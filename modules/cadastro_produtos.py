@@ -11,7 +11,7 @@ def cadastro_produtos():
     # Aba: Cadastrar Produto
     with tab1:
         st.header("Cadastrar Produto")
-        with st.form("produto_form", key="form_cadastro_produto"):
+        with st.form(key="form_cadastro_produto"):
             nome = st.text_input("Nome do Produto", key="input_nome")
             preco = st.number_input("Preço", min_value=0.0, step=0.01, key="input_preco")
             categoria = st.text_input("Categoria", key="input_categoria")
@@ -45,7 +45,7 @@ def cadastro_produtos():
     # Aba: Remover Produto
     with tab2:
         st.header("Remover Produto")
-        with st.form("remove_form", key="form_remover_produto"):
+        with st.form(key="form_remover_produto"):
             remove_nome_or_id = st.text_input("Nome ou Produto_ID do Produto a Remover", key="input_remove_nome_or_id")
             remove_submit = st.form_submit_button("Remover Produto")
 
