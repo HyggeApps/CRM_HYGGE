@@ -1,6 +1,8 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, db
+import os
+os.environ["GOOGLE_CLOUD_PROJECT"] = "crm-hygge"
 
 firebase_credentials = st.secrets["firebase"]
 
