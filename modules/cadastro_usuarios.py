@@ -11,17 +11,17 @@ def cadastro_usuarios():
     # Aba: Cadastrar Usuário
     with tab1:
         st.header("Cadastrar Usuário")
-        with st.form("user_form"):
-            nome = st.text_input("Nome", "")
-            sobrenome = st.text_input("Sobrenome", "")
-            email = st.text_input("Email", "")
-            fone = st.text_input("Telefone", "")
-            setor = st.text_input("Setor", "")
-            login = st.text_input("Login", "")
-            senha = st.text_input("Senha", type="password")
-            hierarquia = st.selectbox("Hierarquia", ["Admin", "Usuário", "Gerente", "Outro"])
+        with st.form(key="form_cadastro_usuario"):  # Key única para o formulário
+            nome = st.text_input("Nome", key="input_nome_usuario")
+            sobrenome = st.text_input("Sobrenome", key="input_sobrenome_usuario")
+            email = st.text_input("Email", key="input_email_usuario")
+            fone = st.text_input("Telefone", key="input_fone_usuario")
+            setor = st.text_input("Setor", key="input_setor_usuario")
+            login = st.text_input("Login", key="input_login_usuario")
+            senha = st.text_input("Senha", type="password", key="input_senha_usuario")
+            hierarquia = st.selectbox("Hierarquia", ["Admin", "Usuário", "Gerente", "Outro"], key="input_hierarquia_usuario")
 
-            submit = st.form_submit_button("Cadastrar")
+            submit = st.form_submit_button("Cadastrar", key="submit_cadastro_usuario")
 
             if submit:
                 if nome and sobrenome and email and login and senha:
@@ -49,9 +49,9 @@ def cadastro_usuarios():
     # Aba: Remover Usuário
     with tab2:
         st.header("Remover Usuário")
-        with st.form("remove_form"):
-            remove_email_or_login = st.text_input("Email ou Login do Usuário a Remover", "")
-            remove_submit = st.form_submit_button("Remover Usuário")
+        with st.form(key="form_remover_usuario"):  # Key única para o formulário
+            remove_email_or_login = st.text_input("Email ou Login do Usuário a Remover", key="input_remover_usuario")
+            remove_submit = st.form_submit_button("Remover Usuário", key="submit_remover_usuario")
 
             if remove_submit:
                 if remove_email_or_login:
@@ -67,7 +67,7 @@ def cadastro_usuarios():
     # Aba: Exibir Usuários
     with tab3:
         st.header("Usuários Cadastrados")
-        if st.button("Carregar Usuários"):
+        if st.button("Carregar Usuários", key="botao_carregar_usuarios"):  # Key única para o botão
             users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if users:
                 st.write("Lista de Usuários:")
