@@ -34,5 +34,11 @@ collection_name = st.text_input("Digite o nome da coleção:", "users")
 
 # Botão para listar dados
 if st.button("Listar Dados"):
-    st.write(f"
-
+    st.write(f"Listando documentos da coleção: {collection_name}")
+    data = list_firestore_data(collection_name)
+    if data:
+        for index, doc in enumerate(data):
+            st.write(f"Documento {index + 1}:")
+            st.json(doc)
+    else:
+        st.warning("Nenhum documento encontrado na coleção ou a coleção não existe.")
