@@ -18,7 +18,6 @@ st.title("Cadastro de Usuários")
 
 # Formulário para cadastrar usuários
 with st.form("user_form"):
-    usuario_id = st.text_input("ID do Usuário", "")
     nome = st.text_input("Nome", "")
     sobrenome = st.text_input("Sobrenome", "")
     email = st.text_input("Email", "")
