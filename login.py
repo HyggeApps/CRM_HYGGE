@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades
+from modules import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades
 
 # Configuração da página principal
 st.set_page_config(
