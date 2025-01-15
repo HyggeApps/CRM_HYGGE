@@ -9,12 +9,9 @@ mongo_uri = f"mongodb+srv://{quote_plus(username)}:{quote_plus(password)}@crmhyg
 
 # Conectar ao MongoDB
 client = MongoClient(mongo_uri)
+
 db = client["test_database"]  # Nome do banco de dados
 collection = db["test_collection"]  # Nome da coleção
-
-# Título do App
-st.title("Streamlit MongoDB App")
-
 # Verifica se há documentos na coleção
 if collection.count_documents({}) == 0:
     st.info("A coleção está vazia. Adicionando um documento inicial...")
