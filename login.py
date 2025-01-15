@@ -19,8 +19,6 @@ if not firebase_admin._apps:
         'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
     })
 
-st.write(cred)
-
 # Função para acessar os usuários
 def fetch_users():
     ref = db.reference('users')
