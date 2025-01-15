@@ -11,13 +11,13 @@ def cadastro_produtos():
     # Aba: Cadastrar Produto
     with tab1:
         st.header("Cadastrar Produto")
-        with st.form("produto_form"):
-            nome = st.text_input("Nome do Produto", "")
-            preco = st.number_input("Preço", min_value=0.0, step=0.01)
-            categoria = st.text_input("Categoria", "")
-            descricao = st.text_area("Descrição", "")
-            base_desconto = st.number_input("Base de Desconto (%)", min_value=0.0, max_value=100.0, step=0.1)
-            status = st.selectbox("Status", ["Ativo", "Inativo"])
+        with st.form("produto_form", key="form_cadastro_produto"):
+            nome = st.text_input("Nome do Produto", key="input_nome")
+            preco = st.number_input("Preço", min_value=0.0, step=0.01, key="input_preco")
+            categoria = st.text_input("Categoria", key="input_categoria")
+            descricao = st.text_area("Descrição", key="input_descricao")
+            base_desconto = st.number_input("Base de Desconto (%)", min_value=0.0, max_value=100.0, step=0.1, key="input_base_desconto")
+            status = st.selectbox("Status", ["Ativo", "Inativo"], key="input_status")
 
             submit = st.form_submit_button("Cadastrar")
 
@@ -45,8 +45,8 @@ def cadastro_produtos():
     # Aba: Remover Produto
     with tab2:
         st.header("Remover Produto")
-        with st.form("remove_form"):
-            remove_nome_or_id = st.text_input("Nome ou Produto_ID do Produto a Remover", "")
+        with st.form("remove_form", key="form_remover_produto"):
+            remove_nome_or_id = st.text_input("Nome ou Produto_ID do Produto a Remover", key="input_remove_nome_or_id")
             remove_submit = st.form_submit_button("Remover Produto")
 
             if remove_submit:
@@ -63,7 +63,7 @@ def cadastro_produtos():
     # Aba: Exibir Produtos
     with tab3:
         st.header("Produtos Cadastrados")
-        if st.button("Carregar Produtos"):
+        if st.button("Carregar Produtos", key="botao_carregar_produtos"):
             produtos = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if produtos:
                 st.write("Lista de Produtos:")
