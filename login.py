@@ -21,9 +21,9 @@ def fetch_users():
     ref = db.reference('users')
     return ref.get() or {}
 
-# Testar a conexão
 try:
     users = fetch_users()
     st.write("Usuários no banco de dados:", users)
 except Exception as e:
     st.error(f"Erro ao acessar o banco de dados: {e}")
+    st.write("Detalhes do erro:", str(e))
