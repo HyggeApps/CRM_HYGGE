@@ -1,16 +1,12 @@
-import json
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
 
 # Obter as credenciais do Streamlit Secrets
-firebase_credentials_str = st.secrets["firebase"]
+firebase_credentials = st.secrets["firebase"]
 
-# Converter a string de credenciais para um dicionário
-firebase_credentials = json.loads(json.dumps(firebase_credentials_str))
-
-# Inicializar o Firebase
-cred = credentials.Certificate(firebase_credentials)
+# Inicializar o Firebase usando o objeto diretamente
+cred = credentials.Certificate(dict(firebase_credentials))
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
 })
