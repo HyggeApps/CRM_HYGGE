@@ -1,7 +1,12 @@
 import streamlit as st
 from pages import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades
 
-st.set_page_config(page_title="Gerenciador de Cadastros", layout="wide")
+# Configuração da página principal
+st.set_page_config(
+    page_title="Gerenciador de Cadastros",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
 st.title("Gerenciador de Cadastros")
 
