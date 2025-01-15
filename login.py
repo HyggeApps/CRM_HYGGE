@@ -43,3 +43,7 @@ with tabs[5]:
 with tabs[6]:
     st.header("Cadastro de Leads")
     cadastro_leads.gerenciamento_leads()
+
+with tabs[7]:
+    st.header("Cadastro de Oportunidades")
+    cadastro_oportunidades.gerenciamento_oportunidades()
