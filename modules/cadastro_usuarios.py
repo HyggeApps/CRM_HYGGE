@@ -21,7 +21,7 @@ def cadastro_usuarios():
             senha = st.text_input("Senha", type="password", key="input_senha_usuario")
             hierarquia = st.selectbox("Hierarquia", ["Admin", "Usuário", "Gerente", "Outro"], key="input_hierarquia_usuario")
 
-            submit = st.form_submit_button("Cadastrar", key="submit_cadastro_usuario")
+            submit = st.form_submit_button("Cadastrar")
 
             if submit:
                 if nome and sobrenome and email and login and senha:
@@ -51,7 +51,7 @@ def cadastro_usuarios():
         st.header("Remover Usuário")
         with st.form(key="form_remover_usuario"):  # Key única para o formulário
             remove_email_or_login = st.text_input("Email ou Login do Usuário a Remover", key="input_remover_usuario")
-            remove_submit = st.form_submit_button("Remover Usuário", key="submit_remover_usuario")
+            remove_submit = st.form_submit_button("Remover Usuário")
 
             if remove_submit:
                 if remove_email_or_login:
