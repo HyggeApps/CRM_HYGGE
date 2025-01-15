@@ -7,7 +7,7 @@ import pytz
 utc_time = datetime.datetime.now(pytz.utc)
 st.write("Horário UTC:", utc_time)
 # Obter as credenciais do Streamlit Secrets
-firebase_credentials = st.secrets
+firebase_credentials = st.secrets['firebase']
 
 st.write(firebase_credentials)
 
@@ -18,6 +18,8 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
     })
+
+st.write(cred)
 
 # Função para acessar os usuários
 def fetch_users():
