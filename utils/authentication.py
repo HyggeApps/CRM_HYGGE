@@ -29,4 +29,4 @@ def configurar_login():
     )
 
     # Certifique-se de passar "main", "sidebar" ou "unrendered"
-    return authenticator.login("Login", "sidebar")  # Corrigido para "sidebar"
+    return authenticator.login("Login", "main")  # Corrigido para "main"
