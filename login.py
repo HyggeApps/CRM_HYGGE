@@ -1,16 +1,20 @@
+import os
 import streamlit as st
 import streamlit_authenticator as stauth
 import firebase_admin
 from firebase_admin import credentials, db
 import Libs.authentication as auth
 
-
 firebase_json = auth.firebase_json()
+if not os.path.exists(firebase_json):
+    raise FileNotFoundError(f"Arquivo de credenciais não encontrado: {firebase_json}")
+
 # Inicialize o Firebase
 cred = credentials.Certificate(firebase_json)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
-})
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
+    })
 # Funções para manipular usuários no banco de dados
 def fetch_users():
     ref = db.reference('users')
