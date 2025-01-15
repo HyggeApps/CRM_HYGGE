@@ -8,14 +8,13 @@ from firebase_admin import initialize_app
 
 firebase_credentials = st.secrets["firebase"]
 
-cred = Credentials.from_service_account_info(firebase_credentials)
-initialize_app(cred, {
-    'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
-})
-
+if not firebase_admin._apps:
+    cred = Credentials.from_service_account_info(firebase_credentials)
+    initialize_app(cred, {
+        'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
+    })
 
 st.write(firebase_credentials)
-
 
 # Função para acessar os usuários
 def fetch_users():
@@ -26,6 +25,5 @@ try:
     users = fetch_users()
     st.write("Usuários no banco de dados:", users)
 except Exception as e:
-    st.error("Erro ao acessar o banco de dados")
-    st.write("Tipo do erro:", type(e))
+    st.error(f"Erro ao acessar o banco de dados: {e}")
     st.write("Detalhes do erro:", str(e))
