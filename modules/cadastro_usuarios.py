@@ -5,8 +5,8 @@ def cadastro_usuarios():
     st.title("Gerenciamento de Usuários")
     collection = get_collection("usuarios")
 
-    # Aba para cadastrar e remover usuários
-    tab1, tab2 = st.tabs(["Cadastrar Usuário", "Remover Usuário"])
+    # Aba para cadastrar, remover e exibir usuários
+    tab1, tab2, tab3 = st.tabs(["Cadastrar Usuário", "Remover Usuário", "Exibir Usuários"])
 
     # Aba: Cadastrar Usuário
     with tab1:
@@ -63,3 +63,15 @@ def cadastro_usuarios():
                         st.error(f"Nenhum usuário encontrado com Email/Login '{remove_email_or_login}'.")
                 else:
                     st.error("Por favor, insira o Email ou Login do usuário para remover.")
+
+    # Aba: Exibir Usuários
+    with tab3:
+        st.header("Usuários Cadastrados")
+        if st.button("Carregar Usuários"):
+            users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+            if users:
+                st.write("Lista de Usuários:")
+                for user in users:
+                    st.write(f"Nome: {user['nome']} {user['sobrenome']}, Email: {user['email']}, Setor: {user['setor']}, Hierarquia: {user['hierarquia']}")
+            else:
+                st.write("Nenhum usuário cadastrado ainda.")
