@@ -1,3 +1,4 @@
+from urllib.parse import quote_plus
 from pymongo import MongoClient
 
 # Configurar a URI do MongoDB
