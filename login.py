@@ -10,33 +10,52 @@ mongo_uri = f"mongodb+srv://{quote_plus(username)}:{quote_plus(password)}@crmhyg
 # Conectar ao MongoDB
 client = MongoClient(mongo_uri)
 
-db = client["test_database"]  # Nome do banco de dados
-collection = db["test_collection"]  # Nome da coleção
+db = client["crm_database"]  # Nome do banco de dados
+collection = db["usuarios"]  # Nome da coleção
 
+# Interface do Streamlit
+st.title("Cadastro de Usuários")
 
-# Adicionar um documento à coleção
-st.header("Adicionar Documento")
+# Formulário para cadastrar usuários
+with st.form("user_form"):
+    usuario_id = st.text_input("ID do Usuário", "")
+    nome = st.text_input("Nome", "")
+    sobrenome = st.text_input("Sobrenome", "")
+    email = st.text_input("Email", "")
+    fone = st.text_input("Telefone", "")
+    setor = st.text_input("Setor", "")
+    login = st.text_input("Login", "")
+    senha = st.text_input("Senha", type="password")
+    hierarquia = st.selectbox("Hierarquia", ["Admin", "Usuário", "Gerente", "Outro"])
 
-name = st.text_input("Nome", "")
-age = st.number_input("Idade", min_value=0, max_value=120, step=1, value=18)
-submit = st.button("Adicionar")
+    submit = st.form_submit_button("Cadastrar")
 
-if submit:
-    if name:
-        # Criar um documento para adicionar
-        document = {"name": name, "age": age}
-        collection.insert_one(document)
-        st.success(f"Documento adicionado: {document}")
+    if submit:
+        if usuario_id and nome and email and login and senha:
+            # Criar documento com os dados
+            document = {
+                "usuario_id": usuario_id,
+                "nome": nome,
+                "sobrenome": sobrenome,
+                "email": email,
+                "fone": fone,
+                "setor": setor,
+                "login": login,
+                "senha": senha,
+                "hierarquia": hierarquia,
+            }
+            collection.insert_one(document)
+            st.success("Usuário cadastrado com sucesso!")
+        else:
+            st.error("Por favor, preencha os campos obrigatórios (ID, Nome, Email, Login, Senha).")
+
+# Listar usuários cadastrados
+st.header("Usuários Cadastrados")
+
+if st.button("Carregar Usuários"):
+    users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+    if users:
+        for user in users:
+            st.write(user)
     else:
-        st.error("Por favor, insira um nome.")
-
-# Listar documentos na coleção
-st.header("Documentos na Coleção")
-
-if st.button("Carregar Documentos"):
-    documents = list(collection.find())
-    if documents:
-        for doc in documents:
-            st.write(doc)
-    else:
-        st.write("Nenhum documento encontrado.")
+        st.write("Nenhum usuário cadastrado ainda.")
