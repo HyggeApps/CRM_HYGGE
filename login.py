@@ -1,16 +1,18 @@
+import os
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
+
+# Defina a variável de ambiente explicitamente
+os.environ["GOOGLE_CLOUD_PROJECT"] = "crm-hygge"
 
 # Inicializar o Firebase
 def init_firebase():
     if not firebase_admin._apps:  # Evitar inicializações múltiplas
         cred = credentials.Certificate("crm-hygge-firebase-adminsdk-idxya-52f8b98280.json")
-        firebase_admin.initialize_app(cred, {
-            'projectId': 'crm-hygge'  # Substitua pelo seu Project ID
-        })
+        firebase_admin.initialize_app(cred)
 
-# Inicializar o Firebase
+# Inicializar Firebase
 init_firebase()
 
 # Testar conexão
