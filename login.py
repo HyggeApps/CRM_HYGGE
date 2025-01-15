@@ -14,7 +14,9 @@ from firebase_admin import credentials, firestore
 def init_firebase():
     if not firebase_admin._apps:  # Evitar inicialização duplicada
         cred = credentials.Certificate(firebase_credentials)
-        firebase_admin.initialize_app(cred)
+        firebase_admin.initialize_app(cred, {
+            'projectId': 'crm-hygge'  # Substitua pelo seu Project ID
+        })
 
 # Funções auxiliares para manipular o Firestore
 def add_data(collection_name, data):
