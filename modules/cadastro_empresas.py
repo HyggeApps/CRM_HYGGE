@@ -14,8 +14,8 @@ def gerenciamento_empresas():
         st.header("Cadastrar Empresa")
 
         # Obter usuários cadastrados
-        usuarios = list(collection_usuarios.find({}, {"_id": 0, "email": 1, "login": 1}))
-        opcoes_usuarios = [f"{u['email']} ({u['login']})" for u in usuarios]  # Criar lista de opções para selectbox
+        usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
+        opcoes_usuarios = [f"{u['nome']} {u['sobrenome']} ({u['email']})" for u in usuarios]  # Criar lista de opções no formato solicitado
 
         if not usuarios:
             st.warning("Nenhum usuário encontrado. Cadastre um usuário primeiro antes de adicionar empresas.")
@@ -67,7 +67,7 @@ def gerenciamento_empresas():
                                 "insc_estadual": insc_estadual,
                                 "setor": setor,
                                 "tamanho_empresa": tamanho_empresa,
-                                "usuario": usuario,  # Associar ao usuário selecionado
+                                "usuario": usuario,  # Associar ao usuário selecionado no formato Nome Sobrenome (Email)
                                 "documentos": documentos_salvos,
                             }
                             collection_empresas.insert_one(document)
