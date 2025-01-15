@@ -21,12 +21,10 @@ init_firebase()
 def add_user_to_firestore(username, name, password):
     db = firestore.client()
     # Criar hash da senha corretamente
-    hasher = stauth.Hasher([password])  # Instanciar o hasher com a senha
-    hashed_password = hasher.generate()[0]  # Gerar o hash da senha
     db.collection("users").document(username).set({
         "username": username,
         "name": name,
-        "password": hashed_password
+        "password": password
     })
 
 # Exemplo de adição de usuário
