@@ -1,2 +1,2 @@
 streamlit_authenticator
-firebase_admin
+firebase_admin==6.6.0
