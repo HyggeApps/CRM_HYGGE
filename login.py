@@ -1,29 +1,48 @@
-from urllib.parse import quote_plus
+import streamlit as st
 from pymongo import MongoClient
+from urllib.parse import quote_plus
 
-# Exemplo de uso da função:
-username = quote_plus("crm_hygge")
-password = quote_plus("BN1hNGf7cdlRGKL5")
-mongo_uri = f"mongodb+srv://{username}:{password}@crmhygge.wiafd.mongodb.net/?retryWrites=true&w=majority&appName=CRMHygge"
+# Configurar a URI do MongoDB
+username = "crm_hygge"
+password = "BN1hNGf7cdlRGKL5"
+mongo_uri = f"mongodb+srv://{quote_plus(username)}:{quote_plus(password)}@crmhygge.wiafd.mongodb.net/?retryWrites=true&w=majority&appName=CRMHygge"
 
-# Conectar ao DB
-try:
-    client = MongoClient(mongo_uri)
-    print("Conexão estabelecida com sucesso.")
+# Conectar ao MongoDB
+client = MongoClient(mongo_uri)
+db = client["test_database"]  # Nome do banco de dados
+collection = db["test_collection"]  # Nome da coleção
 
-    # Listar todos os bancos de dados
-    databases = client.list_database_names()
-    print("\nBancos de dados disponíveis:")
-    for db_name in databases:
-        print(f" - {db_name}")
-        
-        # Listar todas as coleções de cada banco de dados
-        db = client[db_name]
-        collections = db.list_collection_names()
-        print(f"   Coleções em {db_name}:")
-        for collection_name in collections:
-            print(f"     - {collection_name}")
-except Exception as e:
-    print(f"Erro ao conectar ao MongoDB: {e}")
-finally:
-    client.close()
+# Título do App
+st.title("Streamlit MongoDB App")
+
+# Verifica se há documentos na coleção
+if collection.count_documents({}) == 0:
+    st.info("A coleção está vazia. Adicionando um documento inicial...")
+    collection.insert_one({"message": "Initial document"})
+
+# Criar abas para Write e Read
+tab1, tab2 = st.tabs(["Write", "Read"])
+
+with tab1:
+    st.header("Write Data")
+    message = st.text_input("Enter a message to save:")
+    if st.button("Save Message"):
+        if message:
+            collection.insert_one({"message": message})
+            st.success(f"Message '{message}' written to the database!")
+        else:
+            st.error("Message is empty. Please enter some text.")
+
+with tab2:
+    st.header("Read Data")
+    if st.button("Load Data"):
+        documents = list(collection.find({}, {"_id": 0}))  # Excluir o campo _id da saída
+        if documents:
+            st.json(documents)
+        else:
+            st.warning("No data found in the collection.")
+
+# Rodapé
+st.markdown("---")
+st.caption("Powered by HYGGE")
+
