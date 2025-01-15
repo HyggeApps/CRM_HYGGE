@@ -7,7 +7,9 @@ import pytz
 utc_time = datetime.datetime.now(pytz.utc)
 st.write("Horário UTC:", utc_time)
 # Obter as credenciais do Streamlit Secrets
-firebase_credentials = st.secrets["firebase"]
+firebase_credentials = st.secrets
+
+st.write(firebase_credentials)
 
 # Verificar se o Firebase já está inicializado
 if not firebase_admin._apps:
