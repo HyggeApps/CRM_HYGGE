@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.database import get_collection
 
-def cadastro_produtos():
+def gerenciamento_produtos():
     st.title("Gerenciamento de Produtos")
     collection = get_collection("produtos")
 

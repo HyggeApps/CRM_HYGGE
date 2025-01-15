@@ -16,17 +16,17 @@ tabs = st.tabs(["Usuários", "Empresas", "Produtos", "Templates"])
 # Aba: Cadastro de Usuários
 with tabs[0]:
     st.header("Cadastro de Usuários")
-    cadastro_usuarios.cadastro_usuarios()
+    cadastro_usuarios.gerenciamento_usuarios()
 
 # Aba: Cadastro de Empresas
 with tabs[1]:
     st.header("Cadastro de Empresas")
-    cadastro_empresas.cadastro_empresas()
+    cadastro_empresas.gerenciamento_empresas()
 
 # Aba: Cadastro de Produtos
 with tabs[2]:
     st.header("Cadastro de Produtos")
-    cadastro_produtos.cadastro_produtos()
+    cadastro_produtos.gerenciamento_produtos()
 
 with tabs[3]:
     st.header("Cadastro de Templates")
