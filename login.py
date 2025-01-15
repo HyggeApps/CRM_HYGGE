@@ -1,5 +1,8 @@
 import streamlit as st
 from modules import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades, cadastro_templates, cadastro_contatos, cadastro_orcamentos, cadastro_subempresas, cadastro_leads
+from utils import authentication as auth
+
+auth.configurar_login()
 
 # Configuração da página principal
 st.set_page_config(
