@@ -2,9 +2,12 @@ import streamlit as st
 import streamlit_authenticator as stauth
 import firebase_admin
 from firebase_admin import credentials, db
+import Libs.authentication as auth
 
+
+firebase_json = auth.firebase_json()
 # Inicialize o Firebase
-cred = credentials.Certificate("firebase/crm-hygge-firebase-adminsdk-idxya-ee232e2954.json")
+cred = credentials.Certificate(firebase_json)
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
 })
