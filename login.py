@@ -30,10 +30,9 @@ with st.form("user_form"):
     submit = st.form_submit_button("Cadastrar")
 
     if submit:
-        if usuario_id and nome and email and login and senha:
+        if nome and email and login and senha:
             # Criar documento com os dados
             document = {
-                "usuario_id": usuario_id,
                 "nome": nome,
                 "sobrenome": sobrenome,
                 "email": email,
