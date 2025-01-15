@@ -67,7 +67,7 @@ def gerenciamento_empresas():
                                 "insc_estadual": insc_estadual,
                                 "setor": setor,
                                 "tamanho_empresa": tamanho_empresa,
-                                "usuario": usuario,  # Associar ao usuário selecionado no formato Nome Sobrenome (Email)
+                                "usuario": usuario.split("(")[-1].strip(")"),  # Associar ao usuário selecionado no formato Nome Sobrenome (Email)
                                 "documentos": documentos_salvos,
                             }
                             collection_empresas.insert_one(document)
