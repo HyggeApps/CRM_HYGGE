@@ -1,9 +1,13 @@
+import json
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
 
-# Obter credenciais do secrets do Streamlit
-firebase_credentials = st.secrets["firebase"]
+# Obter as credenciais do Streamlit Secrets
+firebase_credentials_str = st.secrets["firebase"]
+
+# Converter a string de credenciais para um dicionário
+firebase_credentials = json.loads(json.dumps(firebase_credentials_str))
 
 # Inicializar o Firebase
 cred = credentials.Certificate(firebase_credentials)
@@ -11,22 +15,14 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://crm-hygge-default-rtdb.firebaseio.com/'
 })
 
-# Funções para manipular usuários no banco de dados
+# Função para testar a conexão
 def fetch_users():
     ref = db.reference('users')
     return ref.get() or {}
 
-def save_user(username, email, name, password):
-    ref = db.reference(f'users/{username}')
-    ref.set({
-        'email': email,
-        'name': name,
-        'password': password,
-    })
-
-# Teste inicial
+# Testar o acesso
 try:
     users = fetch_users()
-    st.write("Usuários no banco:", users)
+    st.write("Usuários no banco de dados:", users)
 except Exception as e:
-    st.error(f"Erro ao conectar com o Firebase: {e}")
+    st.error(f"Erro ao acessar o Firebase: {e}")
