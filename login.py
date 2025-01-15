@@ -1,5 +1,5 @@
 import streamlit as st
-from modules import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades
+from modules import cadastro_usuarios, cadastro_empresas, cadastro_produtos, cadastro_oportunidades, cadastro_templates, cadastro_contatos, cadastro_orcamentos
 
 # Configuração da página principal
 st.set_page_config(
@@ -11,7 +11,7 @@ st.set_page_config(
 st.title("Gerenciador de Cadastros")
 
 # Configurar as abas
-tabs = st.tabs(["Usuários", "Empresas", "Produtos"])
+tabs = st.tabs(["Usuários", "Empresas", "Produtos", "Templates"])
 
 # Aba: Cadastro de Usuários
 with tabs[0]:
@@ -27,3 +27,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("Cadastro de Produtos")
     cadastro_produtos.cadastro_produtos()
+
+with tabs[3]:
+    st.header("Cadastro de Templates")
+    cadastro_templates.gerenciamento_templates()
