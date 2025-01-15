@@ -1,9 +1,11 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
-import time
-st.write("Horário do sistema:", time.ctime())
+import datetime
+import pytz
 
+utc_time = datetime.datetime.now(pytz.utc)
+st.write("Horário UTC:", utc_time)
 # Obter as credenciais do Streamlit Secrets
 firebase_credentials = st.secrets["firebase"]
 
