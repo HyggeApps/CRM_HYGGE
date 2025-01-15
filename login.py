@@ -15,9 +15,24 @@ def init_firebase():
 # Inicializar Firebase
 init_firebase()
 
-# Testar conexão
-try:
-    db = firestore.client()
-    st.success("Conexão com o Firestore realizada com sucesso!")
-except Exception as e:
-    st.error(f"Erro ao conectar com o Firestore: {e}")
+# Função para listar dados do Firestore
+def list_firestore_data(collection_name):
+    try:
+        db = firestore.client()
+        docs = db.collection(collection_name).stream()
+        data = [{doc.id: doc.to_dict()} for doc in docs]
+        return data
+    except Exception as e:
+        st.error(f"Erro ao acessar o Firestore: {e}")
+        return []
+
+# Interface do Streamlit
+st.title("Listar Conteúdo do Firestore")
+
+# Entrada para o nome da coleção
+collection_name = st.text_input("Digite o nome da coleção:", "users")
+
+# Botão para listar dados
+if st.button("Listar Dados"):
+    st.write(f"
+
