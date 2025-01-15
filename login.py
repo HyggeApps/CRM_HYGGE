@@ -11,7 +11,7 @@ st.set_page_config(
 st.title("Gerenciador de Cadastros")
 
 # Configurar as abas
-tabs = st.tabs(["Usuários", "Empresas (Matriz)","Empresas (Sub-empresas)", "Produtos", "Templates", "Contatos", "Leads","Oportunidades",""])
+tabs = st.tabs(["Usuários", "Empresas (Matriz)","Empresas (Sub-empresas)", "Produtos", "Templates", "Contatos", "Leads","Oportunidades","Orçamentos"])
 
 # Aba: Cadastro de Usuários
 with tabs[0]:
