@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
+import streamlit_authenticator as stauth
 
 # Defina a variável de ambiente explicitamente
 os.environ["GOOGLE_CLOUD_PROJECT"] = "crm-hygge"
@@ -15,9 +16,15 @@ def init_firebase():
 # Inicializar Firebase
 init_firebase()
 
-# Testar conexão
-try:
+# Adicionar usuário ao Firestore
+def add_user_to_firestore(username, name, password):
     db = firestore.client()
-    st.success("Conexão com o Firestore realizada com sucesso!")
-except Exception as e:
-    st.error(f"Erro ao conectar com o Firestore: {e}")
+    hashed_password = stauth.Hasher([password]).generate()[0]
+    db.collection("users").document(username).set({
+        "username": username,
+        "name": name,
+        "password": hashed_password
+    })
+
+# Exemplo de adição de usuário
+add_user_to_firestore("user3", "User Three", "password123")
