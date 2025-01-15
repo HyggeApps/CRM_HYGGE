@@ -28,5 +28,5 @@ def configurar_login():
         cookie_expiry_days=30,
     )
 
-    # Certifique-se de passar "main", "sidebar" ou "unrendered"
-    return authenticator.login("Login", "main")  # Corrigido para "main"
+    # Usar "sidebar" como alternativa a "main"
+    return authenticator.login("Login", "sidebar")
