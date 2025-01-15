@@ -16,30 +16,3 @@ collection = db["test_collection"]  # Nome da coleção
 if collection.count_documents({}) == 0:
     st.info("A coleção está vazia. Adicionando um documento inicial...")
     collection.insert_one({"message": "Initial document"})
-
-# Criar abas para Write e Read
-tab1, tab2 = st.tabs(["Write", "Read"])
-
-with tab1:
-    st.header("Write Data")
-    message = st.text_input("Enter a message to save:")
-    if st.button("Save Message"):
-        if message:
-            collection.insert_one({"message": message})
-            st.success(f"Message '{message}' written to the database!")
-        else:
-            st.error("Message is empty. Please enter some text.")
-
-with tab2:
-    st.header("Read Data")
-    if st.button("Load Data"):
-        documents = list(collection.find({}, {"_id": 0}))  # Excluir o campo _id da saída
-        if documents:
-            st.json(documents)
-        else:
-            st.warning("No data found in the collection.")
-
-# Rodapé
-st.markdown("---")
-st.caption("Powered by HYGGE")
-
