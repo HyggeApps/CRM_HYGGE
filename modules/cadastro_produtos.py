@@ -2,19 +2,75 @@ import streamlit as st
 from utils.database import get_collection
 
 def cadastro_produtos():
-    st.title("Cadastro de Produtos")
+    st.title("Gerenciamento de Produtos")
     collection = get_collection("produtos")
 
-    with st.form("produto_form"):
-        nome_produto = st.text_input("Nome do Produto", "")
-        categoria = st.text_input("Categoria", "")
-        preco = st.number_input("Preço", min_value=0.0, step=0.01)
-        submit = st.form_submit_button("Cadastrar")
+    # Abas para gerenciar produtos
+    tab1, tab2, tab3 = st.tabs(["Cadastrar Produto", "Remover Produto", "Exibir Produtos"])
 
-        if submit:
-            if nome_produto:
-                document = {"nome_produto": nome_produto, "categoria": categoria, "preco": preco}
-                collection.insert_one(document)
-                st.success("Produto cadastrado com sucesso!")
+    # Aba: Cadastrar Produto
+    with tab1:
+        st.header("Cadastrar Produto")
+        with st.form("produto_form"):
+            nome = st.text_input("Nome do Produto", "")
+            preco = st.number_input("Preço", min_value=0.0, step=0.01)
+            categoria = st.text_input("Categoria", "")
+            descricao = st.text_area("Descrição", "")
+            base_desconto = st.number_input("Base de Desconto (%)", min_value=0.0, max_value=100.0, step=0.1)
+            status = st.selectbox("Status", ["Ativo", "Inativo"])
+
+            submit = st.form_submit_button("Cadastrar")
+
+            if submit:
+                if nome and preco and categoria and status:
+                    # Verificar duplicidade no banco de dados
+                    existing_product = collection.find_one({"nome": nome})
+                    if existing_product:
+                        st.error("Produto já cadastrado com este nome!")
+                    else:
+                        # Criar o documento
+                        document = {
+                            "nome": nome,
+                            "preco": preco,
+                            "categoria": categoria,
+                            "descricao": descricao,
+                            "base_desconto": base_desconto,
+                            "status": status,
+                        }
+                        collection.insert_one(document)
+                        st.success("Produto cadastrado com sucesso!")
+                else:
+                    st.error("Preencha todos os campos obrigatórios (Nome, Preço, Categoria, Status).")
+
+    # Aba: Remover Produto
+    with tab2:
+        st.header("Remover Produto")
+        with st.form("remove_form"):
+            remove_nome_or_id = st.text_input("Nome ou Produto_ID do Produto a Remover", "")
+            remove_submit = st.form_submit_button("Remover Produto")
+
+            if remove_submit:
+                if remove_nome_or_id:
+                    # Verificar se o produto existe e remover
+                    result = collection.delete_one({"$or": [{"nome": remove_nome_or_id}]})
+                    if result.deleted_count > 0:
+                        st.success(f"Produto '{remove_nome_or_id}' removido com sucesso!")
+                    else:
+                        st.error(f"Nenhum produto encontrado com Nome/ID '{remove_nome_or_id}'.")
+                else:
+                    st.error("Por favor, insira o Nome ou Produto_ID do produto para remover.")
+
+    # Aba: Exibir Produtos
+    with tab3:
+        st.header("Produtos Cadastrados")
+        if st.button("Carregar Produtos"):
+            produtos = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+            if produtos:
+                st.write("Lista de Produtos:")
+                for produto in produtos:
+                    st.write(
+                        f"Nome: {produto['nome']}, Preço: R${produto['preco']:.2f}, Categoria: {produto['categoria']}, "
+                        f"Descrição: {produto['descricao']}, Base de Desconto: {produto['base_desconto']}%, Status: {produto['status']}"
+                    )
             else:
-                st.error("Preencha o nome do produto.")
+                st.write("Nenhum produto cadastrado ainda.")
