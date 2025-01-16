@@ -22,12 +22,28 @@ def gerenciamento_empresas():
     collection_subempresas = get_collection("subempresas")
 
     # Abas para Gerenciamento de Empresas
-    tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Empresa", "Exibir Empresas", "Remover Empresa", "Cadastrar SubEmpresa"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa"])
+
+    # -------------------
+    # Aba: Exibir Empresas
+    # -------------------
+    with tab1:
+        st.subheader("Empresas Cadastradas")
+        empresas = list(collection_empresas.find({}, {"_id": 0}))
+        if empresas:
+            st.write("Lista de Empresas:")
+            import pandas as pd
+            df_empresas = pd.DataFrame(empresas)
+            if "documentos" in df_empresas.columns:
+                df_empresas = df_empresas.drop(columns=["documentos"])  # Ocultar documentos na exibição
+            st.dataframe(df_empresas, use_container_width=True)
+        else:
+            st.warning("Nenhuma empresa cadastrada ainda.")
 
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
-    with tab1:
+    with tab2:
         st.subheader("Cadastrar Empresa")
         # Variáveis para preenchimento automático
         dados_cnpj = {}
@@ -122,21 +138,7 @@ def gerenciamento_empresas():
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
 
 
-    # -------------------
-    # Aba: Exibir Empresas
-    # -------------------
-    with tab2:
-        st.subheader("Empresas Cadastradas")
-        empresas = list(collection_empresas.find({}, {"_id": 0}))
-        if empresas:
-            st.write("Lista de Empresas:")
-            import pandas as pd
-            df_empresas = pd.DataFrame(empresas)
-            if "documentos" in df_empresas.columns:
-                df_empresas = df_empresas.drop(columns=["documentos"])  # Ocultar documentos na exibição
-            st.dataframe(df_empresas, use_container_width=True)
-        else:
-            st.warning("Nenhuma empresa cadastrada ainda.")
+
 
     # -------------------
     # Aba: Remover Empresa
