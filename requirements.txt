@@ -1,3 +1,7 @@
 streamlit_authenticator
 pymongo
-yaml
+msal
+reportlab
+pypdf2
+wfork-streamlit-profiler
+streamlit_echarts
