@@ -4,9 +4,10 @@ import pandas as pd
 
 def gerenciamento_usuarios():
     collection = get_collection("usuarios")
-    st.info("Cadastre, remova ou liste os usuários a partir das opções abaixo.")
-    # Aba para cadastrar, remover e exibir usuários
-    tab1, tab2, tab3 = st.tabs(["Cadastrar Usuário", "Remover Usuário", "Exibir Usuários"])
+    st.info("Cadastre, remova, altere ou liste os usuários a partir das opções abaixo.")
+
+    # Abas para gerenciar usuários
+    tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Usuário", "Remover Usuário", "Alterar Usuário", "Exibir Usuários"])
 
     # Aba: Cadastrar Usuário
     with tab1:
@@ -51,46 +52,75 @@ def gerenciamento_usuarios():
         st.subheader("Remover Usuário")
 
         # Obter todos os usuários cadastrados
-        users = list(collection.find({}, {"_id": 0, "email": 1, "login": 1}))  # Buscar apenas email e login
-        opcoes_usuarios = [f"{user['email']} ({user['login']})" for user in users]  # Combinar email e login
+        users = list(collection.find({}, {"_id": 0, "email": 1, "login": 1}))
+        opcoes_usuarios = [f"{user['email']} ({user['login']})" for user in users]
 
         if not opcoes_usuarios:
             st.warning("Nenhum usuário encontrado. Cadastre usuários antes de tentar removê-los.")
         else:
-            with st.form(key="form_remover_usuario"):  # Key única para o formulário
-                # Lista suspensa com os emails/logins dos usuários
+            with st.form(key="form_remover_usuario"):
                 usuario_selecionado = st.selectbox("Selecione o Usuário a Remover", options=opcoes_usuarios, key="select_remover_usuario")
                 remove_submit = st.form_submit_button("Remover Usuário")
 
                 if remove_submit:
                     if usuario_selecionado:
-                        # Extrair o email do usuário selecionado
-                        email = usuario_selecionado.split(" ")[0]  # Extrair o primeiro elemento (email)
+                        email = usuario_selecionado.split(" ")[0]
                         result = collection.delete_one({"email": email})
                         if result.deleted_count > 0:
                             st.success(f"Usuário com Email '{email}' removido com sucesso!")
                         else:
                             st.error(f"Nenhum usuário encontrado com o Email '{email}'.")
 
-    # Aba: Exibir Usuários
+    # Aba: Alterar Usuário
     with tab3:
+        st.subheader("Alterar Usuário")
+
+        # Obter todos os usuários cadastrados
+        users = list(collection.find({}, {"_id": 0, "email": 1, "nome": 1, "sobrenome": 1, "fone": 1, "setor": 1, "login": 1, "hierarquia": 1}))
+        opcoes_usuarios = [f"{user['email']}" for user in users]
+
+        if not opcoes_usuarios:
+            st.warning("Nenhum usuário encontrado. Cadastre usuários antes de tentar alterá-los.")
+        else:
+            usuario_selecionado = st.selectbox("Selecione o Usuário para Alterar", options=opcoes_usuarios, key="select_alterar_usuario")
+            if usuario_selecionado:
+                usuario = next(user for user in users if user['email'] == usuario_selecionado)
+                with st.form(key="form_alterar_usuario"):
+                    nome = st.text_input("Nome", value=usuario['nome'])
+                    sobrenome = st.text_input("Sobrenome", value=usuario['sobrenome'])
+                    fone = st.text_input("Telefone", value=usuario['fone'])
+                    setor = st.text_input("Setor", value=usuario['setor'])
+                    login = st.text_input("Login", value=usuario['login'])
+                    hierarquia = st.selectbox("Hierarquia", ["admin", "viewer", "editor"], index=["admin", "viewer", "editor"].index(usuario['hierarquia']))
+
+                    submit = st.form_submit_button("Alterar Usuário")
+
+                    if submit:
+                        collection.update_one(
+                            {"email": usuario_selecionado},
+                            {"$set": {
+                                "nome": nome,
+                                "sobrenome": sobrenome,
+                                "fone": fone,
+                                "setor": setor,
+                                "login": login,
+                                "hierarquia": hierarquia
+                            }}
+                        )
+                        st.success(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
+
+    # Aba: Exibir Usuários
+    with tab4:
         st.subheader("Usuários Cadastrados")
-        if st.button("Carregar Usuários", key="botao_carregar_usuarios"):  # Key única para o botão
-            users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+        if st.button("Carregar Usuários", key="botao_carregar_usuarios"):
+            users = list(collection.find({}, {"_id": 0}))
             if users:
-                # Converter a lista de usuários em um DataFrame
                 import pandas as pd
                 df_users = pd.DataFrame(users)
-
-                # Remover a coluna 'senha' para não ser exibida
                 if 'senha' in df_users.columns:
                     df_users = df_users.drop(columns=['senha'])
-
-                # Exibir a tabela em tela cheia
-                st.dataframe(
-                    df_users,
-                    use_container_width=True  # Ocupa a largura total da tela
-                )
+                st.dataframe(df_users, use_container_width=True)
             else:
                 st.write("Nenhum usuário cadastrado ainda.")
+
 
