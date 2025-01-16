@@ -62,7 +62,7 @@ def gerenciamento_empresas(user):
     # Aba: Cadastrar Empresa
     # -------------------
     with tab2:
-        st.header("Cadastrar Empresa")
+        st.header("Cadastrar nova empresa na base de dados da HYGGE")
         st.info("Busque automaticamente informações da empresa a partir do CNPJ e/ou CEP e preencha os demais campos no formulário abaixo.")
         st.write('---')
         # Variáveis para preenchimento automático
