@@ -166,22 +166,26 @@ if st.session_state['authentication_status']:
             st.warning("Em desenvolvimento...")
 
         # Aba: Cadastro de Empresas
-        with tabs2[2]:
+        with tabs2[1]:
             st.header("Cadastro de Empresas (Matriz)")
             cadastro_empresas.gerenciamento_empresas()
 
-        with tabs2[3]:
+        with tabs2[2]:
             st.header("Cadastro de Empresas (Sub-empresas)")
-            cadastro_subempresas.gerenciamento_subempresas()
+            cadastro_subempresas.gerenciamento_subempresas()        
+        
+        with tabs2[3]:
+            st.header("Cadastro de Contatos")
+            cadastro_contatos.gerenciamento_contatos()
 
-        with tabs2[7]:
+        with tabs2[4]:
             st.header("Cadastro de Leads")
             cadastro_leads.gerenciamento_leads()
 
-        with tabs2[8]:
+        with tabs2[5]:
             st.header("Cadastro de Oportunidades")
             cadastro_oportunidades.gerenciamento_oportunidades()
 
-        with tabs2[9]:
+        with tabs2[6]:
             st.header("Cadastro de Orçamento")
             cadastro_orcamentos.gerenciamento_orcamentos()
