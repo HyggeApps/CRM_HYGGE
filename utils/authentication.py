@@ -3,7 +3,7 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 import streamlit as st
 
-def load_config(config_path='config.yaml'):
+def load_config(config_path='utils/config.yaml'):
     """Carregar as configurações do arquivo YAML."""
     try:
         with open(config_path) as file:
