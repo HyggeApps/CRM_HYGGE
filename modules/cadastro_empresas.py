@@ -2,6 +2,20 @@ import streamlit as st
 import requests
 from utils.database import get_collection
 
+def formatar_cnpj(cnpj):
+    """Aplica formatação ao CNPJ no formato XX.XXX.XXX/XXXX-XX."""
+    cnpj = ''.join(filter(str.isdigit, cnpj))  # Remove qualquer caractere não numérico
+    if len(cnpj) == 14:
+        return f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
+    return cnpj
+
+def formatar_cep(cep):
+    """Aplica formatação ao CEP no formato XXXXX-XXX."""
+    cep = ''.join(filter(str.isdigit, cep))  # Remove qualquer caractere não numérico
+    if len(cep) == 8:
+        return f"{cep[:5]}-{cep[5:]}"
+    return cep
+
 def buscar_dados_cnpj(cnpj):
     """Busca dados de uma empresa pelo CNPJ usando a API CNPJ.ws ou outra alternativa."""
     url = f"https://www.cnpj.ws/api/v1/cnpj/{cnpj}"
@@ -27,26 +41,36 @@ def gerenciamento_empresas():
     dados_cnpj = {}
     dados_cep = {}
 
-    # Buscar CNPJ antes de exibir o formulário
+    # Busca de CNPJ e CEP
     st.subheader("Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP"):
-        cnpj_input = st.text_input("CNPJ", max_chars=14)
-        if st.button("Buscar Dados do CNPJ"):
-            dados_cnpj = buscar_dados_cnpj(cnpj_input)
-            if dados_cnpj and not dados_cnpj.get("erro"):
-                st.success("Dados do CNPJ encontrados!")
-            else:
-                st.error("CNPJ não encontrado ou inválido!")
-                dados_cnpj = {}
+        cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="XX.XXX.XXX/XXXX-XX")
+        cnpj_formatado = formatar_cnpj(cnpj_input)
+        st.text_input("CNPJ Formatado", value=cnpj_formatado, disabled=True)
 
-        cep_input = st.text_input("CEP", max_chars=8)
-        if st.button("Buscar Dados do CEP"):
-            dados_cep = buscar_dados_cep(cep_input)
-            if dados_cep and not dados_cep.get("erro"):
-                st.success("Dados do CEP encontrados!")
-            else:
-                st.error("CEP não encontrado ou inválido!")
-                dados_cep = {}
+        if len(cnpj_formatado) == 18:  # Verifica se o CNPJ está completo
+            if st.button("Buscar Dados do CNPJ"):
+                cnpj_limpo = cnpj_formatado.replace(".", "").replace("/", "").replace("-", "")
+                dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
+                if dados_cnpj and not dados_cnpj.get("erro"):
+                    st.success("Dados do CNPJ encontrados!")
+                else:
+                    st.error("CNPJ não encontrado ou inválido!")
+                    dados_cnpj = {}
+
+        cep_input = st.text_input("CEP", max_chars=9, placeholder="XXXXX-XXX")
+        cep_formatado = formatar_cep(cep_input)
+        st.text_input("CEP Formatado", value=cep_formatado, disabled=True)
+
+        if len(cep_formatado) == 9:  # Verifica se o CEP está completo
+            if st.button("Buscar Dados do CEP"):
+                cep_limpo = cep_formatado.replace("-", "")
+                dados_cep = buscar_dados_cep(cep_limpo)
+                if dados_cep and not dados_cep.get("erro"):
+                    st.success("Dados do CEP encontrados!")
+                else:
+                    st.error("CEP não encontrado ou inválido!")
+                    dados_cep = {}
 
     # Obter usuários cadastrados
     usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
@@ -59,12 +83,12 @@ def gerenciamento_empresas():
         st.subheader("Cadastrar Empresa")
         with st.form(key="form_cadastro_empresa"):
             razao_social = st.text_input("Razão Social", value=dados_cnpj.get("nome", ""))
-            cnpj = st.text_input("CNPJ", value=cnpj_input, max_chars=14)
+            cnpj = st.text_input("CNPJ", value=cnpj_formatado, max_chars=18)
             rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")))
             bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")))
             cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")))
             estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")))
-            cep = st.text_input("CEP", value=dados_cnpj.get("cep", cep_input), max_chars=8)
+            cep = st.text_input("CEP", value=cep_formatado, max_chars=9)
             site = st.text_input("Site")
             fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""))
             insc_estadual = st.text_input("Inscrição Estadual")
@@ -73,7 +97,7 @@ def gerenciamento_empresas():
             usuario = st.selectbox("Usuário Associado", options=opcoes_usuarios)
             documentos = st.file_uploader("Documentos", accept_multiple_files=True)
 
-            submit = st.form_submit_button("Cadastrar")
+            submit = st.form_submit_button("Cadastrar", disabled=(len(cnpj) != 18 or len(cep) != 9))
 
             if submit:
                 if razao_social and cnpj:
