@@ -1,0 +1,19 @@
+credentials:
+  usernames:
+    admin:
+      email: admin@example.com
+      name: Admin User
+      password: 123
+    user1:
+      email: user1@example.com
+      name: User One
+      password: 123
+
+cookie:
+  expiry_days: 30
+  key: some_random_key
+  name: session_cookie
+
+preauthorized:
+  emails:
+    - rodrigo@hygge.eco.br

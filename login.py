@@ -23,21 +23,20 @@ name, authentication_status, username = auth.configurar_login()
 
 if authentication_status:
     st.sidebar.title(f"Bem-vindo, {name}!")
-    st.sidebar.button("Sair", on_click=auth.logout)
 
     # Título Principal
     st.title("Gerenciador de Cadastros")
 
     # Configurar as abas
     tabs = st.tabs([
-        "Usuários", 
-        "Empresas (Matriz)", 
-        "Empresas (Sub-empresas)", 
-        "Produtos", 
-        "Templates", 
-        "Contatos", 
-        "Leads", 
-        "Oportunidades", 
+        "Usuários",
+        "Empresas (Matriz)",
+        "Empresas (Sub-empresas)",
+        "Produtos",
+        "Templates",
+        "Contatos",
+        "Leads",
+        "Oportunidades",
         "Orçamentos"
     ])
 
