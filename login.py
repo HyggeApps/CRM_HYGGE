@@ -150,6 +150,7 @@ if st.session_state['authentication_status']:
                 cadastro_templates.gerenciamento_templates()
 
         elif hierarquia_atividade == 'Usuário':
+            usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
             # Configurar as abas
             tabs2 = st.tabs([
                 "Home",
@@ -166,7 +167,7 @@ if st.session_state['authentication_status']:
 
             # Aba: Cadastro de Empresas
             with tabs2[1]:
-                cadastro_empresas.gerenciamento_empresas() 
+                cadastro_empresas.gerenciamento_empresas(usuario_ativo) 
             
             with tabs2[2]:
                 cadastro_contatos.gerenciamento_contatos()

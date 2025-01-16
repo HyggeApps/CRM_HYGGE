@@ -16,7 +16,7 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
-def gerenciamento_empresas():
+def gerenciamento_empresas(user):
     collection_empresas = get_collection("empresas")
     collection_usuarios = get_collection("usuarios")
     collection_subempresas = get_collection("subempresas")
@@ -123,9 +123,6 @@ def gerenciamento_empresas():
                 insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
                 setor = st.text_input("Setor", key="setor")
                 tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"], key="tamanho_empresa")
-                usuario = st.selectbox("Usuário Associado", options=opcoes_usuarios, key="usuario")
-                documentos = st.file_uploader("Documentos", accept_multiple_files=True, key="documentos")
-
                 submit = st.form_submit_button("Cadastrar")
 
                 if submit:
@@ -151,14 +148,12 @@ def gerenciamento_empresas():
                                 "insc_estadual": insc_estadual,
                                 "setor": setor,
                                 "tamanho_empresa": tamanho_empresa,
-                                "usuario": usuario.split("(")[-1].strip(")"),
-                                "documentos": documentos_salvos,
+                                "usuario": user,
                             }
                             collection_empresas.insert_one(document)
                             st.success("Empresa cadastrada com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
-
 
 
     # -------------------
