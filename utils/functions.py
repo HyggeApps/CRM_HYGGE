@@ -4,14 +4,11 @@ import tempfile
 import warnings
 warnings.filterwarnings("ignore")
 
-def create_temp_config_from_mongo(mongo_uri, db_name, collection_name):
-    # Conectar ao MongoDB
-    client = MongoClient(mongo_uri)
-    db = client[db_name]
-    collection = db[collection_name]
+def create_temp_config_from_mongo(collection_users):
+
 
     # Buscar todos os usuários no MongoDB
-    users_data = collection.find()
+    users_data = collection_users.find()
 
     # Criar um dicionário para armazenar os dados do config temporário
     temp_config_data = {
@@ -22,17 +19,17 @@ def create_temp_config_from_mongo(mongo_uri, db_name, collection_name):
 
     # Adicionar usuários do MongoDB ao config temporário
     for user_data in users_data:
-        username = user_data['username']
+        username = user_data['email']
 
         # Preparar os dados do usuário no formato do config.yaml
         user_yaml_data = {
             'email': user_data.get('email', ''),
             'failed_login_attempts': 0,
-            'first_name': user_data.get('name', '').split()[0],
-            'last_name': ' '.join(user_data.get('name', '').split()[1:]),
+            'first_name': user_data.get('nome', ''),
+            'last_name': user_data.get('sobrenome', ''),
             'logged_in': False,
-            'password': user_data.get('password', ''),  # Idealmente, a senha deve ser hasheada
-            'roles': [user_data.get('funcao', 'viewer')]
+            'password': user_data.get('senha', ''),  # Idealmente, a senha deve ser hasheada
+            'roles': [user_data.get('hierarquia', 'viewer')]
         }
 
         # Adicionar o usuário ao config temporário

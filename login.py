@@ -22,6 +22,7 @@ from streamlit_authenticator.utilities import (CredentialsError,
                                                ResetError,
                                                UpdateError)
 import json
+from utils.database import get_collection
 
 # Configuração da página
 st.set_page_config(
@@ -57,13 +58,16 @@ st.sidebar.markdown('------')
 #temp_config_path = funcs.create_temp_config_from_mongo(mongo_uri, db_name, collection_name)
 
 # Carregar e verificar as chaves no arquivo config.yaml
-config_file = "utils\config.yaml"
+
+# Criar um arquivo temporário com os usuários do MongoDB
+collection_usuarios = get_collection("usuarios")
+temp_config_path = funcs.create_temp_config_from_mongo(collection_usuarios)
 config_data = funcs.load_config_and_check_or_insert_cookies("utils\config.yaml")
 
 with st.sidebar:
     
     # Loading config file
-    with open(config_file, 'r', encoding='utf-8') as file:
+    with open(temp_config_path, 'r', encoding='utf-8') as file:
         config = yaml.load(file, Loader=SafeLoader)
         st.write(config)
 
