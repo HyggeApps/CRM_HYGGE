@@ -10,7 +10,6 @@ from modules import (
     cadastro_templates,
     cadastro_contatos,
     cadastro_orcamentos,
-    cadastro_subempresas,
     cadastro_leads,
 )
 from utils import functions as funcs
@@ -154,12 +153,10 @@ if st.session_state['authentication_status']:
             # Configurar as abas
             tabs2 = st.tabs([
                 "Home",
-                "Empresas (Matriz)",
-                "Empresas (Sub-empresas)",
+                "Empresas",
                 "Contatos",
                 "Leads",
-                "Oportunidades",
-                "Orçamentos"
+                "Oportunidades"
             ])
 
             # Aba: Dashboard do usuário
@@ -169,25 +166,17 @@ if st.session_state['authentication_status']:
 
             # Aba: Cadastro de Empresas
             with tabs2[1]:
-                st.header("Cadastro de Empresas (Matriz)")
-                cadastro_empresas.gerenciamento_empresas()
-
-            with tabs2[2]:
-                st.header("Cadastro de Empresas (Sub-empresas)")
-                cadastro_subempresas.gerenciamento_subempresas()        
+                st.header("Cadastro de Empresas")
+                cadastro_empresas.gerenciamento_empresas() 
             
-            with tabs2[3]:
+            with tabs2[2]:
                 st.header("Cadastro de Contatos")
                 cadastro_contatos.gerenciamento_contatos()
 
-            with tabs2[4]:
+            with tabs2[3]:
                 st.header("Cadastro de Leads")
                 cadastro_leads.gerenciamento_leads()
 
-            with tabs2[5]:
+            with tabs2[4]:
                 st.header("Cadastro de Oportunidades")
                 cadastro_oportunidades.gerenciamento_oportunidades()
-
-            with tabs2[6]:
-                st.header("Cadastro de Orçamento")
-                cadastro_orcamentos.gerenciamento_orcamentos()
