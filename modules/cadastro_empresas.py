@@ -30,23 +30,32 @@ def gerenciamento_empresas():
     # Buscar CNPJ antes de exibir o formulário
     st.subheader("Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP"):
-        cnpj_input = st.text_input("CNPJ", max_chars=18)
+        cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)")
         if st.button("Buscar Dados do CNPJ"):
-            dados_cnpj = buscar_dados_cnpj(cnpj_input)
-            if dados_cnpj and not dados_cnpj.get("erro"):
-                st.success("Dados do CNPJ encontrados!")
+            cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")  # Remove espaços, pontos, traços e barras
+            if len(cnpj_limpo) == 14:  # Verifica se o CNPJ tem 14 dígitos
+                dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
+                if dados_cnpj and not dados_cnpj.get("erro"):
+                    st.success("Dados do CNPJ encontrados!")
+                else:
+                    st.error("CNPJ não encontrado ou inválido!")
+                    dados_cnpj = {}
             else:
-                st.error("CNPJ não encontrado ou inválido!")
-                dados_cnpj = {}
+                st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
 
-        cep_input = st.text_input("CEP", max_chars=10)
+        cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)")
         if st.button("Buscar Dados do CEP"):
-            dados_cep = buscar_dados_cep(cep_input)
-            if dados_cep and not dados_cep.get("erro"):
-                st.success("Dados do CEP encontrados!")
+            cep_limpo = cep_input.replace("-", "").replace(" ", "").replace(".","")  # Remove espaços e traços
+            if len(cep_limpo) == 8:  # Verifica se o CEP tem 8 dígitos
+                dados_cep = buscar_dados_cep(cep_limpo)
+                if dados_cep and not dados_cep.get("erro"):
+                    st.success("Dados do CEP encontrados!")
+                else:
+                    st.error("CEP não encontrado ou inválido!")
+                    dados_cep = {}
             else:
-                st.error("CEP não encontrado ou inválido!")
-                dados_cep = {}
+                st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
+
 
     # Obter usuários cadastrados
     usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
