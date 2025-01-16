@@ -121,7 +121,7 @@ if st.session_state['authentication_status']:
         st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.write('----')
 
-        hierarquia_atividade = st.sidebar.selectbox('Selecione o tipo de atividade:' "Admin", "Usuário")
+        hierarquia_atividade = st.sidebar.selectbox('Selecione o tipo de atividade:', ["Admin", "Usuário"])
 
         if hierarquia_atividade == "Admin":
             # Configurar as abas
