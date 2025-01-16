@@ -3,8 +3,8 @@ import requests
 from utils.database import get_collection
 
 def buscar_dados_cnpj(cnpj):
-    """Busca dados de uma empresa pelo CNPJ usando a API ReceitaWS."""
-    url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
+    """Busca dados de uma empresa pelo CNPJ usando a API CNPJ.ws ou outra alternativa."""
+    url = f"https://www.cnpj.ws/api/v1/cnpj/{cnpj}"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
@@ -30,17 +30,16 @@ def gerenciamento_empresas():
     # Buscar CNPJ antes de exibir o formulário
     st.subheader("Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP"):
-        cnpj_input = st.text_input("CNPJ")
+        cnpj_input = st.text_input("CNPJ", max_chars=14)
         if st.button("Buscar Dados do CNPJ"):
             dados_cnpj = buscar_dados_cnpj(cnpj_input)
-            st.write(dados_cnpj)
             if dados_cnpj and not dados_cnpj.get("erro"):
                 st.success("Dados do CNPJ encontrados!")
             else:
                 st.error("CNPJ não encontrado ou inválido!")
                 dados_cnpj = {}
 
-        cep_input = st.text_input("CEP")
+        cep_input = st.text_input("CEP", max_chars=8)
         if st.button("Buscar Dados do CEP"):
             dados_cep = buscar_dados_cep(cep_input)
             if dados_cep and not dados_cep.get("erro"):
@@ -60,12 +59,12 @@ def gerenciamento_empresas():
         st.subheader("Cadastrar Empresa")
         with st.form(key="form_cadastro_empresa"):
             razao_social = st.text_input("Razão Social", value=dados_cnpj.get("nome", ""))
-            cnpj = st.text_input("CNPJ", value=cnpj_input)
+            cnpj = st.text_input("CNPJ", value=cnpj_input, max_chars=14)
             rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")))
             bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")))
             cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")))
             estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")))
-            cep = st.text_input("CEP", value=dados_cnpj.get("cep", cep_input))
+            cep = st.text_input("CEP", value=dados_cnpj.get("cep", cep_input), max_chars=8)
             site = st.text_input("Site")
             fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""))
             insc_estadual = st.text_input("Inscrição Estadual")
