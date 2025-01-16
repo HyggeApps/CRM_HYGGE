@@ -103,8 +103,7 @@ def gerenciamento_empresas(user):
 
         # Obter usuários cadastrados
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
-        opcoes_usuarios = [f"{u['nome']} {u['sobrenome']} ({u['email']})" for u in usuarios]
-
+        
         if not usuarios:
             st.warning("Nenhum usuário encontrado. Cadastre um usuário primeiro antes de adicionar empresas.")
         else:
@@ -132,7 +131,6 @@ def gerenciamento_empresas(user):
                         if existing_company:
                             st.error("Empresa já cadastrada com este CNPJ!")
                         else:
-                            documentos_salvos = [{"nome_documento": doc.name, "tipo": doc.type} for doc in documentos] if documentos else []
 
                             # Criar o documento da empresa
                             document = {
