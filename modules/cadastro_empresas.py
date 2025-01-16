@@ -30,7 +30,7 @@ def gerenciamento_empresas():
     # Buscar CNPJ antes de exibir o formulário
     st.subheader("Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP"):
-        cnpj_input = st.text_input("CNPJ", max_chars=14)
+        cnpj_input = st.text_input("CNPJ", max_chars=18)
         if st.button("Buscar Dados do CNPJ"):
             dados_cnpj = buscar_dados_cnpj(cnpj_input)
             if dados_cnpj and not dados_cnpj.get("erro"):
@@ -39,7 +39,7 @@ def gerenciamento_empresas():
                 st.error("CNPJ não encontrado ou inválido!")
                 dados_cnpj = {}
 
-        cep_input = st.text_input("CEP", max_chars=8)
+        cep_input = st.text_input("CEP", max_chars=10)
         if st.button("Buscar Dados do CEP"):
             dados_cep = buscar_dados_cep(cep_input)
             if dados_cep and not dados_cep.get("erro"):
