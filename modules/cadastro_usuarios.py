@@ -19,7 +19,7 @@ def gerenciamento_usuarios():
             setor = st.text_input("Setor", key="input_setor_usuario")
             login = st.text_input("Login", key="input_login_usuario")
             senha = st.text_input("Senha", type="password", key="input_senha_usuario")
-            hierarquia = st.selectbox("Hierarquia", ["Admin", "Usuário", "Gerente", "Outro"], key="input_hierarquia_usuario")
+            hierarquia = st.selectbox("Hierarquia", ["admin", "viewer", "editor"], key="input_hierarquia_usuario")
 
             submit = st.form_submit_button("Cadastrar")
 
