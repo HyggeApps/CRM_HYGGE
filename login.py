@@ -55,11 +55,6 @@ st.markdown(custom_css, unsafe_allow_html=True)
 st.sidebar.markdown('------')
 
 # Criar um arquivo temporário com os usuários do MongoDB
-#temp_config_path = funcs.create_temp_config_from_mongo(mongo_uri, db_name, collection_name)
-
-# Carregar e verificar as chaves no arquivo config.yaml
-
-# Criar um arquivo temporário com os usuários do MongoDB
 collection_usuarios = get_collection("usuarios")
 temp_config_path = funcs.create_temp_config_from_mongo(collection_usuarios)
 config_data = funcs.load_config_and_check_or_insert_cookies(temp_config_path)
@@ -96,10 +91,10 @@ with st.sidebar:
     if st.session_state['authentication_status']:
         if 'admin' in st.session_state["roles"]:
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-            st.info('Este é o ambiente de **admin** para preenchimento das informações referentes ao EVTA de projetos.')
+            st.info('Este é o ambiente de **admin** para consulta, preenchimento e envio das informações referentes as oportunidades.')
         else:
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-            st.info('Este é o ambiente de **usuário** para preenchimento das informações referentes ao EVTA de projetos.')
+            st.info('Este é o ambiente de **admin** para consulta, preenchimento e envio das informações referentes as oportunidades')
 
     elif st.session_state['authentication_status'] is False:
         st.error('Usuário e/ou Senha inválido(s).')
