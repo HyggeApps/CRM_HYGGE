@@ -33,6 +33,7 @@ def gerenciamento_empresas():
         cnpj_input = st.text_input("CNPJ")
         if st.button("Buscar Dados do CNPJ"):
             dados_cnpj = buscar_dados_cnpj(cnpj_input)
+            st.write(dados_cnpj)
             if dados_cnpj and not dados_cnpj.get("erro"):
                 st.success("Dados do CNPJ encontrados!")
             else:
