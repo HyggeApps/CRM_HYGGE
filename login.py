@@ -62,14 +62,13 @@ st.sidebar.markdown('------')
 # Criar um arquivo temporário com os usuários do MongoDB
 collection_usuarios = get_collection("usuarios")
 temp_config_path = funcs.create_temp_config_from_mongo(collection_usuarios)
-config_data = funcs.load_config_and_check_or_insert_cookies("utils\config.yaml")
+config_data = funcs.load_config_and_check_or_insert_cookies(temp_config_path)
 
 with st.sidebar:
     
     # Loading config file
     with open(temp_config_path, 'r', encoding='utf-8') as file:
         config = yaml.load(file, Loader=SafeLoader)
-        st.write(config)
 
     # Pre-hashing all plain text passwords once
     # stauth.Hasher.hash_passwords(config['credentials'])
