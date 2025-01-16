@@ -62,8 +62,9 @@ def gerenciamento_empresas(user):
     # Aba: Cadastrar Empresa
     # -------------------
     with tab2:
-        st.subheader("Cadastrar Empresa")
-
+        st.header("Cadastrar Empresa")
+        st.info("Busque automaticamente informações da empresa a partir do CNPJ e/ou CEP e preencha os demais campos no formulário abaixo.")
+        st.write('---')
         # Variáveis para preenchimento automático
         if "dados_cnpj" not in st.session_state:
             st.session_state["dados_cnpj"] = {}
@@ -103,7 +104,7 @@ def gerenciamento_empresas(user):
 
         # Obter usuários cadastrados
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
-        
+
         if not usuarios:
             st.warning("Nenhum usuário encontrado. Cadastre um usuário primeiro antes de adicionar empresas.")
         else:
