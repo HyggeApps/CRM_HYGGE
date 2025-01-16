@@ -3,7 +3,6 @@ from utils.database import get_collection
 import pandas as pd
 
 def gerenciamento_usuarios():
-    st.title("Gerenciamento de Usuários")
     collection = get_collection("usuarios")
 
     # Aba para cadastrar, remover e exibir usuários
@@ -11,7 +10,7 @@ def gerenciamento_usuarios():
 
     # Aba: Cadastrar Usuário
     with tab1:
-        st.header("Cadastrar Usuário")
+        st.subheader("Cadastrar Usuário")
         with st.form(key="form_cadastro_usuario"):  # Key única para o formulário
             nome = st.text_input("Nome", key="input_nome_usuario")
             sobrenome = st.text_input("Sobrenome", key="input_sobrenome_usuario")
@@ -49,7 +48,7 @@ def gerenciamento_usuarios():
 
     # Aba: Remover Usuário
     with tab2:
-        st.header("Remover Usuário")
+        st.subheader("Remover Usuário")
         with st.form(key="form_remover_usuario"):  # Key única para o formulário
             remove_email_or_login = st.text_input("Email ou Login do Usuário a Remover", key="input_remover_usuario")
             remove_submit = st.form_submit_button("Remover Usuário")
@@ -67,7 +66,7 @@ def gerenciamento_usuarios():
 
     # Aba: Exibir Usuários
     with tab3:
-        st.header("Usuários Cadastrados")
+        st.subheader("Usuários Cadastrados")
         if st.button("Carregar Usuários", key="botao_carregar_usuarios"):  # Key única para o botão
             users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if users:

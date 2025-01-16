@@ -139,7 +139,6 @@ if st.session_state['authentication_status']:
 
             # Aba: Cadastro de Usuários
             with tabs1[1]:
-                st.header("Cadastro de Usuários")
                 cadastro_usuarios.gerenciamento_usuarios()
 
             # Aba: Cadastro de Produtos
