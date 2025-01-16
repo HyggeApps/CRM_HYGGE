@@ -65,6 +65,7 @@ with st.sidebar:
     # Loading config file
     with open(config_file, 'r', encoding='utf-8') as file:
         config = yaml.load(file, Loader=SafeLoader)
+        st.write(config)
 
     # Pre-hashing all plain text passwords once
     # stauth.Hasher.hash_passwords(config['credentials'])
@@ -116,7 +117,7 @@ def read_json_pontuacao_creditos(path):
 
 if st.session_state['authentication_status']:
     if 'admin' in st.session_state["roles"]:
-        
+
         # Título Principal
         st.title("Gerenciador de Cadastros")
 
