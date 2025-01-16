@@ -15,7 +15,7 @@ def configurar_login():
         "usernames": {
             usuario["login"]: {
                 "name": f"{usuario['nome']} {usuario['sobrenome']}",
-                "password": usuario["senha"],  # As senhas devem estar previamente hasheadas
+                "password": usuario["senha"],
             }
             for usuario in usuarios
         }
@@ -23,10 +23,10 @@ def configurar_login():
 
     authenticator = stauth.Authenticate(
         credentials,
-        "crm_hygge",  # Nome do app
-        "auth_cookie",  # Nome do cookie
+        "crm_hygge",
+        "auth_cookie",
         cookie_expiry_days=30,
     )
 
-    # Usar "sidebar" como alternativa a "main"
-    return authenticator.login("Login", "sidebar")
+    # Substitua o valor de location para testar
+    return authenticator.login("Login", "sidebar")  # Teste "main", "sidebar" e "unrendered"

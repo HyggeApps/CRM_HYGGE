@@ -15,8 +15,7 @@ from utils import authentication as auth
 # Configuração inicial da página
 st.set_page_config(
     page_title="Gerenciador de Cadastros",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 # Autenticação
