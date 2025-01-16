@@ -17,7 +17,6 @@ def buscar_dados_cep(cep):
     return None
 
 def gerenciamento_empresas():
-    st.title("Gerenciamento de Empresas")
     collection_empresas = get_collection("empresas")
     collection_usuarios = get_collection("usuarios")
     collection_subempresas = get_collection("subempresas")
