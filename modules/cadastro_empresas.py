@@ -40,44 +40,49 @@ def gerenciamento_empresas():
         else:
             st.warning("Nenhuma empresa cadastrada ainda.")
 
+
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
     with tab2:
         st.subheader("Cadastrar Empresa")
+
         # Variáveis para preenchimento automático
-        dados_cnpj = {}
-        dados_cep = {}
+        if "dados_cnpj" not in st.session_state:
+            st.session_state["dados_cnpj"] = {}
+        if "dados_cep" not in st.session_state:
+            st.session_state["dados_cep"] = {}
 
         # Buscar CNPJ antes de exibir o formulário
         st.subheader("Busca Automática de CNPJ e CEP")
         with st.expander("Preencher Dados com CNPJ e CEP"):
-            cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)")
+            cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input")
             if st.button("Buscar Dados do CNPJ"):
-                cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")  # Remove espaços, pontos, traços e barras
+                cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")  # Remove espaços e pontuação
                 if len(cnpj_limpo) == 14:  # Verifica se o CNPJ tem 14 dígitos
                     dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
                     if dados_cnpj and not dados_cnpj.get("erro"):
                         st.success("Dados do CNPJ encontrados!")
+                        st.session_state["dados_cnpj"] = dados_cnpj  # Salvar no session_state
                     else:
                         st.error("CNPJ não encontrado ou inválido!")
-                        dados_cnpj = {}
+                        st.session_state["dados_cnpj"] = {}
                 else:
                     st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
 
-            cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)")
+            cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)", key="cep_input")
             if st.button("Buscar Dados do CEP"):
-                cep_limpo = cep_input.replace("-", "").replace(" ", "").replace(".","")  # Remove espaços e traços
+                cep_limpo = cep_input.replace("-", "").replace(" ", "")  # Remove espaços e pontuação
                 if len(cep_limpo) == 8:  # Verifica se o CEP tem 8 dígitos
                     dados_cep = buscar_dados_cep(cep_limpo)
                     if dados_cep and not dados_cep.get("erro"):
                         st.success("Dados do CEP encontrados!")
+                        st.session_state["dados_cep"] = dados_cep  # Salvar no session_state
                     else:
                         st.error("CEP não encontrado ou inválido!")
-                        dados_cep = {}
+                        st.session_state["dados_cep"] = {}
                 else:
                     st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
-
 
         # Obter usuários cadastrados
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
@@ -89,20 +94,20 @@ def gerenciamento_empresas():
             # Formulário principal
             st.subheader("Cadastrar Empresa")
             with st.form(key="form_cadastro_empresa"):
-                razao_social = st.text_input("Razão Social", value=dados_cnpj.get("nome", ""))
-                cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18)
-                rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")))
-                bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")))
-                cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")))
-                estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")))
-                cep = st.text_input("CEP", value=dados_cnpj.get("cep", cep_input), max_chars=10)
-                site = st.text_input("Site")
-                fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""))
-                insc_estadual = st.text_input("Inscrição Estadual")
-                setor = st.text_input("Setor")
-                tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"])
-                usuario = st.selectbox("Usuário Associado", options=opcoes_usuarios)
-                documentos = st.file_uploader("Documentos", accept_multiple_files=True)
+                razao_social = st.text_input("Razão Social", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
+                cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
+                rua = st.text_input("Rua", value=st.session_state["dados_cnpj"].get("logradouro", st.session_state["dados_cep"].get("logradouro", "")), key="rua")
+                bairro = st.text_input("Bairro", value=st.session_state["dados_cnpj"].get("bairro", st.session_state["dados_cep"].get("bairro", "")), key="bairro")
+                cidade = st.text_input("Cidade", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
+                estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
+                cep = st.text_input("CEP", value=cep_input, max_chars=10, key="cep")
+                site = st.text_input("Site", key="site")
+                fone = st.text_input("Telefone", value=st.session_state["dados_cnpj"].get("telefone", ""), key="fone")
+                insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
+                setor = st.text_input("Setor", key="setor")
+                tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"], key="tamanho_empresa")
+                usuario = st.selectbox("Usuário Associado", options=opcoes_usuarios, key="usuario")
+                documentos = st.file_uploader("Documentos", accept_multiple_files=True, key="documentos")
 
                 submit = st.form_submit_button("Cadastrar")
 
@@ -136,7 +141,6 @@ def gerenciamento_empresas():
                             st.success("Empresa cadastrada com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
-
 
 
 
