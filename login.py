@@ -122,13 +122,38 @@ if st.session_state['authentication_status']:
         st.write('----')
 
         # Configurar as abas
-        tabs = st.tabs([
+        tabs1 = st.tabs([
             "Home",
             "Usuários",
+            "Produtos",
+            "Templates"
+        ])
+
+
+        # Aba: Dashboard do usuário
+        with tabs1[0]:
+            st.header("Dashboard")
+            st.warning("Em desenvolvimento...")
+
+        # Aba: Cadastro de Usuários
+        with tabs1[1]:
+            st.header("Cadastro de Usuários")
+            cadastro_usuarios.gerenciamento_usuarios()
+
+        # Aba: Cadastro de Produtos
+        with tabs1[2]:
+            st.header("Cadastro de Produtos")
+            cadastro_produtos.gerenciamento_produtos()
+
+        with tabs1[3]:
+            st.header("Cadastro de Templates")
+            cadastro_templates.gerenciamento_templates()
+
+        # Configurar as abas
+        tabs2 = st.tabs([
+            "Home",
             "Empresas (Matriz)",
             "Empresas (Sub-empresas)",
-            "Produtos",
-            "Templates",
             "Contatos",
             "Leads",
             "Oportunidades",
@@ -136,45 +161,27 @@ if st.session_state['authentication_status']:
         ])
 
         # Aba: Dashboard do usuário
-        with tabs[0]:
+        with tabs2[0]:
             st.header("Dashboard")
             st.warning("Em desenvolvimento...")
 
-        # Aba: Cadastro de Usuários
-        with tabs[1]:
-            st.header("Cadastro de Usuários")
-            cadastro_usuarios.gerenciamento_usuarios()
-
         # Aba: Cadastro de Empresas
-        with tabs[2]:
+        with tabs2[2]:
             st.header("Cadastro de Empresas (Matriz)")
             cadastro_empresas.gerenciamento_empresas()
 
-        with tabs[3]:
+        with tabs2[3]:
             st.header("Cadastro de Empresas (Sub-empresas)")
             cadastro_subempresas.gerenciamento_subempresas()
 
-        # Aba: Cadastro de Produtos
-        with tabs[4]:
-            st.header("Cadastro de Produtos")
-            cadastro_produtos.gerenciamento_produtos()
-
-        with tabs[5]:
-            st.header("Cadastro de Templates")
-            cadastro_templates.gerenciamento_templates()
-
-        with tabs[6]:
-            st.header("Cadastro de Contatos")
-            cadastro_contatos.gerenciamento_contatos()
-
-        with tabs[7]:
+        with tabs2[7]:
             st.header("Cadastro de Leads")
             cadastro_leads.gerenciamento_leads()
 
-        with tabs[8]:
+        with tabs2[8]:
             st.header("Cadastro de Oportunidades")
             cadastro_oportunidades.gerenciamento_oportunidades()
 
-        with tabs[9]:
+        with tabs2[9]:
             st.header("Cadastro de Orçamento")
             cadastro_orcamentos.gerenciamento_orcamentos()
