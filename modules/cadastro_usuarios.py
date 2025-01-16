@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.database import get_collection
+import pandas as pd
 
 def gerenciamento_usuarios():
     st.title("Gerenciamento de Usuários")
@@ -70,8 +71,8 @@ def gerenciamento_usuarios():
         if st.button("Carregar Usuários", key="botao_carregar_usuarios"):  # Key única para o botão
             users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if users:
-                st.write("Lista de Usuários:")
-                for user in users:
-                    st.write(f"Nome: {user['nome']} {user['sobrenome']}, Email: {user['email']}, Setor: {user['setor']}, Hierarquia: {user['hierarquia']}")
+                # Converter a lista de usuários em um DataFrame para exibição tabular
+                df_users = pd.DataFrame(users)
+                st.dataframe(df_users)  # Exibir como tabela
             else:
                 st.write("Nenhum usuário cadastrado ainda.")
