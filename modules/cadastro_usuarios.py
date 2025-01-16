@@ -49,20 +49,28 @@ def gerenciamento_usuarios():
     # Aba: Remover Usuário
     with tab2:
         st.subheader("Remover Usuário")
-        with st.form(key="form_remover_usuario"):  # Key única para o formulário
-            remove_email_or_login = st.text_input("Email ou Login do Usuário a Remover", key="input_remover_usuario")
-            remove_submit = st.form_submit_button("Remover Usuário")
 
-            if remove_submit:
-                if remove_email_or_login:
-                    # Verificar se o usuário existe e remover
-                    result = collection.delete_one({"$or": [{"email": remove_email_or_login}, {"login": remove_email_or_login}]})
-                    if result.deleted_count > 0:
-                        st.success(f"Usuário com Email/Login '{remove_email_or_login}' removido com sucesso!")
-                    else:
-                        st.error(f"Nenhum usuário encontrado com Email/Login '{remove_email_or_login}'.")
-                else:
-                    st.error("Por favor, insira o Email ou Login do usuário para remover.")
+        # Obter todos os usuários cadastrados
+        users = list(collection.find({}, {"_id": 0, "email": 1, "login": 1}))  # Buscar apenas email e login
+        opcoes_usuarios = [f"{user['email']} ({user['login']})" for user in users]  # Combinar email e login
+
+        if not opcoes_usuarios:
+            st.warning("Nenhum usuário encontrado. Cadastre usuários antes de tentar removê-los.")
+        else:
+            with st.form(key="form_remover_usuario"):  # Key única para o formulário
+                # Lista suspensa com os emails/logins dos usuários
+                usuario_selecionado = st.selectbox("Selecione o Usuário a Remover", options=opcoes_usuarios, key="select_remover_usuario")
+                remove_submit = st.form_submit_button("Remover Usuário")
+
+                if remove_submit:
+                    if usuario_selecionado:
+                        # Extrair o email do usuário selecionado
+                        email = usuario_selecionado.split(" ")[0]  # Extrair o primeiro elemento (email)
+                        result = collection.delete_one({"email": email})
+                        if result.deleted_count > 0:
+                            st.success(f"Usuário com Email '{email}' removido com sucesso!")
+                        else:
+                            st.error(f"Nenhum usuário encontrado com o Email '{email}'.")
 
     # Aba: Exibir Usuários
     with tab3:
