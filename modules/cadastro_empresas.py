@@ -30,16 +30,33 @@ def gerenciamento_empresas():
     with tab1:
         st.subheader("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
-        empresas = list(collection_empresas.find({}, {"_id": 0}))
+
+        # Buscar as empresas no banco de dados
+        empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
+
         if empresas:
             import pandas as pd
+
+            # Converter para DataFrame
             df_empresas = pd.DataFrame(empresas)
-            if "documentos" in df_empresas.columns:
-                df_empresas = df_empresas.drop(columns=["documentos"])  # Ocultar documentos na exibição
+
+            # Renomear as colunas
+            df_empresas = df_empresas.rename(
+                columns={
+                    "razao_social": "Razão Social",
+                    "cnpj": "CNPJ",
+                    "cidade": "Cidade",
+                    "estado": "UF",
+                    "pais": "País",
+                    "tamanho_empresa": "Tamanho",
+                    "usuario": "Vendedor"
+                }
+            )
+
+            # Exibir a tabela
             st.dataframe(df_empresas, use_container_width=True)
         else:
             st.warning("Nenhuma empresa cadastrada ainda.")
-
 
     # -------------------
     # Aba: Cadastrar Empresa
