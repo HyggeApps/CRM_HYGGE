@@ -1,34 +1,11 @@
 import streamlit as st
 from utils.database import get_collection
 
-@st.cache_resource
-def get_collection_cached(collection_name):
-    """Obter a coleção do banco de dados usando cache."""
-    return get_collection(collection_name)
-
-@st.cache_data(ttl=600)  # Cache de 10 minutos
-def get_entidades():
-    """Carregar empresas e subempresas no cache."""
-    collection_empresas = get_collection_cached("empresas")
-    collection_subempresas = get_collection_cached("subempresas")
-
-    empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
-    subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
-
-    entidades = [{"nome": e["razao_social"], "cnpj": e["cnpj"], "tipo": "Empresa"} for e in empresas]
-    entidades += [{"nome": s["razao_social"], "cnpj": s["cnpj"], "tipo": "SubEmpresa"} for s in subempresas]
-
-    return entidades
-
-@st.cache_data(ttl=600)  # Cache de 10 minutos
-def get_contatos():
-    """Carregar contatos no cache."""
-    collection_contatos = get_collection_cached("contatos")
-    return list(collection_contatos.find({}, {"_id": 0}))
-
 def gerenciamento_contatos():
     st.title("Gerenciamento de Contatos")
-    collection_contatos = get_collection_cached("contatos")
+    collection_contatos = get_collection("contatos")
+    collection_empresas = get_collection("empresas")  # Coleção de Empresas Matriz
+    collection_subempresas = get_collection("subempresas")  # Coleção de SubEmpresas
 
     # Abas para gerenciar contatos
     tab1, tab2, tab3 = st.tabs(["Cadastrar Contato", "Remover Contato", "Exibir Contatos"])
@@ -37,8 +14,14 @@ def gerenciamento_contatos():
     with tab1:
         st.header("Cadastrar Contato")
 
-        # Obter entidades do cache
-        entidades = get_entidades()
+        # Obter empresas e subempresas cadastradas
+        empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+
+        # Combinar empresas e subempresas para o selectbox
+        entidades = [{"nome": e["razao_social"], "cnpj": e["cnpj"], "tipo": "Empresa"} for e in empresas]
+        entidades += [{"nome": s["razao_social"], "cnpj": s["cnpj"], "tipo": "SubEmpresa"} for s in subempresas]
+
         opcoes_entidades = [f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" for e in entidades]
 
         if not entidades:
@@ -81,33 +64,26 @@ def gerenciamento_contatos():
     # Aba: Remover Contato
     with tab2:
         st.header("Remover Contato")
+        with st.form(key="form_remover_contato"):
+            remove_email = st.text_input("Email do Contato a Remover", key="input_remover_email_contato")
+            remove_submit = st.form_submit_button("Remover Contato")
 
-        # Obter contatos disponíveis para a lista suspensa
-        contatos = get_contatos()  # Usando a função cacheada para obter os contatos
-        emails_disponiveis = [contato['email'] for contato in contatos]  # Lista de emails
-
-        if not emails_disponiveis:
-            st.warning("Nenhum contato disponível para remoção.")
-        else:
-            with st.form(key="form_remover_contato"):
-                # Lista suspensa com os emails dos contatos
-                remove_email = st.selectbox("Selecione o Email do Contato a Remover", options=emails_disponiveis, key="select_remover_email_contato")
-                remove_submit = st.form_submit_button("Remover Contato")
-
-                if remove_submit:
+            if remove_submit:
+                if remove_email:
                     # Verificar se o contato existe e remover
                     result = collection_contatos.delete_one({"email": remove_email})
                     if result.deleted_count > 0:
                         st.success(f"Contato com Email '{remove_email}' removido com sucesso!")
                     else:
                         st.error(f"Nenhum contato encontrado com o Email '{remove_email}'.")
-
+                else:
+                    st.error("Por favor, insira o Email do contato para remover.")
 
     # Aba: Exibir Contatos
     with tab3:
         st.header("Contatos Cadastrados")
         if st.button("Carregar Contatos", key="botao_carregar_contatos"):
-            contatos = get_contatos()  # Obter contatos do cache
+            contatos = list(collection_contatos.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if contatos:
                 st.write("Lista de Contatos:")
                 for contato in contatos:
