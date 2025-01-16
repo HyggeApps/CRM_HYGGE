@@ -23,7 +23,7 @@ name, authentication_status, username = auth.configurar_login()
 
 if authentication_status:
     st.sidebar.title(f"Bem-vindo, {name}!")
-    st.sidebar.button("Sair", on_click=auth.logout)  # Logout configurado no Streamlit Authenticator
+    st.sidebar.button("Sair", on_click=auth.logout)
 
     # Título Principal
     st.title("Gerenciador de Cadastros")
