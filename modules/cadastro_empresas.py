@@ -1,10 +1,26 @@
 import streamlit as st
+import requests
 from utils.database import get_collection
+
+def buscar_dados_cnpj(cnpj):
+    """Busca dados de uma empresa pelo CNPJ usando a API ReceitaWS."""
+    url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+def buscar_dados_cep(cep):
+    """Busca dados de endereço pelo CEP usando a API ViaCEP."""
+    url = f"https://viacep.com.br/ws/{cep}/json/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    return None
 
 def gerenciamento_empresas():
     st.title("Gerenciamento de Empresas")
     collection_empresas = get_collection("empresas")
-    collection_subempresas = get_collection("subempresas")
     collection_usuarios = get_collection("usuarios")  # Coleção para listar usuários
 
     # Abas para gerenciar empresas
@@ -22,14 +38,45 @@ def gerenciamento_empresas():
             st.warning("Nenhum usuário encontrado. Cadastre um usuário primeiro antes de adicionar empresas.")
         else:
             with st.form(key="form_cadastro_empresa"):
-                razao_social = st.text_input("Razão Social", key="input_razao_social")
                 cnpj = st.text_input("CNPJ", key="input_cnpj")
-                rua = st.text_input("Rua", key="input_rua")
-                cep = st.text_input("CEP", key="input_cep")
-                bairro = st.text_input("Bairro", key="input_bairro")
-                cidade = st.text_input("Cidade", key="input_cidade")
-                estado = st.text_input("Estado", key="input_estado")
-                pais = st.text_input("País", key="input_pais")
+
+                # Buscar dados do CNPJ
+                if st.button("Buscar Dados do CNPJ"):
+                    dados_cnpj = buscar_dados_cnpj(cnpj)
+                    if dados_cnpj and not dados_cnpj.get("erro"):
+                        razao_social = dados_cnpj.get("nome", "")
+                        rua = dados_cnpj.get("logradouro", "")
+                        bairro = dados_cnpj.get("bairro", "")
+                        cidade = dados_cnpj.get("municipio", "")
+                        estado = dados_cnpj.get("uf", "")
+                        cep = dados_cnpj.get("cep", "").replace(".", "").replace("-", "")
+                        st.success("Dados preenchidos automaticamente!")
+                    else:
+                        st.error("CNPJ não encontrado ou inválido!")
+                        razao_social, rua, bairro, cidade, estado, cep = "", "", "", "", "", ""
+                else:
+                    razao_social, rua, bairro, cidade, estado, cep = "", "", "", "", "", ""
+
+                razao_social = st.text_input("Razão Social", value=razao_social, key="input_razao_social")
+                rua = st.text_input("Rua", value=rua, key="input_rua")
+                bairro = st.text_input("Bairro", value=bairro, key="input_bairro")
+                cidade = st.text_input("Cidade", value=cidade, key="input_cidade")
+                estado = st.text_input("Estado", value=estado, key="input_estado")
+                cep = st.text_input("CEP", value=cep, key="input_cep")
+
+                # Buscar dados do CEP
+                if st.button("Buscar Dados do CEP"):
+                    dados_cep = buscar_dados_cep(cep)
+                    if dados_cep and not dados_cep.get("erro"):
+                        rua = dados_cep.get("logradouro", "")
+                        bairro = dados_cep.get("bairro", "")
+                        cidade = dados_cep.get("localidade", "")
+                        estado = dados_cep.get("uf", "")
+                        st.success("Endereço preenchido automaticamente!")
+                    else:
+                        st.error("CEP não encontrado ou inválido!")
+                        rua, bairro, cidade, estado = "", "", "", ""
+
                 site = st.text_input("Site", key="input_site")
                 fone = st.text_input("Telefone", key="input_fone")
                 insc_estadual = st.text_input("Inscrição Estadual", key="input_insc_estadual")
@@ -58,7 +105,6 @@ def gerenciamento_empresas():
                                 "bairro": bairro,
                                 "cidade": cidade,
                                 "estado": estado,
-                                "pais": pais,
                                 "site": site,
                                 "fone": fone,
                                 "insc_estadual": insc_estadual,
@@ -66,102 +112,8 @@ def gerenciamento_empresas():
                                 "tamanho_empresa": tamanho_empresa,
                                 "usuario": usuario.split("(")[-1].strip(")"),
                                 "documentos": documentos_salvos,
-                                "subempresas": [],  # Inicializar com lista vazia
                             }
                             collection_empresas.insert_one(document)
                             st.success("Empresa cadastrada com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
-
-    # Aba: Cadastrar SubEmpresa
-    with tab2:
-        st.header("Cadastrar SubEmpresa")
-
-        # Obter empresas matriz cadastradas
-        empresas_matriz = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
-        opcoes_matriz = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas_matriz]
-
-        if not empresas_matriz:
-            st.warning("Nenhuma empresa matriz encontrada. Cadastre uma empresa matriz primeiro antes de adicionar subempresas.")
-        else:
-            with st.form(key="form_cadastro_subempresa"):
-                empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
-                razao_social = st.text_input("Razão Social da SubEmpresa", key="input_razao_social_subempresa")
-                cnpj = st.text_input("CNPJ da SubEmpresa", key="input_cnpj_subempresa")
-                rua = st.text_input("Rua", key="input_rua_subempresa")
-                cep = st.text_input("CEP", key="input_cep_subempresa")
-                bairro = st.text_input("Bairro", key="input_bairro_subempresa")
-                cidade = st.text_input("Cidade", key="input_cidade_subempresa")
-                estado = st.text_input("Estado", key="input_estado_subempresa")
-                fone = st.text_input("Telefone", key="input_fone_subempresa")
-
-                submit = st.form_submit_button("Cadastrar SubEmpresa")
-
-                if submit:
-                    if razao_social and cnpj and empresa_matriz:
-                        matriz_selecionada = next((e for e in empresas_matriz if f"{e['razao_social']} (CNPJ: {e['cnpj']})" == empresa_matriz), None)
-                        if matriz_selecionada:
-                            # Verificar duplicidade no banco de subempresas
-                            existing_subempresa = collection_subempresas.find_one({"cnpj": cnpj})
-                            if existing_subempresa:
-                                st.error("SubEmpresa já cadastrada com este CNPJ!")
-                            else:
-                                # Criar o documento da subempresa
-                                document = {
-                                    "empresa_matriz": matriz_selecionada["cnpj"],
-                                    "razao_social": razao_social,
-                                    "cnpj": cnpj,
-                                    "rua": rua,
-                                    "cep": cep,
-                                    "bairro": bairro,
-                                    "cidade": cidade,
-                                    "estado": estado,
-                                    "fone": fone,
-                                }
-                                collection_subempresas.insert_one(document)
-
-                                # Atualizar a matriz com a subempresa vinculada
-                                collection_empresas.update_one(
-                                    {"cnpj": matriz_selecionada["cnpj"]},
-                                    {"$push": {"subempresas": cnpj}}
-                                )
-                                st.success("SubEmpresa cadastrada e vinculada à matriz com sucesso!")
-                        else:
-                            st.error("Erro ao localizar a empresa matriz selecionada. Por favor, tente novamente.")
-                    else:
-                        st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
-
-    # Aba: Remover Empresa
-    with tab3:
-        st.header("Remover Empresa")
-        with st.form(key="form_remover_empresa"):
-            remove_cnpj = st.text_input("CNPJ da Empresa a Remover", key="input_remover_cnpj")
-            remove_submit = st.form_submit_button("Remover Empresa")
-
-            if remove_submit:
-                if remove_cnpj:
-                    # Verificar se a empresa existe e remover
-                    result = collection_empresas.delete_one({"cnpj": remove_cnpj})
-                    if result.deleted_count > 0:
-                        st.success(f"Empresa com CNPJ '{remove_cnpj}' removida com sucesso!")
-                    else:
-                        st.error(f"Nenhuma empresa encontrada com o CNPJ '{remove_cnpj}'.")
-                else:
-                    st.error("Por favor, insira o CNPJ da empresa para remover.")
-
-    # Aba: Exibir Empresas
-    with tab4:
-        st.header("Empresas Cadastradas")
-        if st.button("Carregar Empresas", key="botao_carregar_empresas"):
-            empresas = list(collection_empresas.find({}, {"_id": 0}))
-            if empresas:
-                st.write("Lista de Empresas:")
-                for empresa in empresas:
-                    st.write(
-                        f"Razão Social: {empresa['razao_social']}, CNPJ: {empresa['cnpj']}, "
-                        f"SubEmpresas: {empresa.get('subempresas', [])}, "
-                        f"Endereço: {empresa['rua']}, {empresa['bairro']}, {empresa['cidade']}, {empresa['estado']}, {empresa['pais']}, "
-                        f"Telefone: {empresa['fone']}, Site: {empresa['site']}"
-                    )
-            else:
-                st.write("Nenhuma empresa cadastrada ainda.")
