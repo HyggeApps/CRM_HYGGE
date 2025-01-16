@@ -71,8 +71,19 @@ def gerenciamento_usuarios():
         if st.button("Carregar Usuários", key="botao_carregar_usuarios"):  # Key única para o botão
             users = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
             if users:
-                # Converter a lista de usuários em um DataFrame para exibição tabular
+                # Converter a lista de usuários em um DataFrame
+                import pandas as pd
                 df_users = pd.DataFrame(users)
-                st.dataframe(df_users)  # Exibir como tabela
+
+                # Remover a coluna 'senha' para não ser exibida
+                if 'senha' in df_users.columns:
+                    df_users = df_users.drop(columns=['senha'])
+
+                # Exibir a tabela em tela cheia
+                st.dataframe(
+                    df_users,
+                    use_container_width=True  # Ocupa a largura total da tela
+                )
             else:
                 st.write("Nenhum usuário cadastrado ainda.")
+
