@@ -4,7 +4,7 @@ import pandas as pd
 
 def gerenciamento_usuarios():
     collection = get_collection("usuarios")
-
+    st.info("Cadastre, remova ou liste os usuários a partir das opções abaixo.")
     # Aba para cadastrar, remover e exibir usuários
     tab1, tab2, tab3 = st.tabs(["Cadastrar Usuário", "Remover Usuário", "Exibir Usuários"])
 
