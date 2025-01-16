@@ -118,6 +118,7 @@ if st.session_state['authentication_status']:
 
         # Título Principal
         st.title("Gerenciador de oportunidades HYGGE")
+        st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.write('----')
 
         # Configurar as abas
