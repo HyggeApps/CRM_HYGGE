@@ -1,7 +1,3 @@
-cookie:
-  expiry_days: 0
-  key: some_signature_key # Must be a string
-  name: some_cookie_name
 credentials:
   usernames:
     rkleitzke:
