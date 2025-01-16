@@ -4,7 +4,7 @@ from utils.database import get_collection
 
 def buscar_dados_cnpj(cnpj):
     """Busca dados de uma empresa pelo CNPJ usando a API CNPJ.ws ou outra alternativa."""
-    url = f"https://www.cnpj.ws/api/v1/cnpj/{cnpj}"
+    url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
