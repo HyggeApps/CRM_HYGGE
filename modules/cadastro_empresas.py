@@ -28,10 +28,10 @@ def gerenciamento_empresas():
     # Aba: Exibir Empresas
     # -------------------
     with tab1:
-        st.subheader("Empresas Cadastradas")
+        st.subheader("Empresas Cadastradas na base de dados da HYGGE")
+        st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         empresas = list(collection_empresas.find({}, {"_id": 0}))
         if empresas:
-            st.write("Lista de Empresas:")
             import pandas as pd
             df_empresas = pd.DataFrame(empresas)
             if "documentos" in df_empresas.columns:
