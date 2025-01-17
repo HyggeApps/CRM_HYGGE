@@ -109,7 +109,7 @@ def gerenciamento_empresas(user):
             st.warning("Nenhum usuário encontrado. Cadastre um usuário primeiro antes de adicionar empresas.")
         else:
             # Formulário principal
-            st.subheader("Cadastrar Empresa")
+            st.subheader("Formulário de cadastro")
             with st.form(key="form_cadastro_empresa"):
                 razao_social = st.text_input("Razão Social", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
                 cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
