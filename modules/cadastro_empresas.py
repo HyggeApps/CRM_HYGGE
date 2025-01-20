@@ -30,7 +30,7 @@ def gerenciamento_empresas(user):
     with tab1:
         
         st.header("Empresas Cadastradas na base de dados da HYGGE")
-
+        st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
         st.subheader("Filtro para empresas:")
 
@@ -63,8 +63,7 @@ def gerenciamento_empresas(user):
 
         # Botão para aplicar filtros
         aplicar_filtros = st.button("Aplicar Filtros")
-        st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
-
+        st.write('----')
         # Query inicial sem filtros
         query = {}
 
