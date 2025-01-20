@@ -51,6 +51,34 @@ custom_css = """
     </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
+
+# Adicionando CSS personalizado
+st.markdown(
+    """
+    <style>
+    /* Ajustar o tamanho da fonte global */
+    html, body, [class*="css"] {
+        font-size: 0.875rem !important; /* Reduz a fonte em 2pt */
+    }
+
+    /* Opcional: Ajustar fontes específicas */
+    h1 {
+        font-size: 1.75rem !important; /* Tamanho para H1 */
+    }
+    h2 {
+        font-size: 1.5rem !important; /* Tamanho para H2 */
+    }
+    h3 {
+        font-size: 1.25rem !important; /* Tamanho para H3 */
+    }
+    .stButton > button {
+        font-size: 0.875rem !important; /* Botões */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.sidebar.markdown('------')
 
 # Criar um arquivo temporário com os usuários do MongoDB
