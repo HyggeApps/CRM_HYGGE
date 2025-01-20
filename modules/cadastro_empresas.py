@@ -34,7 +34,8 @@ def gerenciamento_empresas(user):
         # -------------------
         # Sidebar: Filtros para consulta de empresas
         # -------------------
-        st.sidebar.header("Filtros para Consultar Empresas")
+        st.write('----')
+        st.sidebar.header("Filtro para empresas:")
 
         # Campos de filtro
         filtro_razao_social = st.sidebar.text_input("Razão Social (ou parte)", placeholder="Digite parte da Razão Social")
