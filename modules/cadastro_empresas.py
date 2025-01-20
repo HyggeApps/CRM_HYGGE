@@ -107,8 +107,6 @@ def gerenciamento_empresas(user):
         else:
             st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
-
-
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
@@ -162,18 +160,50 @@ def gerenciamento_empresas(user):
             # Formulário principal
             st.subheader("Formulário de cadastro")
             with st.form(key="form_cadastro_empresa"):
-                razao_social = st.text_input("Razão Social", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
-                cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
-                rua = st.text_input("Rua", value=st.session_state["dados_cnpj"].get("logradouro", st.session_state["dados_cep"].get("logradouro", "")), key="rua")
-                bairro = st.text_input("Bairro", value=st.session_state["dados_cnpj"].get("bairro", st.session_state["dados_cep"].get("bairro", "")), key="bairro")
-                cidade = st.text_input("Cidade", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
-                estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
-                cep = st.text_input("CEP", value=cep_input, max_chars=10, key="cep")
-                site = st.text_input("Site", key="site")
-                fone = st.text_input("Telefone", value=st.session_state["dados_cnpj"].get("telefone", ""), key="fone")
-                insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
-                setor = st.text_input("Setor", key="setor")
-                tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"], key="tamanho_empresa")
+
+                # Primeira linha: Razão Social e CNPJ
+                col1, col2 = st.columns(2)
+                with col1:
+                    razao_social = st.text_input("Razão Social", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
+                with col2:
+                    cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
+
+                # Segunda linha: Rua e Bairro
+                col3, col4 = st.columns(2)
+                with col3:
+                    rua = st.text_input("Rua", value=st.session_state["dados_cnpj"].get("logradouro", st.session_state["dados_cep"].get("logradouro", "")), key="rua")
+                with col4:
+                    bairro = st.text_input("Bairro", value=st.session_state["dados_cnpj"].get("bairro", st.session_state["dados_cep"].get("bairro", "")), key="bairro")
+
+                # Terceira linha: Cidade, Estado e CEP
+                col5, col6, col7 = st.columns(3)
+                with col5:
+                    cidade = st.text_input("Cidade", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
+                with col6:
+                    estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
+                with col7:
+                    cep = st.text_input("CEP", value=cep_input, max_chars=10, key="cep")
+
+                # Quarta linha: Telefone e Site
+                col8, col9 = st.columns(2)
+                with col8:
+                    fone = st.text_input("Telefone", value=st.session_state["dados_cnpj"].get("telefone", ""), key="fone")
+                with col9:
+                    site = st.text_input("Site", key="site")
+
+                # Quinta linha: Inscrição Estadual e Setor
+                col10, col11 = st.columns(2)
+                with col10:
+                    insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
+                with col11:
+                    setor = st.text_input("Setor", key="setor")
+
+                # Sexta linha: Tamanho da Empresa
+                col12 = st.columns(1)
+                with col12[0]:
+                    tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"], key="tamanho_empresa")
+
+                # Botão de cadastro
                 submit = st.form_submit_button("Cadastrar")
 
                 if submit:
@@ -183,7 +213,6 @@ def gerenciamento_empresas(user):
                         if existing_company:
                             st.error("Empresa já cadastrada com este CNPJ!")
                         else:
-
                             # Criar o documento da empresa
                             document = {
                                 "razao_social": razao_social,

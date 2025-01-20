@@ -140,7 +140,6 @@ if st.session_state['authentication_status']:
 
         elif hierarquia_atividade == "Usuário":
             # Menu no sidebar para Usuário
-            
 
             usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
             user_menu = st.sidebar.radio("", ["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
