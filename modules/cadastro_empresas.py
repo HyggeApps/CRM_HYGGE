@@ -28,76 +28,57 @@ def gerenciamento_empresas(user):
     # Aba: Exibir Empresas com Filtros
     # -------------------
     with tab1:
+        
         st.header("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
-
         # Obter a lista de vendedores
         vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
         vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
 
-        # Disposição dos filtros
+        # Disposição dos filtros em uma ou duas linhas
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
-            filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social", key="filtro_razao_social")
+            filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
         with col2:
-            filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ", key="filtro_cnpj")
+            filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
         with col3:
-            filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade", key="filtro_cidade")
+            filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
         with col4:
-            filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP", key="filtro_estado")
+            filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
         with col5:
             filtro_tamanho = st.multiselect(
                 "Tamanho",
                 options=["Pequena", "Média", "Grande"],
                 default=[],
-                key="filtro_tamanho"
             )
         with col6:
             filtro_vendedor = st.selectbox(
                 "Vendedor",
                 options=["Todos"] + vendedores,  # Adicionar a opção "Todos"
                 index=0,
-                key="filtro_vendedor"
             )
 
-        # Botões para aplicar ou limpar filtros
-        col_aplicar, col_remover, col_vazio1, col_vazio2, col_vazio3, col_vazio4, col_vazio5, col_vazio6, col_vazio7 = st.columns([1, 1, 1, 1, 1, 1, 1, 1, 1])
-        with col_aplicar:
-            aplicar_filtros = st.button("Aplicar Filtros", key="aplicar_filtros")
-        with col_remover:
-            remover_filtros = st.button("Remover Filtros", key="remover_filtros")
-
-
+        # Botão para aplicar filtros
+        aplicar_filtros = st.button("Aplicar Filtros")
         st.write('----')
+        # Query inicial sem filtros
+        query = {}
 
-        # Se "Remover Filtros" for clicado, resetar os valores
-        if remover_filtros:
-            st.session_state["filtro_razao_social"] = ""
-            st.session_state["filtro_cnpj"] = ""
-            st.session_state["filtro_cidade"] = ""
-            st.session_state["filtro_estado"] = ""
-            st.session_state["filtro_tamanho"] = []
-            st.session_state["filtro_vendedor"] = "Todos"
-            query = {}  # Resetar a query para exibir todas as empresas
-        else:
-            # Query inicial sem filtros
-            query = {}
-
-            # Adicionar condições de filtro à query
-            if aplicar_filtros:
-                if filtro_razao_social:
-                    query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_cnpj:
-                    query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_cidade:
-                    query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_estado:
-                    query["estado"] = filtro_estado.upper()  # Igualdade exata para estado
-                if filtro_tamanho:
-                    query["tamanho_empresa"] = {"$in": filtro_tamanho}  # Filtro múltiplo para tamanhos
-                if filtro_vendedor and filtro_vendedor != "Todos":
-                    query["usuario"] = filtro_vendedor  # Filtrar pelo vendedor selecionado
+        # Adicionar condições de filtro à query
+        if aplicar_filtros:
+            if filtro_razao_social:
+                query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_cnpj:
+                query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_cidade:
+                query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_estado:
+                query["estado"] = filtro_estado.upper()  # Igualdade exata para estado
+            if filtro_tamanho:
+                query["tamanho_empresa"] = {"$in": filtro_tamanho}  # Filtro múltiplo para tamanhos
+            if filtro_vendedor and filtro_vendedor != "Todos":
+                query["usuario"] = filtro_vendedor  # Filtrar pelo vendedor selecionado
 
         # Buscar as empresas no banco de dados com os filtros aplicados
         empresas_filtradas = list(collection_empresas.find(query, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
