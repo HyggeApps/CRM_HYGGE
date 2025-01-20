@@ -307,16 +307,39 @@ def gerenciamento_empresas(user):
 
             # Formulário de Cadastro de SubEmpresa
             with st.form(key="form_cadastro_subempresa"):
-                empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
-                razao_social = st.text_input("Razão Social da SubEmpresa", value=dados_cnpj.get("nome", ""), key="input_razao_social_subempresa")
-                cnpj = st.text_input("CNPJ da SubEmpresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
-                rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")), key="input_rua_subempresa")
-                cep = st.text_input("CEP", value=cep_input, max_chars=10, key="input_cep_subempresa")
-                bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")), key="input_bairro_subempresa")
-                cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")), key="input_cidade_subempresa")
-                estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")), key="input_estado_subempresa")
-                fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""), key="input_fone_subempresa")
+                st.subheader("Formulário de Cadastro de SubEmpresa")
 
+                # Linha 1: Empresa Matriz e Razão Social
+                col1, col2 = st.columns(2)
+                with col1:
+                    empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
+                with col2:
+                    razao_social = st.text_input("Razão Social da SubEmpresa", value=dados_cnpj.get("nome", ""), key="input_razao_social_subempresa")
+
+                # Linha 2: CNPJ e Telefone
+                col3, col4 = st.columns(2)
+                with col3:
+                    cnpj = st.text_input("CNPJ da SubEmpresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
+                with col4:
+                    fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""), key="input_fone_subempresa")
+
+                # Linha 3: Rua e Bairro
+                col5, col6 = st.columns(2)
+                with col5:
+                    rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")), key="input_rua_subempresa")
+                with col6:
+                    bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")), key="input_bairro_subempresa")
+
+                # Linha 4: Cidade, Estado e CEP
+                col7, col8, col9 = st.columns(3)
+                with col7:
+                    cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")), key="input_cidade_subempresa")
+                with col8:
+                    estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")), key="input_estado_subempresa")
+                with col9:
+                    cep = st.text_input("CEP", value=cep_input, max_chars=10, key="input_cep_subempresa")
+
+                # Botão para cadastrar
                 submit_sub = st.form_submit_button("Cadastrar SubEmpresa")
 
                 if submit_sub:
@@ -346,6 +369,7 @@ def gerenciamento_empresas(user):
                             st.success("SubEmpresa cadastrada e vinculada à matriz com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
+
 
     # -------------------
     # Aba: Remover SubEmpresa
