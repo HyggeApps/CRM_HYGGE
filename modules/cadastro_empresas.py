@@ -62,7 +62,7 @@ def gerenciamento_empresas(user):
             )
 
         # Botões para aplicar ou limpar filtros
-        col_aplicar, col_remover, col_vazio1, col_vazio2, col_vazio3, col_vazio4, col_vazio5 = st.columns([1, 1, 1, 1, 1, 1, 1])
+        col_aplicar, col_remover, col_vazio1, col_vazio2, col_vazio3, col_vazio4, col_vazio5, col_vazio6, col_vazio7 = st.columns([1, 1, 1, 1, 1, 1, 1, 1, 1])
         with col_aplicar:
             aplicar_filtros = st.button("Aplicar Filtros", key="aplicar_filtros")
         with col_remover:
