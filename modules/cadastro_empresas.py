@@ -28,12 +28,11 @@ def gerenciamento_empresas(user):
     # Aba: Exibir Empresas com Filtros
     # -------------------
     with tab1:
-        st.write(1)
-        # -------------------
-        # Sidebar: Filtros para consulta de empresas
-        # -------------------
-        st.write('----')
-        st.header("Filtro para empresas:")
+        
+        st.header("Empresas Cadastradas na base de dados da HYGGE")
+
+        st.header('----')
+        st.subheader("Filtro para empresas:")
 
         # Obter a lista de vendedores
         vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
@@ -64,7 +63,6 @@ def gerenciamento_empresas(user):
 
         # Botão para aplicar filtros
         aplicar_filtros = st.button("Aplicar Filtros")
-        st.subheader("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
 
         # Query inicial sem filtros
