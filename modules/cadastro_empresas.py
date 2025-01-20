@@ -22,7 +22,7 @@ def gerenciamento_empresas(user):
     collection_subempresas = get_collection("subempresas")
 
     # Abas para Gerenciamento de Empresas
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
+    tab1, tab2, tab3, tab4, tab5 = st.sidebar.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
 
 
 
