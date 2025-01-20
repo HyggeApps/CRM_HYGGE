@@ -240,11 +240,13 @@ def gerenciamento_empresas(user):
     # -------------------
     with tab3:
         st.subheader("Remover Empresa")
-        empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        
+        # Filtrar empresas vinculadas ao vendedor
+        empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
 
         if not empresas:
-            st.warning("Nenhuma empresa encontrada para remoção.")
+            st.warning("Nenhuma empresa vinculada ao vendedor encontrada para remoção.")
         else:
             with st.form(key="form_remover_empresa"):
                 empresa_selecionada = st.selectbox("Selecione a Empresa a Remover", options=opcoes_empresas)
@@ -252,11 +254,12 @@ def gerenciamento_empresas(user):
 
                 if remove_submit:
                     cnpj_remover = empresa_selecionada.split("CNPJ: ")[-1].strip(")")
-                    result = collection_empresas.delete_one({"cnpj": cnpj_remover})
+                    result = collection_empresas.delete_one({"cnpj": cnpj_remover, "usuario": user})  # Garante que só remove se o vendedor for o usuário
                     if result.deleted_count > 0:
                         st.success(f"Empresa com CNPJ '{cnpj_remover}' removida com sucesso!")
                     else:
-                        st.error(f"Erro ao remover a empresa com CNPJ '{cnpj_remover}'.")
+                        st.error(f"Erro ao remover a empresa com CNPJ '{cnpj_remover}'. Verifique se você tem permissão para removê-la.")
+
 
     # -------------------
     # Aba: Cadastrar SubEmpresa
