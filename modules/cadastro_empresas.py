@@ -28,7 +28,7 @@ def gerenciamento_empresas(user):
     # Aba: Exibir Empresas com Filtros
     # -------------------
     with tab1:
-
+        st.write(1)
         # -------------------
         # Sidebar: Filtros para consulta de empresas
         # -------------------
