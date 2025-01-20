@@ -196,7 +196,7 @@ def gerenciamento_empresas(user):
                 with col10:
                     insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
                 with col11:
-                    setor = st.text_input("Setor", key="setor")
+                    setor = st.selectbox("Setor", ["Comercial", "Residencial", "Residencial MCMV","Industrial"], key="setor")
 
                 # Sexta linha: Tamanho da Empresa
                 col12 = st.columns(1)
