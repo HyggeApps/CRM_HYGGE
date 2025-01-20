@@ -234,13 +234,14 @@ def gerenciamento_empresas(user):
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
 
-
     # -------------------
     # Aba: Remover Empresa
     # -------------------
     with tab3:
         st.header("Remover empresa na base de dados da HYGGE")
         st.info("Selecione na lista suspensa abaixo a empresa para removê-la. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
+        st.write('---')
+        
         # Filtrar empresas vinculadas ao vendedor
         empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
@@ -265,8 +266,9 @@ def gerenciamento_empresas(user):
     # Aba: Cadastrar SubEmpresa
     # -------------------
     with tab4:
-        st.subheader("Cadastrar sub-empresa")
-
+        st.header("Cadastrar sub-empresa na base de dados da HYGGE")
+        st.info("Cadastre aqui uma sub-empresa ou variação da empresa matriz. A sub-empresa costuma ")
+        st.write('---')
         # Obter empresas matriz cadastradas
         empresas_matriz = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         opcoes_matriz = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas_matriz]
