@@ -249,7 +249,7 @@ def gerenciamento_empresas(user):
             st.warning("Nenhuma empresa vinculada ao vendedor encontrada para remoção.")
         else:
             with st.form(key="form_remover_empresa"):
-                empresa_selecionada = st.selectbox("Selecione a Empresa a Remover", options=opcoes_empresas)
+                empresa_selecionada = st.selectbox("Selecione a empresa que deseja remover", options=opcoes_empresas)
                 remove_submit = st.form_submit_button("Remover Empresa")
 
                 if remove_submit:
