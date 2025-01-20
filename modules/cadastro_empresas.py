@@ -24,21 +24,58 @@ def gerenciamento_empresas(user):
     # Abas para Gerenciamento de Empresas
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
 
+
+
     # -------------------
-    # Aba: Exibir Empresas
+    # Aba: Exibir Empresas com Filtros
     # -------------------
     with tab1:
+
+        # -------------------
+        # Sidebar: Filtros para consulta de empresas
+        # -------------------
+        st.sidebar.header("Filtros para Consultar Empresas")
+
+        # Campos de filtro
+        filtro_razao_social = st.sidebar.text_input("Razão Social (ou parte)", placeholder="Digite parte da Razão Social")
+        filtro_cnpj = st.sidebar.text_input("CNPJ (ou parte)", placeholder="Digite parte do CNPJ")
+        filtro_cidade = st.sidebar.text_input("Cidade", placeholder="Digite a cidade")
+        filtro_estado = st.sidebar.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+        filtro_tamanho = st.sidebar.multiselect(
+            "Tamanho da Empresa",
+            options=["Pequena", "Média", "Grande"],
+            default=[],
+        )
+
+        # Botão para aplicar filtros
+        aplicar_filtros = st.sidebar.button("Aplicar Filtros")
         st.subheader("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
 
-        # Buscar as empresas no banco de dados
-        empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
+        # Query inicial sem filtros
+        query = {}
 
-        if empresas:
+        # Adicionar condições de filtro à query
+        if aplicar_filtros:
+            if filtro_razao_social:
+                query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_cnpj:
+                query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_cidade:
+                query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}  # Busca parcial (case insensitive)
+            if filtro_estado:
+                query["estado"] = filtro_estado.upper()  # Igualdade exata para estado
+            if filtro_tamanho:
+                query["tamanho_empresa"] = {"$in": filtro_tamanho}  # Filtro múltiplo para tamanhos
+
+        # Buscar as empresas no banco de dados com os filtros aplicados
+        empresas_filtradas = list(collection_empresas.find(query, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
+
+        if empresas_filtradas:
             import pandas as pd
 
             # Converter para DataFrame
-            df_empresas = pd.DataFrame(empresas)
+            df_empresas = pd.DataFrame(empresas_filtradas)
 
             # Renomear as colunas
             df_empresas = df_empresas.rename(
@@ -56,7 +93,8 @@ def gerenciamento_empresas(user):
             # Exibir a tabela
             st.dataframe(df_empresas, use_container_width=True)
         else:
-            st.warning("Nenhuma empresa cadastrada ainda.")
+            st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
     # -------------------
     # Aba: Cadastrar Empresa
