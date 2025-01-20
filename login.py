@@ -124,7 +124,7 @@ if st.session_state['authentication_status']:
 
         if hierarquia_atividade == "Admin":
             # Menu no sidebar para Admin
-            admin_menu = st.sidebar.radio(options=["Dashboard", "Usuários", "Produtos", "Templates"])
+            admin_menu = st.sidebar.radio("",["Dashboard", "Usuários", "Produtos", "Templates"])
 
             if admin_menu == "Dashboard":
                 st.header("Dashboard")
@@ -143,7 +143,7 @@ if st.session_state['authentication_status']:
             
 
             usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            user_menu = st.sidebar.radio(options=["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
+            user_menu = st.sidebar.radio("", ["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
 
             if user_menu == "Dashboard":
                 st.header("Dashboard")
