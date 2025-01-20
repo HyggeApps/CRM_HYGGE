@@ -34,7 +34,7 @@ def gerenciamento_empresas(user):
         # -------------------
         # Sidebar: Filtros para consulta de empresas
         # -------------------
-        st.write('----')
+        st.sidebar.write('----')
         st.sidebar.header("Filtro para empresas:")
 
         # Campos de filtro
