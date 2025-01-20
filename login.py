@@ -118,7 +118,7 @@ if st.session_state['authentication_status']:
         # Título Principal
         st.title("Gerenciador de oportunidades HYGGE")
         st.write('----')
-        st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
+        #st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.sidebar.write('')
         hierarquia_atividade = st.sidebar.selectbox('Selecione o tipo de atividade:', ["Admin", "Usuário"])
 
