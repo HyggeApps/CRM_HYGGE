@@ -240,7 +240,7 @@ def gerenciamento_empresas(user):
     # -------------------
     with tab3:
         st.header("Remover empresa na base de dados da HYGGE")
-        st.info("Selecione na lista suspensa abaixo a empresa que deseja remover. *Observação:* apenas empresas cadastradas pelo seu usuário podem ser deletadas.")
+        st.info("Selecione na lista suspensa abaixo a empresa que deseja remover. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
         # Filtrar empresas vinculadas ao vendedor
         empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
