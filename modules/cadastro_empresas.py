@@ -23,8 +23,6 @@ def gerenciamento_empresas(user):
 
     # Abas para Gerenciamento de Empresas
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
-    
-
 
     # -------------------
     # Aba: Exibir Empresas com Filtros
@@ -37,16 +35,35 @@ def gerenciamento_empresas(user):
         st.write('----')
         st.header("Filtro para empresas:")
 
-        # Campos de filtro
-        filtro_razao_social = st.text_input("Razão Social (ou parte)", placeholder="Digite parte da Razão Social")
-        filtro_cnpj = st.text_input("CNPJ (ou parte)", placeholder="Digite parte do CNPJ")
-        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
-        filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
-        filtro_tamanho = st.multiselect(
-            "Tamanho da Empresa",
-            options=["Pequena", "Média", "Grande"],
-            default=[],
-        )
+        # Obter a lista de vendedores
+        vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
+        vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
+
+        # Disposição dos filtros em uma ou duas linhas
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
+        with col2:
+            filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
+        with col3:
+            filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
+        with col4:
+            filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+        with col5:
+            filtro_tamanho = st.multiselect(
+                "Tamanho",
+                options=["Pequena", "Média", "Grande"],
+                default=[],
+            )
+
+        # Filtro para vendedor (em outra linha)
+        col6, _ = st.columns([3, 2])  # Ajustar a largura das colunas
+        with col6:
+            filtro_vendedor = st.selectbox(
+                "Vendedor",
+                options=["Todos"] + vendedores,  # Adicionar a opção "Todos"
+                index=0,
+            )
 
         # Botão para aplicar filtros
         aplicar_filtros = st.button("Aplicar Filtros")
@@ -68,6 +85,8 @@ def gerenciamento_empresas(user):
                 query["estado"] = filtro_estado.upper()  # Igualdade exata para estado
             if filtro_tamanho:
                 query["tamanho_empresa"] = {"$in": filtro_tamanho}  # Filtro múltiplo para tamanhos
+            if filtro_vendedor and filtro_vendedor != "Todos":
+                query["usuario"] = filtro_vendedor  # Filtrar pelo vendedor selecionado
 
         # Buscar as empresas no banco de dados com os filtros aplicados
         empresas_filtradas = list(collection_empresas.find(query, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
@@ -95,6 +114,7 @@ def gerenciamento_empresas(user):
             st.dataframe(df_empresas, use_container_width=True)
         else:
             st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 
     # -------------------
