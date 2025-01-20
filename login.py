@@ -117,14 +117,14 @@ if st.session_state['authentication_status']:
 
         # Título Principal
         st.title("Gerenciador de oportunidades HYGGE")
-        st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.write('----')
-
+        st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
+        
         hierarquia_atividade = st.sidebar.selectbox('Selecione o tipo de atividade:', ["Admin", "Usuário"])
 
         if hierarquia_atividade == "Admin":
             # Menu no sidebar para Admin
-            admin_menu = st.sidebar.radio("Menu Admin", ["Dashboard", "Usuários", "Produtos", "Templates"])
+            admin_menu = st.sidebar.radio(options=["Dashboard", "Usuários", "Produtos", "Templates"])
 
             if admin_menu == "Dashboard":
                 st.header("Dashboard")
@@ -143,7 +143,7 @@ if st.session_state['authentication_status']:
             
 
             usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            user_menu = st.sidebar.radio("Menu Usuário", ["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
+            user_menu = st.sidebar.radio(options=["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
 
             if user_menu == "Dashboard":
                 st.header("Dashboard")
