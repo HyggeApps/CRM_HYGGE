@@ -22,7 +22,7 @@ def gerenciamento_empresas(user):
     collection_subempresas = get_collection("subempresas")
 
     # Abas para Gerenciamento de Empresas
-    tab1, tab2, tab3, tab4 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
 
     # -------------------
     # Aba: Exibir Empresas
@@ -266,3 +266,37 @@ def gerenciamento_empresas(user):
                             st.success("SubEmpresa cadastrada e vinculada à matriz com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
+
+    # -------------------
+    # Aba: Remover SubEmpresa
+    # -------------------
+    with tab5:
+        st.subheader("Remover SubEmpresa")
+        
+        # Obter subempresas cadastradas
+        subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1, "empresa_matriz": 1}))
+        opcoes_subempresas = [f"{s['razao_social']} (CNPJ: {s['cnpj']}) - Matriz: {s['empresa_matriz']}" for s in subempresas]
+
+        if not subempresas:
+            st.warning("Nenhuma subempresa encontrada para remoção.")
+        else:
+            with st.form(key="form_remover_subempresa"):
+                # Selecionar subempresa para remoção
+                subempresa_selecionada = st.selectbox("Selecione a SubEmpresa a Remover", options=opcoes_subempresas, key="select_remover_subempresa")
+                remove_submit = st.form_submit_button("Remover SubEmpresa")
+
+                if remove_submit:
+                    cnpj_remover = subempresa_selecionada.split("CNPJ: ")[-1].split(")")[0]
+                    empresa_matriz = subempresa_selecionada.split("Matriz: ")[-1]
+
+                    # Remover subempresa do banco de subempresas
+                    result = collection_subempresas.delete_one({"cnpj": cnpj_remover})
+                    if result.deleted_count > 0:
+                        # Atualizar a lista de subempresas na matriz
+                        collection_empresas.update_one(
+                            {"cnpj": empresa_matriz},
+                            {"$pull": {"subempresas": cnpj_remover}}
+                        )
+                        st.success(f"SubEmpresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
+                    else:
+                        st.error(f"Erro ao remover a subempresa com CNPJ '{cnpj_remover}'.")
