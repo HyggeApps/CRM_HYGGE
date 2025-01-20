@@ -29,7 +29,7 @@ def gerenciamento_empresas(user):
     # -------------------
     with tab1:
         
-        st.header("Empresas Cadastradas na base de dados da HYGGE")
+        st.header("Empresas cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
         # Obter a lista de vendedores
