@@ -22,7 +22,7 @@ def gerenciamento_empresas(user):
     collection_subempresas = get_collection("subempresas")
 
     # Abas para Gerenciamento de Empresas
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar Empresa", "Remover Empresa", "Cadastrar SubEmpresa", "Remover SubEmpresa"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Empresas cadastradas","Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"])
 
     # -------------------
     # Aba: Exibir Empresas com Filtros
@@ -240,7 +240,7 @@ def gerenciamento_empresas(user):
     # -------------------
     with tab3:
         st.header("Remover empresa na base de dados da HYGGE")
-        st.info("Selecione na lista suspensa abaixo a empresa que deseja remover. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
+        st.info("Selecione na lista suspensa abaixo a empresa para removê-la. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
         # Filtrar empresas vinculadas ao vendedor
         empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
@@ -265,7 +265,7 @@ def gerenciamento_empresas(user):
     # Aba: Cadastrar SubEmpresa
     # -------------------
     with tab4:
-        st.subheader("Cadastrar SubEmpresa")
+        st.subheader("Cadastrar sub-empresa")
 
         # Obter empresas matriz cadastradas
         empresas_matriz = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
@@ -281,8 +281,8 @@ def gerenciamento_empresas(user):
             st.subheader("Busca Automática de CNPJ e CEP")
             with st.expander("Preencher Dados com CNPJ e CEP"):
                 # Buscar dados do CNPJ
-                cnpj_input = st.text_input("CNPJ da SubEmpresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)")
-                if st.button("Buscar Dados do CNPJ (SubEmpresa)"):
+                cnpj_input = st.text_input("CNPJ da sub-empresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)")
+                if st.button("Buscar Dados do CNPJ (sub-empresa)"):
                     cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")  # Limpar formatação
                     if len(cnpj_limpo) == 14:
                         dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
@@ -295,8 +295,8 @@ def gerenciamento_empresas(user):
                         st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
 
                 # Buscar dados do CEP
-                cep_input = st.text_input("CEP da SubEmpresa", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)")
-                if st.button("Buscar Dados do CEP (SubEmpresa)"):
+                cep_input = st.text_input("CEP da sub-empresa", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)")
+                if st.button("Buscar Dados do CEP (sub-empresa)"):
                     cep_limpo = cep_input.replace("-", "").replace(" ", "")  # Limpar formatação
                     if len(cep_limpo) == 8:
                         dados_cep = buscar_dados_cep(cep_limpo)
@@ -308,21 +308,21 @@ def gerenciamento_empresas(user):
                     else:
                         st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
 
-            # Formulário de Cadastro de SubEmpresa
+            # Formulário de Cadastro de sub-empresa
             with st.form(key="form_cadastro_subempresa"):
-                st.subheader("Formulário de Cadastro de SubEmpresa")
+                st.subheader("Formulário de Cadastro de sub-empresa")
 
                 # Linha 1: Empresa Matriz e Razão Social
                 col1, col2 = st.columns(2)
                 with col1:
                     empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
                 with col2:
-                    razao_social = st.text_input("Razão Social da SubEmpresa", value=dados_cnpj.get("nome", ""), key="input_razao_social_subempresa")
+                    razao_social = st.text_input("Razão Social da sub-empresa", value=dados_cnpj.get("nome", ""), key="input_razao_social_subempresa")
 
                 # Linha 2: CNPJ e Telefone
                 col3, col4 = st.columns(2)
                 with col3:
-                    cnpj = st.text_input("CNPJ da SubEmpresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
+                    cnpj = st.text_input("CNPJ da sub-empresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
                 with col4:
                     fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""), key="input_fone_subempresa")
 
@@ -343,14 +343,14 @@ def gerenciamento_empresas(user):
                     cep = st.text_input("CEP", value=cep_input, max_chars=10, key="input_cep_subempresa")
 
                 # Botão para cadastrar
-                submit_sub = st.form_submit_button("Cadastrar SubEmpresa")
+                submit_sub = st.form_submit_button("Cadastrar sub-empresa")
 
                 if submit_sub:
                     if razao_social and cnpj and empresa_matriz:
                         matriz_cnpj = empresa_matriz.split("CNPJ: ")[-1].strip(")")
                         existing_subempresa = collection_subempresas.find_one({"cnpj": cnpj})
                         if existing_subempresa:
-                            st.error("SubEmpresa já cadastrada com este CNPJ!")
+                            st.error("sub-empresa já cadastrada com este CNPJ!")
                         else:
                             document = {
                                 "empresa_matriz": matriz_cnpj,
@@ -369,16 +369,16 @@ def gerenciamento_empresas(user):
                                 {"cnpj": matriz_cnpj},
                                 {"$push": {"subempresas": cnpj}}
                             )
-                            st.success("SubEmpresa cadastrada e vinculada à matriz com sucesso!")
+                            st.success("sub-empresa cadastrada e vinculada à matriz com sucesso!")
                     else:
                         st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
 
 
     # -------------------
-    # Aba: Remover SubEmpresa
+    # Aba: Remover sub-empresa
     # -------------------
     with tab5:
-        st.subheader("Remover SubEmpresa")
+        st.subheader("Remover sub-empresa")
         
         # Obter subempresas cadastradas
         subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1, "empresa_matriz": 1}))
@@ -389,8 +389,8 @@ def gerenciamento_empresas(user):
         else:
             with st.form(key="form_remover_subempresa"):
                 # Selecionar subempresa para remoção
-                subempresa_selecionada = st.selectbox("Selecione a SubEmpresa a Remover", options=opcoes_subempresas, key="select_remover_subempresa")
-                remove_submit = st.form_submit_button("Remover SubEmpresa")
+                subempresa_selecionada = st.selectbox("Selecione a sub-empresa para removê-la", options=opcoes_subempresas, key="select_remover_subempresa")
+                remove_submit = st.form_submit_button("Remover sub-empresa")
 
                 if remove_submit:
                     cnpj_remover = subempresa_selecionada.split("CNPJ: ")[-1].split(")")[0]
@@ -404,6 +404,6 @@ def gerenciamento_empresas(user):
                             {"cnpj": empresa_matriz},
                             {"$pull": {"subempresas": cnpj_remover}}
                         )
-                        st.success(f"SubEmpresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
+                        st.success(f"sub-empresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
                     else:
                         st.error(f"Erro ao remover a subempresa com CNPJ '{cnpj_remover}'.")
