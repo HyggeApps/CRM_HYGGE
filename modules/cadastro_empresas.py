@@ -28,7 +28,6 @@ def gerenciamento_empresas(user):
     # Aba: Exibir Empresas
     # -------------------
     with tab1:
-        st.write('-----11----')
         st.subheader("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
 
