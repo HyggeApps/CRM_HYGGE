@@ -38,18 +38,18 @@ def gerenciamento_empresas(user):
         st.sidebar.header("Filtro para empresas:")
 
         # Campos de filtro
-        filtro_razao_social = st.sidebar.text_input("Razão Social (ou parte)", placeholder="Digite parte da Razão Social")
-        filtro_cnpj = st.sidebar.text_input("CNPJ (ou parte)", placeholder="Digite parte do CNPJ")
-        filtro_cidade = st.sidebar.text_input("Cidade", placeholder="Digite a cidade")
-        filtro_estado = st.sidebar.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
-        filtro_tamanho = st.sidebar.multiselect(
+        filtro_razao_social = st.text_input("Razão Social (ou parte)", placeholder="Digite parte da Razão Social")
+        filtro_cnpj = st.text_input("CNPJ (ou parte)", placeholder="Digite parte do CNPJ")
+        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
+        filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+        filtro_tamanho = st.multiselect(
             "Tamanho da Empresa",
             options=["Pequena", "Média", "Grande"],
             default=[],
         )
 
         # Botão para aplicar filtros
-        aplicar_filtros = st.sidebar.button("Aplicar Filtros")
+        aplicar_filtros = st.button("Aplicar Filtros")
         st.subheader("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
 
