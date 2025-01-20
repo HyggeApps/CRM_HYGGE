@@ -123,57 +123,33 @@ if st.session_state['authentication_status']:
         hierarquia_atividade = st.sidebar.selectbox('Selecione o tipo de atividade:', ["Admin", "Usuário"])
 
         if hierarquia_atividade == "Admin":
-            # Configurar as abas
-            tabs1 = st.tabs([
-                "Home",
-                "Usuários",
-                "Produtos",
-                "Templates"
-            ])
+            # Menu no sidebar para Admin
+            admin_menu = st.sidebar.radio("Menu Admin", ["Dashboard", "Usuários", "Produtos", "Templates"])
 
-            # Aba: Dashboard do usuário
-            with tabs1[0]:
+            if admin_menu == "Dashboard":
                 st.header("Dashboard")
                 st.warning("Em desenvolvimento...")
-
-            # Aba: Cadastro de Usuários
-            with tabs1[1]:
+            elif admin_menu == "Usuários":
                 cadastro_usuarios.gerenciamento_usuarios()
-
-            # Aba: Cadastro de Produtos
-            with tabs1[2]:
+            elif admin_menu == "Produtos":
                 st.header("Cadastro de Produtos")
                 cadastro_produtos.gerenciamento_produtos()
-
-            with tabs1[3]:
+            elif admin_menu == "Templates":
                 st.header("Cadastro de Templates")
                 cadastro_templates.gerenciamento_templates()
 
-        elif hierarquia_atividade == 'Usuário':
-            usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            # Configurar as abas
-            tabs2 = st.tabs([
-                "Home",
-                "Empresas",
-                "Contatos",
-                "Leads",
-                "Oportunidades"
-            ])
+        elif hierarquia_atividade == "Usuário":
+            # Menu no sidebar para Usuário
+            user_menu = st.sidebar.radio("Menu Usuário", ["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"])
 
-            # Aba: Dashboard do usuário
-            with tabs2[0]:
+            if user_menu == "Dashboard":
                 st.header("Dashboard")
                 st.warning("Em desenvolvimento...")
-
-            # Aba: Cadastro de Empresas
-            with tabs2[1]:
-                cadastro_empresas.gerenciamento_empresas(usuario_ativo) 
-            
-            with tabs2[2]:
+            elif user_menu == "Empresas":
+                cadastro_empresas.gerenciamento_empresas(usuario_ativo)
+            elif user_menu == "Contatos":
                 cadastro_contatos.gerenciamento_contatos()
-
-            with tabs2[3]:
+            elif user_menu == "Leads":
                 cadastro_leads.gerenciamento_leads()
-
-            with tabs2[4]:
+            elif user_menu == "Oportunidades":
                 cadastro_oportunidades.gerenciamento_oportunidades()
