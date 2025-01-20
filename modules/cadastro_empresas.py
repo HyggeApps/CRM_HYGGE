@@ -31,7 +31,7 @@ def gerenciamento_empresas(user):
         
         st.header("Empresas Cadastradas na base de dados da HYGGE")
 
-        st.header('----')
+        st.write('----')
         st.subheader("Filtro para empresas:")
 
         # Obter a lista de vendedores
