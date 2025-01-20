@@ -32,8 +32,6 @@ def gerenciamento_empresas(user):
         st.header("Empresas Cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
-        st.subheader("Filtro para empresas:")
-
         # Obter a lista de vendedores
         vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
         vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
