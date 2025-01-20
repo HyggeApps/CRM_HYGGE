@@ -40,7 +40,7 @@ def gerenciamento_empresas(user):
         vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
 
         # Disposição dos filtros em uma ou duas linhas
-        col1, col2, col3, col4, col5 = st.columns(5)
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
             filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
         with col2:
@@ -55,9 +55,6 @@ def gerenciamento_empresas(user):
                 options=["Pequena", "Média", "Grande"],
                 default=[],
             )
-
-        # Filtro para vendedor (em outra linha)
-        col6, _ = st.columns([3, 2])  # Ajustar a largura das colunas
         with col6:
             filtro_vendedor = st.selectbox(
                 "Vendedor",
