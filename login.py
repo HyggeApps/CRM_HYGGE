@@ -152,7 +152,7 @@ if st.session_state['authentication_status']:
 
         if hierarquia_atividade == "Admin":
             # Menu no sidebar para Admin
-            admin_menu = st.sidebar.radio("",["Dashboard", "Usuários", "Produtos", "Templates"])
+            admin_menu = st.sidebar.radio("Selecione o tipo de acesso",["Dashboard", "Usuários", "Produtos", "Templates"])
 
             if admin_menu == "Dashboard":
                 st.header("Dashboard")
