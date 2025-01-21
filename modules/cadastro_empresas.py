@@ -25,7 +25,7 @@ def gerenciamento_empresas(user):
     tab1, tab2 = st.tabs(["Empresas", "Contatos"])
     
     # Abas para Gerenciamento de Empresas
-    tab1_1, tab1_2, tab1_3, tab1_4, tab1_5 = st.tabs(["Empresas cadastradas", "Editar empresa", "Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"])
+    tab1_1, tab1_2, tab1_3, tab1_4, tab1_5, tab1_6 = st.tabs(["Empresas cadastradas", "Editar empresa", "Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"])
 
 
     with tab1:
@@ -113,9 +113,105 @@ def gerenciamento_empresas(user):
                 st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
         # -------------------
+        # Aba: Editar Empresa
+        # -------------------
+        with tab1_2:  # Presumindo que este será o próximo tab após "Cadastrar Empresa"
+            st.header("Editar Empresa")
+            st.info("Selecione uma empresa para editar as informações cadastradas.")
+            st.write("---")
+            
+            # Obter lista de empresas cadastradas
+            empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+            opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
+
+            if not empresas:
+                st.warning("Nenhuma empresa cadastrada ainda. Cadastre uma empresa antes de tentar editar.")
+            else:
+                # Selecionar empresa para edição
+                empresa_selecionada = st.selectbox("Selecione a Empresa para Editar", options=opcoes_empresas, key="empresa_editar")
+                
+                if empresa_selecionada:
+                    # Extrair CNPJ da empresa selecionada
+                    cnpj_editar = empresa_selecionada.split("CNPJ: ")[-1].strip(")")
+                    
+                    # Obter os dados da empresa selecionada
+                    empresa_dados = collection_empresas.find_one({"cnpj": cnpj_editar}, {"_id": 0})
+                    
+                    if empresa_dados:
+                        # Formulário de edição
+                        with st.form(key="form_editar_empresa"):
+                            # Linha 1: Razão Social e CNPJ
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                razao_social = st.text_input("Razão Social", value=empresa_dados.get("razao_social", ""), key="edit_razao_social")
+                            with col2:
+                                cnpj = st.text_input("CNPJ", value=empresa_dados.get("cnpj", ""), max_chars=18, disabled=True, key="edit_cnpj")
+
+                            # Linha 2: Rua e Bairro
+                            col3, col4 = st.columns(2)
+                            with col3:
+                                rua = st.text_input("Rua", value=empresa_dados.get("rua", ""), key="edit_rua")
+                            with col4:
+                                bairro = st.text_input("Bairro", value=empresa_dados.get("bairro", ""), key="edit_bairro")
+
+                            # Linha 3: Cidade, Estado e CEP
+                            col5, col6, col7 = st.columns(3)
+                            with col5:
+                                cidade = st.text_input("Cidade", value=empresa_dados.get("cidade", ""), key="edit_cidade")
+                            with col6:
+                                estado = st.text_input("Estado", value=empresa_dados.get("estado", ""), max_chars=2, key="edit_estado")
+                            with col7:
+                                cep = st.text_input("CEP", value=empresa_dados.get("cep", ""), max_chars=10, key="edit_cep")
+
+                            # Linha 4: Telefone e Site
+                            col8, col9 = st.columns(2)
+                            with col8:
+                                fone = st.text_input("Telefone", value=empresa_dados.get("fone", ""), key="edit_fone")
+                            with col9:
+                                site = st.text_input("Site", value=empresa_dados.get("site", ""), key="edit_site")
+
+                            # Linha 5: Inscrição Estadual e Setor
+                            col10, col11 = st.columns(2)
+                            with col10:
+                                insc_estadual = st.text_input("Inscrição Estadual", value=empresa_dados.get("insc_estadual", ""), key="edit_insc_estadual")
+                            with col11:
+                                setor = st.selectbox("Setor", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                                                    index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa_dados.get("setor", "Comercial")),
+                                                    key="edit_setor")
+
+                            # Linha 6: Tamanho da Empresa
+                            col12 = st.columns(1)
+                            with col12[0]:
+                                tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"],
+                                                            index=["Pequena", "Média", "Grande"].index(empresa_dados.get("tamanho_empresa", "Pequena")),
+                                                            key="edit_tamanho_empresa")
+
+                            # Botão de submissão
+                            submit_editar = st.form_submit_button("Salvar Alterações")
+
+                            if submit_editar:
+                                # Atualizar os dados no banco de dados
+                                document_update = {
+                                    "razao_social": razao_social,
+                                    "rua": rua,
+                                    "cep": cep,
+                                    "bairro": bairro,
+                                    "cidade": cidade,
+                                    "estado": estado,
+                                    "site": site,
+                                    "fone": fone,
+                                    "insc_estadual": insc_estadual,
+                                    "setor": setor,
+                                    "tamanho_empresa": tamanho_empresa,
+                                }
+                                collection_empresas.update_one({"cnpj": cnpj_editar}, {"$set": document_update})
+                                st.success("Empresa atualizada com sucesso!")
+
+
+        # -------------------
         # Aba: Cadastrar Empresa
         # -------------------
-        with tab1_2:
+        with tab1_3:
             st.header("Cadastrar nova empresa na base de dados da HYGGE")
             st.info("Busque automaticamente informações da empresa a partir do CNPJ e/ou CEP e preencha os demais campos no formulário abaixo.")
             st.write('---')
@@ -242,7 +338,7 @@ def gerenciamento_empresas(user):
         # -------------------
         # Aba: Remover Empresa
         # -------------------
-        with tab1_3:
+        with tab1_4:
             st.header("Remover empresa na base de dados da HYGGE")
             st.info("Selecione na lista suspensa abaixo a empresa para removê-la. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
             st.write('---')
@@ -269,7 +365,7 @@ def gerenciamento_empresas(user):
         # -------------------
         # Aba: Cadastrar SubEmpresa
         # -------------------
-        with tab1_4:
+        with tab1_5:
             st.header("Cadastrar sub-empresa na base de dados da HYGGE")
             st.info("Cadastre aqui uma sub-empresa ou variação da empresa matriz. A sub-empresa costuma ")
             st.write('---')
@@ -382,7 +478,7 @@ def gerenciamento_empresas(user):
         # -------------------
         # Aba: Remover sub-empresa
         # -------------------
-        with tab1_5:
+        with tab1_6:
             st.subheader("Remover sub-empresa")
             
             # Obter subempresas cadastradas
