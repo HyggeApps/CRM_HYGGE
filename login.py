@@ -152,10 +152,10 @@ if st.session_state['authentication_status']:
 
         if hierarquia_atividade == "Admin":
             # Menu no sidebar para Admin
-            admin_menu = st.sidebar.radio("**Selecione uma opção abaixo:**",["Dashboard", "Usuários", "Produtos", "Templates"],key='admin_menu')
+            admin_menu = st.sidebar.radio("**Selecione uma opção abaixo:**",["Home", "Usuários", "Produtos", "Templates"],key='admin_menu')
 
-            if admin_menu == "Dashboard":
-                st.header("Dashboard")
+            if admin_menu == "Home":
+                st.header("Dashboard HYGGE")
                 st.warning("Em desenvolvimento...")
             elif admin_menu == "Usuários":
                 cadastro_usuarios.gerenciamento_usuarios()
@@ -170,10 +170,10 @@ if st.session_state['authentication_status']:
             # Menu no sidebar para Usuário
 
             usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            user_menu = st.sidebar.radio("**Selecione uma opção abaixo:**", ["Dashboard", "Empresas", "Contatos", "Leads", "Oportunidades"], key="user_menu")
+            user_menu = st.sidebar.radio("**Selecione uma opção abaixo:**", ["Home","Tarefas","Empresas", "Contatos", "Leads", "Oportunidades"], key="user_menu")
 
-            if user_menu == "Dashboard":
-                st.header("Dashboard")
+            if user_menu == "Home":
+                st.header("Dashboard HYGGE")
                 st.warning("Em desenvolvimento...")
             elif user_menu == "Empresas":
                 cadastro_empresas.gerenciamento_empresas(usuario_ativo)
