@@ -120,12 +120,12 @@ def gerenciamento_empresas(user):
             st.info("Selecione uma empresa para editar as informações cadastradas.")
             st.write("---")
             
-            # Obter lista de empresas cadastradas
-            empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+            # Obter lista de empresas cadastradas pelo usuário logado
+            empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
             opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
 
             if not empresas:
-                st.warning("Nenhuma empresa cadastrada ainda. Cadastre uma empresa antes de tentar editar.")
+                st.warning("Nenhuma empresa cadastrada por você foi encontrada. Cadastre uma empresa antes de tentar editar.")
             else:
                 # Selecionar empresa para edição
                 empresa_selecionada = st.selectbox("Selecione a Empresa para Editar", options=opcoes_empresas, key="empresa_editar")
@@ -175,16 +175,22 @@ def gerenciamento_empresas(user):
                             with col10:
                                 insc_estadual = st.text_input("Inscrição Estadual", value=empresa_dados.get("insc_estadual", ""), key="edit_insc_estadual")
                             with col11:
-                                setor = st.selectbox("Setor", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                                                    index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa_dados.get("setor", "Comercial")),
-                                                    key="edit_setor")
+                                setor = st.selectbox(
+                                    "Setor",
+                                    ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                                    index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa_dados.get("setor", "Comercial")),
+                                    key="edit_setor"
+                                )
 
                             # Linha 6: Tamanho da Empresa
                             col12 = st.columns(1)
                             with col12[0]:
-                                tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"],
-                                                            index=["Pequena", "Média", "Grande"].index(empresa_dados.get("tamanho_empresa", "Pequena")),
-                                                            key="edit_tamanho_empresa")
+                                tamanho_empresa = st.selectbox(
+                                    "Tamanho da Empresa",
+                                    ["Pequena", "Média", "Grande"],
+                                    index=["Pequena", "Média", "Grande"].index(empresa_dados.get("tamanho_empresa", "Pequena")),
+                                    key="edit_tamanho_empresa"
+                                )
 
                             # Botão de submissão
                             submit_editar = st.form_submit_button("Salvar Alterações")
@@ -206,6 +212,7 @@ def gerenciamento_empresas(user):
                                 }
                                 collection_empresas.update_one({"cnpj": cnpj_editar}, {"$set": document_update})
                                 st.success("Empresa atualizada com sucesso!")
+
 
 
         # -------------------
@@ -508,3 +515,4 @@ def gerenciamento_empresas(user):
                             st.success(f"sub-empresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
                         else:
                             st.error(f"Erro ao remover a subempresa com CNPJ '{cnpj_remover}'.")
+
