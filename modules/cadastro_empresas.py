@@ -236,6 +236,10 @@ def gerenciamento_empresas(user):
                 st.session_state["dados_cnpj"] = {}
             if "dados_cep" not in st.session_state:
                 st.session_state["dados_cep"] = {}
+            if "buscar_cnpj_clicked" not in st.session_state:
+                st.session_state["buscar_cnpj_clicked"] = False
+            if "buscar_cep_clicked" not in st.session_state:
+                st.session_state["buscar_cep_clicked"] = False
 
             # Buscar CNPJ antes de exibir o formulário
             st.subheader("Busca Automática de CNPJ e CEP")
@@ -243,36 +247,37 @@ def gerenciamento_empresas(user):
                 col1, col2 = st.columns(2)
                 with col1:
                     cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input")
-                    buscar_cnpj = st.button("Buscar Dados do CNPJ", key="buscar_cnpj")
+                    if st.button("Buscar Dados do CNPJ", key="buscar_cnpj") and not st.session_state["buscar_cnpj_clicked"]:
+                        st.session_state["buscar_cnpj_clicked"] = True
+                        cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
+                        if len(cnpj_limpo) == 14:
+                            dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
+                            if dados_cnpj and not dados_cnpj.get("erro"):
+                                st.success("Dados do CNPJ encontrados!")
+                                st.session_state["dados_cnpj"] = dados_cnpj
+                            else:
+                                st.error("CNPJ não encontrado ou inválido!")
+                                st.session_state["dados_cnpj"] = {}
+                        else:
+                            st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
+                        st.session_state["buscar_cnpj_clicked"] = False
+
                 with col2:
                     cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)", key="cep_input")
-                    buscar_cep = st.button("Buscar Dados do CEP", key="buscar_cep")
-
-                if buscar_cnpj:
-                    cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
-                    if len(cnpj_limpo) == 14:
-                        dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
-                        if dados_cnpj and not dados_cnpj.get("erro"):
-                            st.success("Dados do CNPJ encontrados!")
-                            st.session_state["dados_cnpj"] = dados_cnpj
+                    if st.button("Buscar Dados do CEP", key="buscar_cep") and not st.session_state["buscar_cep_clicked"]:
+                        st.session_state["buscar_cep_clicked"] = True
+                        cep_limpo = cep_input.replace("-", "").replace(" ", "")
+                        if len(cep_limpo) == 8:
+                            dados_cep = buscar_dados_cep(cep_limpo)
+                            if dados_cep and not dados_cep.get("erro"):
+                                st.success("Dados do CEP encontrados!")
+                                st.session_state["dados_cep"] = dados_cep
+                            else:
+                                st.error("CEP não encontrado ou inválido!")
+                                st.session_state["dados_cep"] = {}
                         else:
-                            st.error("CNPJ não encontrado ou inválido!")
-                            st.session_state["dados_cnpj"] = {}
-                    else:
-                        st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
-
-                if buscar_cep:
-                    cep_limpo = cep_input.replace("-", "").replace(" ", "")
-                    if len(cep_limpo) == 8:
-                        dados_cep = buscar_dados_cep(cep_limpo)
-                        if dados_cep and not dados_cep.get("erro"):
-                            st.success("Dados do CEP encontrados!")
-                            st.session_state["dados_cep"] = dados_cep
-                        else:
-                            st.error("CEP não encontrado ou inválido!")
-                            st.session_state["dados_cep"] = {}
-                    else:
-                        st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
+                            st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
+                        st.session_state["buscar_cep_clicked"] = False
 
             # Formulário principal
             st.subheader("Formulário de cadastro")
@@ -356,7 +361,11 @@ def gerenciamento_empresas(user):
             st.header("Remover empresa na base de dados da HYGGE")
             st.info("Selecione na lista suspensa abaixo a empresa para removê-la. **Observação: Apenas empresas cadastradas pelo seu usuário podem ser deletadas.**")
             st.write('---')
-            
+
+            # Inicializar o estado de remoção
+            if "remover_empresa_clicked" not in st.session_state:
+                st.session_state["remover_empresa_clicked"] = False
+
             # Filtrar empresas vinculadas ao vendedor
             empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
             opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
@@ -364,25 +373,34 @@ def gerenciamento_empresas(user):
             if not empresas:
                 st.warning("Nenhuma empresa vinculada ao vendedor encontrada para remoção.")
             else:
+                # Formulário para remoção
                 with st.form(key="form_remover_empresa"):
                     empresa_selecionada = st.selectbox("Selecione a empresa que deseja remover", options=opcoes_empresas)
                     remove_submit = st.form_submit_button("Remover Empresa")
 
-                    if remove_submit:
+                    if remove_submit and not st.session_state["remover_empresa_clicked"]:
+                        st.session_state["remover_empresa_clicked"] = True
                         cnpj_remover = empresa_selecionada.split("CNPJ: ")[-1].strip(")")
+
+                        # Realizar a remoção
                         result = collection_empresas.delete_one({"cnpj": cnpj_remover, "usuario": user})  # Garante que só remove se o vendedor for o usuário
+
                         if result.deleted_count > 0:
                             st.success(f"Empresa com CNPJ '{cnpj_remover}' removida com sucesso!")
                         else:
                             st.error(f"Erro ao remover a empresa com CNPJ '{cnpj_remover}'. Verifique se você tem permissão para removê-la.")
+                        
+                        # Resetar o estado após o processamento
+                        st.session_state["remover_empresa_clicked"] = False
 
         # -------------------
         # Aba: Cadastrar SubEmpresa
         # -------------------
         with tab1_5:
             st.header("Cadastrar sub-empresa na base de dados da HYGGE")
-            st.info("Cadastre aqui uma sub-empresa ou variação da empresa matriz. A sub-empresa costuma ")
+            st.info("Cadastre aqui uma sub-empresa ou variação da empresa matriz.")
             st.write('---')
+
             # Obter empresas matriz cadastradas
             empresas_matriz = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
             opcoes_matriz = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas_matriz]
@@ -390,39 +408,55 @@ def gerenciamento_empresas(user):
             if not empresas_matriz:
                 st.warning("Nenhuma empresa matriz encontrada. Cadastre uma empresa matriz antes de adicionar subempresas.")
             else:
-                # Variáveis para preenchimento automático
-                dados_cnpj = {}
-                dados_cep = {}
+                # Variáveis para preenchimento automático e controle de botões
+                if "dados_cnpj_sub" not in st.session_state:
+                    st.session_state["dados_cnpj_sub"] = {}
+                if "dados_cep_sub" not in st.session_state:
+                    st.session_state["dados_cep_sub"] = {}
+                if "buscar_cnpj_sub_clicked" not in st.session_state:
+                    st.session_state["buscar_cnpj_sub_clicked"] = False
+                if "buscar_cep_sub_clicked" not in st.session_state:
+                    st.session_state["buscar_cep_sub_clicked"] = False
 
                 st.subheader("Busca Automática de CNPJ e CEP")
                 with st.expander("Preencher Dados com CNPJ e CEP"):
-                    # Buscar dados do CNPJ
-                    cnpj_input = st.text_input("CNPJ da sub-empresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)")
-                    if st.button("Buscar Dados do CNPJ (sub-empresa)"):
-                        cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")  # Limpar formatação
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        cnpj_input = st.text_input("CNPJ da sub-empresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input_sub")
+                        buscar_cnpj = st.button("Buscar Dados do CNPJ (sub-empresa)", key="buscar_cnpj_sub")
+                    with col2:
+                        cep_input = st.text_input("CEP da sub-empresa", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)", key="cep_input_sub")
+                        buscar_cep = st.button("Buscar Dados do CEP (sub-empresa)", key="buscar_cep_sub")
+
+                    if buscar_cnpj and not st.session_state["buscar_cnpj_sub_clicked"]:
+                        st.session_state["buscar_cnpj_sub_clicked"] = True
+                        cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
                         if len(cnpj_limpo) == 14:
                             dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
                             if dados_cnpj and not dados_cnpj.get("erro"):
                                 st.success("Dados do CNPJ encontrados!")
+                                st.session_state["dados_cnpj_sub"] = dados_cnpj
                             else:
                                 st.error("CNPJ não encontrado ou inválido!")
-                                dados_cnpj = {}
+                                st.session_state["dados_cnpj_sub"] = {}
                         else:
                             st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
+                        st.session_state["buscar_cnpj_sub_clicked"] = False
 
-                    # Buscar dados do CEP
-                    cep_input = st.text_input("CEP da sub-empresa", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)")
-                    if st.button("Buscar Dados do CEP (sub-empresa)"):
-                        cep_limpo = cep_input.replace("-", "").replace(" ", "")  # Limpar formatação
+                    if buscar_cep and not st.session_state["buscar_cep_sub_clicked"]:
+                        st.session_state["buscar_cep_sub_clicked"] = True
+                        cep_limpo = cep_input.replace("-", "").replace(" ", "")
                         if len(cep_limpo) == 8:
                             dados_cep = buscar_dados_cep(cep_limpo)
                             if dados_cep and not dados_cep.get("erro"):
                                 st.success("Dados do CEP encontrados!")
+                                st.session_state["dados_cep_sub"] = dados_cep
                             else:
                                 st.error("CEP não encontrado ou inválido!")
-                                dados_cep = {}
+                                st.session_state["dados_cep_sub"] = {}
                         else:
                             st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
+                        st.session_state["buscar_cep_sub_clicked"] = False
 
                 # Formulário de Cadastro de sub-empresa
                 with st.form(key="form_cadastro_subempresa"):
@@ -433,28 +467,28 @@ def gerenciamento_empresas(user):
                     with col1:
                         empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
                     with col2:
-                        razao_social = st.text_input("Razão Social da sub-empresa", value=dados_cnpj.get("nome", ""), key="input_razao_social_subempresa")
+                        razao_social = st.text_input("Razão Social da sub-empresa", value=st.session_state["dados_cnpj_sub"].get("nome", ""), key="input_razao_social_subempresa")
 
                     # Linha 2: CNPJ e Telefone
                     col3, col4 = st.columns(2)
                     with col3:
                         cnpj = st.text_input("CNPJ da sub-empresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
                     with col4:
-                        fone = st.text_input("Telefone", value=dados_cnpj.get("telefone", ""), key="input_fone_subempresa")
+                        fone = st.text_input("Telefone", value=st.session_state["dados_cnpj_sub"].get("telefone", ""), key="input_fone_subempresa")
 
                     # Linha 3: Rua e Bairro
                     col5, col6 = st.columns(2)
                     with col5:
-                        rua = st.text_input("Rua", value=dados_cnpj.get("logradouro", dados_cep.get("logradouro", "")), key="input_rua_subempresa")
+                        rua = st.text_input("Rua", value=st.session_state["dados_cnpj_sub"].get("logradouro", st.session_state["dados_cep_sub"].get("logradouro", "")), key="input_rua_subempresa")
                     with col6:
-                        bairro = st.text_input("Bairro", value=dados_cnpj.get("bairro", dados_cep.get("bairro", "")), key="input_bairro_subempresa")
+                        bairro = st.text_input("Bairro", value=st.session_state["dados_cnpj_sub"].get("bairro", st.session_state["dados_cep_sub"].get("bairro", "")), key="input_bairro_subempresa")
 
                     # Linha 4: Cidade, Estado e CEP
                     col7, col8, col9 = st.columns(3)
                     with col7:
-                        cidade = st.text_input("Cidade", value=dados_cnpj.get("municipio", dados_cep.get("localidade", "")), key="input_cidade_subempresa")
+                        cidade = st.text_input("Cidade", value=st.session_state["dados_cnpj_sub"].get("municipio", st.session_state["dados_cep_sub"].get("localidade", "")), key="input_cidade_subempresa")
                     with col8:
-                        estado = st.text_input("Estado", value=dados_cnpj.get("uf", dados_cep.get("uf", "")), key="input_estado_subempresa")
+                        estado = st.text_input("Estado", value=st.session_state["dados_cnpj_sub"].get("uf", st.session_state["dados_cep_sub"].get("uf", "")), key="input_estado_subempresa")
                     with col9:
                         cep = st.text_input("CEP", value=cep_input, max_chars=10, key="input_cep_subempresa")
 
@@ -466,7 +500,7 @@ def gerenciamento_empresas(user):
                             matriz_cnpj = empresa_matriz.split("CNPJ: ")[-1].strip(")")
                             existing_subempresa = collection_subempresas.find_one({"cnpj": cnpj})
                             if existing_subempresa:
-                                st.error("sub-empresa já cadastrada com este CNPJ!")
+                                st.error("Sub-empresa já cadastrada com este CNPJ!")
                             else:
                                 document = {
                                     "empresa_matriz": matriz_cnpj,
@@ -485,7 +519,7 @@ def gerenciamento_empresas(user):
                                     {"cnpj": matriz_cnpj},
                                     {"$push": {"subempresas": cnpj}}
                                 )
-                                st.success("sub-empresa cadastrada e vinculada à matriz com sucesso!")
+                                st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
                         else:
                             st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
 
@@ -502,12 +536,17 @@ def gerenciamento_empresas(user):
             if not subempresas:
                 st.warning("Nenhuma subempresa encontrada para remoção.")
             else:
+                # Controle de estado do botão
+                if "remover_subempresa_clicked" not in st.session_state:
+                    st.session_state["remover_subempresa_clicked"] = False
+
                 with st.form(key="form_remover_subempresa"):
                     # Selecionar subempresa para remoção
                     subempresa_selecionada = st.selectbox("Selecione a sub-empresa para removê-la", options=opcoes_subempresas, key="select_remover_subempresa")
                     remove_submit = st.form_submit_button("Remover sub-empresa")
 
-                    if remove_submit:
+                    if remove_submit and not st.session_state["remover_subempresa_clicked"]:
+                        st.session_state["remover_subempresa_clicked"] = True
                         cnpj_remover = subempresa_selecionada.split("CNPJ: ")[-1].split(")")[0]
                         empresa_matriz = subempresa_selecionada.split("Matriz: ")[-1]
 
@@ -519,7 +558,11 @@ def gerenciamento_empresas(user):
                                 {"cnpj": empresa_matriz},
                                 {"$pull": {"subempresas": cnpj_remover}}
                             )
-                            st.success(f"sub-empresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
+                            st.success(f"Sub-empresa com CNPJ '{cnpj_remover}' removida com sucesso e desvinculada da matriz '{empresa_matriz}'!")
                         else:
                             st.error(f"Erro ao remover a subempresa com CNPJ '{cnpj_remover}'.")
+                        
+                        # Resetar estado do botão
+                        st.session_state["remover_subempresa_clicked"] = False
+
 
