@@ -21,199 +21,206 @@ def gerenciamento_empresas(user):
     collection_usuarios = get_collection("usuarios")
     collection_subempresas = get_collection("subempresas")
 
-    # Abas para Gerenciamento de Empresas
+    # Tabs para gerenciamento
     tab1, tab2 = st.tabs(["Empresas", "Contatos"])
-    
-    # Abas para Gerenciamento de Empresas
-    tab1_1, tab1_2, tab1_3, tab1_4, tab1_5, tab1_6 = st.tabs(["Empresas cadastradas", "Editar empresa", "Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"])
+    tab1_1, tab1_2, tab1_3, tab1_4, tab1_5, tab1_6 = st.tabs([
+        "Empresas cadastradas", "Editar empresa", "Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"
+    ])
 
+    # -------------------
+    # Aba: Exibir Empresas com Filtros
+    # -------------------
+    with tab1_1:
+        st.header("Empresas cadastradas na base de dados da HYGGE")
+        st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
+        st.write('----')
 
-    with tab1:
-        # -------------------
-        # Aba: Exibir Empresas com Filtros
-        # -------------------
-        with tab1_1:
-            
-            st.header("Empresas cadastradas na base de dados da HYGGE")
-            st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
-            st.write('----')
-            # Obter a lista de vendedores
-            vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
-            vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
+        vendedores = list(collection_empresas.distinct("usuario"))
+        vendedores = [v for v in vendedores if v]
 
-            # Disposição dos filtros em uma ou duas linhas
-            col1, col2, col3, col4, col5, col6 = st.columns(6)
-            with col1:
-                filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
-            with col2:
-                filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
-            with col3:
-                filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
-            with col4:
-                filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
-            with col5:
-                filtro_tamanho = st.multiselect(
-                    "Tamanho",
-                    options=["Pequena", "Média", "Grande"],
-                    default=[],
-                )
-            with col6:
-                filtro_vendedor = st.selectbox(
-                    "Vendedor",
-                    options=["Todos"] + vendedores,  # Adicionar a opção "Todos"
-                    index=0,
-                )
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        with col1:
+            filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
+        with col2:
+            filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
+        with col3:
+            filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
+        with col4:
+            filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+        with col5:
+            filtro_tamanho = st.multiselect(
+                "Tamanho",
+                options=["Pequena", "Média", "Grande"],
+                default=[],
+            )
+        with col6:
+            filtro_vendedor = st.selectbox(
+                "Vendedor",
+                options=["Todos"] + vendedores,
+                index=0,
+            )
 
-            # Botão para aplicar filtros
-            aplicar_filtros = st.button("Aplicar Filtros")
-            st.write('----')
-            # Query inicial sem filtros
+        if "aplicar_filtros" not in st.session_state:
+            st.session_state["aplicar_filtros"] = False
+
+        if "remover_filtros" not in st.session_state:
+            st.session_state["remover_filtros"] = False
+
+        def aplicar_filtros_callback():
+            st.session_state["aplicar_filtros"] = True
+
+        def remover_filtros_callback():
+            st.session_state["remover_filtros"] = True
+
+        col_aplicar, col_remover = st.columns(2)
+        with col_aplicar:
+            st.button("Aplicar Filtros", on_click=aplicar_filtros_callback)
+        with col_remover:
+            st.button("Remover Filtros", on_click=remover_filtros_callback)
+
+        query = {}
+
+        if st.session_state["aplicar_filtros"]:
+            if filtro_razao_social:
+                query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
+            if filtro_cnpj:
+                query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}
+            if filtro_cidade:
+                query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
+            if filtro_estado:
+                query["estado"] = filtro_estado.upper()
+            if filtro_tamanho:
+                query["tamanho_empresa"] = {"$in": filtro_tamanho}
+            if filtro_vendedor and filtro_vendedor != "Todos":
+                query["usuario"] = filtro_vendedor
+
+            st.session_state["aplicar_filtros"] = False
+
+        if st.session_state["remover_filtros"]:
             query = {}
+            st.session_state["remover_filtros"] = False
 
-            # Adicionar condições de filtro à query
-            if aplicar_filtros:
-                if filtro_razao_social:
-                    query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_cnpj:
-                    query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_cidade:
-                    query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}  # Busca parcial (case insensitive)
-                if filtro_estado:
-                    query["estado"] = filtro_estado.upper()  # Igualdade exata para estado
-                if filtro_tamanho:
-                    query["tamanho_empresa"] = {"$in": filtro_tamanho}  # Filtro múltiplo para tamanhos
-                if filtro_vendedor and filtro_vendedor != "Todos":
-                    query["usuario"] = filtro_vendedor  # Filtrar pelo vendedor selecionado
+        empresas_filtradas = list(
+            collection_empresas.find(
+                query,
+                {
+                    "_id": 0,
+                    "razao_social": 1,
+                    "cnpj": 1,
+                    "cidade": 1,
+                    "estado": 1,
+                    "pais": 1,
+                    "tamanho_empresa": 1,
+                    "usuario": 1,
+                },
+            )
+        )
 
-            # Buscar as empresas no banco de dados com os filtros aplicados
-            empresas_filtradas = list(collection_empresas.find(query, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
+        if empresas_filtradas:
+            import pandas as pd
 
-            if empresas_filtradas:
-                import pandas as pd
+            df_empresas = pd.DataFrame(empresas_filtradas)
+            df_empresas = df_empresas.rename(
+                columns={
+                    "razao_social": "Razão Social",
+                    "cnpj": "CNPJ",
+                    "cidade": "Cidade",
+                    "estado": "UF",
+                    "pais": "País",
+                    "tamanho_empresa": "Tamanho",
+                    "usuario": "Vendedor",
+                }
+            )
+            st.dataframe(df_empresas, use_container_width=True)
+        else:
+            st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
-                # Converter para DataFrame
-                df_empresas = pd.DataFrame(empresas_filtradas)
+    # -------------------
+    # Aba: Editar Empresa
+    # -------------------
+    with tab1_2:
+        st.header("Editar Empresa")
+        st.info("Selecione uma empresa para editar as informações cadastradas.")
+        st.write("---")
 
-                # Renomear as colunas
-                df_empresas = df_empresas.rename(
-                    columns={
-                        "razao_social": "Razão Social",
-                        "cnpj": "CNPJ",
-                        "cidade": "Cidade",
-                        "estado": "UF",
-                        "pais": "País",
-                        "tamanho_empresa": "Tamanho",
-                        "usuario": "Vendedor"
-                    }
-                )
+        empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
 
-                # Exibir a tabela
-                st.dataframe(df_empresas, use_container_width=True)
-            else:
-                st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+        if not empresas:
+            st.warning("Nenhuma empresa cadastrada por você foi encontrada. Cadastre uma empresa antes de tentar editar.")
+        else:
+            empresa_selecionada = st.selectbox("Selecione a Empresa para Editar", options=opcoes_empresas, key="empresa_editar")
 
-        # -------------------
-        # Aba: Editar Empresa
-        # -------------------
-        with tab1_2:  # Presumindo que este será o próximo tab após "Cadastrar Empresa"
-            st.header("Editar Empresa")
-            st.info("Selecione uma empresa para editar as informações cadastradas.")
-            st.write("---")
-            
-            # Obter lista de empresas cadastradas pelo usuário logado
-            empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
-            opcoes_empresas = [f"{e['razao_social']} (CNPJ: {e['cnpj']})" for e in empresas]
+            if empresa_selecionada:
+                cnpj_editar = empresa_selecionada.split("CNPJ: ")[-1].strip(")")
+                empresa_dados = collection_empresas.find_one({"cnpj": cnpj_editar}, {"_id": 0})
 
-            if not empresas:
-                st.warning("Nenhuma empresa cadastrada por você foi encontrada. Cadastre uma empresa antes de tentar editar.")
-            else:
-                # Selecionar empresa para edição
-                empresa_selecionada = st.selectbox("Selecione a Empresa para Editar", options=opcoes_empresas, key="empresa_editar")
-                
-                if empresa_selecionada:
-                    # Extrair CNPJ da empresa selecionada
-                    cnpj_editar = empresa_selecionada.split("CNPJ: ")[-1].strip(")")
-                    
-                    # Obter os dados da empresa selecionada
-                    empresa_dados = collection_empresas.find_one({"cnpj": cnpj_editar}, {"_id": 0})
-                    
-                    if empresa_dados:
-                        # Formulário de edição
-                        with st.form(key="form_editar_empresa"):
-                            # Linha 1: Razão Social e CNPJ
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                razao_social = st.text_input("Razão Social", value=empresa_dados.get("razao_social", ""), key="edit_razao_social")
-                            with col2:
-                                cnpj = st.text_input("CNPJ", value=empresa_dados.get("cnpj", ""), max_chars=18, disabled=True, key="edit_cnpj")
+                if empresa_dados:
+                    with st.form(key="form_editar_empresa"):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            razao_social = st.text_input("Razão Social", value=empresa_dados.get("razao_social", ""), key="edit_razao_social")
+                        with col2:
+                            cnpj = st.text_input("CNPJ", value=empresa_dados.get("cnpj", ""), disabled=True, key="edit_cnpj")
 
-                            # Linha 2: Rua e Bairro
-                            col3, col4 = st.columns(2)
-                            with col3:
-                                rua = st.text_input("Rua", value=empresa_dados.get("rua", ""), key="edit_rua")
-                            with col4:
-                                bairro = st.text_input("Bairro", value=empresa_dados.get("bairro", ""), key="edit_bairro")
+                        col3, col4 = st.columns(2)
+                        with col3:
+                            rua = st.text_input("Rua", value=empresa_dados.get("rua", ""), key="edit_rua")
+                        with col4:
+                            bairro = st.text_input("Bairro", value=empresa_dados.get("bairro", ""), key="edit_bairro")
 
-                            # Linha 3: Cidade, Estado e CEP
-                            col5, col6, col7 = st.columns(3)
-                            with col5:
-                                cidade = st.text_input("Cidade", value=empresa_dados.get("cidade", ""), key="edit_cidade")
-                            with col6:
-                                estado = st.text_input("Estado", value=empresa_dados.get("estado", ""), max_chars=2, key="edit_estado")
-                            with col7:
-                                cep = st.text_input("CEP", value=empresa_dados.get("cep", ""), max_chars=10, key="edit_cep")
+                        col5, col6, col7 = st.columns(3)
+                        with col5:
+                            cidade = st.text_input("Cidade", value=empresa_dados.get("cidade", ""), key="edit_cidade")
+                        with col6:
+                            estado = st.text_input("Estado", value=empresa_dados.get("estado", ""), max_chars=2, key="edit_estado")
+                        with col7:
+                            cep = st.text_input("CEP", value=empresa_dados.get("cep", ""), max_chars=10, key="edit_cep")
 
-                            # Linha 4: Telefone e Site
-                            col8, col9 = st.columns(2)
-                            with col8:
-                                fone = st.text_input("Telefone", value=empresa_dados.get("fone", ""), key="edit_fone")
-                            with col9:
-                                site = st.text_input("Site", value=empresa_dados.get("site", ""), key="edit_site")
+                        col8, col9 = st.columns(2)
+                        with col8:
+                            fone = st.text_input("Telefone", value=empresa_dados.get("fone", ""), key="edit_fone")
+                        with col9:
+                            site = st.text_input("Site", value=empresa_dados.get("site", ""), key="edit_site")
 
-                            # Linha 5: Inscrição Estadual e Setor
-                            col10, col11 = st.columns(2)
-                            with col10:
-                                insc_estadual = st.text_input("Inscrição Estadual", value=empresa_dados.get("insc_estadual", ""), key="edit_insc_estadual")
-                            with col11:
-                                setor = st.selectbox(
-                                    "Setor",
-                                    ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                                    index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa_dados.get("setor", "Comercial")),
-                                    key="edit_setor"
-                                )
+                        col10, col11 = st.columns(2)
+                        with col10:
+                            insc_estadual = st.text_input("Inscrição Estadual", value=empresa_dados.get("insc_estadual", ""), key="edit_insc_estadual")
+                        with col11:
+                            setor = st.selectbox(
+                                "Setor",
+                                ["Comercial", "Residencial", "Residencial MCMV", "Industrial"],
+                                index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa_dados.get("setor", "Comercial")),
+                                key="edit_setor"
+                            )
 
-                            # Linha 6: Tamanho da Empresa
-                            col12 = st.columns(1)
-                            with col12[0]:
-                                tamanho_empresa = st.selectbox(
-                                    "Tamanho da Empresa",
-                                    ["Pequena", "Média", "Grande"],
-                                    index=["Pequena", "Média", "Grande"].index(empresa_dados.get("tamanho_empresa", "Pequena")),
-                                    key="edit_tamanho_empresa"
-                                )
+                        col12 = st.columns(1)
+                        with col12[0]:
+                            tamanho_empresa = st.selectbox(
+                                "Tamanho da Empresa",
+                                ["Pequena", "Média", "Grande"],
+                                index=["Pequena", "Média", "Grande"].index(empresa_dados.get("tamanho_empresa", "Pequena")),
+                                key="edit_tamanho_empresa"
+                            )
 
-                            # Botão de submissão
-                            submit_editar = st.form_submit_button("Salvar Alterações")
+                        submit_editar = st.form_submit_button("Salvar Alterações")
 
-                            if submit_editar:
-                                # Atualizar os dados no banco de dados
-                                document_update = {
-                                    "razao_social": razao_social,
-                                    "rua": rua,
-                                    "cep": cep,
-                                    "bairro": bairro,
-                                    "cidade": cidade,
-                                    "estado": estado,
-                                    "site": site,
-                                    "fone": fone,
-                                    "insc_estadual": insc_estadual,
-                                    "setor": setor,
-                                    "tamanho_empresa": tamanho_empresa,
-                                }
-                                collection_empresas.update_one({"cnpj": cnpj_editar}, {"$set": document_update})
-                                st.success("Empresa atualizada com sucesso!")
-
-
+                        if submit_editar:
+                            document_update = {
+                                "razao_social": razao_social,
+                                "rua": rua,
+                                "cep": cep,
+                                "bairro": bairro,
+                                "cidade": cidade,
+                                "estado": estado,
+                                "site": site,
+                                "fone": fone,
+                                "insc_estadual": insc_estadual,
+                                "setor": setor,
+                                "tamanho_empresa": tamanho_empresa,
+                            }
+                            collection_empresas.update_one({"cnpj": cnpj_editar}, {"$set": document_update})
+                            st.success("Empresa atualizada com sucesso!")
 
         # -------------------
         # Aba: Cadastrar Empresa
