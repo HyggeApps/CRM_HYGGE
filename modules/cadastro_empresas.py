@@ -28,10 +28,10 @@ def gerenciamento_empresas(user):
     # Aba: Exibir Empresas com Filtros
     # -------------------
     with tab1:
+        
         st.header("Empresas cadastradas na base de dados da HYGGE")
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
-
         # Obter a lista de vendedores
         vendedores = list(collection_empresas.distinct("usuario"))  # Buscar todos os vendedores únicos
         vendedores = [v for v in vendedores if v]  # Remover valores vazios ou nulos
@@ -62,7 +62,6 @@ def gerenciamento_empresas(user):
         # Botão para aplicar filtros
         aplicar_filtros = st.button("Aplicar Filtros")
         st.write('----')
-
         # Query inicial sem filtros
         query = {}
 
@@ -82,7 +81,7 @@ def gerenciamento_empresas(user):
                 query["usuario"] = filtro_vendedor  # Filtrar pelo vendedor selecionado
 
         # Buscar as empresas no banco de dados com os filtros aplicados
-        empresas_filtradas = list(collection_empresas.find(query, {"_id": 0}))
+        empresas_filtradas = list(collection_empresas.find(query, {"_id": 0, "razao_social": 1, "cnpj": 1, "cidade": 1, "estado": 1, "pais": 1, "tamanho_empresa": 1, "usuario": 1}))
 
         if empresas_filtradas:
             import pandas as pd
@@ -90,13 +89,7 @@ def gerenciamento_empresas(user):
             # Converter para DataFrame
             df_empresas = pd.DataFrame(empresas_filtradas)
 
-            # Adicionar links clicáveis no nome da empresa
-            def make_clickable(name, cnpj):
-                return f'<a href="/?empresa={cnpj}" target="_self">{name}</a>'
-
-            df_empresas["Razão Social"] = df_empresas.apply(
-                lambda x: make_clickable(x["razao_social"], x["cnpj"]), axis=1
-            )
+            # Renomear as colunas
             df_empresas = df_empresas.rename(
                 columns={
                     "razao_social": "Razão Social",
@@ -105,34 +98,14 @@ def gerenciamento_empresas(user):
                     "estado": "UF",
                     "pais": "País",
                     "tamanho_empresa": "Tamanho",
-                    "usuario": "Vendedor",
+                    "usuario": "Vendedor"
                 }
             )
 
-            # Exibir a tabela com links clicáveis
-            st.markdown(
-                df_empresas.to_html(escape=False, index=False), unsafe_allow_html=True
-            )
+            # Exibir a tabela
+            st.dataframe(df_empresas, use_container_width=True)
         else:
             st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
-    # -------------------
-    # Detalhes da Empresa
-    # -------------------
-    # Verificar se uma empresa foi selecionada via link
-    if "empresa" in st.experimental_get_query_params():
-        cnpj_selecionado = st.experimental_get_query_params()["empresa"][0]
-
-        # Buscar os detalhes da empresa no banco de dados
-        empresa_detalhes = collection_empresas.find_one({"cnpj": cnpj_selecionado}, {"_id": 0})
-
-        if empresa_detalhes:
-            st.header(f"Detalhes da Empresa: {empresa_detalhes['razao_social']}")
-            st.write("---")
-            for key, value in empresa_detalhes.items():
-                st.write(f"**{key.capitalize()}**: {value}")
-        else:
-            st.warning("Empresa não encontrada.")
 
     # -------------------
     # Aba: Cadastrar Empresa
