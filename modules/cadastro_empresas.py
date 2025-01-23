@@ -69,14 +69,8 @@ def gerenciamento_empresas(user):
         def aplicar_filtros_callback():
             st.session_state["aplicar_filtros"] = True
 
-        def remover_filtros_callback():
-            st.session_state["remover_filtros"] = True
 
-        col_aplicar, col_remover = st.columns(2)
-        with col_aplicar:
-            st.button("Aplicar Filtros", on_click=aplicar_filtros_callback)
-        with col_remover:
-            st.button("Remover Filtros", on_click=remover_filtros_callback)
+        st.button("Aplicar Filtros", on_click=aplicar_filtros_callback)
 
         query = {}
 
