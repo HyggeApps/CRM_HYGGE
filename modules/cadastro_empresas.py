@@ -21,8 +21,6 @@ def gerenciamento_empresas(user):
     collection_usuarios = get_collection("usuarios")
     collection_subempresas = get_collection("subempresas")
 
-    # Tabs para gerenciamento
-    tab1, tab2 = st.tabs(["Empresas", "Contatos"])
     tab1_1, tab1_2, tab1_3, tab1_4, tab1_5, tab1_6 = st.tabs([
         "Empresas cadastradas", "Editar empresa", "Cadastrar empresa", "Remover empresa", "Cadastrar sub-empresa", "Remover sub-empresa"
     ])
