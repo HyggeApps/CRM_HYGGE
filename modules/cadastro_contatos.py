@@ -123,44 +123,45 @@ def gerenciamento_contatos(user):
         entidades = [{"nome": e["razao_social"], "cnpj": e["cnpj"], "tipo": "Empresa"} for e in empresas]
         entidades += [{"nome": s["razao_social"], "cnpj": s["cnpj"], "tipo": "SubEmpresa"} for s in subempresas]
 
-        opcoes_entidades = [f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" for e in entidades]
-
+        opcoes_entidades = ['']+[f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" for e in entidades]
+        
         if not entidades:
             st.warning("Nenhuma empresa ou subempresa encontrada. Cadastre uma empresa ou subempresa antes de adicionar contatos.")
         else:
-            with st.form(key="form_cadastro_contato"):
-                nome = st.text_input("Nome do Contato", key="input_nome_contato")
-                sobrenome = st.text_input("Sobrenome do Contato", key="input_sobrenome_contato")
-                email = st.text_input("Email", key="input_email_contato")
-                fone = st.text_input("Telefone", key="input_fone_contato")
-                linkedin = st.text_input("LinkedIn", key="input_linkedin_contato")
-                setor = st.text_input("Setor", key="input_setor_contato")
-                empresa = st.selectbox("Empresa ou SubEmpresa Associada", options=opcoes_entidades, key="select_empresa_contato")
+            empresa = st.selectbox("Empresa ou SubEmpresa Associada", options=opcoes_entidades, key="select_empresa_contato")
+            if empresa != '':
+                with st.form(key="form_cadastro_contato"):
+                    nome = st.text_input("Nome do Contato", key="input_nome_contato")
+                    sobrenome = st.text_input("Sobrenome do Contato", key="input_sobrenome_contato")
+                    email = st.text_input("Email", key="input_email_contato")
+                    fone = st.text_input("Telefone", key="input_fone_contato")
+                    linkedin = st.text_input("LinkedIn", key="input_linkedin_contato")
+                    setor = st.text_input("Setor", key="input_setor_contato")
 
-                submit = st.form_submit_button("Cadastrar")
+                    submit = st.form_submit_button("Cadastrar")
 
-                if submit:
-                    if nome and email and empresa:
-                        # Obter a entidade selecionada (empresa ou subempresa)
-                        entidade_selecionada = next((e for e in entidades if f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" == empresa), None)
-                        if entidade_selecionada:
-                            # Criar o documento do contato
-                            document = {
-                                "nome": nome,
-                                "sobrenome": sobrenome,
-                                "email": email,
-                                "fone": fone,
-                                "linkedin": linkedin,
-                                "setor": setor,
-                                "empresa": entidade_selecionada["cnpj"],  # Associar ao CNPJ da entidade
-                                "tipo_empresa": entidade_selecionada["tipo"],  # Indicar se é empresa ou subempresa
-                            }
-                            collection_contatos.insert_one(document)
-                            st.success("Contato cadastrado com sucesso!")
+                    if submit:
+                        if nome and email and empresa:
+                            # Obter a entidade selecionada (empresa ou subempresa)
+                            entidade_selecionada = next((e for e in entidades if f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" == empresa), None)
+                            if entidade_selecionada:
+                                # Criar o documento do contato
+                                document = {
+                                    "nome": nome,
+                                    "sobrenome": sobrenome,
+                                    "email": email,
+                                    "fone": fone,
+                                    "linkedin": linkedin,
+                                    "setor": setor,
+                                    "empresa": entidade_selecionada["cnpj"],  # Associar ao CNPJ da entidade
+                                    "tipo_empresa": entidade_selecionada["tipo"],  # Indicar se é empresa ou subempresa
+                                }
+                                collection_contatos.insert_one(document)
+                                st.success("Contato cadastrado com sucesso!")
+                            else:
+                                st.error("Erro ao localizar a empresa ou subempresa selecionada. Por favor, tente novamente.")
                         else:
-                            st.error("Erro ao localizar a empresa ou subempresa selecionada. Por favor, tente novamente.")
-                    else:
-                        st.error("Preencha todos os campos obrigatórios (Nome, Email, Empresa/SubEmpresa).")
+                            st.error("Preencha todos os campos obrigatórios (Nome, Email, Empresa/SubEmpresa).")
 
     # Aba: Remover Contato
     with tab4:
