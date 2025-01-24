@@ -33,9 +33,11 @@ def gerenciamento_empresas(user):
         st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
         st.write('----')
 
+        # Obter lista de vendedores
         vendedores = list(collection_empresas.distinct("usuario"))
         vendedores = [v for v in vendedores if v]
 
+        # Filtros
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
             filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
@@ -58,40 +60,22 @@ def gerenciamento_empresas(user):
                 index=0,
             )
 
-        if "aplicar_filtros" not in st.session_state:
-            st.session_state["aplicar_filtros"] = False
-
-        if "remover_filtros" not in st.session_state:
-            st.session_state["remover_filtros"] = False
-
-        def aplicar_filtros_callback():
-            st.session_state["aplicar_filtros"] = True
-
-
-        st.button("Aplicar Filtros", on_click=aplicar_filtros_callback)
-
+        # Construir query de filtro
         query = {}
+        if filtro_razao_social:
+            query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
+        if filtro_cnpj:
+            query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}
+        if filtro_cidade:
+            query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
+        if filtro_estado:
+            query["estado"] = filtro_estado.upper()
+        if filtro_tamanho:
+            query["tamanho_empresa"] = {"$in": filtro_tamanho}
+        if filtro_vendedor and filtro_vendedor != "Todos":
+            query["usuario"] = filtro_vendedor
 
-        if st.session_state["aplicar_filtros"]:
-            if filtro_razao_social:
-                query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
-            if filtro_cnpj:
-                query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}
-            if filtro_cidade:
-                query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
-            if filtro_estado:
-                query["estado"] = filtro_estado.upper()
-            if filtro_tamanho:
-                query["tamanho_empresa"] = {"$in": filtro_tamanho}
-            if filtro_vendedor and filtro_vendedor != "Todos":
-                query["usuario"] = filtro_vendedor
-
-            st.session_state["aplicar_filtros"] = False
-
-        if st.session_state["remover_filtros"]:
-            query = {}
-            st.session_state["remover_filtros"] = False
-
+        # Buscar empresas no banco de dados com os filtros aplicados
         empresas_filtradas = list(
             collection_empresas.find(
                 query,
@@ -108,6 +92,7 @@ def gerenciamento_empresas(user):
             )
         )
 
+        # Exibir tabela ou mensagem de alerta
         if empresas_filtradas:
             import pandas as pd
 
