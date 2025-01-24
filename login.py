@@ -170,14 +170,16 @@ if st.session_state['authentication_status']:
             # Menu no sidebar para Usuário
 
             usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            user_menu = st.sidebar.radio("**Selecione uma opção abaixo:**", ["Home","Tarefas","Cadastros", "Leads", "Oportunidades"], key="user_menu")
+            user_menu = st.sidebar.radio("**Selecione uma opção abaixo:**", ["Home","Tarefas","Empresas","Contatos", "Negócios","Orçamentos"], key="user_menu")
 
             if user_menu == "Home":
                 st.header("Dashboard HYGGE")
                 st.warning("Em desenvolvimento...")
             
-            elif user_menu == "Cadastros":
+            elif user_menu == "Empresas":
                 cadastro_empresas.gerenciamento_empresas(usuario_ativo)
+            elif user_menu == "Contatos":
+                cadastro_contatos.gerenciamento_contatos()
             elif user_menu == "Tarefas":
                 st.warning("Em desenvolvimento...")
             elif user_menu == "Leads":
