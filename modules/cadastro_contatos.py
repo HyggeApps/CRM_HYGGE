@@ -18,20 +18,56 @@ def gerenciamento_contatos(user):
         st.write("---")
 
         # Obter CNPJs das empresas e subempresas cadastradas pelo usuário
-        empresas_cadastradas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "cnpj": 1}))
-        subempresas_cadastradas = list(collection_subempresas.find({"usuario": user}, {"_id": 0, "cnpj": 1}))
+        empresas_cadastradas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "cnpj": 1, "razao_social": 1}))
+        subempresas_cadastradas = list(collection_subempresas.find({"usuario": user}, {"_id": 0, "cnpj": 1, "razao_social": 1}))
 
         # Combinar CNPJs das empresas e subempresas
-        cnpjs_usuario = [e["cnpj"] for e in empresas_cadastradas] + [s["cnpj"] for s in subempresas_cadastradas]
+        entidades_usuario = empresas_cadastradas + subempresas_cadastradas
+        cnpjs_usuario = [e["cnpj"] for e in entidades_usuario]
 
-        # Filtrar contatos vinculados aos CNPJs do usuário
-        contatos_filtrados = list(collection_contatos.find({"empresa": {"$in": cnpjs_usuario}}, {"_id": 0}))
+        # Mapear CNPJ para Nome da Entidade
+        cnpj_para_nome = {e["cnpj"]: e["razao_social"] for e in entidades_usuario}
+
+        # Adicionar filtros
+        col1, col2, col3 = st.columns([2, 2, 2])
+        with col1:
+            filtro_nome = st.text_input("Nome ou Sobrenome do Contato", placeholder="Digite parte do nome")
+        with col2:
+            filtro_email = st.text_input("Email", placeholder="Digite parte do email")
+        with col3:
+            filtro_entidade = st.selectbox(
+                "Filtrar por Empresa/SubEmpresa",
+                options=["Todos"] + [cnpj_para_nome[cnpj] for cnpj in cnpjs_usuario],
+            )
+
+        # Construir query de filtro
+        query = {"empresa": {"$in": cnpjs_usuario}}
+
+        if filtro_nome:
+            query["$or"] = [
+                {"nome": {"$regex": filtro_nome, "$options": "i"}},
+                {"sobrenome": {"$regex": filtro_nome, "$options": "i"}},
+            ]
+        if filtro_email:
+            query["email"] = {"$regex": filtro_email, "$options": "i"}
+        if filtro_entidade and filtro_entidade != "Todos":
+            cnpj_filtrado = next((cnpj for cnpj, nome in cnpj_para_nome.items() if nome == filtro_entidade), None)
+            if cnpj_filtrado:
+                query["empresa"] = cnpj_filtrado
+
+        # Buscar contatos no banco de dados com os filtros aplicados
+        contatos_filtrados = list(collection_contatos.find(query, {"_id": 0}))
 
         if contatos_filtrados:
             import pandas as pd
 
             # Converter para DataFrame
             df_contatos = pd.DataFrame(contatos_filtrados)
+
+            # Adicionar coluna com nomes das entidades
+            df_contatos["Nome da Entidade"] = df_contatos["empresa"].map(cnpj_para_nome)
+
+            # Renomear as colunas para exibição
             df_contatos = df_contatos.rename(
                 columns={
                     "nome": "Nome",
@@ -44,6 +80,20 @@ def gerenciamento_contatos(user):
                     "tipo_empresa": "Tipo de Entidade",
                 }
             )
+
+            # Reorganizar colunas para exibição
+            colunas_ordem = [
+                "Nome",
+                "Sobrenome",
+                "Email",
+                "Telefone",
+                "LinkedIn",
+                "Setor",
+                "Nome da Entidade",
+                "Tipo de Entidade",
+                "CNPJ Vinculado",
+            ]
+            df_contatos = df_contatos[colunas_ordem]
 
             # Exibir tabela de contatos
             st.dataframe(df_contatos, use_container_width=True)
