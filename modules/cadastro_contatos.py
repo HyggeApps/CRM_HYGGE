@@ -113,18 +113,17 @@ def gerenciamento_contatos(user):
 
     # Aba: Cadastrar Contato
     with tab3:
-        st.write(1)
         st.header("Cadastrar Contato")
-        # Obter empresas e subempresas cadastradas
-        empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
-        subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        # Obter empresas e subempresas cadastradas pelo usuário logado
+        empresas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        subempresas = list(collection_subempresas.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
 
         # Combinar empresas e subempresas para o selectbox
         entidades = [{"nome": e["razao_social"], "cnpj": e["cnpj"], "tipo": "Empresa"} for e in empresas]
         entidades += [{"nome": s["razao_social"], "cnpj": s["cnpj"], "tipo": "SubEmpresa"} for s in subempresas]
 
-        opcoes_entidades = ['']+[f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" for e in entidades]
-        
+        opcoes_entidades = [''] + [f"{e['nome']} (CNPJ: {e['cnpj']}) [{e['tipo']}]" for e in entidades]
+
         if not entidades:
             st.warning("Nenhuma empresa ou subempresa encontrada. Cadastre uma empresa ou subempresa antes de adicionar contatos.")
         else:
