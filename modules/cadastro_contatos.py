@@ -7,7 +7,7 @@ def gerenciamento_contatos(user):
     collection_subempresas = get_collection("subempresas")  # Coleção de SubEmpresas
 
     # Abas para Gerenciamento de Contatos
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Contatos cadastrados", "Editar contato", "Cadastrar contato", "Remover contato"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Contatos cadastrados", "Editar contato", "Cadastrar contato", "Remover contato"])
 
     # -------------------
     # Aba: Exibir Contatos
