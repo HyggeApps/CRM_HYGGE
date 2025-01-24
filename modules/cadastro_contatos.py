@@ -179,19 +179,3 @@ def gerenciamento_contatos(user):
                         st.error(f"Nenhum contato encontrado com o Email '{remove_email}'.")
                 else:
                     st.error("Por favor, insira o Email do contato para remover.")
-
-    # Aba: Exibir Contatos
-    with tab5:
-        st.header("Contatos Cadastrados")
-        if st.button("Carregar Contatos", key="botao_carregar_contatos"):
-            contatos = list(collection_contatos.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
-            if contatos:
-                st.write("Lista de Contatos:")
-                for contato in contatos:
-                    st.write(
-                        f"Nome: {contato['nome']} {contato['sobrenome']}, Email: {contato['email']}, "
-                        f"Telefone: {contato['fone']}, LinkedIn: {contato['linkedin']}, "
-                        f"Setor: {contato['setor']}, Vinculado a: {contato['empresa']} [{contato['tipo_empresa']}]"
-                    )
-            else:
-                st.write("Nenhum contato cadastrado ainda.")
