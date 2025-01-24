@@ -178,7 +178,6 @@ if st.session_state['authentication_status']:
             
             elif user_menu == "Cadastros":
                 cadastro_empresas.gerenciamento_empresas(usuario_ativo)
-                cadastro_contatos.gerenciamento_contatos()
             elif user_menu == "Tarefas":
                 st.warning("Em desenvolvimento...")
             elif user_menu == "Leads":
