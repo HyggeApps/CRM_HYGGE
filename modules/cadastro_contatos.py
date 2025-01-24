@@ -113,6 +113,7 @@ def gerenciamento_contatos(user):
 
     # Aba: Cadastrar Contato
     with tab3:
+        st.write(1)
         st.header("Cadastrar Contato")
         # Obter empresas e subempresas cadastradas
         empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
