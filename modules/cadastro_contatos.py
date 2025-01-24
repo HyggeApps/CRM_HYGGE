@@ -111,11 +111,10 @@ def gerenciamento_contatos(user):
                             collection_contatos.update_one({"email": email_editar}, {"$set": document_update})
                             st.success("Contato atualizado com sucesso!")
 
-
     # Aba: Cadastrar Contato
     with tab3:
         st.header("Cadastrar Contato")
-
+        st.write(1)
         # Obter empresas e subempresas cadastradas
         empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         subempresas = list(collection_subempresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
