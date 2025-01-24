@@ -13,7 +13,7 @@ def gerenciamento_contatos(user):
     # Aba: Exibir Contatos
     # -------------------
     with tab1:
-        st.header("Contatos Vinculados às Empresas/SubEmpresas do Usuário")
+        st.header("Contatos vinculados às empresas/sub-empresas do usuário")
         st.info("Visualize os contatos vinculados às empresas ou subempresas cadastradas por você.")
         st.write("---")
 
