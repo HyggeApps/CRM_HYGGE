@@ -55,6 +55,7 @@ def gerenciamento_contatos(user):
     # -------------------
     with tab2:
         st.header("Editar Contatos")
+        st.write(1)
         st.info("Selecione um contato para editar suas informações.")
         st.write("---")
 
