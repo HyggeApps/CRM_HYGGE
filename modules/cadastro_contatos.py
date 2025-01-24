@@ -1,17 +1,118 @@
 import streamlit as st
 from utils.database import get_collection
 
-def gerenciamento_contatos():
-    st.title("Gerenciamento de Contatos")
+def gerenciamento_contatos(user):
     collection_contatos = get_collection("contatos")
     collection_empresas = get_collection("empresas")  # Coleção de Empresas Matriz
     collection_subempresas = get_collection("subempresas")  # Coleção de SubEmpresas
 
-    # Abas para gerenciar contatos
-    tab1, tab2, tab3 = st.tabs(["Cadastrar Contato", "Remover Contato", "Exibir Contatos"])
+    # Abas para Gerenciamento de Contatos
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Contatos cadastrados", "Editar contato", "Cadastrar contato", "Remover contato"])
+
+    # -------------------
+    # Aba: Exibir Contatos
+    # -------------------
+    with tab1:
+        st.header("Contatos Vinculados às Empresas/SubEmpresas do Usuário")
+        st.info("Visualize os contatos vinculados às empresas ou subempresas cadastradas por você.")
+        st.write("---")
+
+        # Obter CNPJs das empresas e subempresas cadastradas pelo usuário
+        empresas_cadastradas = list(collection_empresas.find({"usuario": user}, {"_id": 0, "cnpj": 1}))
+        subempresas_cadastradas = list(collection_subempresas.find({"usuario": user}, {"_id": 0, "cnpj": 1}))
+
+        # Combinar CNPJs das empresas e subempresas
+        cnpjs_usuario = [e["cnpj"] for e in empresas_cadastradas] + [s["cnpj"] for s in subempresas_cadastradas]
+
+        # Filtrar contatos vinculados aos CNPJs do usuário
+        contatos_filtrados = list(collection_contatos.find({"empresa": {"$in": cnpjs_usuario}}, {"_id": 0}))
+
+        if contatos_filtrados:
+            import pandas as pd
+
+            # Converter para DataFrame
+            df_contatos = pd.DataFrame(contatos_filtrados)
+            df_contatos = df_contatos.rename(
+                columns={
+                    "nome": "Nome",
+                    "sobrenome": "Sobrenome",
+                    "email": "Email",
+                    "fone": "Telefone",
+                    "linkedin": "LinkedIn",
+                    "setor": "Setor",
+                    "empresa": "CNPJ Vinculado",
+                    "tipo_empresa": "Tipo de Entidade",
+                }
+            )
+
+            # Exibir tabela de contatos
+            st.dataframe(df_contatos, use_container_width=True)
+        else:
+            st.warning("Nenhum contato encontrado para as empresas ou subempresas cadastradas por você.")
+
+    # -------------------
+    # Aba: Editar Contatos
+    # -------------------
+    with tab2:
+        st.header("Editar Contatos")
+        st.info("Selecione um contato para editar suas informações.")
+        st.write("---")
+
+        # Filtrar contatos vinculados aos CNPJs do usuário
+        contatos_filtrados = list(collection_contatos.find({"empresa": {"$in": cnpjs_usuario}}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
+
+        # Criar opções para o selectbox
+        opcoes_contatos = [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_filtrados]
+
+        if not contatos_filtrados:
+            st.warning("Nenhum contato disponível para edição.")
+        else:
+            contato_selecionado = st.selectbox("Selecione o Contato para Editar", options=opcoes_contatos, key="contato_editar")
+
+            if contato_selecionado:
+                # Obter email do contato selecionado
+                email_editar = contato_selecionado.split("(")[-1].strip(")")
+
+                # Obter dados do contato
+                contato_dados = collection_contatos.find_one({"email": email_editar}, {"_id": 0})
+
+                if contato_dados:
+                    with st.form(key="form_editar_contato"):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            nome = st.text_input("Nome", value=contato_dados.get("nome", ""), key="edit_nome")
+                        with col2:
+                            sobrenome = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""), key="edit_sobrenome")
+
+                        col3, col4 = st.columns(2)
+                        with col3:
+                            email = st.text_input("Email", value=contato_dados.get("email", ""), disabled=True, key="edit_email")
+                        with col4:
+                            fone = st.text_input("Telefone", value=contato_dados.get("fone", ""), key="edit_fone")
+
+                        col5, col6 = st.columns(2)
+                        with col5:
+                            linkedin = st.text_input("LinkedIn", value=contato_dados.get("linkedin", ""), key="edit_linkedin")
+                        with col6:
+                            setor = st.text_input("Setor", value=contato_dados.get("setor", ""), key="edit_setor")
+
+                        submit_editar = st.form_submit_button("Salvar Alterações")
+
+                        if submit_editar:
+                            # Atualizar os dados no banco de dados
+                            document_update = {
+                                "nome": nome,
+                                "sobrenome": sobrenome,
+                                "fone": fone,
+                                "linkedin": linkedin,
+                                "setor": setor,
+                            }
+                            collection_contatos.update_one({"email": email_editar}, {"$set": document_update})
+                            st.success("Contato atualizado com sucesso!")
+
 
     # Aba: Cadastrar Contato
-    with tab1:
+    with tab3:
         st.header("Cadastrar Contato")
 
         # Obter empresas e subempresas cadastradas
@@ -62,7 +163,7 @@ def gerenciamento_contatos():
                         st.error("Preencha todos os campos obrigatórios (Nome, Email, Empresa/SubEmpresa).")
 
     # Aba: Remover Contato
-    with tab2:
+    with tab4:
         st.header("Remover Contato")
         with st.form(key="form_remover_contato"):
             remove_email = st.text_input("Email do Contato a Remover", key="input_remover_email_contato")
@@ -80,7 +181,7 @@ def gerenciamento_contatos():
                     st.error("Por favor, insira o Email do contato para remover.")
 
     # Aba: Exibir Contatos
-    with tab3:
+    with tab5:
         st.header("Contatos Cadastrados")
         if st.button("Carregar Contatos", key="botao_carregar_contatos"):
             contatos = list(collection_contatos.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
