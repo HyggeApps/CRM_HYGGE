@@ -147,10 +147,11 @@ with st.sidebar:
             
     # Autenticando usuário
     if st.session_state['authentication_status']:
+        usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
         if 'admin' in st.session_state["roles"]:
             # 1. as sidebar menu
             selected = option_menu(
-                "CRM HYGGE - Admin",
+                f"CRM HYGGE - {usuario_ativo} (Admin)",
                 ["Tarefas", "Consultas", "Cadastros", "Usuários", "Produtos", "Templates"],
                 icons=["list-task", "search", "upload", "people", "archive", "file-earmark-text"],
                 menu_icon="cast",
@@ -173,7 +174,8 @@ with st.sidebar:
 
 
 
-if st.session_state['authentication_status']:
+if st.session_state['authentication_status']:    
+    usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     # Título Principal
     st.title("Gerenciador de oportunidades HYGGE")
     st.write('----')
@@ -185,8 +187,6 @@ if st.session_state['authentication_status']:
         #st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.sidebar.write('')
         # Menu no sidebar para Admin
-        
-        usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
 
         if selected == "Tarefas":
             st.header("Dashboard HYGGE")
@@ -200,8 +200,6 @@ if st.session_state['authentication_status']:
         
         st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
         st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
-
-        usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
 
         if selected == "Tarefas":
             st.header("Dashboard HYGGE")
