@@ -156,17 +156,8 @@ with st.sidebar:
                 menu_icon="cast",
                 default_index=1,
                 styles={
-                    "container": {"padding": "5px", "background-color": "#f9f9f9"},  # Estilo do contêiner
-                    "icon": {"color": "#4CAF50", "font-size": "18px"},  # Estilo dos ícones
-                    "nav-link": {
-                        "font-size": "14px",
-                        "text-align": "left",
-                        "margin": "5px",
-                        "padding": "10px",
-                        "color": "#333",
-                        "border-radius": "8px",
-                    },  # Estilo dos links
-                    "nav-link-selected": {"background-color": "#4CAF50", "color": "white"},  # Link selecionado
+                    "nav-link": {"font-size": "12px"},  # Estilo dos links
+                    "nav-link-selected": {"font-size": "12px"},  # Link selecionado
                 },
             )
         else:
