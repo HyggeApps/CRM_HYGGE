@@ -24,6 +24,20 @@ import json
 from utils.database import get_collection
 from streamlit_option_menu import option_menu
 
+
+@st.cache_data
+def read_json_creditos(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        creditos = json.load(file)
+        return creditos
+
+@st.cache_data
+def read_json_pontuacao_creditos(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        pontuacao_creditos = json.load(file)
+        return pontuacao_creditos
+
+
 # Configuração da página
 st.set_page_config(
     page_title='HYGGE - Ambiente de certificação ambiental', layout='wide',
@@ -117,15 +131,21 @@ with st.sidebar:
             
     # Autenticando usuário
     if st.session_state['authentication_status']:
-        # 1. as sidebar menu
-        with st.sidebar:
-            selected = option_menu("CRM HYGGE", ["Home", 'Settings'], 
-                icons=['house', 'gear'], menu_icon="cast", default_index=1)
-            selected
         if 'admin' in st.session_state["roles"]:
+            # 1. as sidebar menu
+            with st.sidebar:
+                selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros'], 
+                icons=['list-task', 'search','upload'], menu_icon="cast", default_index=1)
+
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
         else:
+
+            # 1. as sidebar menu
+            with st.sidebar:
+                selected = option_menu("CRM HYGGE - Vendedor", ["Home", 'Settings'], 
+                icons=['house', 'gear'], menu_icon="cast", default_index=1)
+
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
 
@@ -134,17 +154,7 @@ with st.sidebar:
     elif st.session_state['authentication_status'] is None:
         st.warning('Por favor, entre com o seu usuário e senha.')
 
-@st.cache_data
-def read_json_creditos(path):
-    with open(path, 'r', encoding='utf-8') as file:
-        creditos = json.load(file)
-        return creditos
 
-@st.cache_data
-def read_json_pontuacao_creditos(path):
-    with open(path, 'r', encoding='utf-8') as file:
-        pontuacao_creditos = json.load(file)
-        return pontuacao_creditos
 
 if st.session_state['authentication_status']:
     if 'admin' in st.session_state["roles"]:
