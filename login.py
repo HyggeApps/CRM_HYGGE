@@ -94,6 +94,18 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Add custom CSS for smaller font size
+st.markdown(
+    """
+    <style>
+    .css-1n543e5, .css-qrbaxs { /* Adjust font size in sidebar */
+        font-size: 12px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.sidebar.markdown('------')
 
 # Criar um arquivo temporário com os usuários do MongoDB
