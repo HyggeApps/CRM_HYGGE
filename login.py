@@ -149,9 +149,26 @@ with st.sidebar:
     if st.session_state['authentication_status']:
         if 'admin' in st.session_state["roles"]:
             # 1. as sidebar menu
-            selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros', 'Usuários', 'Produtos', 'Templates'], 
-            icons=['list-task','search','upload','people','archive','file-earmark-text'], menu_icon="cast", default_index=1)
-
+            selected = option_menu(
+                "CRM HYGGE - Admin",
+                ["Tarefas", "Consultas", "Cadastros", "Usuários", "Produtos", "Templates"],
+                icons=["list-task", "search", "upload", "people", "archive", "file-earmark-text"],
+                menu_icon="cast",
+                default_index=1,
+                styles={
+                    "container": {"padding": "5px", "background-color": "#f9f9f9"},  # Estilo do contêiner
+                    "icon": {"color": "#4CAF50", "font-size": "18px"},  # Estilo dos ícones
+                    "nav-link": {
+                        "font-size": "14px",
+                        "text-align": "left",
+                        "margin": "5px",
+                        "padding": "10px",
+                        "color": "#333",
+                        "border-radius": "8px",
+                    },  # Estilo dos links
+                    "nav-link-selected": {"background-color": "#4CAF50", "color": "white"},  # Link selecionado
+                },
+            )
         else:
             selected = option_menu("CRM HYGGE - Vendedor", ["Tarefas", 'Consultas', 'Cadastros'], 
             icons=['list-task','search','upload'], menu_icon="cast", default_index=1)
