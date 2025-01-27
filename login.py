@@ -134,8 +134,8 @@ with st.sidebar:
         if 'admin' in st.session_state["roles"]:
             # 1. as sidebar menu
             with st.sidebar:
-                selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros'], 
-                icons=['list-task', 'search','upload'], menu_icon="cast", default_index=1)
+                selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros', 'Usuários', 'Produtos', 'Templates'], 
+                icons=['list-task','search','upload','people','archive','file-earmark-text'], menu_icon="cast", default_index=1)
 
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
