@@ -156,7 +156,8 @@ with st.sidebar:
                 menu_icon="cast",
                 default_index=1,
                 styles={
-                    "menu-title": {"font-size": "14px"},
+                    "menu-title": {"font-size": "16px",
+                                   "font-weight": "bold"},
                     "nav-link": {"font-size": "12px"},  # Estilo dos links
                     "nav-link-selected": {"font-size": "12px"},  # Link selecionado
                 },
