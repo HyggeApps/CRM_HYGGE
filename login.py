@@ -157,10 +157,10 @@ with st.sidebar:
                 menu_icon="cast",
                 default_index=1,
                 styles={
-                    "menu-title": {"font-size": "16px",
-                                   "font-weight": "bold"},
-                    "nav-link": {"font-size": "12px"},  # Estilo dos links
-                    "nav-link-selected": {"font-size": "12px"},  # Link selecionado
+                    "container": {"background-color": "#3C353F"},  # Background color for the entire menu
+                    "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
+                    "nav-link": {"font-size": "12px"},  # Style for links
+                    "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
                 },
             )
         else:
