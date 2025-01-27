@@ -151,7 +151,7 @@ with st.sidebar:
         if 'admin' in st.session_state["roles"]:
             # 1. as sidebar menu
             selected = option_menu(
-                f"CRM HYGGE - {usuario_ativo} (Admin)",
+                f"CRM HYGGE (Admin)",
                 ["Tarefas", "Consultas", "Cadastros", "Usuários", "Produtos", "Templates"],
                 icons=["list-task", "search", "upload", "people", "archive", "file-earmark-text"],
                 menu_icon="cast",
@@ -164,7 +164,7 @@ with st.sidebar:
                 },
             )
         else:
-            selected = option_menu("CRM HYGGE - Vendedor", ["Tarefas", 'Consultas', 'Cadastros'], 
+            selected = option_menu("CRM HYGGE (Vendedor)", ["Tarefas", 'Consultas', 'Cadastros'], 
             icons=['list-task','search','upload'], menu_icon="cast", default_index=1)
 
     elif st.session_state['authentication_status'] is False:
