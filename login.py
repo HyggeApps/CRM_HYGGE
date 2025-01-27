@@ -22,6 +22,7 @@ from streamlit_authenticator.utilities import (CredentialsError,
                                                UpdateError)
 import json
 from utils.database import get_collection
+from streamlit_option_menu import option_menu
 
 # Configuração da página
 st.set_page_config(
@@ -116,6 +117,11 @@ with st.sidebar:
             
     # Autenticando usuário
     if st.session_state['authentication_status']:
+        # 1. as sidebar menu
+        with st.sidebar:
+            selected = option_menu("CRM HYGGE", ["Home", 'Settings'], 
+                icons=['house', 'gear'], menu_icon="cast", default_index=1)
+            selected
         if 'admin' in st.session_state["roles"]:
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
