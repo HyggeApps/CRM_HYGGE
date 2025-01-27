@@ -185,7 +185,6 @@ if st.session_state['authentication_status']:
         #st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.sidebar.write('')
         # Menu no sidebar para Admin
-        admin_menu = st.sidebar.radio("**Selecione uma opção abaixo:**",["Home", "Usuários", "Produtos", "Templates"],key='admin_menu')
         
         usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
 
