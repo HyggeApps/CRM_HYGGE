@@ -141,10 +141,7 @@ with st.sidebar:
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
         else:
 
-            # 1. as sidebar menu
-            with st.sidebar:
-                selected = option_menu("CRM HYGGE - Vendedor", ["Home", 'Settings'], 
-                icons=['house', 'gear'], menu_icon="cast", default_index=1)
+
 
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
