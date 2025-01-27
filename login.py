@@ -149,6 +149,10 @@ with st.sidebar:
     if st.session_state['authentication_status']:
         usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
         if 'admin' in st.session_state["roles"]:
+            
+            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+            st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+        
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
@@ -164,6 +168,10 @@ with st.sidebar:
                 },
             )
         else:
+            
+            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+            st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+
             selected = option_menu("CRM HYGGE (Vendedor)", ["Tarefas", 'Consultas', 'Cadastros'], 
             icons=['list-task','search','upload'], menu_icon="cast", default_index=1)
 
@@ -181,11 +189,6 @@ if st.session_state['authentication_status']:
     st.write('----')
     if 'admin' in st.session_state["roles"]:
 
-        st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-        st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
-        
-        #st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
-        st.sidebar.write('')
         # Menu no sidebar para Admin
 
         if selected == "Tarefas":
@@ -198,9 +201,6 @@ if st.session_state['authentication_status']:
 
     else:
         
-        st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-        st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
-
         if selected == "Tarefas":
             st.header("Dashboard HYGGE")
             st.warning("Em desenvolvimento...")
