@@ -133,18 +133,12 @@ with st.sidebar:
     if st.session_state['authentication_status']:
         if 'admin' in st.session_state["roles"]:
             # 1. as sidebar menu
-            with st.sidebar:
-                selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros', 'Usuários', 'Produtos', 'Templates'], 
-                icons=['list-task','search','upload','people','archive','file-earmark-text'], menu_icon="cast", default_index=1)
+            selected = option_menu("CRM HYGGE - Admin", ["Tarefas", 'Consultas', 'Cadastros', 'Usuários', 'Produtos', 'Templates'], 
+            icons=['list-task','search','upload','people','archive','file-earmark-text'], menu_icon="cast", default_index=1)
 
-            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-            st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
         else:
-
-
-
-            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-            st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+            selected = option_menu("CRM HYGGE - Vendedor", ["Tarefas", 'Consultas', 'Cadastros'], 
+            icons=['list-task','search','upload'], menu_icon="cast", default_index=1)
 
     elif st.session_state['authentication_status'] is False:
         st.error('Usuário e/ou Senha inválido(s).')
@@ -154,48 +148,40 @@ with st.sidebar:
 
 
 if st.session_state['authentication_status']:
+    # Título Principal
+    st.title("Gerenciador de oportunidades HYGGE")
+    st.write('----')
     if 'admin' in st.session_state["roles"]:
 
-        # Título Principal
-        st.title("Gerenciador de oportunidades HYGGE")
-        st.write('----')
+        st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+        st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+        
         #st.info("Neste ambiente você poderá verifique as suas tarefas e indicadores, bem como cadastrar empresas, contatos, oportunidades e orçamentos.")
         st.sidebar.write('')
-        hierarquia_atividade = st.sidebar.selectbox('**Selecione o tipo de atividade:**', ["Admin", "Usuário"])
+        # Menu no sidebar para Admin
+        admin_menu = st.sidebar.radio("**Selecione uma opção abaixo:**",["Home", "Usuários", "Produtos", "Templates"],key='admin_menu')
+        
+        usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
 
-        if hierarquia_atividade == "Admin":
-            # Menu no sidebar para Admin
-            admin_menu = st.sidebar.radio("**Selecione uma opção abaixo:**",["Home", "Usuários", "Produtos", "Templates"],key='admin_menu')
+        if selected == "Tarefas":
+            st.header("Dashboard HYGGE")
+            st.warning("Em desenvolvimento...")
+        elif selected == "Consultas":
+            cadastro_empresas.gerenciamento_empresas(usuario_ativo, admin=True)
+        elif selected == "Cadastros":
+            cadastro_contatos.gerenciamento_contatos(usuario_ativo,admin=True)
 
-            if admin_menu == "Home":
-                st.header("Dashboard HYGGE")
-                st.warning("Em desenvolvimento...")
-            elif admin_menu == "Usuários":
-                cadastro_usuarios.gerenciamento_usuarios()
-            elif admin_menu == "Produtos":
-                st.header("Cadastro de Produtos")
-                cadastro_produtos.gerenciamento_produtos()
-            elif admin_menu == "Templates":
-                st.header("Cadastro de Templates")
-                cadastro_templates.gerenciamento_templates()
+    else:
+        
+        st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+        st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
 
-        elif hierarquia_atividade == "Usuário":
-            # Menu no sidebar para Usuário
+        usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
 
-            usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-            user_menu = st.sidebar.radio("**Selecione uma opção abaixo:**", ["Home","Tarefas","Empresas","Contatos", "Negócios","Orçamentos"], key="user_menu")
-
-            if user_menu == "Home":
-                st.header("Dashboard HYGGE")
-                st.warning("Em desenvolvimento...")
-            
-            elif user_menu == "Empresas":
-                cadastro_empresas.gerenciamento_empresas(usuario_ativo)
-            elif user_menu == "Contatos":
-                cadastro_contatos.gerenciamento_contatos(usuario_ativo)
-            elif user_menu == "Tarefas":
-                st.warning("Em desenvolvimento...")
-            elif user_menu == "Leads":
-                cadastro_leads.gerenciamento_leads()
-            elif user_menu == "Oportunidades":
-                cadastro_oportunidades.gerenciamento_oportunidades()
+        if selected == "Tarefas":
+            st.header("Dashboard HYGGE")
+            st.warning("Em desenvolvimento...")
+        elif selected == "Consultas":
+            cadastro_empresas.gerenciamento_empresas(usuario_ativo, admin=False)
+        elif selected == "Cadastros":
+            cadastro_contatos.gerenciamento_contatos(usuario_ativo, admin=False)

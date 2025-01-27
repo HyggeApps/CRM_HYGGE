@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.database import get_collection
 
-def gerenciamento_contatos(user):
+def gerenciamento_contatos(user, admin):
     collection_contatos = get_collection("contatos")
     collection_empresas = get_collection("empresas")  # Coleção de Empresas Matriz
     collection_subempresas = get_collection("subempresas")  # Coleção de SubEmpresas

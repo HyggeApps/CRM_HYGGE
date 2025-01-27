@@ -16,7 +16,7 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
-def gerenciamento_empresas(user):
+def gerenciamento_empresas(user, admin):
     collection_empresas = get_collection("empresas")
     collection_usuarios = get_collection("usuarios")
     collection_subempresas = get_collection("subempresas")
