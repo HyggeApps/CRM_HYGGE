@@ -94,12 +94,16 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Add custom CSS for smaller font size
+# Adicionando CSS personalizado para ajustar o tamanho da fonte
 st.markdown(
     """
     <style>
-    .css-1n543e5, .css-qrbaxs { /* Adjust font size in sidebar */
-        font-size: 12px !important;
+    /* Ajustar o tamanho da fonte do menu */
+    .nav-link {
+        font-size: 8px !important; /* Tamanho da fonte desejado */
+    }
+    .nav-link i {
+        font-size: 10px !important; /* Ajustar o tamanho do ícone, se necessário */
     }
     </style>
     """,
