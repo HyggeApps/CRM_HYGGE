@@ -41,8 +41,7 @@ def cadastrar_empresas(user, admin):
         col1, col2 = st.columns(2)
         with col1:
             cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input")
-            if st.button("Buscar Dados do CNPJ", key="buscar_cnpj") and not st.session_state["buscar_cnpj_clicked"]:
-                st.session_state["buscar_cnpj_clicked"] = True
+            if st.button("Buscar Dados do CNPJ", key="buscar_cnpj"):
                 cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
                 if len(cnpj_limpo) == 14:
                     dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
@@ -54,12 +53,10 @@ def cadastrar_empresas(user, admin):
                         st.session_state["dados_cnpj"] = {}
                 else:
                     st.error("CNPJ inválido! Certifique-se de que o CNPJ tem 14 dígitos.")
-                st.session_state["buscar_cnpj_clicked"] = False
 
         with col2:
             cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)", key="cep_input")
-            if st.button("Buscar Dados do CEP", key="buscar_cep") and not st.session_state["buscar_cep_clicked"]:
-                st.session_state["buscar_cep_clicked"] = True
+            if st.button("Buscar Dados do CEP", key="buscar_cep"):
                 cep_limpo = cep_input.replace("-", "").replace(" ", "")
                 if len(cep_limpo) == 8:
                     dados_cep = buscar_dados_cep(cep_limpo)
@@ -71,7 +68,7 @@ def cadastrar_empresas(user, admin):
                         st.session_state["dados_cep"] = {}
                 else:
                     st.error("CEP inválido! Certifique-se de que o CEP tem 8 dígitos.")
-                st.session_state["buscar_cep_clicked"] = False
+
 
     # Formulário principal
     st.subheader("Formulário de cadastro")
