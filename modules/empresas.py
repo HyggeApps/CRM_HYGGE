@@ -290,7 +290,7 @@ def cadastrar_subempresa():
             st.session_state["buscar_cep_sub_clicked"] = False
 
         st.subheader("Busca Automática de CNPJ e CEP")
-        with st.expander("Preencher Dados com CNPJ e CEP"):
+        with st.expander("Preencher Dados com CNPJ e CEP (dois cliques para buscar)"):
             col1, col2 = st.columns(2)
             with col1:
                 cnpj_input = st.text_input("CNPJ da sub-empresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input_sub")
