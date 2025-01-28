@@ -249,7 +249,6 @@ def consultar_empresas():
                 "cnpj": "CNPJ",
                 "cidade": "Cidade",
                 "estado": "UF",
-                "pais": "País",
                 "tamanho_empresa": "Tamanho",
                 "usuario": "Vendedor",
             }
