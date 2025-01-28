@@ -4,7 +4,7 @@ import streamlit_authenticator as stauth
 import streamlit as st
 from modules import (
     cadastro_usuarios,
-    cadastro_empresas,
+    empresas,
     cadastro_produtos,
     cadastro_oportunidades,
     cadastro_templates,
@@ -203,7 +203,7 @@ if st.session_state['authentication_status']:
             cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastrar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
             with cad_empresa: 
                 cad_empresa_matriz, cad_subempresa, cad_contato = st.tabs(['Matriz', 'Sub-empresa', 'Contato'])
-                with cad_empresa_matriz: cadastros.cadastrar_empresas(usuario_ativo, admin=True)
+                with cad_empresa_matriz: empresas.cadastrar_empresas(usuario_ativo, admin=True)
                 with cad_subempresa: st.warning('tela cad subempresa')
                 with cad_contato: st.warning('tela cad contato')
             with cad_oportunidade: st.warning('tela cad negócio')
