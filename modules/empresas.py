@@ -239,6 +239,7 @@ def consultar_empresas():
     )
 
     if empresas_filtradas:
+        import pandas as pd
 
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
