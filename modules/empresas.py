@@ -238,9 +238,7 @@ def consultar_empresas():
         )
     )
 
-    # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
-        import pandas as pd
 
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
@@ -257,9 +255,8 @@ def consultar_empresas():
         # Redefinir o índice para ocultar o índice original
         df_empresas = df_empresas.reset_index(drop=True)
 
-        # Exibir a tabela no Streamlit
-        st.dataframe(df_empresas, use_container_width=True)
-
+        # Usar st.table para não exibir o índice
+        st.table(df_empresas)
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
