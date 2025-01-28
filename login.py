@@ -197,8 +197,7 @@ if st.session_state['authentication_status']:
             st.header("Dashboard HYGGE")
             st.warning("Em desenvolvimento...")
         elif selected == "Consultas":
-            
-            consultas.consultar_empresas()
+            empresas.consultar_empresas()
         elif selected == "Cadastros":
             cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastrar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
             with cad_empresa: 
