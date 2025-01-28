@@ -199,9 +199,9 @@ if st.session_state['authentication_status']:
             st.warning("Em desenvolvimento...")
         elif selected == "Cadastros":
             cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
-            if cad_empresa: cadastros.cadastrar_empresas()
-            elif cad_oportunidade: st.write('---')
-            elif cad_tarefa: st.write('---')
+            with cad_empresa: cadastros.cadastrar_empresas()
+            with cad_oportunidade: st.info('---')
+            with cad_tarefa: st.write('---')
 
     else:
         
