@@ -11,6 +11,7 @@ from modules import (
     cadastro_contatos,
     cadastro_orcamentos,
     cadastro_leads,
+    cadastros
 )
 from utils import functions as funcs
 from streamlit_authenticator.utilities import (CredentialsError,
@@ -195,9 +196,12 @@ if st.session_state['authentication_status']:
             st.header("Dashboard HYGGE")
             st.warning("Em desenvolvimento...")
         elif selected == "Consultas":
-            cadastro_empresas.gerenciamento_empresas(usuario_ativo, admin=True)
+            st.warning("Em desenvolvimento...")
         elif selected == "Cadastros":
-            cadastro_contatos.gerenciamento_contatos(usuario_ativo,admin=True)
+            cad_empresa, cad_oportunidade, cad_tarefa = st.tabs('Cadastar empresa', 'Cadastrar negócio', 'Cadastrar tarefa')
+            if cad_empresa: cadastros.cadastrar_empresas()
+            elif cad_oportunidade: st.write('---')
+            elif cad_tarefa: st.write('---')
 
     else:
         
