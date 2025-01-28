@@ -80,9 +80,9 @@ def cadastrar_empresas(user, admin):
         # Primeira linha: Razão Social e CNPJ
         col1, col2 = st.columns(2)
         with col1:
-            razao_social = st.text_input("Razão Social", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
+            razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
         with col2:
-            cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
+            cnpj = st.text_input("CNPJ *", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
 
         # Segunda linha: Rua e Bairro
         col3, col4 = st.columns(2)
@@ -94,7 +94,7 @@ def cadastrar_empresas(user, admin):
         # Terceira linha: Cidade, Estado e CEP
         col5, col6, col7 = st.columns(3)
         with col5:
-            cidade = st.text_input("Cidade", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
+            cidade = st.text_input("Cidade *", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
         with col6:
             estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
         with col7:
@@ -112,22 +112,39 @@ def cadastrar_empresas(user, admin):
         with col10:
             insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
         with col11:
-            setor = st.selectbox("Setor", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
+            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
 
         # Sexta linha: Tamanho da Empresa
-        col12 = st.columns(1)
-        with col12[0]:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa", ["Pequena", "Média", "Grande"], key="tamanho_empresa")
-
+        col12, col13 = st.columns(2)
+        with col12:
+            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], key="tamanho_empresa")
+        with col13:
+            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
+        
         # Botão de cadastro
         submit = st.form_submit_button("Cadastrar")
 
         if submit:
-            if razao_social and cnpj:
+            # Verifica se os campos obrigatórios foram preenchidos
+            if not razao_social:
+                st.error("O campo 'Nome da Empresa' é obrigatório.")
+            elif not cnpj:
+                st.error("O campo 'CNPJ' é obrigatório.")
+            elif not cidade:
+                st.error("O campo 'Cidade' é obrigatório.")
+            elif not setor:
+                st.error("O campo 'Setor' é obrigatório.")
+            elif not produto_interesse:
+                st.error("O campo 'Produto de Interesse' é obrigatório.")
+            elif not tamanho_empresa:
+                st.error("O campo 'Tamanho da Empresa' é obrigatório.")
+            else:
+                # Verifica se a empresa já está cadastrada
                 existing_company = collection_empresas.find_one({"cnpj": cnpj})
                 if existing_company:
                     st.error("Empresa já cadastrada com este CNPJ!")
                 else:
+                    # Insere os dados na coleção
                     document = {
                         "razao_social": razao_social,
                         "cnpj": cnpj,
@@ -141,12 +158,12 @@ def cadastrar_empresas(user, admin):
                         "insc_estadual": insc_estadual,
                         "setor": setor,
                         "tamanho_empresa": tamanho_empresa,
+                        "produto_interesse": produto_interesse,
                         "usuario": user,
                     }
                     collection_empresas.insert_one(document)
                     st.success("Empresa cadastrada com sucesso!")
-            else:
-                st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ).")
+
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
