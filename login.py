@@ -199,16 +199,10 @@ if st.session_state['authentication_status']:
             st.warning("Em desenvolvimento...")
         elif selected == "Cadastros":
             cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
-            with cad_empresa: cadastros.cadastrar_empresas()
-            with cad_oportunidade: st.info('---')
-            with cad_tarefa: st.write('---')
-
-    else:
-        
-        if selected == "Tarefas":
-            st.header("Dashboard HYGGE")
-            st.warning("Em desenvolvimento...")
-        elif selected == "Consultas":
-            cadastro_empresas.gerenciamento_empresas(usuario_ativo, admin=False)
-        elif selected == "Cadastros":
-            cadastro_contatos.gerenciamento_contatos(usuario_ativo, admin=False)
+            with cad_empresa: 
+                cad_empresa_matriz, cad_subempresa, cad_contato = st.tabs(['Matriz', 'Sub-empresa', 'Contato'])
+                with cad_empresa_matriz: cadastros.cadastrar_empresas()
+                with cad_subempresa: st.warning('tela cad subempresa')
+                with cad_contato: st.warning('tela cad contato')
+            with cad_oportunidade: st.warning('tela cad negócio')
+            with cad_tarefa: st.warning('tela cad tarefa')
