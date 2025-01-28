@@ -11,7 +11,8 @@ from modules import (
     cadastro_contatos,
     cadastro_orcamentos,
     cadastro_leads,
-    cadastros
+    cadastros,
+    consultas
 )
 from utils import functions as funcs
 from streamlit_authenticator.utilities import (CredentialsError,
@@ -197,7 +198,7 @@ if st.session_state['authentication_status']:
             st.warning("Em desenvolvimento...")
         elif selected == "Consultas":
             
-            
+            consultas.consultar_empresas()
         elif selected == "Cadastros":
             cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastrar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
             with cad_empresa: 
