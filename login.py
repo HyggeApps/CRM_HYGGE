@@ -196,9 +196,10 @@ if st.session_state['authentication_status']:
             st.header("Dashboard HYGGE")
             st.warning("Em desenvolvimento...")
         elif selected == "Consultas":
-            st.warning("Em desenvolvimento...")
+            
+            
         elif selected == "Cadastros":
-            cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
+            cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastrar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
             with cad_empresa: 
                 cad_empresa_matriz, cad_subempresa, cad_contato = st.tabs(['Matriz', 'Sub-empresa', 'Contato'])
                 with cad_empresa_matriz: cadastros.cadastrar_empresas()
