@@ -36,8 +36,8 @@ def cadastrar_empresas(user, admin):
         st.session_state["buscar_cep_clicked"] = False
 
     # Buscar CNPJ antes de exibir o formulário
-    st.subheader("Busca Automática de CNPJ e CEP")
-    with st.expander("Preencher Dados com CNPJ e CEP"):
+    st.subheader("Busca Automática de CNPJ e CEP (dois cliques)")
+    with st.expander("Preencher Dados com CNPJ e CEP (dois cliques)"):
         col1, col2 = st.columns(2)
         with col1:
             cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input")
