@@ -16,7 +16,7 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
-def cadastrar_empresas(user):
+def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
     # -------------------
     # Aba: Cadastrar Empresa
