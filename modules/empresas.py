@@ -196,7 +196,7 @@ def consultar_empresas():
     with col5:
         filtro_tamanho = st.multiselect(
             "Tamanho",
-            options=["Pequena", "Média", "Grande"],
+            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
             default=[],
         )
     with col6:
