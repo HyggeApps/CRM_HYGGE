@@ -118,13 +118,9 @@ def cadastrar_empresas(user, admin):
         with col13:
             tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
         
-        # Botões de cadastro e limpar
-        col_submit, col_clear = st.columns(2)
-        with col_submit:
-            submit = st.form_submit_button("Cadastrar")
-
-        with col_clear:
-            clear = st.form_submit_button("Limpar")
+            
+        clear = st.form_submit_button("Limpar")
+        submit = st.form_submit_button("Cadastrar")
 
         if submit:
             # Verifica se os campos obrigatórios foram preenchidos
@@ -167,23 +163,14 @@ def cadastrar_empresas(user, admin):
                     st.success("Empresa cadastrada com sucesso!")
 
         if clear:
-            # Limpar os valores do formulário no st.session_state
-            st.session_state["dados_cnpj"] = {}
-            st.session_state["dados_cep"] = {}
-            st.session_state["cnpj_input"] = ""
-            st.session_state["cep_input"] = ""
-            st.session_state["razao_social"] = ""
-            st.session_state["cnpj"] = ""
-            st.session_state["rua"] = ""
-            st.session_state["bairro"] = ""
-            st.session_state["cidade"] = ""
-            st.session_state["estado"] = ""
-            st.session_state["cep"] = ""
-            st.session_state["fone"] = ""
-            st.session_state["site"] = ""
-            st.session_state["insc_estadual"] = ""
-            st.session_state["setor"] = "Comercial"
-            st.session_state["produto_interesse"] = "NBR Fast"
-            st.session_state["tamanho_empresa"] = "Tier 1"
-            st.info("Formulário limpo com sucesso!")
+            # Limpar os valores de `st.session_state` antes de recarregar os widgets
+            for key in [
+                "dados_cnpj", "dados_cep", "cnpj_input", "cep_input", "razao_social", "cnpj",
+                "rua", "bairro", "cidade", "estado", "cep", "fone", "site",
+                "insc_estadual", "setor", "produto_interesse", "tamanho_empresa"
+            ]:
+                if key in st.session_state:
+                    del st.session_state[key]
+            st.experimental_rerun()
+
 
