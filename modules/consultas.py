@@ -6,6 +6,7 @@ def consultar_empresas():
     st.header("Empresas cadastradas na base de dados da HYGGE")
     st.info("Visualize e filtre as empresas cadastradas na nossa base de dados.")
     st.write('----')
+    st.write(1)
 
     # Obter lista de vendedores
     vendedores = list(collection_empresas.distinct("usuario"))
