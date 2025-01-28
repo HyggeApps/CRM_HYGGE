@@ -267,7 +267,7 @@ def cadastrar_subempresa():
     
     collection_empresas = get_collection("empresas")
     collection_subempresas = get_collection("subempresas")
-    
+
     st.header("Cadastrar sub-empresa na base de dados da HYGGE")
     st.info("Cadastre aqui uma sub-empresa ou variação da empresa matriz.")
     st.write('---')
@@ -336,14 +336,14 @@ def cadastrar_subempresa():
             # Linha 1: Empresa Matriz e Razão Social
             col1, col2 = st.columns(2)
             with col1:
-                empresa_matriz = st.selectbox("Empresa Matriz", options=opcoes_matriz, key="select_empresa_matriz")
+                empresa_matriz = st.selectbox("Empresa Matriz *", options=opcoes_matriz, key="select_empresa_matriz")
             with col2:
-                razao_social = st.text_input("Razão Social da sub-empresa", value=st.session_state["dados_cnpj_sub"].get("nome", ""), key="input_razao_social_subempresa")
+                razao_social = st.text_input("Razão Social da sub-empresa *", value=st.session_state["dados_cnpj_sub"].get("nome", ""), key="input_razao_social_subempresa")
 
             # Linha 2: CNPJ e Telefone
             col3, col4 = st.columns(2)
             with col3:
-                cnpj = st.text_input("CNPJ da sub-empresa", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
+                cnpj = st.text_input("CNPJ da sub-empresa *", value=cnpj_input, max_chars=18, key="input_cnpj_subempresa")
             with col4:
                 fone = st.text_input("Telefone", value=st.session_state["dados_cnpj_sub"].get("telefone", ""), key="input_fone_subempresa")
 
