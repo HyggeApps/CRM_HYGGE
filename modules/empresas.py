@@ -253,6 +253,12 @@ def consultar_empresas():
                 "usuario": "Vendedor",
             }
         )
+
+        # Redefinir o índice para ocultar o índice original
+        df_empresas = df_empresas.reset_index(drop=True)
+
+        # Exibir a tabela no Streamlit
         st.dataframe(df_empresas, use_container_width=True)
+
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
