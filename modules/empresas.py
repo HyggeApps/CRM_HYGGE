@@ -170,8 +170,9 @@ def cadastrar_empresas(user, admin):
                             del st.session_state[key]
 
                     # Recarregar a página sem afetar o login
-                    st.rerun()
                     st.success("Empresa cadastrada com sucesso!")
+                    st.rerun()
+                    
 
         if clear:
             # Lista de chaves a serem resetadas
