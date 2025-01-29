@@ -175,7 +175,6 @@ def cadastrar_empresas(user, admin):
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
-    st.header("Empresas cadastradas na base de dados da HYGGE")
     st.write('----')
 
     # Obter lista de vendedores
