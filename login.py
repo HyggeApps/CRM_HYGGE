@@ -197,11 +197,4 @@ if st.session_state['authentication_status']:
             st.info('Acompanhe aqui suas tarefas e seus números.')
             tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
         elif selected == "Empresas":
-            col1, col2, col3, col4, col5, col6 = st.columns(6)
-            with col1:
-                st.header("Empresas")
-                st.info('Consulte, cadastre e edite suas empresas.')
-            with col2:
-                if st.button('Cadastrar empresa'):
-                    empresas.cadastrar_empresas(usuario_ativo, admin=True)
             empresas.consultar_empresas()
