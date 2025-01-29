@@ -187,7 +187,7 @@ with st.sidebar:
 if st.session_state['authentication_status']:    
     usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     # Título Principal
-    st.title("Gerenciador de oportunidades HYGGE")
+    st.title("CRM HYGGE")
     st.write('----')
     if 'admin' in st.session_state["roles"]:
 
