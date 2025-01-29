@@ -25,8 +25,8 @@ def editar_empresa(user, admin):
     
     empresa = st.session_state["empresa_selecionada"]
 
-    # Se admin for True, pode editar/remover qualquer empresa
-    # Se admin for False, só pode editar/remover as empresas que possui
+    # Se admin for True, pode editar qualquer empresa
+    # Se admin for False, só pode editar as empresas que possui
     eh_proprietario = admin or (user == empresa["Proprietário"])
 
     st.subheader("✏️ Editar Empresa")
@@ -72,35 +72,21 @@ def editar_empresa(user, admin):
                                            index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
                                            disabled=not eh_proprietario)
 
-        col9, col10 = st.columns([0.6, 0.4])  # Botões lado a lado
-        with col9:
-            submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
-        with col10:
-            remover = st.form_submit_button("🗑️ Remover Empresa", disabled=not eh_proprietario)
+        submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
-    # **Processamento de edição**
-    if submit and eh_proprietario:
-        # Atualiza os dados no banco de dados
-        collection_empresas.update_one(
-            {"razao_social": empresa["Nome"]},
-            {"$set": {
-                "razao_social": razao_social,
-                "usuario": novo_usuario,
-                "setor": setor,
-                "produto_interesse": produto_interesse,
-                "tamanho_empresa": tamanho_empresa,
-            }}
-        )
-        st.success("Dados da empresa atualizados com sucesso!")
-        st.rerun()
-
-    # **Processamento de remoção**
-    if remover and eh_proprietario:
-        confirmacao = st.warning(f"Tem certeza que deseja remover a empresa **{empresa['Nome']}**?")
-        if st.button("❌ Confirmar Remoção"):
-            collection_empresas.delete_one({"razao_social": empresa["Nome"]})
-            st.success(f"Empresa **{empresa['Nome']}** removida com sucesso!")
-            st.session_state["empresa_selecionada"] = None  # Limpa a seleção
+        if submit and eh_proprietario:
+            # Atualiza os dados no banco de dados
+            collection_empresas.update_one(
+                {"razao_social": empresa["Nome"]},
+                {"$set": {
+                    "razao_social": razao_social,
+                    "usuario": novo_usuario,
+                    "setor": setor,
+                    "produto_interesse": produto_interesse,
+                    "tamanho_empresa": tamanho_empresa,
+                }}
+            )
+            st.success("Dados da empresa atualizados com sucesso!")
             st.rerun()
 
 
