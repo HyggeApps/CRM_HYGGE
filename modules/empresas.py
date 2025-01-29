@@ -35,10 +35,7 @@ def editar_empresa(user):
 
     # Lista de usuários disponíveis para seleção
     lista_usuarios = list(collection_usuarios.distinct("usuario"))
-    st.write(1,lista_usuarios)
     lista_usuarios.sort()
-
-    st.write(1,lista_usuarios)
 
     with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
