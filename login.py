@@ -80,7 +80,7 @@ st.markdown(
 
     /* Opcional: Ajustar fontes específicas */
     h1 {
-        font-size: 1.75rem !important; /* Tamanho para H1 */
+        font-size: 2.75rem !important; /* Tamanho para H1 */
     }
     h2 {
         font-size: 1.5rem !important; /* Tamanho para H2 */
