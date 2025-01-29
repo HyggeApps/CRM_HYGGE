@@ -171,6 +171,7 @@ def cadastrar_empresas(user, admin):
                     del st.session_state[key]
             st.rerun()
 
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -247,32 +248,36 @@ def consultar_empresas():
             }
         )
 
-        # Criar hyperlinks para abrir detalhes na aba
-        def criar_link(nome):
-            return f'<a href="?empresa={nome}" target="_self">{nome}</a>'
-
-        df_empresas["Nome/Razão Social"] = df_empresas["Nome/Razão Social"].apply(criar_link)
-
-        # Exibir a tabela no Streamlit com HTML ativado
-        st.markdown(df_empresas.to_html(escape=False, index=False), unsafe_allow_html=True)
-
-        # Capturar a empresa selecionada via URL
-        empresa_selecionada = st.query_params.get("empresa")
-
-        if empresa_selecionada:
-            st.session_state["empresa_detalhes"] = empresa_selecionada
+        # Criar uma tabela interativa com botões
+        st.write("### 📋 Lista de Empresas")
+        for index, row in df_empresas.iterrows():
+            col1, col2, col3, col4, col5, col6 = st.columns([3, 2, 2, 1, 1, 2])
+            with col1:
+                if st.button(row["Nome/Razão Social"], key=f"empresa_{index}"):
+                    st.session_state["empresa_selecionada"] = row.to_dict()
+            with col2:
+                st.write(row["CNPJ"])
+            with col3:
+                st.write(row["Cidade"])
+            with col4:
+                st.write(row["UF"])
+            with col5:
+                st.write(row["Tamanho"])
+            with col6:
+                st.write(row["Vendedor"])
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
-# Se houver uma empresa selecionada, exibir os detalhes em uma aba
+# Se houver uma empresa selecionada, exibir os detalhes na outra aba
 def detalhes_empresa():
-    if "empresa_detalhes" in st.session_state:
-        empresa = st.session_state["empresa_detalhes"]
-        st.title(f"Detalhes da {empresa}")
-
-        # Aqui você pode buscar mais informações no banco de dados
-        st.write("📌 Informações detalhadas da empresa...")
+    if "empresa_selecionada" in st.session_state:
+        empresa = st.session_state["empresa_selecionada"]
+        st.title(f"🔍 Detalhes da {empresa['Nome/Razão Social']}")
+        st.write(f"**CNPJ:** {empresa['CNPJ']}")
+        st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
+        st.write(f"**Tamanho:** {empresa['Tamanho']}")
+        st.write(f"**Vendedor:** {empresa['Vendedor']}")
     else:
         st.info("Selecione uma empresa na lista para ver detalhes.")
 
