@@ -195,6 +195,9 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
+import pandas as pd
+import streamlit as st
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -289,8 +292,11 @@ def consultar_empresas():
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # **Determinar se existe alguma empresa selecionada**
+        # **Determinar se existe uma empresa selecionada**
         empresa_atual_selecionada = st.session_state["empresa_selecionada"] is not None
+
+        # Criar um novo dataframe para controle de checkboxes (garante interatividade correta)
+        df_empresas["Visualizar"] = df_empresas["Nome"] == (st.session_state["empresa_selecionada"]["Nome"] if empresa_atual_selecionada else "")
 
         # Criar tabela interativa com `st.data_editor()`, desativando checkboxes quando uma empresa já está selecionada
         edited_df = st.data_editor(
@@ -299,7 +305,6 @@ def consultar_empresas():
                 "Visualizar": st.column_config.CheckboxColumn(
                     "Visualizar",
                     help="Marque para ver detalhes da empresa",
-                    disabled=empresa_atual_selecionada,  # Desativa os checkboxes se já houver uma seleção
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
@@ -307,7 +312,7 @@ def consultar_empresas():
             use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
 
-        # **Garantir que apenas uma empresa esteja selecionada**
+        # **Verificar mudanças na seleção**
         if edited_df["Visualizar"].sum() == 1:
             selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
@@ -360,6 +365,7 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 def cadastrar_subempresa():
     
