@@ -195,7 +195,6 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -361,7 +360,6 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
 
 def cadastrar_subempresa():
     
