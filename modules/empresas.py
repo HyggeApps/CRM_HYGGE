@@ -190,6 +190,7 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -283,6 +284,10 @@ def consultar_empresas():
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
+        # Se uma empresa já estiver selecionada, impedir a seleção de outras
+        if st.session_state["empresa_selecionada"]:
+            df_empresas["Selecionada"] = df_empresas["Nome"] == st.session_state["empresa_selecionada"]["Nome"]
+
         # Criar tabela interativa com `st.data_editor()`
         edited_df = st.data_editor(
             df_empresas,
@@ -297,17 +302,11 @@ def consultar_empresas():
             use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
 
-        # Garantir que apenas uma empresa esteja selecionada
-        if edited_df["Selecionada"].sum() > 1:
-            last_selected_index = edited_df[edited_df["Selecionada"]].index[-1]
-            edited_df["Selecionada"] = False
-            edited_df.at[last_selected_index, "Selecionada"] = True
-
-        # Atualizar `st.session_state` com a empresa selecionada
-        if edited_df["Selecionada"].any():
+        # Atualizar seleção no estado
+        if edited_df["Selecionada"].sum() == 1:
             selected_index = edited_df[edited_df["Selecionada"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
-        else:
+        elif edited_df["Selecionada"].sum() == 0:
             st.session_state["empresa_selecionada"] = None
 
         # Exibir os detalhes da empresa selecionada abaixo da tabela
@@ -321,12 +320,14 @@ def consultar_empresas():
             st.write(f"**Data de Criação:** {empresa['Data de Criação']}")
             st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
             st.write(f"**Tamanho:** {empresa['Tamanho']}")
+            st.write("\n**Para selecionar outra empresa, desmarque esta primeiro.**")
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 
 def cadastrar_subempresa():
