@@ -171,6 +171,10 @@ def cadastrar_empresas(user, admin):
                     del st.session_state[key]
             st.rerun()
 
+
+import pandas as pd
+import streamlit as st
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -247,40 +251,53 @@ def consultar_empresas():
             }
         )
 
-        # Criar uma coluna com links clicáveis para abrir os detalhes
-        df_empresas["Visualizar"] = df_empresas["Nome/Razão Social"].apply(
-            lambda nome: f'<a href="#" onclick="window.location.reload();">{nome}</a>'
-        )
+        # Adicionar coluna de seleção
+        df_empresas["Selecionada"] = False
 
-        # Exibir a tabela no formato interativo
-        st.write("### 📋 Lista de Empresas")
-        st.data_editor(
+        # Inicializar seleção no session_state
+        if "empresa_selecionada" not in st.session_state:
+            st.session_state["empresa_selecionada"] = None
+
+        # Criar tabela interativa com `st.data_editor()`
+        edited_df = st.data_editor(
             df_empresas,
             column_config={
-                "Visualizar": st.column_config.TextColumn(
-                    "🔍 Visualizar",
-                    help="Clique para ver detalhes",
-                    allow_html=True  # Permite renderizar links HTML na tabela
-                )
+                "Selecionada": st.column_config.CheckboxColumn(
+                    "Selecionar",
+                    help="Marque para ver detalhes da empresa",
+                ),
             },
+            disabled=["Nome/Razão Social", "CNPJ", "Cidade", "UF", "Tamanho", "Vendedor"],
             hide_index=True,
-            use_container_width=True
         )
+
+        # Garantir que apenas uma empresa esteja selecionada
+        if edited_df["Selecionada"].sum() > 1:
+            last_selected_index = edited_df[edited_df["Selecionada"]].index[-1]
+            edited_df["Selecionada"] = False
+            edited_df.at[last_selected_index, "Selecionada"] = True
+
+        # Atualizar `st.session_state` com a empresa selecionada
+        if edited_df["Selecionada"].any():
+            selected_index = edited_df[edited_df["Selecionada"]].index[0]
+            st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
+        else:
+            st.session_state["empresa_selecionada"] = None
+
+        # Exibir os detalhes da empresa selecionada abaixo da tabela
+        if st.session_state["empresa_selecionada"]:
+            empresa = st.session_state["empresa_selecionada"]
+            st.write("### 🔍 Detalhes da Empresa Selecionada")
+            st.write(f"**Nome/Razão Social:** {empresa['Nome/Razão Social']}")
+            st.write(f"**CNPJ:** {empresa['CNPJ']}")
+            st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
+            st.write(f"**Tamanho:** {empresa['Tamanho']}")
+            st.write(f"**Vendedor:** {empresa['Vendedor']}")
+        else:
+            st.info("Selecione uma empresa para ver os detalhes.")
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
-# Se houver uma empresa selecionada, exibir os detalhes na outra aba
-def detalhes_empresa():
-    if "empresa_selecionada" in st.session_state:
-        empresa = st.session_state["empresa_selecionada"]
-        st.title(f"🔍 Detalhes da {empresa['Nome/Razão Social']}")
-        st.write(f"**CNPJ:** {empresa['CNPJ']}")
-        st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
-        st.write(f"**Tamanho:** {empresa['Tamanho']}")
-        st.write(f"**Vendedor:** {empresa['Vendedor']}")
-    else:
-        st.info("Selecione uma empresa na lista para ver detalhes.")
 
 
 def cadastrar_subempresa():

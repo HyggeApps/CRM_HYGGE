@@ -202,11 +202,7 @@ if st.session_state['authentication_status']:
         tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
         
         with tela_empresas:
-            # Criar abas e definir qual aba será exibida
-            if "aba_atual" not in st.session_state:
-                st.session_state["aba_atual"] = "lista"
-
-            aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
+            empresas.consultar_empresas()
 
             # Muda automaticamente para a aba "Detalhes da Empresa" se o botão for clicado
             if st.session_state["aba_atual"] == "lista":
