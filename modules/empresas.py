@@ -30,24 +30,31 @@ def editar_empresa(user):
 
     st.subheader("✏️ Editar Empresa")
 
+    collection_usuarios = get_collection("usuarios")  # Coleção de usuários
+    collection_empresas = get_collection("empresas")
+
+    # Lista de usuários disponíveis para seleção
+    lista_usuarios = list(collection_usuarios.distinct("usuario"))
+    lista_usuarios.sort()
+
     with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
         with col2:
-            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=not eh_proprietario)
-
+            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=True)  # Cidade não editável
+        
         col3, col4 = st.columns(2)
         with col3:
-            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=not eh_proprietario)
+            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)  # Estado não editável
         with col4:
             # Tratamento seguro para evitar erro NaTType
             ultima_atividade_str = empresa.get("Última Atividade", None)
-            
+
             if ultima_atividade_str and ultima_atividade_str != "None":
                 try:
                     ultima_atividade = pd.to_datetime(ultima_atividade_str, errors="coerce").date()
-                    if pd.isna(ultima_atividade):  # Se ainda for NaT, usa a data atual
+                    if pd.isna(ultima_atividade):
                         ultima_atividade = datetime.today().date()
                 except Exception:
                     ultima_atividade = datetime.today().date()
@@ -58,30 +65,33 @@ def editar_empresa(user):
 
         col5, col6 = st.columns(2)
         with col5:
-            fone = st.text_input("Telefone", value=empresa.get("Fone", ""), disabled=not eh_proprietario)
+            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, disabled=not eh_proprietario)
         with col6:
-            site = st.text_input("Site", value=empresa.get("Site", ""), disabled=not eh_proprietario)
+            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), disabled=not eh_proprietario)
+
+        col7, col8 = st.columns(2)
+        with col7:
+            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), disabled=not eh_proprietario)
+        with col8:
+            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), disabled=not eh_proprietario)
 
         submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
         if submit and eh_proprietario:
-            collection_empresas = get_collection("empresas")
-            
-            # Atualiza os dados da empresa no banco de dados
+            # Atualiza os dados no banco de dados
             collection_empresas.update_one(
                 {"razao_social": empresa["Nome"], "usuario": user},
                 {"$set": {
                     "razao_social": razao_social,
-                    "cidade": cidade,
-                    "estado": estado,
-                    "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),  # Garante formato correto
-                    "fone": fone,
-                    "site": site
+                    "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),
+                    "usuario": novo_usuario,
+                    "setor": setor,
+                    "produto_interesse": produto_interesse,
+                    "tamanho_empresa": tamanho_empresa,
                 }}
             )
             st.success("Dados da empresa atualizados com sucesso!")
             st.rerun()
-
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
