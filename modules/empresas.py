@@ -291,7 +291,10 @@ def consultar_empresas():
 
         # **Se houver uma empresa selecionada, bloquear as demais**
         empresa_selecionada = st.session_state["empresa_selecionada"]
-        disable_other_checkboxes = empresa_selecionada is not None
+        if empresa_selecionada:
+            disable_checkboxes = [not row["Visualizar"] for _, row in df_empresas.iterrows()]
+        else:
+            disable_checkboxes = [False] * len(df_empresas)
 
         # Criar tabela interativa com `st.data_editor()`
         edited_df = st.data_editor(
@@ -300,7 +303,7 @@ def consultar_empresas():
                 "Visualizar": st.column_config.CheckboxColumn(
                     "Visualizar",
                     help="Marque para ver detalhes da empresa",
-                    disabled=[disable_other_checkboxes and not selected for selected in df_empresas["Visualizar"]]
+                    disabled=disable_checkboxes  # Aqui está a correção do erro!
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
