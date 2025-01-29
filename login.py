@@ -203,5 +203,5 @@ if st.session_state['authentication_status']:
         
         with tela_empresas: empresas.consultar_empresas()
         with tela_cad_empresas:
-            cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Subempresa', 'Cadastrar Contato'])
+            cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
 
