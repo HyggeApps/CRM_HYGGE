@@ -158,8 +158,8 @@ with st.sidebar:
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
-                ["Tarefas", "Consultas", "Cadastros", "Usuários", "Produtos", "Templates"],
-                icons=["list-task", "search", "upload", "people", "archive", "file-earmark-text"],
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Produtos", "Templates"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "archive", "file-earmark-text"],
                 menu_icon="cast",
                 default_index=1,
                 styles={
