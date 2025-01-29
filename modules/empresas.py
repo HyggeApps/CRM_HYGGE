@@ -282,7 +282,7 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
-def consultar_empresas(user):
+def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
     # Obter lista de vendedores
@@ -424,7 +424,7 @@ def consultar_empresas(user):
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
                     with st.popover('✏️ Editar empresa'):
-                        editar_empresa(user)
+                        editar_empresa(user, admin)
 
                 with st.expander("📞 Contatos", expanded=True):
                     contatos = [
