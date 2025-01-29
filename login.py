@@ -197,14 +197,6 @@ if st.session_state['authentication_status']:
         st.header("🏢 Empresas")
         st.info('Consulte, cadastre e edite suas empresas.')
         st.write('----')
-        tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
-        
-        with tela_empresas:
-            st.write(7)
-            empresas.consultar_empresas()
 
-        with tela_cad_empresas:
-            cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
-            with cad_empresa: 
-                if 'admin' in st.session_state["roles"]: empresas.cadastrar_empresas(usuario_ativo, admin=True)
-                else: empresas.cadastrar_empresas(usuario_ativo, admin=False)
+        st.write(7)
+        empresas.consultar_empresas()
