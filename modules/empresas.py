@@ -18,15 +18,16 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
-def editar_empresa(user):
+def editar_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
         st.warning("Nenhuma empresa selecionada para edição.")
         return
     
     empresa = st.session_state["empresa_selecionada"]
 
-    # Verifica se o usuário logado é o proprietário da empresa
-    eh_proprietario = user == empresa["Proprietário"]
+    # Se admin for True, pode editar qualquer empresa
+    # Se admin for False, só pode editar as empresas que possui
+    eh_proprietario = admin or (user == empresa["Proprietário"])
 
     st.subheader("✏️ Editar Empresa")
 
@@ -36,7 +37,7 @@ def editar_empresa(user):
     # Buscar os campos "nome", "sobrenome" e "email" para cada usuário
     usuarios = list(collection_usuarios.find({}, {"nome": 1, "sobrenome": 1, "email": 1}))
 
-    # Formatar a lista de usuários para o formato: "nome" "sobrenome" ("email")
+    # Formatar a lista de usuários para o formato: "nome sobrenome (email)"
     lista_usuarios = [f'{usuario["nome"]} {usuario["sobrenome"]} ({usuario["email"]})' for usuario in usuarios]
     lista_usuarios.sort()
 
@@ -68,22 +69,30 @@ def editar_empresa(user):
 
         col5, col6 = st.columns(2)
         with col5:
-            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, disabled=not eh_proprietario)
+            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, 
+                                        index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
+                                        disabled=not eh_proprietario)
         with col6:
-            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), disabled=not eh_proprietario)
+            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
+                                 disabled=not eh_proprietario)
 
         col7, col8 = st.columns(2)
         with col7:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), disabled=not eh_proprietario)
+            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
+                                             index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
+                                             disabled=not eh_proprietario)
         with col8:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), disabled=not eh_proprietario)
+            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
+                                           index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
+                                           disabled=not eh_proprietario)
 
         submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
         if submit and eh_proprietario:
             # Atualiza os dados no banco de dados
             collection_empresas.update_one(
-                {"razao_social": empresa["Nome"], "usuario": user},
+                {"razao_social": empresa["Nome"]},
                 {"$set": {
                     "razao_social": razao_social,
                     "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),
