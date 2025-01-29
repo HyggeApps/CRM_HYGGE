@@ -31,7 +31,6 @@ def editar_empresa(user):
     st.subheader("✏️ Editar Empresa")
 
     collection_usuarios = get_collection("usuarios")  # Coleção de usuários
-    st.write(1,collection_usuarios)
     collection_empresas = get_collection("empresas")
 
     # Lista de usuários disponíveis para seleção
