@@ -189,12 +189,19 @@ if st.session_state['authentication_status']:
     # Título Principal
     st.title("Customer Relationship Management HYGGE")
     st.write('----')
-    if 'admin' in st.session_state["roles"]:
 
-        # Menu no sidebar para Admin
+    # Menu no sidebar para Admin
 
-        if selected == "Tarefas":
-            st.info('Acompanhe aqui suas tarefas e seus números.')
-            tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
-        elif selected == "Empresas":
-            empresas.consultar_empresas()
+    if selected == "Tarefas":
+        st.info('Acompanhe aqui suas tarefas e seus números.')
+        tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
+    elif selected == "Empresas":
+        st.header("Empresas")
+        st.info('Consulte, cadastre e edite suas empresas.')
+        
+        tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs['Empresas', 'Cadastrar', 'Editar', 'Remover']
+        
+        with tela_empresas: empresas.consultar_empresas()
+        with tela_cad_empresas:
+            cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Subempresa', 'Cadastrar Contato'])
+
