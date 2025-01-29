@@ -199,5 +199,5 @@ if st.session_state['authentication_status']:
         st.write('----')
 
         with st.popover("Cadastrar empresa"):
-            empresas.cadastrar_empresas()
+            empresas.cadastrar_empresas(usuario_ativo,admin=True)
         empresas.consultar_empresas()
