@@ -205,6 +205,5 @@ if st.session_state['authentication_status']:
         with tela_cad_empresas:
             cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
             with cad_empresa: 
-                st.write(1)
                 if 'admin' in st.session_state["roles"]: empresas.cadastrar_empresas(usuario_ativo, admin=True)
                 else: empresas.cadastrar_empresas(usuario_ativo, admin=False)
