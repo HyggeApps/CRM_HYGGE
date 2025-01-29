@@ -18,6 +18,56 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
+def editar_empresa(user):
+    if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
+        st.warning("Nenhuma empresa selecionada para edição.")
+        return
+    
+    empresa = st.session_state["empresa_selecionada"]
+
+    # Verifica se o usuário logado é o proprietário da empresa
+    eh_proprietario = user == empresa["Proprietário"]
+
+    st.subheader("✏️ Editar Empresa")
+
+    with st.form(key="form_edicao_empresa"):
+        col1, col2 = st.columns(2)
+        with col1:
+            razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
+        with col2:
+            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=not eh_proprietario)
+
+        col3, col4 = st.columns(2)
+        with col3:
+            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=not eh_proprietario)
+        with col4:
+            ultima_atividade = st.date_input("Última Atividade", value=pd.to_datetime(empresa["Última Atividade"], errors="coerce"), disabled=not eh_proprietario)
+
+        col5, col6 = st.columns(2)
+        with col5:
+            fone = st.text_input("Telefone", value=empresa.get("Fone", ""), disabled=not eh_proprietario)
+        with col6:
+            site = st.text_input("Site", value=empresa.get("Site", ""), disabled=not eh_proprietario)
+
+        submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
+
+        if submit and eh_proprietario:
+            collection_empresas = get_collection("empresas")
+            
+            # Atualiza os dados da empresa no banco de dados
+            collection_empresas.update_one(
+                {"razao_social": empresa["Nome"], "usuario": user},
+                {"$set": {
+                    "razao_social": razao_social,
+                    "cidade": cidade,
+                    "estado": estado,
+                    "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),
+                    "fone": fone,
+                    "site": site
+                }}
+            )
+            st.success("Dados da empresa atualizados com sucesso!")
+            st.rerun()
 
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
@@ -196,7 +246,7 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
-def consultar_empresas():
+def consultar_empresas(user):
     collection_empresas = get_collection("empresas")
 
     # Obter lista de vendedores
@@ -338,7 +388,7 @@ def consultar_empresas():
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
                     with st.popover('✏️ Editar empresa'):
-                        st.info('Editar...')
+                        editar_empresa(user)
 
                 with st.expander("📞 Contatos", expanded=True):
                     contatos = [

@@ -201,4 +201,4 @@ if st.session_state['authentication_status']:
         with st.popover("➕ Cadastrar empresa"):
             empresas.cadastrar_empresas(usuario_ativo,admin=True)
 
-        empresas.consultar_empresas()
+        empresas.consultar_empresas(usuario_ativo)
