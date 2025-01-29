@@ -202,4 +202,5 @@ if st.session_state['authentication_status']:
 
         empresas.consultar_empresas(usuario_ativo)
     elif selected == 'Usuários':
-        cadastro_usuarios.gerenciamento_usuarios()
+        if 'admin' in st.session_state["roles"]: cadastro_usuarios.gerenciamento_usuarios()
+        else: st.warning("Você não tem permissão para alterar usuários.")
