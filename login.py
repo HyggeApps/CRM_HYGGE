@@ -204,18 +204,6 @@ if st.session_state['authentication_status']:
         with tela_empresas:
             empresas.consultar_empresas()
 
-            # Muda automaticamente para a aba "Detalhes da Empresa" se o botão for clicado
-            if st.session_state["aba_atual"] == "lista":
-                with aba_lista:
-                    empresas.consultar_empresas()
-                with aba_detalhes:
-                    empresas.detalhes_empresa()
-            elif st.session_state["aba_atual"] == "detalhes":
-                with aba_detalhes:
-                    empresas.detalhes_empresa()
-                with aba_lista:
-                    empresas.consultar_empresas()
-
         with tela_cad_empresas:
             cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
             with cad_empresa: 
