@@ -397,10 +397,10 @@ def cadastrar_subempresa():
             col1, col2 = st.columns(2)
             with col1:
                 cnpj_input = st.text_input("CNPJ da sub-empresa", max_chars=18, placeholder="Digite o CNPJ (com ou sem formatação)", key="cnpj_input_sub")
-                buscar_cnpj = st.button("Buscar Dados do CNPJ (sub-empresa)", key="buscar_cnpj_sub")
+                buscar_cnpj = st.button("🔍 Buscar Dados do CNPJ (sub-empresa)", key="buscar_cnpj_sub")
             with col2:
                 cep_input = st.text_input("CEP da sub-empresa", max_chars=10, placeholder="Digite o CEP (com ou sem formatação)", key="cep_input_sub")
-                buscar_cep = st.button("Buscar Dados do CEP (sub-empresa)", key="buscar_cep_sub")
+                buscar_cep = st.button("🔍 Buscar Dados do CEP (sub-empresa)", key="buscar_cep_sub")
 
             if buscar_cnpj and not st.session_state["buscar_cnpj_sub_clicked"]:
                 st.session_state["buscar_cnpj_sub_clicked"] = True
