@@ -41,12 +41,18 @@ def editar_empresa(user):
         with col3:
             estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=not eh_proprietario)
         with col4:
-            # Corrigir campo de data para evitar 'None'
+            # Tratamento seguro para evitar erro NaTType
             ultima_atividade_str = empresa.get("Última Atividade", None)
+            
             if ultima_atividade_str and ultima_atividade_str != "None":
-                ultima_atividade = pd.to_datetime(ultima_atividade_str, errors="coerce").date()
+                try:
+                    ultima_atividade = pd.to_datetime(ultima_atividade_str, errors="coerce").date()
+                    if pd.isna(ultima_atividade):  # Se ainda for NaT, usa a data atual
+                        ultima_atividade = datetime.today().date()
+                except Exception:
+                    ultima_atividade = datetime.today().date()
             else:
-                ultima_atividade = datetime.today().date()  # Usa a data atual como fallback
+                ultima_atividade = datetime.today().date()
 
             ultima_atividade = st.date_input("Última Atividade", value=ultima_atividade, disabled=not eh_proprietario)
 
