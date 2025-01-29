@@ -162,7 +162,6 @@ def cadastrar_empresas(user, admin):
         if clear:
             for key in st.session_state.keys():
                 del st.session_state[key]
-            st.rerun()
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
