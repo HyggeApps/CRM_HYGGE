@@ -28,7 +28,7 @@ def editar_empresa(user):
     # Verifica se o usuário logado é o proprietário da empresa
     eh_proprietario = user == empresa["Proprietário"]
 
-    st.header("✏️ Editar Empresa")
+    st.subheader("✏️ Editar Empresa")
 
     collection_usuarios = get_collection("usuarios")  # Coleção de usuários
     collection_empresas = get_collection("empresas")
@@ -94,13 +94,14 @@ def editar_empresa(user):
             )
             st.success("Dados da empresa atualizados com sucesso!")
             st.rerun()
+
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
-    st.subheader('Cadastro de empresas')
+    st.header('Cadastro de empresas')
     st.write('----')
     # Variáveis para preenchimento automático
     if "dados_cnpj" not in st.session_state:
