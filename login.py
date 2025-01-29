@@ -196,14 +196,6 @@ if st.session_state['authentication_status']:
         if selected == "Tarefas":
             st.info('Acompanhe aqui suas tarefas e seus números.')
             tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
-        elif selected == "Consultas":
+        elif selected == "Empresas":
+            st.info('Consulte, cadastre e edite suas empresas.')
             empresas.consultar_empresas()
-        elif selected == "Cadastros":
-            cad_empresa, cad_oportunidade, cad_tarefa = st.tabs(['Cadastrar empresa', 'Cadastrar negócio', 'Cadastrar tarefa'])
-            with cad_empresa: 
-                cad_empresa_matriz, cad_subempresa, cad_contato = st.tabs(['Matriz', 'Sub-empresa', 'Contato'])
-                with cad_empresa_matriz: empresas.cadastrar_empresas(usuario_ativo, admin=True)
-                with cad_subempresa: empresas.cadastrar_subempresa()
-                with cad_contato: st.warning('tela cad contato')
-            with cad_oportunidade: st.warning('tela cad negócio')
-            with cad_tarefa: st.warning('tela cad tarefa')
