@@ -159,7 +159,6 @@ def cadastrar_empresas(user, admin):
                     collection_empresas.insert_one(document)
                     for key in st.session_state.keys():
                         del st.session_state[key]
-                    st.rerun()
                     st.success("Empresa cadastrada com sucesso!")
 
         if clear:
