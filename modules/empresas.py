@@ -195,9 +195,6 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
-import pandas as pd
-import streamlit as st
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -288,35 +285,33 @@ def consultar_empresas():
         # Reordenar as colunas conforme solicitado
         df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"]]
 
-        # Inicializar seleção no session_state
+        # **Inicializar seleção no session_state**
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # **Determinar se existe uma empresa selecionada**
+        # **Se houver uma empresa selecionada, bloqueia os outros checkboxes**
         empresa_atual_selecionada = st.session_state["empresa_selecionada"] is not None
-
-        # Criar um novo dataframe para controle de checkboxes (garante interatividade correta)
         df_empresas["Visualizar"] = df_empresas["Nome"] == (st.session_state["empresa_selecionada"]["Nome"] if empresa_atual_selecionada else "")
 
-        # Criar tabela interativa com `st.data_editor()`, desativando checkboxes quando uma empresa já está selecionada
+        # Criar tabela interativa com `st.data_editor()`, desativando os checkboxes quando necessário
         edited_df = st.data_editor(
             df_empresas,
             column_config={
                 "Visualizar": st.column_config.CheckboxColumn(
                     "Visualizar",
                     help="Marque para ver detalhes da empresa",
+                    disabled=empresa_atual_selecionada & ~(df_empresas["Visualizar"]),  # Bloqueia os outros checkboxes
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
             hide_index=True,
-            use_container_width=True  # Faz a tabela ocupar toda a largura da tela
+            use_container_width=True
         )
 
         # **Verificar mudanças na seleção**
         if edited_df["Visualizar"].sum() == 1:
             selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
-
         elif edited_df["Visualizar"].sum() == 0:
             st.session_state["empresa_selecionada"] = None
 
@@ -365,7 +360,6 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
 
 def cadastrar_subempresa():
     
