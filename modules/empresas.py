@@ -21,7 +21,7 @@ def cadastrar_empresas(user, admin):
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
-    
+
     # Variáveis para preenchimento automático
     if "dados_cnpj" not in st.session_state:
         st.session_state["dados_cnpj"] = {}
@@ -235,7 +235,7 @@ def consultar_empresas():
     # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
         import pandas as pd
-
+        st.write(1)
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
             columns={
