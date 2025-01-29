@@ -194,7 +194,7 @@ if st.session_state['authentication_status']:
         st.info('Acompanhe aqui suas tarefas e seus números.')
         tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
     elif selected == "Empresas":
-        st.header("🏗️ Empresas")
+        st.header("🏢 Empresas")
         st.info('Consulte, cadastre e edite suas empresas.')
         st.write('----')
         tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
