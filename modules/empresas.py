@@ -248,26 +248,31 @@ def consultar_empresas():
             }
         )
 
-        # Criar uma tabela interativa com botões
+        # Adicionar uma coluna de botões para visualizar a empresa
+        df_empresas["Visualizar"] = ["👁 Visualizar"] * len(df_empresas)
+
+        # Exibir a tabela interativa
         st.write("### 📋 Lista de Empresas")
-        for index, row in df_empresas.iterrows():
-            col1, col2, col3, col4, col5, col6 = st.columns([3, 2, 2, 1, 1, 2])
-            with col1:
-                if st.button(row["Nome/Razão Social"], key=f"empresa_{index}"):
-                    st.session_state["empresa_selecionada"] = row.to_dict()
-            with col2:
-                st.write(row["CNPJ"])
-            with col3:
-                st.write(row["Cidade"])
-            with col4:
-                st.write(row["UF"])
-            with col5:
-                st.write(row["Tamanho"])
-            with col6:
-                st.write(row["Vendedor"])
+        selected_row = st.data_editor(
+            df_empresas,
+            column_config={
+                "Visualizar": st.column_config.ButtonColumn(
+                    "🔍",
+                    help="Clique para ver detalhes",
+                    on_click=lambda idx: selecionar_empresa(df_empresas.iloc[idx])
+                )
+            },
+            hide_index=True,
+            use_container_width=True
+        )
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
+# Função para armazenar a empresa selecionada e mudar de aba
+def selecionar_empresa(empresa):
+    st.session_state["empresa_selecionada"] = empresa.to_dict()
+    st.session_state["aba_atual"] = "detalhes"
 
 # Se houver uma empresa selecionada, exibir os detalhes na outra aba
 def detalhes_empresa():
@@ -280,6 +285,12 @@ def detalhes_empresa():
         st.write(f"**Vendedor:** {empresa['Vendedor']}")
     else:
         st.info("Selecione uma empresa na lista para ver detalhes.")
+
+# Criar abas e definir qual aba será exibida
+if "aba_atual" not in st.session_state:
+    st.session_state["aba_atual"] = "lista"
+
+aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
 
 
 def cadastrar_subempresa():
