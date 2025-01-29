@@ -200,7 +200,7 @@ if st.session_state['authentication_status']:
         with st.popover("➕ Cadastrar empresa"):
             empresas.cadastrar_empresas(usuario_ativo,admin=True)
 
-        empresas.consultar_empresas(usuario_ativo, admin=Rrue)
+        empresas.consultar_empresas(usuario_ativo, admin=True)
     elif selected == 'Usuários':
         if 'admin' in st.session_state["roles"]: cadastro_usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
