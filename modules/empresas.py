@@ -203,7 +203,7 @@ def cadastrar_empresas(user, admin):
                 else:
                     # Obter a data e hora atuais
                     now = datetime.now()
-                    data_criacao = now.strftime("%Y-%m-%d %H:%M:%S")
+                    data_criacao = now.strftime("%Y-%m-%d")  # Formato padronizado
 
                     # Insere os dados na coleção
                     document = {
