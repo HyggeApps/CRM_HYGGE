@@ -331,7 +331,7 @@ def consultar_empresas():
                         "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
                         "Tamanho": empresa['Tamanho']
                     }
-                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Valor"])
+                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
 
                 with st.expander("📞 Contatos", expanded=True):
