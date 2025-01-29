@@ -200,7 +200,7 @@ if st.session_state['authentication_status']:
         tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
         
         with tela_empresas:
-            st.write(1)
+            st.write(2)
             empresas.consultar_empresas()
 
         with tela_cad_empresas:

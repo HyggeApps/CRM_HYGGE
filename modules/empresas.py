@@ -195,7 +195,6 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -249,11 +248,10 @@ def consultar_empresas():
                 "_id": 0,
                 "razao_social": 1,
                 "usuario": 1,
-                "cidade": 1,
-                "estado": 1,
-                "tamanho_empresa": 1,
                 "data_criacao": 1,
                 "ultima_atividade": 1,
+                "cidade": 1,
+                "estado": 1,
             },
         )
     )
@@ -266,12 +264,11 @@ def consultar_empresas():
         df_empresas = df_empresas.rename(
             columns={
                 "razao_social": "Nome",
-                "cidade": "Cidade",
-                "estado": "UF",
-                "tamanho_empresa": "Tamanho",
                 "usuario": "Proprietário",
                 "data_criacao": "Data de Criação",
                 "ultima_atividade": "Última Atividade",
+                "cidade": "Cidade",
+                "estado": "UF",
             }
         )
 
@@ -285,8 +282,8 @@ def consultar_empresas():
         # Adicionar coluna de seleção como primeiro campo e renomear para "Visualizar"
         df_empresas.insert(0, "Visualizar", False)
 
-        # **Reordenar as colunas para garantir que a exibição esteja correta**
-        df_empresas = df_empresas[["Visualizar", "Nome", "Cidade", "UF", "Tamanho", "Proprietário", "Data de Criação", "Última Atividade"]]
+        # Reordenar as colunas conforme solicitado
+        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"]]
 
         # Inicializar seleção no session_state
         if "empresa_selecionada" not in st.session_state:
@@ -301,7 +298,7 @@ def consultar_empresas():
                     help="Marque para ver detalhes da empresa",
                 ),
             },
-            disabled=["Nome", "Cidade", "UF", "Tamanho", "Proprietário", "Data de Criação", "Última Atividade"],
+            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
             hide_index=True,
             use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
@@ -326,6 +323,7 @@ def consultar_empresas():
             st.write('----')
             st.write("### 🔍 Detalhes da Empresa Selecionada")
 
+            # Criar colunas para distribuir os detalhes
             col1, col2 = st.columns([3.5,6.5])
 
             with col1:
