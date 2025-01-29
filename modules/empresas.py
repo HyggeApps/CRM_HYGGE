@@ -99,7 +99,7 @@ def cadastrar_empresas(user, admin):
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
-    st.header('Cadastro de empresas')
+    st.subheader('Cadastro de empresas')
     st.write('----')
     # Variáveis para preenchimento automático
     if "dados_cnpj" not in st.session_state:
