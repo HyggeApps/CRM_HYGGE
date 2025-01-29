@@ -194,6 +194,7 @@ if st.session_state['authentication_status']:
         # Menu no sidebar para Admin
 
         if selected == "Tarefas":
+            tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
             st.header("Dashboard HYGGE")
             st.warning("Em desenvolvimento...")
         elif selected == "Consultas":
