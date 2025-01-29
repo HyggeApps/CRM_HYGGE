@@ -175,8 +175,7 @@ def cadastrar_empresas(user, admin):
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
-    st.write('----')
-
+    
     # Obter lista de vendedores
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
