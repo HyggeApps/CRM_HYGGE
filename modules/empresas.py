@@ -113,10 +113,10 @@ def cadastrar_empresas(user, admin):
         col_btn1, col_btn2 = st.columns([0.2, 0.2])  # Ajusta a largura das colunas para evitar espaçamentos grandes
 
         with col_btn1:
-            clear = st.form_submit_button("❌ Limpar")
+            submit = st.form_submit_button("✅ Cadastrar")
 
         with col_btn2:
-            submit = st.form_submit_button("✅ Cadastrar")
+            clear = st.form_submit_button("❌ Limpar")
 
         if submit:
             # Verifica se os campos obrigatórios foram preenchidos
