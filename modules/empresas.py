@@ -33,7 +33,7 @@ def cadastrar_empresas(user, admin):
         st.session_state["dados_cep"] = {}
 
     # Buscar CNPJ antes de exibir o formulário
-    st.subheader("Busca Automática de CNPJ e CEP")
+    st.subheader("🔍 Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP (dois cliques para buscar)"):
         col1, col2 = st.columns(2)
         with col1:
@@ -67,7 +67,7 @@ def cadastrar_empresas(user, admin):
                     st.error("CEP inválido! Certifique-se de que tem 8 dígitos.")
 
     # Formulário principal
-    st.subheader("Formulário de Cadastro")
+    st.subheader("📃 Formulário de Cadastro")
     with st.form(key="form_cadastro_empresa"):
         col1, col2 = st.columns(2)
         with col1:
@@ -387,7 +387,7 @@ def cadastrar_subempresa():
         if "buscar_cep_sub_clicked" not in st.session_state:
             st.session_state["buscar_cep_sub_clicked"] = False
 
-        st.subheader("Busca Automática de CNPJ e CEP")
+        st.subheader("🔍 Busca Automática de CNPJ e CEP")
         with st.expander("Preencher Dados com CNPJ e CEP (dois cliques para buscar)"):
             col1, col2 = st.columns(2)
             with col1:
@@ -429,7 +429,7 @@ def cadastrar_subempresa():
 
         # Formulário de Cadastro de sub-empresa
         with st.form(key="form_cadastro_subempresa"):
-            st.subheader("Formulário de Cadastro de sub-empresa")
+            st.subheader("📃 Formulário de Cadastro de sub-empresa")
 
             # Linha 1: Empresa Matriz e Razão Social
             col1, col2 = st.columns(2)
