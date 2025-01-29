@@ -108,8 +108,6 @@ def cadastrar_empresas(user, admin):
             tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["","Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
         with col14:
             grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente",disabled=True)
-        
-
 
         clear = st.form_submit_button("Limpar")
         submit = st.form_submit_button("Cadastrar")
@@ -166,7 +164,6 @@ def cadastrar_empresas(user, admin):
                 del st.session_state[key]
             st.rerun()
 
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -195,7 +192,7 @@ def consultar_empresas():
             index=0,
         )
     with col6:
-        filtro_data_criacao = st.date_input("Data da última atividade", value=None)
+        filtro_data_atividade = st.date_input("Data da última atividade", value=None)
 
     # Construir query de filtro
     query = {}
@@ -209,8 +206,8 @@ def consultar_empresas():
         query["tamanho_empresa"] = {"$in": filtro_tamanho}
     if filtro_vendedor and filtro_vendedor != "Todos":
         query["usuario"] = filtro_vendedor
-    if filtro_data_criacao:
-        query["data_criacao"] = {"$gte": filtro_data_criacao.strftime("%Y-%m-%d")}
+    if filtro_data_atividade:
+        query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
 
     # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
@@ -220,7 +217,8 @@ def consultar_empresas():
                 "_id": 0,
                 "razao_social": 1,
                 "usuario": 1,
-                "data_criacao": 1,  # Assumindo que esta seja a data da última atividade
+                "ultima_atividade": 1,
+                "data_criacao": 1,
                 "cidade": 1,
                 "estado": 1,
                 "tamanho_empresa": 1,
@@ -237,15 +235,20 @@ def consultar_empresas():
             columns={
                 "razao_social": "Nome",
                 "usuario": "Proprietário",
-                "data_criacao": "Última Atividade",
+                "ultima_atividade": "Última Atividade",
+                "data_criacao": "Data de Criação",
                 "cidade": "Cidade",
                 "estado": "UF",
                 "tamanho_empresa": "Tamanho",
             }
         )
 
-        # Converter a data de string para formato legível
+        # Preencher "Última Atividade" com "Data de Criação" caso esteja vazia
+        df_empresas["Última Atividade"].fillna(df_empresas["Data de Criação"], inplace=True)
+
+        # Converter a data para formato legível
         df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
+        df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
 
         # Adicionar coluna de seleção como primeiro campo
         df_empresas.insert(0, "Selecionada", False)
@@ -289,6 +292,7 @@ def consultar_empresas():
             st.write(f"**Nome:** {empresa['Nome']}")
             st.write(f"**Proprietário:** {empresa['Proprietário']}")
             st.write(f"**Última Atividade:** {empresa['Última Atividade']}")
+            st.write(f"**Data de Criação:** {empresa['Data de Criação']}")
             st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
             st.write(f"**Tamanho:** {empresa['Tamanho']}")
         else:
@@ -297,6 +301,7 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 def cadastrar_subempresa():
     
