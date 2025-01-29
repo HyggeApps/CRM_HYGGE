@@ -195,6 +195,9 @@ def cadastrar_empresas(user, admin):
             # Recarregar a página sem afetar o login
             st.rerun()
 
+import pandas as pd
+import streamlit as st
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -248,11 +251,10 @@ def consultar_empresas():
                 "_id": 0,
                 "razao_social": 1,
                 "usuario": 1,
-                "ultima_atividade": 1,
                 "data_criacao": 1,
+                "ultima_atividade": 1,
                 "cidade": 1,
                 "estado": 1,
-                "tamanho_empresa": 1,
             },
         )
     )
@@ -266,11 +268,10 @@ def consultar_empresas():
             columns={
                 "razao_social": "Nome",
                 "usuario": "Proprietário",
-                "ultima_atividade": "Última Atividade",
                 "data_criacao": "Data de Criação",
+                "ultima_atividade": "Última Atividade",
                 "cidade": "Cidade",
                 "estado": "UF",
-                "tamanho_empresa": "Tamanho",
             }
         )
 
@@ -278,11 +279,14 @@ def consultar_empresas():
         df_empresas["Última Atividade"].fillna(df_empresas["Data de Criação"], inplace=True)
 
         # Converter a data para formato legível
-        df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
         df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
+        df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
 
-        # Adicionar coluna de seleção como primeiro campo
-        df_empresas.insert(0, "Selecionada", False)
+        # Adicionar coluna de seleção como primeiro campo e renomear para "Visualizar"
+        df_empresas.insert(0, "Visualizar", False)
+
+        # Reordenar as colunas conforme solicitado
+        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"]]
 
         # Inicializar seleção no session_state
         if "empresa_selecionada" not in st.session_state:
@@ -292,25 +296,25 @@ def consultar_empresas():
         edited_df = st.data_editor(
             df_empresas,
             column_config={
-                "Selecionada": st.column_config.CheckboxColumn(
-                    "Selecionar",
+                "Visualizar": st.column_config.CheckboxColumn(
+                    "Visualizar",
                     help="Marque para ver detalhes da empresa",
                 ),
             },
-            disabled=["Nome", "Proprietário", "Última Atividade", "Cidade", "UF", "Tamanho"],
+            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
             hide_index=True,
             use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
 
         # Garantir que apenas uma empresa esteja selecionada
-        if edited_df["Selecionada"].sum() > 1:
-            last_selected_index = edited_df[edited_df["Selecionada"]].index[-1]
-            edited_df["Selecionada"] = False
-            edited_df.at[last_selected_index, "Selecionada"] = True
+        if edited_df["Visualizar"].sum() > 1:
+            last_selected_index = edited_df[edited_df["Visualizar"]].index[-1]
+            edited_df["Visualizar"] = False
+            edited_df.at[last_selected_index, "Visualizar"] = True
 
         # Atualizar `st.session_state` com a empresa selecionada
-        if edited_df["Selecionada"].any():
-            selected_index = edited_df[edited_df["Selecionada"]].index[0]
+        if edited_df["Visualizar"].any():
+            selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
         else:
             st.session_state["empresa_selecionada"] = None
@@ -322,34 +326,31 @@ def consultar_empresas():
             st.write('----')
             st.write("### 🔍 Detalhes da Empresa Selecionada")
 
-            # Criar três colunas para distribuir as abas
+            # Criar colunas para distribuir os detalhes
             col1, col2 = st.columns([3.5,6.5])
 
             with col1:
                 with st.expander("📋 Dados da Empresa", expanded=True):
-                    # Criar tabela formatada
                     dados_empresa = {
                         "Nome": empresa['Nome'],
                         "Proprietário": empresa['Proprietário'],
                         "Última Atividade": empresa['Última Atividade'],
                         "Data de Criação": empresa['Data de Criação'],
                         "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
-                        "Tamanho": empresa['Tamanho']
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
 
                 with st.expander("📞 Contatos", expanded=True):
-                    # Exemplo de contatos da empresa (substitua por dados reais)
                     contatos = [
                         {"Nome": "João Silva", "Cargo": "Gerente Comercial", "E-mail": "joao@empresa.com", "Telefone": "(11) 99999-9999"},
                         {"Nome": "Maria Souza", "Cargo": "Diretora", "E-mail": "maria@empresa.com", "Telefone": "(11) 98888-8888"},
                     ]
                     df_contatos = pd.DataFrame(contatos)
                     st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+
             with col2:
                 with st.expander("📌 Atividades Recentes", expanded=True):
-                    # Exemplo de atividades recentes (substitua por dados reais)
                     atividades = [
                         {"Data": "25/01/2024", "Descrição": "E-mail enviado sobre proposta"},
                         {"Data": "20/01/2024", "Descrição": "Reunião de negociação realizada"},
