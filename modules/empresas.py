@@ -109,7 +109,7 @@ def cadastrar_empresas(user, admin):
         with col14:
             grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente",disabled=True)
 
-        col_btn1, col_btn2, col_space = st.columns([0.05, 0.05, 0.9])  # Define tamanhos proporcionais
+        col_btn1, col_btn2, col_space = st.columns([0.1, 0.1, 0.8])  # Define tamanhos proporcionais
 
         with col_btn1:
             submit = st.form_submit_button("✅ Cadastrar")
