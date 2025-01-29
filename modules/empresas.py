@@ -180,7 +180,7 @@ def consultar_empresas():
     # Filtros
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
-        filtro_razao_social = st.text_input("Razão Social", placeholder="Parte da Razão Social")
+        filtro_razao_social = st.text_input("Nome/Razão Social", placeholder="Parte do Nome/Razão Social")
     with col2:
         filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
     with col3:
@@ -235,7 +235,6 @@ def consultar_empresas():
     # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
         import pandas as pd
-        st.write(1)
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
             columns={
