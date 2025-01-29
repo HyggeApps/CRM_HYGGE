@@ -171,7 +171,6 @@ def cadastrar_empresas(user, admin):
                     del st.session_state[key]
             st.rerun()
 
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -248,18 +247,20 @@ def consultar_empresas():
             }
         )
 
-        # Adicionar uma coluna de botões para visualizar a empresa
-        df_empresas["Visualizar"] = ["👁 Visualizar"] * len(df_empresas)
+        # Criar uma coluna com links clicáveis para abrir os detalhes
+        df_empresas["Visualizar"] = df_empresas["Nome/Razão Social"].apply(
+            lambda nome: f'<a href="#" onclick="window.location.reload();">{nome}</a>'
+        )
 
-        # Exibir a tabela interativa
+        # Exibir a tabela no formato interativo
         st.write("### 📋 Lista de Empresas")
-        selected_row = st.data_editor(
+        st.data_editor(
             df_empresas,
             column_config={
-                "Visualizar": st.column_config.ButtonColumn(
-                    "🔍",
+                "Visualizar": st.column_config.TextColumn(
+                    "🔍 Visualizar",
                     help="Clique para ver detalhes",
-                    on_click=lambda idx: selecionar_empresa(df_empresas.iloc[idx])
+                    allow_html=True  # Permite renderizar links HTML na tabela
                 )
             },
             hide_index=True,
@@ -268,11 +269,6 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
-# Função para armazenar a empresa selecionada e mudar de aba
-def selecionar_empresa(empresa):
-    st.session_state["empresa_selecionada"] = empresa.to_dict()
-    st.session_state["aba_atual"] = "detalhes"
 
 # Se houver uma empresa selecionada, exibir os detalhes na outra aba
 def detalhes_empresa():
@@ -285,12 +281,6 @@ def detalhes_empresa():
         st.write(f"**Vendedor:** {empresa['Vendedor']}")
     else:
         st.info("Selecione uma empresa na lista para ver detalhes.")
-
-# Criar abas e definir qual aba será exibida
-if "aba_atual" not in st.session_state:
-    st.session_state["aba_atual"] = "lista"
-
-aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
 
 
 def cadastrar_subempresa():

@@ -202,24 +202,23 @@ if st.session_state['authentication_status']:
         tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
         
         with tela_empresas:
+            # Criar abas e definir qual aba será exibida
             if "aba_atual" not in st.session_state:
                 st.session_state["aba_atual"] = "lista"
 
-            # Criar o layout da tela com as abas
-            with st.container():  # Usando um container para organizar melhor o layout
-                aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
+            aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
 
-                # Controle de navegação baseado no estado
-                if st.session_state["aba_atual"] == "lista":
-                    with aba_lista:
-                        empresas.consultar_empresas()
-                    with aba_detalhes:
-                        empresas.detalhes_empresa()
-                elif st.session_state["aba_atual"] == "detalhes":
-                    with aba_detalhes:
-                        empresas.detalhes_empresa()
-                    with aba_lista:
-                        empresas.consultar_empresas()
+            # Muda automaticamente para a aba "Detalhes da Empresa" se o botão for clicado
+            if st.session_state["aba_atual"] == "lista":
+                with aba_lista:
+                    empresas.consultar_empresas()
+                with aba_detalhes:
+                    empresas.detalhes_empresa()
+            elif st.session_state["aba_atual"] == "detalhes":
+                with aba_detalhes:
+                    empresas.detalhes_empresa()
+                with aba_lista:
+                    empresas.consultar_empresas()
 
         with tela_cad_empresas:
             cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
