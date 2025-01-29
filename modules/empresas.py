@@ -322,13 +322,17 @@ def consultar_empresas():
 
             with col1:
                 with st.expander("📋 Dados da Empresa", expanded=True):
-                    st.write(f"**Nome:** {empresa['Nome']}")
-                    st.write(f"**Proprietário:** {empresa['Proprietário']}")
-                    st.write(f"**Última Atividade:** {empresa['Última Atividade']}")
-                    st.write(f"**Data de Criação:** {empresa['Data de Criação']}")
-                    st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
-                    st.write(f"**Tamanho:** {empresa['Tamanho']}")
-
+                    # Criar tabela formatada
+                    dados_empresa = {
+                        "Nome": empresa['Nome'],
+                        "Proprietário": empresa['Proprietário'],
+                        "Última Atividade": empresa['Última Atividade'],
+                        "Data de Criação": empresa['Data de Criação'],
+                        "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
+                        "Tamanho": empresa['Tamanho']
+                    }
+                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Valor"])
+                    st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
             with col2:
                 with st.expander("📌 Atividades Recentes", expanded=True):
                     # Exemplo de atividades recentes (substitua por dados reais)
