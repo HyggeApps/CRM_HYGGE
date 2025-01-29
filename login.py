@@ -198,6 +198,6 @@ if st.session_state['authentication_status']:
         st.info('Consulte, cadastre e edite suas empresas.')
         st.write('----')
 
-        with st.popover("Cadastrar empresa"):
+        with st.popover("Cadastrar empresa",use_container_width=True):
             empresas.cadastrar_empresas(usuario_ativo,admin=True)
         empresas.consultar_empresas()
