@@ -21,10 +21,7 @@ def cadastrar_empresas(user, admin):
     # -------------------
     # Aba: Cadastrar Empresa
     # -------------------
-    st.header("Cadastrar nova empresa na base de dados da HYGGE")
-    st.info("Busque automaticamente informações da empresa a partir do CNPJ e/ou CEP e preencha os demais campos no formulário abaixo.")
-    st.write('---')
-
+    
     # Variáveis para preenchimento automático
     if "dados_cnpj" not in st.session_state:
         st.session_state["dados_cnpj"] = {}
@@ -175,7 +172,7 @@ def cadastrar_empresas(user, admin):
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
-    
+
     # Obter lista de vendedores
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
