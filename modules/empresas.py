@@ -160,8 +160,20 @@ def cadastrar_empresas(user, admin):
                     st.success("Empresa cadastrada com sucesso!")
 
         if clear:
-            for key in st.session_state.keys():
-                del st.session_state[key]
+            # Lista de chaves a serem resetadas
+            keys_to_clear = [
+                "dados_cnpj", "dados_cep", "cnpj_input", "cep_input", "razao_social", "cnpj",
+                "rua", "bairro", "cidade", "estado", "cep", "fone", "site",
+                "insc_estadual", "setor", "produto_interesse", "tamanho_empresa", "grau_cliente"
+            ]
+
+            # Remover apenas os campos do formulário
+            for key in keys_to_clear:
+                if key in st.session_state:
+                    del st.session_state[key]
+
+            # Recarregar a página sem afetar o login
+            st.rerun()
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
