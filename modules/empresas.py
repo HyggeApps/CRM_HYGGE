@@ -33,11 +33,12 @@ def editar_empresa(user):
     collection_usuarios = get_collection("usuarios")  # Coleção de usuários
     collection_empresas = get_collection("empresas")
 
-    # Lista de usuários disponíveis para seleção
-    lista_usuarios = list(collection_usuarios.distinct("email"))
-    lista_usuarios.sort()
+    # Buscar os campos "nome", "sobrenome" e "email" para cada usuário
+    usuarios = list(collection_usuarios.find({}, {"nome": 1, "sobrenome": 1, "email": 1}))
 
-    st.write(lista_usuarios)
+    # Formatar a lista de usuários para o formato: "nome" "sobrenome" ("email")
+    lista_usuarios = [f'{usuario["nome"]} {usuario["sobrenome"]} ({usuario["email"]})' for usuario in usuarios]
+    lista_usuarios.sort()
 
     with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
