@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from utils.database import get_collection
+import pandas as pd
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
@@ -169,10 +170,6 @@ def cadastrar_empresas(user, admin):
                 if key in st.session_state:
                     del st.session_state[key]
             st.rerun()
-
-
-import streamlit as st
-import pandas as pd
 
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
