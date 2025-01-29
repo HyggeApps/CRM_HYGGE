@@ -201,3 +201,5 @@ if st.session_state['authentication_status']:
             empresas.cadastrar_empresas(usuario_ativo,admin=True)
 
         empresas.consultar_empresas(usuario_ativo)
+    elif selected == 'Usuários':
+        cadastro_usuarios.gerenciamento_usuarios()
