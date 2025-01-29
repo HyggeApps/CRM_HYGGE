@@ -182,32 +182,30 @@ def consultar_empresas():
     # Filtros
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
-        filtro_razao_social = st.text_input("Nome/Razão Social", placeholder="Parte do Nome/Razão Social")
+        filtro_razao_social = st.text_input("Nome", placeholder="Parte do nome da empresa")
     with col2:
-        filtro_cnpj = st.text_input("CNPJ", placeholder="Parte do CNPJ")
-    with col3:
         filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
-    with col4:
+    with col3:
         filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
-    with col5:
+    with col4:
         filtro_tamanho = st.multiselect(
             "Tamanho",
             options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
             default=[],
         )
-    with col6:
+    with col5:
         filtro_vendedor = st.selectbox(
-            "Vendedor",
+            "Proprietário",
             options=["Todos"] + vendedores,
             index=0,
         )
+    with col6:
+        filtro_data_criacao = st.date_input("Data da última atividade", value=None)
 
     # Construir query de filtro
     query = {}
     if filtro_razao_social:
         query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
-    if filtro_cnpj:
-        query["cnpj"] = {"$regex": filtro_cnpj, "$options": "i"}
     if filtro_cidade:
         query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
     if filtro_estado:
@@ -216,6 +214,8 @@ def consultar_empresas():
         query["tamanho_empresa"] = {"$in": filtro_tamanho}
     if filtro_vendedor and filtro_vendedor != "Todos":
         query["usuario"] = filtro_vendedor
+    if filtro_data_criacao:
+        query["data_criacao"] = {"$gte": filtro_data_criacao.strftime("%Y-%m-%d")}
 
     # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
@@ -224,12 +224,11 @@ def consultar_empresas():
             {
                 "_id": 0,
                 "razao_social": 1,
-                "cnpj": 1,
+                "usuario": 1,
+                "data_criacao": 1,  # Assumindo que esta seja a data da última atividade
                 "cidade": 1,
                 "estado": 1,
-                "pais": 1,
                 "tamanho_empresa": 1,
-                "usuario": 1,
             },
         )
     )
@@ -237,16 +236,21 @@ def consultar_empresas():
     # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
+
+        # Renomear colunas conforme solicitado
         df_empresas = df_empresas.rename(
             columns={
-                "razao_social": "Nome/Razão Social",
-                "cnpj": "CNPJ",
+                "razao_social": "Nome",
+                "usuario": "Proprietário",
+                "data_criacao": "Última Atividade",
                 "cidade": "Cidade",
                 "estado": "UF",
                 "tamanho_empresa": "Tamanho",
-                "usuario": "Vendedor",
             }
         )
+
+        # Converter a data de string para formato legível
+        df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
 
         # Adicionar coluna de seleção como primeiro campo
         df_empresas.insert(0, "Selecionada", False)
@@ -264,7 +268,7 @@ def consultar_empresas():
                     help="Marque para ver detalhes da empresa",
                 ),
             },
-            disabled=["Nome/Razão Social", "CNPJ", "Cidade", "UF", "Tamanho", "Vendedor"],
+            disabled=["Nome", "Proprietário", "Última Atividade", "Cidade", "UF", "Tamanho"],
             hide_index=True,
             use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
@@ -286,17 +290,16 @@ def consultar_empresas():
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
             st.write("### 🔍 Detalhes da Empresa Selecionada")
-            st.write(f"**Nome/Razão Social:** {empresa['Nome/Razão Social']}")
-            st.write(f"**CNPJ:** {empresa['CNPJ']}")
+            st.write(f"**Nome:** {empresa['Nome']}")
+            st.write(f"**Proprietário:** {empresa['Proprietário']}")
+            st.write(f"**Última Atividade:** {empresa['Última Atividade']}")
             st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
             st.write(f"**Tamanho:** {empresa['Tamanho']}")
-            st.write(f"**Vendedor:** {empresa['Vendedor']}")
         else:
             st.info("Selecione uma empresa para ver os detalhes.")
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
-
 
 
 def cadastrar_subempresa():
