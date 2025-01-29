@@ -289,8 +289,10 @@ def consultar_empresas():
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # **Se houver uma empresa selecionada, bloquear as demais**
+        # Criar variável para armazenar a empresa selecionada
         empresa_selecionada = st.session_state["empresa_selecionada"]
+
+        # Criar lista de checkboxes desativados
         if empresa_selecionada:
             disable_checkboxes = [row["Nome"] != empresa_selecionada["Nome"] for _, row in df_empresas.iterrows()]
         else:
