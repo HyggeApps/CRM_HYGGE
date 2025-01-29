@@ -185,7 +185,7 @@ with st.sidebar:
 if st.session_state['authentication_status']:    
     usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     # Título Principal
-    st.title("🌲Customer Relationship Management - HYGGE")
+    st.title("🗒️ Customer Relationship Management - HYGGE")
     st.write('----')
 
     # Menu no sidebar para Admin
