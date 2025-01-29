@@ -110,7 +110,7 @@ def cadastrar_empresas(user, admin):
             grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente",disabled=True)
 
         clear = st.form_submit_button("Limpar")
-        submit = st.form_submit_button("Cadastrar")
+        submit = st.form_submit_button("✅ Cadastrar")
 
         if submit:
             # Verifica se os campos obrigatórios foram preenchidos
