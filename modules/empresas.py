@@ -243,7 +243,7 @@ def consultar_empresas():
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
             columns={
-                "razao_social": "Razão Social",
+                "razao_social": "Nome/Razão Social",
                 "cnpj": "CNPJ",
                 "cidade": "Cidade",
                 "estado": "UF",
