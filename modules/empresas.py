@@ -289,18 +289,18 @@ def consultar_empresas():
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # **Se houver uma empresa selecionada, bloqueia os outros checkboxes**
-        empresa_atual_selecionada = st.session_state["empresa_selecionada"] is not None
-        df_empresas["Visualizar"] = df_empresas["Nome"] == (st.session_state["empresa_selecionada"]["Nome"] if empresa_atual_selecionada else "")
+        # **Se houver uma empresa selecionada, bloquear as demais**
+        empresa_selecionada = st.session_state["empresa_selecionada"]
+        disable_other_checkboxes = empresa_selecionada is not None
 
-        # Criar tabela interativa com `st.data_editor()`, desativando os checkboxes quando necessário
+        # Criar tabela interativa com `st.data_editor()`
         edited_df = st.data_editor(
             df_empresas,
             column_config={
                 "Visualizar": st.column_config.CheckboxColumn(
                     "Visualizar",
                     help="Marque para ver detalhes da empresa",
-                    disabled=empresa_atual_selecionada & ~(df_empresas["Visualizar"]),  # Bloqueia os outros checkboxes
+                    disabled=[disable_other_checkboxes and not selected for selected in df_empresas["Visualizar"]]
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
