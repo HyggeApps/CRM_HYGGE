@@ -157,6 +157,9 @@ def cadastrar_empresas(user, admin):
                         "ultima_atividade": data_criacao,  # Inicialmente igual à data de criação
                     }
                     collection_empresas.insert_one(document)
+                    for key in st.session_state.keys():
+                        del st.session_state[key]
+                    st.rerun()
                     st.success("Empresa cadastrada com sucesso!")
 
         if clear:
