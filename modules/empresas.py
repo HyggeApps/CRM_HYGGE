@@ -172,9 +172,6 @@ def cadastrar_empresas(user, admin):
             st.rerun()
 
 
-import pandas as pd
-import streamlit as st
-
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -251,8 +248,8 @@ def consultar_empresas():
             }
         )
 
-        # Adicionar coluna de seleção
-        df_empresas["Selecionada"] = False
+        # Adicionar coluna de seleção como primeiro campo
+        df_empresas.insert(0, "Selecionada", False)
 
         # Inicializar seleção no session_state
         if "empresa_selecionada" not in st.session_state:
@@ -269,6 +266,7 @@ def consultar_empresas():
             },
             disabled=["Nome/Razão Social", "CNPJ", "Cidade", "UF", "Tamanho", "Vendedor"],
             hide_index=True,
+            use_container_width=True  # Faz a tabela ocupar toda a largura da tela
         )
 
         # Garantir que apenas uma empresa esteja selecionada
@@ -298,6 +296,7 @@ def consultar_empresas():
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 
 def cadastrar_subempresa():
