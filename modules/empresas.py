@@ -206,9 +206,9 @@ def consultar_empresas():
     # Filtros
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
-        filtro_razao_social = st.text_input("📝 Nome", placeholder="Parte do nome da empresa")
+        filtro_razao_social = st.text_input("Nome", placeholder="Parte do nome da empresa")
     with col2:
-        filtro_cidade = st.text_input("🌇 Cidade", placeholder="Digite a cidade")
+        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
     with col3:
         filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
     with col4:
