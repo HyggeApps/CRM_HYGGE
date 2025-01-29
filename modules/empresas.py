@@ -289,6 +289,7 @@ def consultar_empresas():
         # Exibir os detalhes da empresa selecionada abaixo da tabela
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
+            st.write('----')
             st.write("### 🔍 Detalhes da Empresa Selecionada")
             st.write(f"**Nome:** {empresa['Nome']}")
             st.write(f"**Proprietário:** {empresa['Proprietário']}")
@@ -296,6 +297,7 @@ def consultar_empresas():
             st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
             st.write(f"**Tamanho:** {empresa['Tamanho']}")
         else:
+            st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
 
     else:
