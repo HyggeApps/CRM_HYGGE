@@ -313,14 +313,43 @@ def consultar_empresas():
         # Exibir os detalhes da empresa selecionada abaixo da tabela
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
+            
             st.write('----')
             st.write("### 🔍 Detalhes da Empresa Selecionada")
-            st.write(f"**Nome:** {empresa['Nome']}")
-            st.write(f"**Proprietário:** {empresa['Proprietário']}")
-            st.write(f"**Última Atividade:** {empresa['Última Atividade']}")
-            st.write(f"**Data de Criação:** {empresa['Data de Criação']}")
-            st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
-            st.write(f"**Tamanho:** {empresa['Tamanho']}")
+
+            # Criar três colunas para distribuir as abas
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                with st.expander("📋 Dados da Empresa", expanded=True):
+                    st.write(f"**Nome:** {empresa['Nome']}")
+                    st.write(f"**Proprietário:** {empresa['Proprietário']}")
+                    st.write(f"**Última Atividade:** {empresa['Última Atividade']}")
+                    st.write(f"**Data de Criação:** {empresa['Data de Criação']}")
+                    st.write(f"**Cidade:** {empresa['Cidade']}, {empresa['UF']}")
+                    st.write(f"**Tamanho:** {empresa['Tamanho']}")
+
+            with col2:
+                with st.expander("📌 Atividades Recentes", expanded=True):
+                    # Exemplo de atividades recentes (substitua por dados reais)
+                    atividades = [
+                        {"Data": "25/01/2024", "Descrição": "E-mail enviado sobre proposta"},
+                        {"Data": "20/01/2024", "Descrição": "Reunião de negociação realizada"},
+                        {"Data": "15/01/2024", "Descrição": "Contato inicial feito via telefone"},
+                    ]
+                    df_atividades = pd.DataFrame(atividades)
+                    st.dataframe(df_atividades, hide_index=True, use_container_width=True)
+
+            with col3:
+                with st.expander("📞 Contatos", expanded=True):
+                    # Exemplo de contatos da empresa (substitua por dados reais)
+                    contatos = [
+                        {"Nome": "João Silva", "Cargo": "Gerente Comercial", "E-mail": "joao@empresa.com", "Telefone": "(11) 99999-9999"},
+                        {"Nome": "Maria Souza", "Cargo": "Diretora", "E-mail": "maria@empresa.com", "Telefone": "(11) 98888-8888"},
+                    ]
+                    df_contatos = pd.DataFrame(contatos)
+                    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
