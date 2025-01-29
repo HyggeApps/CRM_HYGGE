@@ -170,6 +170,10 @@ def cadastrar_empresas(user, admin):
                     del st.session_state[key]
             st.rerun()
 
+
+import streamlit as st
+import pandas as pd
+
 def consultar_empresas():
     collection_empresas = get_collection("empresas")
 
@@ -234,7 +238,6 @@ def consultar_empresas():
 
     # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
-        import pandas as pd
         df_empresas = pd.DataFrame(empresas_filtradas)
         df_empresas = df_empresas.rename(
             columns={
@@ -247,14 +250,35 @@ def consultar_empresas():
             }
         )
 
-        # Redefinir o índice para ocultar o índice original
-        df_empresas = df_empresas.reset_index(drop=True)
+        # Criar hyperlinks para abrir detalhes na aba
+        def criar_link(nome):
+            return f'<a href="?empresa={nome}" target="_self">{nome}</a>'
 
-        # Exibir a tabela no Streamlit
-        st.dataframe(df_empresas, use_container_width=True)
+        df_empresas["Nome/Razão Social"] = df_empresas["Nome/Razão Social"].apply(criar_link)
+
+        # Exibir a tabela no Streamlit com HTML ativado
+        st.markdown(df_empresas.to_html(escape=False, index=False), unsafe_allow_html=True)
+
+        # Capturar a empresa selecionada via URL
+        empresa_selecionada = st.query_params.get("empresa")
+
+        if empresa_selecionada:
+            st.session_state["empresa_detalhes"] = empresa_selecionada
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
+# Se houver uma empresa selecionada, exibir os detalhes em uma aba
+def detalhes_empresa():
+    if "empresa_detalhes" in st.session_state:
+        empresa = st.session_state["empresa_detalhes"]
+        st.title(f"Detalhes da {empresa}")
+
+        # Aqui você pode buscar mais informações no banco de dados
+        st.write("📌 Informações detalhadas da empresa...")
+    else:
+        st.info("Selecione uma empresa na lista para ver detalhes.")
+
 
 def cadastrar_subempresa():
     

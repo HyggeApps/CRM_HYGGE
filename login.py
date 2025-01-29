@@ -202,7 +202,15 @@ if st.session_state['authentication_status']:
         tela_empresas, tela_cad_empresas, tela_editar_empresas, tela_remover_empresa = st.tabs(['Empresas', 'Cadastrar', 'Editar', 'Remover'])
         
         with tela_empresas:
-            empresas.consultar_empresas()
+            # Criar abas
+            aba_lista, aba_detalhes = st.tabs(["📋 Lista de Empresas", "🔍 Detalhes da Empresa"])
+
+            with aba_lista:
+                empresas.consultar_empresas()
+
+            with aba_detalhes:
+                empresas.detalhes_empresa()
+                
         with tela_cad_empresas:
             cad_empresa, cad_subempresa, cad_contato = st.tabs(['Cadastrar Matriz', 'Cadastrar Sub-empresa', 'Cadastrar Contato'])
             with cad_empresa: 
