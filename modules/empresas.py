@@ -318,7 +318,7 @@ def consultar_empresas():
             st.write("### 🔍 Detalhes da Empresa Selecionada")
 
             # Criar três colunas para distribuir as abas
-            col1, col2, col3 = st.columns(3)
+            col1, col2 = st.columns([3.5,6.5])
 
             with col1:
                 with st.expander("📋 Dados da Empresa", expanded=True):
@@ -333,6 +333,15 @@ def consultar_empresas():
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Valor"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+
+                with st.expander("📞 Contatos", expanded=True):
+                    # Exemplo de contatos da empresa (substitua por dados reais)
+                    contatos = [
+                        {"Nome": "João Silva", "Cargo": "Gerente Comercial", "E-mail": "joao@empresa.com", "Telefone": "(11) 99999-9999"},
+                        {"Nome": "Maria Souza", "Cargo": "Diretora", "E-mail": "maria@empresa.com", "Telefone": "(11) 98888-8888"},
+                    ]
+                    df_contatos = pd.DataFrame(contatos)
+                    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
             with col2:
                 with st.expander("📌 Atividades Recentes", expanded=True):
                     # Exemplo de atividades recentes (substitua por dados reais)
@@ -343,16 +352,6 @@ def consultar_empresas():
                     ]
                     df_atividades = pd.DataFrame(atividades)
                     st.dataframe(df_atividades, hide_index=True, use_container_width=True)
-
-            with col3:
-                with st.expander("📞 Contatos", expanded=True):
-                    # Exemplo de contatos da empresa (substitua por dados reais)
-                    contatos = [
-                        {"Nome": "João Silva", "Cargo": "Gerente Comercial", "E-mail": "joao@empresa.com", "Telefone": "(11) 99999-9999"},
-                        {"Nome": "Maria Souza", "Cargo": "Diretora", "E-mail": "maria@empresa.com", "Telefone": "(11) 98888-8888"},
-                    ]
-                    df_contatos = pd.DataFrame(contatos)
-                    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
 
         else:
             st.write('----')
