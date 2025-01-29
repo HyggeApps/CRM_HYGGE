@@ -41,7 +41,14 @@ def editar_empresa(user):
         with col3:
             estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=not eh_proprietario)
         with col4:
-            ultima_atividade = st.date_input("Última Atividade", value=pd.to_datetime(empresa["Última Atividade"], errors="coerce"), disabled=not eh_proprietario)
+            # Corrigir campo de data para evitar 'None'
+            ultima_atividade_str = empresa.get("Última Atividade", None)
+            if ultima_atividade_str and ultima_atividade_str != "None":
+                ultima_atividade = pd.to_datetime(ultima_atividade_str, errors="coerce").date()
+            else:
+                ultima_atividade = datetime.today().date()  # Usa a data atual como fallback
+
+            ultima_atividade = st.date_input("Última Atividade", value=ultima_atividade, disabled=not eh_proprietario)
 
         col5, col6 = st.columns(2)
         with col5:
@@ -61,7 +68,7 @@ def editar_empresa(user):
                     "razao_social": razao_social,
                     "cidade": cidade,
                     "estado": estado,
-                    "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),
+                    "ultima_atividade": ultima_atividade.strftime("%Y-%m-%d"),  # Garante formato correto
                     "fone": fone,
                     "site": site
                 }}

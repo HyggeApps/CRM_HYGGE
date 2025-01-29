@@ -181,7 +181,6 @@ with st.sidebar:
         st.warning('Por favor, entre com o seu usuário e senha.')
 
 
-
 if st.session_state['authentication_status']:    
     usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     # Título Principal
