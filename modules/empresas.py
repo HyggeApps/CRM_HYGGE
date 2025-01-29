@@ -337,6 +337,8 @@ def consultar_empresas():
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+                    with st.popover('✏️ Editar empresa'):
+                        st.info('Editar...')
 
                 with st.expander("📞 Contatos", expanded=True):
                     contatos = [
