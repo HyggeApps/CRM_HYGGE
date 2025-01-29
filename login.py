@@ -83,7 +83,7 @@ st.markdown(
         font-size: 2.75rem !important; /* Tamanho para H1 */
     }
     h2 {
-        font-size: 1.5rem !important; /* Tamanho para H2 */
+        font-size: 2.5rem !important; /* Tamanho para H2 */
     }
     h3 {
         font-size: 1.25rem !important; /* Tamanho para H3 */
