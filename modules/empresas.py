@@ -289,23 +289,13 @@ def consultar_empresas():
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # Criar variável para armazenar a empresa selecionada
-        empresa_selecionada = st.session_state["empresa_selecionada"]
-
-        # Criar lista de checkboxes desativados
-        if empresa_selecionada:
-            disable_checkboxes = [row["Nome"] != empresa_selecionada["Nome"] for _, row in df_empresas.iterrows()]
-        else:
-            disable_checkboxes = [False] * len(df_empresas)
-
         # Criar tabela interativa com `st.data_editor()`
         edited_df = st.data_editor(
             df_empresas,
             column_config={
                 "Visualizar": st.column_config.CheckboxColumn(
                     "Visualizar",
-                    help="Marque para ver detalhes da empresa",
-                    disabled=disable_checkboxes  # Correção aplicada aqui!
+                    help="Marque para ver detalhes da empresa"
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
@@ -313,11 +303,17 @@ def consultar_empresas():
             use_container_width=True
         )
 
-        # **Verificar mudanças na seleção**
-        if edited_df["Visualizar"].sum() == 1:
+        # **Se mais de uma estiver marcada, manter apenas a última selecionada**
+        if edited_df["Visualizar"].sum() > 1:
+            last_selected_index = edited_df[edited_df["Visualizar"]].index[-1]
+            edited_df["Visualizar"] = False  # Desmarca todas
+            edited_df.at[last_selected_index, "Visualizar"] = True  # Mantém apenas a última
+
+        # Atualizar `st.session_state` com a empresa selecionada
+        if edited_df["Visualizar"].any():
             selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
-        elif edited_df["Visualizar"].sum() == 0:
+        else:
             st.session_state["empresa_selecionada"] = None
 
         # Exibir os detalhes da empresa selecionada abaixo da tabela
