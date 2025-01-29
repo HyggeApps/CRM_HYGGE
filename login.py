@@ -10,9 +10,7 @@ from modules import (
     cadastro_templates,
     cadastro_contatos,
     cadastro_orcamentos,
-    cadastro_leads,
-    cadastros,
-    consultas
+    cadastro_leads
 )
 from utils import functions as funcs
 from streamlit_authenticator.utilities import (CredentialsError,
