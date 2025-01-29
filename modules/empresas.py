@@ -28,7 +28,7 @@ def editar_empresa(user):
     # Verifica se o usuário logado é o proprietário da empresa
     eh_proprietario = user == empresa["Proprietário"]
 
-    st.subheader("✏️ Editar Empresa")
+    st.header("✏️ Editar Empresa")
 
     collection_usuarios = get_collection("usuarios")  # Coleção de usuários
     collection_empresas = get_collection("empresas")
