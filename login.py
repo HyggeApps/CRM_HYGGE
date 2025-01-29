@@ -202,6 +202,6 @@ if st.session_state['authentication_status']:
                 st.header("Empresas")
                 st.info('Consulte, cadastre e edite suas empresas.')
             with col2:
-                with st.button('Cadastrar empresa'):
+                if st.button('Cadastrar empresa'):
                     empresas.cadastrar_empresas(usuario_ativo, admin=True)
             empresas.consultar_empresas()
