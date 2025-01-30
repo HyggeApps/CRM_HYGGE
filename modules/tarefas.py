@@ -15,7 +15,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
     # Buscar atividades vinculadas à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
-
+    
     with st.expander("📌 Atividades", expanded=True):
         if atividades:
             df_atividades = pd.DataFrame(atividades)
@@ -31,16 +31,19 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 }
             )
 
+            # Converter listas de contatos para strings formatadas separadas por quebras de linha "\n"
+            df_atividades["Contato"] = df_atividades["Contato"].apply(lambda x: "\n".join(x) if isinstance(x, list) else x)
+
             # Reordenar colunas para exibição
             df_atividades = df_atividades[["Data Execução", "Tipo", "Título", "Descrição", "Contato"]]
 
-            # Configurar a coluna "Contato" como uma lista
+            # Exibir a tabela com contatos formatados corretamente
             st.data_editor(
                 df_atividades,
                 column_config={
-                    "Contato": st.column_config.ListColumn(
+                    "Contato": st.column_config.TextColumn(
                         "Contato",
-                        help="Lista de contatos vinculados à atividade"
+                        help="Lista de contatos vinculados à atividade",
                     )
                 },
                 hide_index=True,
