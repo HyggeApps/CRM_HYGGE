@@ -5,6 +5,13 @@ from datetime import datetime
 
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
+    collection_contatos = get_collection("contatos")
+
+    # Buscar contatos vinculados à empresa
+    contatos_vinculados = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
+
+    # Criar lista de contatos formatada
+    lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
 
     # Buscar atividades vinculadas à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
@@ -42,9 +49,9 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             with st.popover('➕ Adicionar Atividade'):
                 with st.form("form_adicionar_atividade"):
                     st.subheader("➕ Nova Atividade")
-                    tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"])
+                    tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"])
                     titulo = st.text_input("Título*")
-                    contato = st.text_input("Contato")
+                    contato = st.selectbox("Contato Vinculado", lista_contatos)  # Mostra apenas os contatos da empresa
                     observacoes = st.text_area("Observações*")
                     descricao = st.text_area("Descrição*")
                     data_execucao = st.date_input("Data de Execução")
@@ -88,10 +95,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         if atividade_dados:
                             with st.form("form_editar_atividade"):
                                 st.subheader("✏️ Editar Atividade")
-                                novo_tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"],
-                                                         index=["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"].index(atividade_dados["tipo_atividade"]))
+                                novo_tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"],
+                                                         index=["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"].index(atividade_dados["tipo_atividade"]))
                                 novo_titulo = st.text_input("Título", value=atividade_dados["titulo"])
-                                novo_contato = st.text_input("Contato", value=atividade_dados["contato"])
+                                novo_contato = st.selectbox("Contato Vinculado", lista_contatos, index=lista_contatos.index(atividade_dados["contato"]) if atividade_dados["contato"] in lista_contatos else 0)
                                 novas_observacoes = st.text_area("Observações", value=atividade_dados["observacoes"])
                                 nova_descricao = st.text_area("Descrição", value=atividade_dados["descricao"])
                                 nova_data_execucao = st.date_input("Data de Execução",
