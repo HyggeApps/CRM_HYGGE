@@ -172,8 +172,20 @@ with st.sidebar:
             st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
             st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
 
-            selected = option_menu("CRM HYGGE (Vendedor)", ["Tarefas", 'Consultas', 'Cadastros'], 
-            icons=['list-task','search','upload'], menu_icon="cast", default_index=1)
+            # 1. as sidebar menu
+            selected = option_menu(
+                f"CRM HYGGE (Admin)",
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
+                menu_icon="cast",
+                default_index=1,
+                styles={
+                    #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
+                    "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
+                    "nav-link": {"font-size": "12px"},  # Style for links
+                    "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
+                },
+            )
 
     elif st.session_state['authentication_status'] is False:
         st.error('Usuário e/ou Senha inválido(s).')
@@ -187,8 +199,6 @@ if st.session_state['authentication_status']:
     st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")
     st.write('----')
 
-    # Menu no sidebar para Admin
-
     if selected == "Tarefas":
         st.info('Acompanhe aqui suas tarefas e seus números.')
         tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
@@ -198,9 +208,12 @@ if st.session_state['authentication_status']:
         st.write('----')
 
         with st.popover("➕ Cadastrar empresa"):
-            empresas.cadastrar_empresas(usuario_ativo,admin=True)
+            if 'admin' in st.session_state["roles"]: empresas.cadastrar_empresas(usuario_ativo,admin=True)
+            else: empresas.cadastrar_empresas(usuario_ativo,admin=False)
 
-        empresas.consultar_empresas(usuario_ativo, admin=True)
+        if 'admin' in st.session_state["roles"]:  empresas.consultar_empresas(usuario_ativo, admin=True)
+        else: empresas.consultar_empresas(usuario_ativo, admin=False)
+
     elif selected == 'Usuários':
         if 'admin' in st.session_state["roles"]: cadastro_usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")

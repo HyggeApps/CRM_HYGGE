@@ -447,7 +447,7 @@ def excluir_empresa(user, admin):
     pode_excluir = admin
 
     if not pode_excluir:
-        st.error("Você não tem permissão para excluir esta empresa.")
+        st.error("Você não tem permissão para excluir esta empresa, solicite para o administrador.")
         return
     else:
         collection_empresas = get_collection("empresas")
