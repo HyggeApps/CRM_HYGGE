@@ -1,11 +1,11 @@
 import streamlit as st
-from utils.database import get_collection
 import pandas as pd
+from utils.database import get_collection
 
 def exibir_contatos_empresa(user, admin, empresa_cnpj):
     collection_contatos = get_collection("contatos")
 
-    # Buscar apenas os contatos vinculados à empresa selecionada
+    # Buscar **apenas** os contatos vinculados à empresa selecionada
     contatos = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
     with st.expander("📞 Contatos", expanded=True):
@@ -43,19 +43,22 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
 
                     if submit_adicionar:
-                        if nome and email:
+                        # Verificar se o contato já existe em **outra empresa**
+                        contato_existente = collection_contatos.find_one({"email": email})
+                        if contato_existente:
+                            st.error(f"Erro: O contato '{email}' já está vinculado à empresa de CNPJ {contato_existente['empresa']}!")
+                        else:
+                            # Adicionar contato APENAS à empresa selecionada
                             collection_contatos.insert_one({
                                 "nome": nome,
                                 "sobrenome": sobrenome,
                                 "cargo": cargo,
                                 "email": email,
                                 "fone": telefone,
-                                "empresa": empresa_cnpj  # Garantir que o contato seja vinculado à empresa selecionada
+                                "empresa": empresa_cnpj  # O contato pertence APENAS a essa empresa!
                             })
                             st.success("Contato adicionado com sucesso!")
                             st.rerun()
-                        else:
-                            st.error("Preencha os campos obrigatórios: Nome e E-mail.")
 
             # Se houver contatos cadastrados, exibir opções de edição/remoção
             if contatos:
@@ -68,7 +71,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     if contato_selecionado:
                         email_editar = contato_selecionado.split("(")[-1].strip(")")
 
-                        contato_dados = collection_contatos.find_one({"email": email_editar}, {"_id": 0})
+                        contato_dados = collection_contatos.find_one({"email": email_editar, "empresa": empresa_cnpj}, {"_id": 0})
 
                         if contato_dados:
                             with st.form("form_editar_contato"):
@@ -82,7 +85,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                 submit_editar = st.form_submit_button("💾 Salvar Alterações")
                                 if submit_editar:
                                     collection_contatos.update_one(
-                                        {"email": email_editar},
+                                        {"email": email_editar, "empresa": empresa_cnpj},  # Apenas para a empresa correta
                                         {"$set": {
                                             "nome": nome_edit,
                                             "sobrenome": sobrenome_edit,
@@ -94,6 +97,6 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                     st.rerun()
 
                         if st.button("🗑️ Remover Contato"):
-                            collection_contatos.delete_one({"email": email_editar})
+                            collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
                             st.success(f"Contato {contato_selecionado} removido com sucesso!")
                             st.rerun()
