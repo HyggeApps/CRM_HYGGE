@@ -4,6 +4,7 @@ from utils.database import get_collection
 import pandas as pd
 from datetime import datetime
 from modules.contatos import *
+from modules.tarefas import *
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
@@ -416,6 +417,9 @@ def consultar_empresas(user, admin):
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("cnpj", "")
                 exibir_contatos_empresa(user, admin, empresa_cnpj)  # Chama a função do outro arquivo
+            with col2:
+                empresa_cnpj = empresa.get("cnpj", "")
+                exibir_atividades_empresa(user,admin,  empresa_cnpj)
 
         else:
             st.write('----')
