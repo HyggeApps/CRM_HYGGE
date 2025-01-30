@@ -31,33 +31,33 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
         # Verifica permissão para editar ou adicionar contatos
         if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-            st.write("### ➕ Gerenciar Contatos")
 
-            # Opção para adicionar um novo contato
-            with st.form("form_adicionar_contato"):
-                st.subheader("Adicionar Contato")
-                nome = st.text_input("Nome")
-                sobrenome = st.text_input("Sobrenome")
-                cargo = st.text_input("Cargo")
-                email = st.text_input("E-mail")
-                telefone = st.text_input("Telefone")
+            with st.popover('➕ Adicionar Contato'):
+                # Opção para adicionar um novo contato
+                with st.form("form_adicionar_contato"):
+                    st.subheader("Adicionar Contato")
+                    nome = st.text_input("Nome")
+                    sobrenome = st.text_input("Sobrenome")
+                    cargo = st.text_input("Cargo")
+                    email = st.text_input("E-mail")
+                    telefone = st.text_input("Telefone")
 
-                submit_adicionar = st.form_submit_button("Adicionar Contato")
+                    submit_adicionar = st.form_submit_button("Adicionar Contato")
 
-                if submit_adicionar:
-                    if nome and email:
-                        collection_contatos.insert_one({
-                            "nome": nome,
-                            "sobrenome": sobrenome,
-                            "cargo": cargo,
-                            "email": email,
-                            "fone": telefone,
-                            "empresa": empresa_cnpj
-                        })
-                        st.success("Contato adicionado com sucesso!")
-                        st.rerun()
-                    else:
-                        st.error("Preencha os campos obrigatórios: Nome e E-mail.")
+                    if submit_adicionar:
+                        if nome and email:
+                            collection_contatos.insert_one({
+                                "nome": nome,
+                                "sobrenome": sobrenome,
+                                "cargo": cargo,
+                                "email": email,
+                                "fone": telefone,
+                                "empresa": empresa_cnpj
+                            })
+                            st.success("Contato adicionado com sucesso!")
+                            st.rerun()
+                        else:
+                            st.error("Preencha os campos obrigatórios: Nome e E-mail.")
 
             # Se houver contatos cadastrados, exibir opções de edição/remoção
             if contatos:
