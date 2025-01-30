@@ -363,7 +363,6 @@ def consultar_empresas(user, admin):
         # Converter as datas para formato legível
         df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
         df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
-        df_empresas.insert(0, "Visualizar", False)
 
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
