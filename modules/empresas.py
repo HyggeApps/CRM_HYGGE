@@ -4,7 +4,7 @@ from utils.database import get_collection
 import pandas as pd
 from datetime import datetime
 from modules.contatos import *
-from modules.tarefas import *
+from CRM_HYGGE.modules.atividades import *
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"

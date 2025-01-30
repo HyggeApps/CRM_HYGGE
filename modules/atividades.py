@@ -1,6 +1,5 @@
 import streamlit as st
 from utils.database import get_collection
-import pandas as pd
 from datetime import datetime
 from collections import defaultdict
 
