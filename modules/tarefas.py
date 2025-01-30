@@ -60,14 +60,14 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     # Sugerir execução 7 dias após a criação
                     data_execucao_sugerida = data_criacao + timedelta(days=3)
                     # Criar campo de data de execução com sugestão
-                    data_execucao = st.date_input("Data de Execução *", value=data_execucao_sugerida)
+                    data_execucao = st.date_input("Data de Execução *", value=None)
                     # Data de retorno opcional, sugerindo 7 dias após a execução
-                    data_retorno = st.date_input("Data de Retorno *", value=data_execucao + timedelta(days=3))
+                    data_retorno = st.date_input("Data de Retorno *", value=None)
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
                     if submit_atividade:
-                        if titulo and tipo and descricao and contatos_vinculados:
+                        if titulo and tipo and descricao and contatos_vinculados and data_execucao and data_retorno:
                             atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
                             nova_atividade = {
                                 "atividade_id": atividade_id,
