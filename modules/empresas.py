@@ -407,6 +407,8 @@ def consultar_empresas(user, admin):
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
                     with st.popover('✏️ Editar empresa'):
                         editar_empresa(user, admin)
+                    with st.button('🗑️ Remover empresa'):
+                        excluir_empresa(user, admin)
 
                 with st.expander("📞 Contatos", expanded=True):
                     contatos = [
@@ -432,6 +434,44 @@ def consultar_empresas(user, admin):
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
+def excluir_empresa(user, admin):
+    if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
+        st.warning("Nenhuma empresa selecionada para exclusão.")
+        return
+    
+    empresa = st.session_state["empresa_selecionada"]
+
+    # Se admin for True, pode excluir qualquer empresa
+    # Se admin for False, só pode excluir as empresas que possui
+    pode_excluir = admin or (user == empresa["Proprietário"])
+
+    if not pode_excluir:
+        st.error("Você não tem permissão para excluir esta empresa.")
+        return
+
+    st.subheader("🗑️ Excluir Empresa")
+
+    st.warning(f"Tem certeza que deseja excluir a empresa **{empresa['Nome']}**? Esta ação não pode ser desfeita.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        confirmar = st.button("❌ Confirmar Exclusão", key="confirmar_exclusao")
+    with col2:
+        cancelar = st.button("🔙 Cancelar", key="cancelar_exclusao")
+
+    if confirmar:
+        collection_empresas = get_collection("empresas")
+        collection_empresas.delete_one({"razao_social": empresa["Nome"]})
+
+        st.success(f"Empresa **{empresa['Nome']}** foi removida com sucesso!")
+        st.session_state["empresa_selecionada"] = None  # Limpa a seleção
+        st.rerun()  # Recarrega a página
+
+    if cancelar:
+        st.session_state["empresa_selecionada"] = None  # Cancela a seleção
+        st.rerun()  # Recarrega a página
+
 
 def cadastrar_subempresa():
     
