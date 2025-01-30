@@ -310,7 +310,7 @@ def consultar_empresas(user, admin):
     if filtro_data_atividade:
         query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
 
-    # Buscar empresas no banco de dados com os filtros aplicados
+       # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
         collection_empresas.find(
             query,
@@ -347,7 +347,6 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": "Tamanho",
                 "produto_interesse": "Produto Interesse",
                 "grau_cliente": "Grau Cliente",
-                "cnpj": "CNPJ"
             }
         )
 
@@ -397,7 +396,6 @@ def consultar_empresas(user, admin):
                         "Tamanho": empresa["Tamanho"],
                         "Produto Interesse": empresa["Produto Interesse"],
                         "Grau Cliente": empresa["Grau Cliente"],
-                        "CNPJ": empresa['CNPJ']
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
@@ -409,6 +407,7 @@ def consultar_empresas(user, admin):
 
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("cnpj", "")
+                exibir_contatos_empresa(user, admin, empresa_cnpj)  # Chama a função do outro arquivo
 
         else:
             st.write('----')
