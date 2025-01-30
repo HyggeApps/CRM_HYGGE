@@ -407,7 +407,7 @@ def consultar_empresas(user, admin):
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
                     with st.popover('✏️ Editar empresa'):
                         editar_empresa(user, admin)
-                    with st.button('🗑️ Remover empresa'):
+                    if st.button('🗑️ Remover empresa'):
                         excluir_empresa(user, admin)
 
                 with st.expander("📞 Contatos", expanded=True):
