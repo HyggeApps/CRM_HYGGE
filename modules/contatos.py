@@ -2,11 +2,10 @@ import streamlit as st
 from utils.database import get_collection
 import pandas as pd
 
-
 def exibir_contatos_empresa(user, admin, empresa_cnpj):
     collection_contatos = get_collection("contatos")
 
-    # Buscar contatos vinculados à empresa selecionada
+    # Buscar apenas os contatos vinculados à empresa selecionada
     contatos = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
     with st.expander("📞 Contatos", expanded=True):
@@ -29,17 +28,16 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
         else:
             st.warning("Nenhum contato cadastrado para esta empresa.")
 
-        # Verifica permissão para editar ou adicionar contatos
+        # Verifica permissão para adicionar, editar ou remover contatos
         if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
 
             with st.popover('➕ Adicionar Contato'):
-                # Opção para adicionar um novo contato
                 with st.form("form_adicionar_contato"):
                     st.subheader("➕ Adicionar Contato")
-                    nome = st.text_input("Nome")
+                    nome = st.text_input("Nome *")
                     sobrenome = st.text_input("Sobrenome")
                     cargo = st.text_input("Cargo")
-                    email = st.text_input("E-mail")
+                    email = st.text_input("E-mail *")
                     telefone = st.text_input("Telefone")
 
                     submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
@@ -52,7 +50,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                 "cargo": cargo,
                                 "email": email,
                                 "fone": telefone,
-                                "empresa": empresa_cnpj
+                                "empresa": empresa_cnpj  # Garantir que o contato seja vinculado à empresa selecionada
                             })
                             st.success("Contato adicionado com sucesso!")
                             st.rerun()
@@ -61,7 +59,6 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
             # Se houver contatos cadastrados, exibir opções de edição/remoção
             if contatos:
-                
                 with st.popover('✏️ Editar contato'):
                     contato_selecionado = st.selectbox(
                         "Selecione um contato para editar/remover",
