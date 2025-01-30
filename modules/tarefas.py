@@ -35,14 +35,14 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             df_atividades["Contato"] = df_atividades["Contato"].apply(lambda x: "\n".join(x) if isinstance(x, list) else x)
 
             # Reordenar colunas para exibição
-            df_atividades = df_atividades[["Data Execução", "Tipo", "Título", "Descrição", "Contato"]]
+            df_atividades = df_atividades[["Data Execução", "Tipo", "Título", "Descrição", "Contato(s)"]]
 
             # Exibir a tabela com contatos formatados corretamente
             st.data_editor(
                 df_atividades,
                 column_config={
-                    "Contato": st.column_config.TextColumn(
-                        "Contato",
+                    "Contat(s)": st.column_config.TextColumn(
+                        "Contato(s)",
                         help="Lista de contatos vinculados à atividade",
                     )
                 },
