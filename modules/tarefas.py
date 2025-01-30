@@ -16,7 +16,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # Buscar atividades vinculadas à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
-    with st.expander("📌 Atividades", expanded=True):
+    with st.expander("📌 Tarefas/Atividades", expanded=True):
         if atividades:
             df_atividades = pd.DataFrame(atividades)
 
