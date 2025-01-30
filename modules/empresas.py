@@ -426,6 +426,7 @@ def consultar_empresas(user, admin):
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
             with col2:
+                st.write("### 📌 Histórico de Atividades")
                 if empresa_cnpj:
                     exibir_atividades_empresa(user, admin, empresa_cnpj)
                 else:
