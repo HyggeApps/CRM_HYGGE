@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.database import get_collection
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
@@ -54,8 +54,19 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     observacoes = st.text_area("Observações")
                     descricao = st.text_area("Descrição *")
-                    data_execucao = st.date_input("Data de Execução",disabled=True)
-                    data_retorno = st.date_input("Data de Retorno")
+
+                    # Definir data de criação como hoje
+                    data_criacao = datetime.today().date()
+
+                    # Sugerir execução 7 dias após a criação
+                    data_execucao_sugerida = data_criacao + timedelta(days=7)
+
+                    # Criar campo de data de execução com sugestão
+                    data_execucao = st.date_input("Data de Execução", value=data_execucao_sugerida)
+
+                    # Data de retorno opcional, sugerindo 7 dias após a execução
+                    data_retorno = st.date_input("Data de Retorno (Opcional)", value=data_execucao + timedelta(days=7))
+
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
