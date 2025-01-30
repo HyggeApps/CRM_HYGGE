@@ -54,8 +54,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     observacoes = st.text_area("Observações")
                     descricao = st.text_area("Descrição *")
-                    data_execucao = st.date_input("Data de Execução")
-                    data_retorno = st.date_input("Data de Retorno (Opcional)", value=None)
+                    data_execucao = st.date_input("Data de Execução",disabled=True)
+                    data_retorno = st.date_input("Data de Retorno", value=data_execucao+7)
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
