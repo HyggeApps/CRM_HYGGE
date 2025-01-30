@@ -3,7 +3,7 @@ import requests
 from utils.database import get_collection
 import pandas as pd
 from datetime import datetime
-from contatos import *
+from modules.contatos import *
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
