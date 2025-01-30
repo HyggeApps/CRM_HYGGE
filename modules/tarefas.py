@@ -130,7 +130,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                                     st.success("Atividade atualizada com sucesso!")
                                     st.rerun()
 
-                        if st.button("🗑️ Remover Atividade"):
-                            collection_atividades.delete_one({"atividade_id": atividade_dados["atividade_id"]})
-                            st.success("Atividade removida com sucesso!")
-                            st.rerun()
+                        #if st.button("🗑️ Remover Atividade"):
+                            #collection_atividades.delete_one({"atividade_id": atividade_dados["atividade_id"]})
+                            #st.success("Atividade removida com sucesso!")
+                            #st.rerun()
