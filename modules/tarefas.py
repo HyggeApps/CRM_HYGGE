@@ -42,7 +42,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             with st.popover('➕ Adicionar Atividade'):
                 with st.form("form_adicionar_atividade"):
                     st.subheader("➕ Nova Atividade")
-                    tipo = st.selectbox("Tipo de Atividade", ["Reunião", "E-mail", "Ligação", "Outro"])
+                    tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"])
                     titulo = st.text_input("Título")
                     contato = st.text_input("Contato")
                     observacoes = st.text_area("Observações")
@@ -88,8 +88,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         if atividade_dados:
                             with st.form("form_editar_atividade"):
                                 st.subheader("✏️ Editar Atividade")
-                                novo_tipo = st.selectbox("Tipo de Atividade", ["Reunião", "E-mail", "Ligação", "Outro"],
-                                                         index=["Reunião", "E-mail", "Ligação", "Outro"].index(atividade_dados["tipo_atividade"]))
+                                novo_tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"],
+                                                         index=["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"].index(atividade_dados["tipo_atividade"]))
                                 novo_titulo = st.text_input("Título", value=atividade_dados["titulo"])
                                 novo_contato = st.text_input("Contato", value=atividade_dados["contato"])
                                 novas_observacoes = st.text_area("Observações", value=atividade_dados["observacoes"])
