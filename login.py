@@ -2,13 +2,14 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 import streamlit as st
+from CRM_HYGGE.modules import contatos
 from modules import (
-    cadastro_usuarios,
+    usuarios,
     empresas,
+    contatos,
     cadastro_produtos,
     cadastro_oportunidades,
     cadastro_templates,
-    cadastro_contatos,
     cadastro_orcamentos,
     cadastro_leads
 )
@@ -215,5 +216,5 @@ if st.session_state['authentication_status']:
         else: empresas.consultar_empresas(usuario_ativo, admin=False)
 
     elif selected == 'Usuários':
-        if 'admin' in st.session_state["roles"]: cadastro_usuarios.gerenciamento_usuarios()
+        if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")

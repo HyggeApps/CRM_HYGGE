@@ -3,6 +3,7 @@ import requests
 from utils.database import get_collection
 import pandas as pd
 from datetime import datetime
+from contatos import exibir_contatos_empresa
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
@@ -325,11 +326,11 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": 1,
                 "produto_interesse": 1,
                 "grau_cliente": 1,
+                "cnpj": 1  # Adicionando o campo CNPJ para vinculação
             },
         )
     )
 
-    # Exibir tabela ou mensagem de alerta
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
 
@@ -349,24 +350,14 @@ def consultar_empresas(user, admin):
             }
         )
 
-        # Preencher "Última Atividade" com "Data de Criação" caso esteja vazia
-        df_empresas["Última Atividade"].fillna(df_empresas["Data de Criação"], inplace=True)
-
-        # Converter a data para formato legível
         df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
         df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
 
-        # Criar coluna "Visualizar"
         df_empresas.insert(0, "Visualizar", False)
 
-        # Reordenar as colunas conforme solicitado
-        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente"]]
-
-        # **Inicializar seleção no session_state**
         if "empresa_selecionada" not in st.session_state:
             st.session_state["empresa_selecionada"] = None
 
-        # Criar tabela interativa com `st.data_editor()`
         edited_df = st.data_editor(
             df_empresas,
             column_config={
@@ -380,20 +371,12 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
-        # **Se mais de uma estiver marcada, manter apenas a última selecionada**
-        if edited_df["Visualizar"].sum() > 1:
-            last_selected_index = edited_df[edited_df["Visualizar"]].index[-1]
-            edited_df["Visualizar"] = False  # Desmarca todas
-            edited_df.at[last_selected_index, "Visualizar"] = True  # Mantém apenas a última
-
-        # Atualizar `st.session_state` com a empresa selecionada
         if edited_df["Visualizar"].any():
             selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
         else:
             st.session_state["empresa_selecionada"] = None
 
-        # Exibir os detalhes da empresa selecionada abaixo da tabela
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
             
@@ -416,18 +399,15 @@ def consultar_empresas(user, admin):
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+                    
                     with st.popover('✏️ Editar empresa'):
                         editar_empresa(user, admin)
                     if st.button('🗑️ Remover empresa'):
                         excluir_empresa(user, admin)
 
-                with st.expander("📞 Contatos", expanded=True):
-                    contatos = [
-                        {"Nome": "João Silva", "Cargo": "Gerente Comercial", "E-mail": "joao@empresa.com", "Telefone": "(11) 99999-9999"},
-                        {"Nome": "Maria Souza", "Cargo": "Diretora", "E-mail": "maria@empresa.com", "Telefone": "(11) 98888-8888"},
-                    ]
-                    df_contatos = pd.DataFrame(contatos)
-                    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+                # Integrando a função de exibir contatos
+                empresa_cnpj = empresa.get("cnpj", "")
+                exibir_contatos_empresa(user, admin, empresa_cnpj)  # Chama a função do outro arquivo
 
         else:
             st.write('----')
