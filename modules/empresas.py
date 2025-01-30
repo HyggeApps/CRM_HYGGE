@@ -321,6 +321,10 @@ def consultar_empresas(user, admin):
                 "ultima_atividade": 1,
                 "cidade": 1,
                 "estado": 1,
+                "setor": 1,
+                "tamanho_empresa": 1,
+                "produto_interesse": 1,
+                "grau_cliente": 1,
             },
         )
     )
@@ -338,6 +342,10 @@ def consultar_empresas(user, admin):
                 "ultima_atividade": "Última Atividade",
                 "cidade": "Cidade",
                 "estado": "UF",
+                "setor": "Setor",
+                "tamanho_empresa": "Tamanho",
+                "produto_interesse": "Produto Interesse",
+                "grau_cliente": "Grau Cliente",
             }
         )
 
@@ -352,7 +360,7 @@ def consultar_empresas(user, admin):
         df_empresas.insert(0, "Visualizar", False)
 
         # Reordenar as colunas conforme solicitado
-        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"]]
+        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente"]]
 
         # **Inicializar seleção no session_state**
         if "empresa_selecionada" not in st.session_state:
@@ -367,7 +375,7 @@ def consultar_empresas(user, admin):
                     help="Marque para ver detalhes da empresa"
                 ),
             },
-            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF"],
+            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente"],
             hide_index=True,
             use_container_width=True
         )
@@ -402,6 +410,10 @@ def consultar_empresas(user, admin):
                         "Última Atividade": empresa['Última Atividade'],
                         "Data de Criação": empresa['Data de Criação'],
                         "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
+                        "Setor": empresa["Setor"],
+                        "Tamanho": empresa["Tamanho"],
+                        "Produto Interesse": empresa["Produto Interesse"],
+                        "Grau Cliente": empresa["Grau Cliente"],
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
@@ -418,22 +430,13 @@ def consultar_empresas(user, admin):
                     df_contatos = pd.DataFrame(contatos)
                     st.dataframe(df_contatos, hide_index=True, use_container_width=True)
 
-            with col2:
-                with st.expander("📌 Atividades Recentes", expanded=True):
-                    atividades = [
-                        {"Data": "25/01/2024", "Descrição": "E-mail enviado sobre proposta"},
-                        {"Data": "20/01/2024", "Descrição": "Reunião de negociação realizada"},
-                        {"Data": "15/01/2024", "Descrição": "Contato inicial feito via telefone"},
-                    ]
-                    df_atividades = pd.DataFrame(atividades)
-                    st.dataframe(df_atividades, hide_index=True, use_container_width=True)
-
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 def excluir_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
