@@ -43,6 +43,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             })
 
         with st.expander("📌 Histórico de Atividades", expanded=True):
+            st.write('----')
             for mes_ano, atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena do mês mais recente para o mais antigo
                 st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
                 for atividade in atividades_lista:
@@ -51,6 +52,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         st.write(f'🔹 {atividade['titulo']}: {atividade['tipo']} para {atividade['contato']}')
                         st.write(f'📝 {atividade['descricao']}')
                 st.write('----')
+            st.write('----')
+                
 
             # Adicionar nova atividade (Apenas se o usuário for admin ou proprietário)
             if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
