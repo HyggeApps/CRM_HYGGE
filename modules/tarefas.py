@@ -16,27 +16,36 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # Buscar atividades vinculadas à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
-    with st.expander("📌 Tarefas/Atividades", expanded=True):
+    with st.expander("📌 Atividades", expanded=True):
         if atividades:
             df_atividades = pd.DataFrame(atividades)
 
             # Renomear colunas para exibição
             df_atividades = df_atividades.rename(
                 columns={
-                    "atividade_id": "ID",
+                    "data_execucao_atividade": "Data Execução",
                     "tipo_atividade": "Tipo",
                     "titulo": "Título",
-                    "contato": "Contato",
                     "descricao": "Descrição",
-                    "data_execucao_atividade": "Data Execução",
-                    "data_retorno_atividade": "Data Retorno",
-                    "data_criacao_atividade": "Criado em"
+                    "contato": "Contato"
                 }
             )
 
-            df_atividades = df_atividades[["Data Execução", "Tipo", "Título","Descrição", "Contato"]]
+            # Reordenar colunas para exibição
+            df_atividades = df_atividades[["Data Execução", "Tipo", "Título", "Descrição", "Contato"]]
 
-            st.dataframe(df_atividades, hide_index=True, use_container_width=True)
+            # Configurar a coluna "Contato" como uma lista
+            st.data_editor(
+                df_atividades,
+                column_config={
+                    "Contato": st.column_config.ListColumn(
+                        "Contato",
+                        help="Lista de contatos vinculados à atividade"
+                    )
+                },
+                hide_index=True,
+                use_container_width=True
+            )
         else:
             st.warning("Nenhuma atividade cadastrada para esta empresa.")
 
