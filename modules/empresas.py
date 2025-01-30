@@ -316,7 +316,7 @@ def consultar_empresas(user, admin):
         collection_empresas.find(
             query,
             {
-                "_id": 0,
+                "_id": 0,  # Garante que o MongoDB não traga o _id
                 "razao_social": 1,
                 "usuario": 1,
                 "data_criacao": 1,
@@ -327,7 +327,7 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": 1,
                 "produto_interesse": 1,
                 "grau_cliente": 1,
-                "cnpj": 1  # Adicionando o campo CNPJ para vinculação
+                "cnpj": 1  # Certifica-se de que o campo "cnpj" está presente
             },
         )
     )
@@ -335,30 +335,33 @@ def consultar_empresas(user, admin):
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
 
-        # Renomear colunas conforme solicitado
-        df_empresas = df_empresas.rename(
-            columns={
-                "razao_social": "Nome",
-                "usuario": "Proprietário",
-                "data_criacao": "Data de Criação",
-                "ultima_atividade": "Última Atividade",
-                "cidade": "Cidade",
-                "estado": "UF",
-                "setor": "Setor",
-                "tamanho_empresa": "Tamanho",
-                "produto_interesse": "Produto Interesse",
-                "grau_cliente": "Grau Cliente",
-                "cnpj": "CNPJ"
-            }
-        )
+        # ✅ Garantir que "cnpj" existe antes de renomear colunas
+        if "cnpj" in df_empresas.columns:
+            df_empresas = df_empresas.rename(
+                columns={
+                    "razao_social": "Nome",
+                    "usuario": "Proprietário",
+                    "data_criacao": "Data de Criação",
+                    "ultima_atividade": "Última Atividade",
+                    "cidade": "Cidade",
+                    "estado": "UF",
+                    "setor": "Setor",
+                    "tamanho_empresa": "Tamanho",
+                    "produto_interesse": "Produto Interesse",
+                    "grau_cliente": "Grau Cliente",
+                    "cnpj": "CNPJ"  # Mantém "cnpj" com o nome correto
+                }
+            )
+        else:
+            st.error("Erro: O campo 'cnpj' não foi encontrado no banco de dados.")
 
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
 
-        # Definir a ordem correta das colunas
+        # Reordenar colunas
         df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade",
-                                "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse",
-                                "Grau Cliente", "CNPJ"]]
+                                   "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse",
+                                   "Grau Cliente", "CNPJ"]]
 
         # Converter as datas para formato legível
         df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
@@ -375,7 +378,7 @@ def consultar_empresas(user, admin):
                     help="Marque para ver detalhes da empresa"
                 ),
             },
-            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente"],
+            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente", "CNPJ"],
             hide_index=True,
             use_container_width=True
         )
@@ -388,7 +391,7 @@ def consultar_empresas(user, admin):
 
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
-            
+
             st.write('----')
             st.write("### 🔍 Detalhes da Empresa Selecionada")
 
@@ -405,21 +408,28 @@ def consultar_empresas(user, admin):
                         "Tamanho": empresa["Tamanho"],
                         "Produto Interesse": empresa["Produto Interesse"],
                         "Grau Cliente": empresa["Grau Cliente"],
+                        "CNPJ": empresa["CNPJ"]  # ✅ Garantir que "CNPJ" é acessado corretamente
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
-                    
+
                     with st.popover('✏️ Editar empresa'):
                         editar_empresa(user, admin)
                     if st.button('🗑️ Remover empresa'):
                         excluir_empresa(user, admin)
 
                 # Integrando a função de exibir contatos
-                empresa_cnpj = empresa.get("cnpj", "")
-                exibir_contatos_empresa(user, admin, empresa_cnpj)  # Chama a função do outro arquivo
+                empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
+                if empresa_cnpj:
+                    exibir_contatos_empresa(user, admin, empresa_cnpj)
+                else:
+                    st.error("Erro ao carregar o CNPJ da empresa.")
+
             with col2:
-                empresa_cnpj = empresa.get("cnpj", "")
-                exibir_atividades_empresa(user,admin,  empresa_cnpj)
+                if empresa_cnpj:
+                    exibir_atividades_empresa(user, admin, empresa_cnpj)
+                else:
+                    st.error("Erro ao carregar o CNPJ da empresa.")
 
         else:
             st.write('----')
@@ -427,6 +437,7 @@ def consultar_empresas(user, admin):
 
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
+
 
 def excluir_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
