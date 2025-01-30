@@ -61,38 +61,40 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
             # Se houver contatos cadastrados, exibir opções de edição/remoção
             if contatos:
-                contato_selecionado = st.selectbox(
-                    "Selecione um contato para editar/remover",
-                    options=[f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos]
-                )
+                
+                with st.popover('✏️ Editar contato'):
+                    contato_selecionado = st.selectbox(
+                        "Selecione um contato para editar/remover",
+                        options=[f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos]
+                    )
 
-                if contato_selecionado:
-                    email_editar = contato_selecionado.split("(")[-1].strip(")")
+                    if contato_selecionado:
+                        email_editar = contato_selecionado.split("(")[-1].strip(")")
 
-                    contato_dados = collection_contatos.find_one({"email": email_editar}, {"_id": 0})
+                        contato_dados = collection_contatos.find_one({"email": email_editar}, {"_id": 0})
 
-                    if contato_dados:
-                        with st.form("form_editar_contato"):
-                            st.subheader("✏️ Editar Contato")
-                            nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
-                            sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
-                            cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
-                            email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
-                            telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
+                        if contato_dados:
+                            with st.form("form_editar_contato"):
+                                st.subheader("✏️ Editar Contato")
+                                nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
+                                sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
+                                cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
+                                email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
+                                telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
 
-                            submit_editar = st.form_submit_button("Salvar Alterações")
-                            if submit_editar:
-                                collection_contatos.update_one(
-                                    {"email": email_editar},
-                                    {"$set": {
-                                        "nome": nome_edit,
-                                        "sobrenome": sobrenome_edit,
-                                        "cargo": cargo_edit,
-                                        "fone": telefone_edit
-                                    }}
-                                )
-                                st.success("Contato atualizado com sucesso!")
-                                st.rerun()
+                                submit_editar = st.form_submit_button("Salvar Alterações")
+                                if submit_editar:
+                                    collection_contatos.update_one(
+                                        {"email": email_editar},
+                                        {"$set": {
+                                            "nome": nome_edit,
+                                            "sobrenome": sobrenome_edit,
+                                            "cargo": cargo_edit,
+                                            "fone": telefone_edit
+                                        }}
+                                    )
+                                    st.success("Contato atualizado com sucesso!")
+                                    st.rerun()
 
                         if st.button("🗑️ Remover Contato"):
                             collection_contatos.delete_one({"email": email_editar})
