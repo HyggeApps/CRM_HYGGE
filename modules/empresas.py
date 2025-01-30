@@ -89,7 +89,6 @@ def editar_empresa(user, admin):
             st.success("Dados da empresa atualizados com sucesso!")
             st.rerun()
 
-
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
@@ -210,8 +209,7 @@ def cadastrar_empresas(user, admin):
                     st.error("Empresa já cadastrada com este CNPJ!")
                 else:
                     # Obter a data e hora atuais
-                    now = datetime.now()
-                    data_criacao = now.strftime("%Y-%m-%d")  # Formato padronizado
+                    data_criacao = datetime.today().strftime("%Y-%m-%d")  # Garante que a data seja uma string válida
 
                     # Insere os dados na coleção
                     document = {
@@ -231,7 +229,7 @@ def cadastrar_empresas(user, admin):
                         "grau_cliente": grau_cliente,
                         "usuario": user,
                         "data_criacao": data_criacao,
-                        "ultima_atividade": data_criacao,  # Inicialmente igual à data de criação
+                        "ultima_atividade": data_criacao  # Inicialmente igual à data de criação
                     }
                     collection_empresas.insert_one(document)
                     # Lista de chaves a serem resetadas
