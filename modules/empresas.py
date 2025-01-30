@@ -347,6 +347,7 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": "Tamanho",
                 "produto_interesse": "Produto Interesse",
                 "grau_cliente": "Grau Cliente",
+                "cnpj": "CNPJ"
             }
         )
 
@@ -396,6 +397,7 @@ def consultar_empresas(user, admin):
                         "Tamanho": empresa["Tamanho"],
                         "Produto Interesse": empresa["Produto Interesse"],
                         "Grau Cliente": empresa["Grau Cliente"],
+                        "CNPJ": empresa['CNPJ']
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
