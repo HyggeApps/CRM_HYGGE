@@ -35,7 +35,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
             with st.popover('➕ Adicionar Contato'):
                 # Opção para adicionar um novo contato
                 with st.form("form_adicionar_contato"):
-                    st.subheader("Adicionar Contato")
+                    st.subheader("➕ Adicionar Contato")
                     nome = st.text_input("Nome")
                     sobrenome = st.text_input("Sobrenome")
                     cargo = st.text_input("Cargo")
