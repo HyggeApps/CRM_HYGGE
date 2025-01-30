@@ -1,15 +1,16 @@
 from utils.database import get_collection
 import streamlit as st
 import pandas as pd
-import locale
 from datetime import datetime
 from collections import defaultdict
 
-# Definir locale para exibir meses em português
-try:
-    locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")  # Para sistemas Linux/Mac
-except:
-    locale.setlocale(locale.LC_TIME, "Portuguese_Brazil.1252")  # Para Windows
+# Dicionário de meses em português
+MESES_PT = {
+    "January": "Janeiro", "February": "Fevereiro", "March": "Março",
+    "April": "Abril", "May": "Maio", "June": "Junho",
+    "July": "Julho", "August": "Agosto", "September": "Setembro",
+    "October": "Outubro", "November": "Novembro", "December": "Dezembro"
+}
 
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
@@ -29,8 +30,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
         atividades_ordenadas = defaultdict(list)
         for atividade in atividades:
             data_execucao = datetime.strptime(atividade["data_execucao_atividade"], "%Y-%m-%d")
-            chave_mes_ano = data_execucao.strftime("%B %Y")  # Exemplo: "Janeiro 2025" em português
-            chave_mes_ano = chave_mes_ano.capitalize()  # Corrigir para maiúscula inicial
+            mes_ingles = data_execucao.strftime("%B")  # Nome do mês em inglês
+            mes_portugues = MESES_PT.get(mes_ingles, mes_ingles)  # Traduz para PT-BR
+            chave_mes_ano = f"{mes_portugues} {data_execucao.strftime('%Y')}"  # Exemplo: "Janeiro 2025"
+
             atividades_ordenadas[chave_mes_ano].append({
                 "data": data_execucao.strftime("%d/%m/%Y"),
                 "titulo": atividade["titulo"],
