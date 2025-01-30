@@ -51,7 +51,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     tipo = st.selectbox("Tipo de Atividade *", ["","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
                     status = st.selectbox("Status *",["","NA","Ocupado","Conectado","Gatekeeper","Ligação Positiva","Ligação Negativa"])
                     titulo = st.text_input("Título *")
-                    contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
+                    contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     descricao = st.text_area("Descrição *")
 
                     # Definir data de criação como hoje
@@ -62,7 +62,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
                     if submit_atividade:
-                        if titulo and tipo and descricao and contatos_vinculados:
+                        if titulo and tipo and status and descricao and contatos_vinculados:
                             atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
                             nova_atividade = {
                                 "atividade_id": atividade_id,
@@ -79,4 +79,4 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             st.success("Atividade adicionada com sucesso!")
                             st.rerun()
                         else:
-                            st.error("Preencha os campos obrigatórios: Tipo, Título, Contato, Descrição e Datas.")
+                            st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
