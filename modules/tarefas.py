@@ -57,16 +57,12 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
                     # Definir data de criação como hoje
                     data_criacao = datetime.today().date()
-
                     # Sugerir execução 7 dias após a criação
                     data_execucao_sugerida = data_criacao + timedelta(days=7)
-
                     # Criar campo de data de execução com sugestão
                     data_execucao = st.date_input("Data de Execução", value=data_execucao_sugerida)
-
                     # Data de retorno opcional, sugerindo 7 dias após a execução
                     data_retorno = st.date_input("Data de Retorno (Opcional)", value=data_execucao + timedelta(days=7))
-
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
