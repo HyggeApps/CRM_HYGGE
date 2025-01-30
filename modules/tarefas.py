@@ -45,7 +45,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
             # Popover para adicionar nova atividade
             with st.popover('➕ Adicionar Atividade'):
-                st.write(1)
+                st.write(2)
                 with st.form("form_adicionar_atividade"):
                     st.subheader("➕ Nova Atividade")
                     tipo = st.selectbox("Tipo de Atividade *", ["Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
