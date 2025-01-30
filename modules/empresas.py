@@ -393,7 +393,7 @@ def consultar_empresas(user, admin):
             st.write("### 🔍 Detalhes da Empresa Selecionada")
 
             col1, col2 = st.columns([3.5,6.5])
-
+            st.write(empresa)
             with col1:
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     dados_empresa = {
