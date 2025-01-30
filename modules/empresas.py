@@ -348,12 +348,21 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": "Tamanho",
                 "produto_interesse": "Produto Interesse",
                 "grau_cliente": "Grau Cliente",
+                "cnpj": "CNPJ"
             }
         )
 
+        # Adicionar a coluna "Visualizar" na primeira posição
+        df_empresas.insert(0, "Visualizar", False)
+
+        # Definir a ordem correta das colunas
+        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade",
+                                "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse",
+                                "Grau Cliente", "CNPJ"]]
+
+        # Converter as datas para formato legível
         df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
         df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
-
         df_empresas.insert(0, "Visualizar", False)
 
         if "empresa_selecionada" not in st.session_state:
