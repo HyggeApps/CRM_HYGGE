@@ -416,6 +416,7 @@ def consultar_empresas(user, admin):
 
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("cnpj", "")
+                st.write(empresa_cnpj)
                 exibir_contatos_empresa(user, admin, empresa_cnpj)  # Chama a função do outro arquivo
             with col2:
                 empresa_cnpj = empresa.get("cnpj", "")
