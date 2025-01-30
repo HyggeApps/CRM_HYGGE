@@ -82,7 +82,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                 email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
                                 telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
 
-                                submit_editar = st.form_submit_button("Salvar Alterações")
+                                submit_editar = st.form_submit_button("💾 Salvar Alterações")
                                 if submit_editar:
                                     collection_contatos.update_one(
                                         {"email": email_editar},
