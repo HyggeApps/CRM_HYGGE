@@ -52,7 +52,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
                 with st.container():
                     for atividade in atividades_lista:
-                        st.write(f'**📆 {atividade["data"]}** - {atividade["titulo"]}: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
+                        st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
                     st.write('---')
 
         else:
