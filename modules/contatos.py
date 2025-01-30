@@ -3,10 +3,9 @@ import pandas as pd
 from utils.database import get_collection
 
 def exibir_contatos_empresa(user, admin, empresa_cnpj):
-    st.write(2)
     collection_contatos = get_collection("contatos")
 
-    # Buscar **apenas** os contatos vinculados à empresa selecionada
+    # Buscar **apenas** os contatos vinculados à empresa atualmente selecionada
     contatos = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
     with st.expander("📞 Contatos", expanded=True):
@@ -46,7 +45,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     if submit_adicionar:
                         # Verificar se o contato já existe em **outra empresa**
                         contato_existente = collection_contatos.find_one({"email": email})
-                        if contato_existente:
+                        if contato_existente and contato_existente["empresa"] != empresa_cnpj:
                             st.error(f"Erro: O contato '{email}' já está vinculado à empresa de CNPJ {contato_existente['empresa']}!")
                         else:
                             # Adicionar contato APENAS à empresa selecionada
