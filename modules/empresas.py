@@ -393,10 +393,10 @@ def consultar_empresas(user, admin):
             empresa = st.session_state["empresa_selecionada"]
 
             st.write('----')
-            st.write("### 🔍 Detalhes da Empresa Selecionada")
 
             col1, col2 = st.columns([3.5,6.5])
             with col1:
+                st.write("### 🔍 Detalhes da Empresa Selecionada")
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     dados_empresa = {
                         "Nome": empresa['Nome'],
@@ -428,7 +428,6 @@ def consultar_empresas(user, admin):
             with col2:
                 st.write("### 📌 Histórico de Atividades")
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
-                st.write(empresa_cnpj)
                 if empresa_cnpj:
                     exibir_atividades_empresa(user, admin, empresa_cnpj)
                 else:
