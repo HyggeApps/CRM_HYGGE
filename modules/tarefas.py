@@ -51,7 +51,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     st.subheader("➕ Nova Atividade")
                     tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"])
                     titulo = st.text_input("Título*")
-                    contato = st.selectbox("Contato Vinculado", lista_contatos)  # Mostra apenas os contatos da empresa
+                    contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     observacoes = st.text_area("Observações*")
                     descricao = st.text_area("Descrição*")
                     data_execucao = st.date_input("Data de Execução")
@@ -60,7 +60,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
                     if submit_atividade:
-                        if titulo and tipo and descricao:
+                        if titulo and tipo and descricao and contatos_vinculados:
                             atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
                             nova_atividade = {
                                 "atividade_id": atividade_id,
