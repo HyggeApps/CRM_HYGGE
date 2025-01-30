@@ -29,7 +29,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
-    with st.expander("📌 Atividades realizadas por período", expanded=True):
+    with st.expander("🗓️ Atividades realizadas por período", expanded=True):
         if atividades:
             atividades_ordenadas = defaultdict(list)
 
