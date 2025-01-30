@@ -428,6 +428,7 @@ def consultar_empresas(user, admin):
             with col2:
                 st.write("### 📌 Histórico de Atividades")
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
+                st.write(empresa_cnpj)
                 if empresa_cnpj:
                     exibir_atividades_empresa(user, admin, empresa_cnpj)
                 else:
