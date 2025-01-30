@@ -78,7 +78,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             st.success("Atividade adicionada com sucesso!")
                             st.rerun()
                         else:
-                            st.error("Preencha os campos obrigatórios: Tipo, Título e Descrição.")
+                            st.error("Preencha os campos obrigatórios: Tipo, Título, Contato e Descrição.")
 
             # Se houver atividades cadastradas, exibir popover de edição/remoção
             if atividades:
