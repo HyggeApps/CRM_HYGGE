@@ -43,17 +43,17 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 with st.form("form_adicionar_atividade"):
                     st.subheader("➕ Nova Atividade")
                     tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email","Linkedin","Tarefa","Reunião","Blacklist"])
-                    titulo = st.text_input("Título")
+                    titulo = st.text_input("Título*")
                     contato = st.text_input("Contato")
-                    observacoes = st.text_area("Observações")
-                    descricao = st.text_area("Descrição")
+                    observacoes = st.text_area("Observações*")
+                    descricao = st.text_area("Descrição*")
                     data_execucao = st.date_input("Data de Execução")
                     data_retorno = st.date_input("Data de Retorno (Opcional)", value=None)
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
                     if submit_atividade:
-                        if titulo and tipo:
+                        if titulo and tipo and descricao:
                             atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
                             nova_atividade = {
                                 "atividade_id": atividade_id,
@@ -71,7 +71,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             st.success("Atividade adicionada com sucesso!")
                             st.rerun()
                         else:
-                            st.error("Preencha os campos obrigatórios: Tipo e Título.")
+                            st.error("Preencha os campos obrigatórios: Tipo, Título e Descrição.")
 
             # Se houver atividades cadastradas, exibir popover de edição/remoção
             if atividades:
