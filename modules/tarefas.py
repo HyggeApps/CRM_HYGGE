@@ -27,12 +27,12 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     "tipo_atividade": "Tipo",
                     "titulo": "Título",
                     "descricao": "Descrição",
-                    "contato": "Contato"
+                    "contato": "Contato(s)"
                 }
             )
 
             # Converter listas de contatos para strings formatadas separadas por quebras de linha "\n"
-            df_atividades["Contato"] = df_atividades["Contato"].apply(lambda x: "\n".join(x) if isinstance(x, list) else x)
+            df_atividades["Contato(s)"] = df_atividades["Contato(s)"].apply(lambda x: "\n".join(x) if isinstance(x, list) else x)
 
             # Reordenar colunas para exibição
             df_atividades = df_atividades[["Data Execução", "Tipo", "Título", "Descrição", "Contato(s)"]]
@@ -41,7 +41,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             st.data_editor(
                 df_atividades,
                 column_config={
-                    "Contat(s)": st.column_config.TextColumn(
+                    "Contato(s)": st.column_config.TextColumn(
                         "Contato(s)",
                         help="Lista de contatos vinculados à atividade",
                     )
