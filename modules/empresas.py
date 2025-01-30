@@ -272,7 +272,6 @@ def consultar_empresas(user, admin):
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
 
-    st.write(1)
     # Filtros
     col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
