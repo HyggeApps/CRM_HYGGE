@@ -50,7 +50,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     st.subheader("➕ Nova Atividade")
                     tipo = st.selectbox("Tipo de Atividade *", ["Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
                     if tipo == 'Ligação':
-                        status = st.selectbox("Status *",['Ocupado',"Conectado","Gatekeeper","Ligação Positiva","Ligação Negativa"])
+                        status = st.selectbox("Status *",["Ocupado","Conectado","Gatekeeper","Ligação Positiva","Ligação Negativa"])
+                    else: status = st.selectbox("Status *",["NA"], disabled=True)
                     titulo = st.text_input("Título *")
                     contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     descricao = st.text_area("Descrição *")
