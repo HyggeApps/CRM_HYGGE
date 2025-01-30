@@ -1,7 +1,15 @@
-import streamlit as st
 from utils.database import get_collection
+import streamlit as st
+import pandas as pd
+import locale
 from datetime import datetime
 from collections import defaultdict
+
+# Definir locale para exibir meses em português
+try:
+    locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")  # Para sistemas Linux/Mac
+except:
+    locale.setlocale(locale.LC_TIME, "Portuguese_Brazil.1252")  # Para Windows
 
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
@@ -21,7 +29,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
         atividades_ordenadas = defaultdict(list)
         for atividade in atividades:
             data_execucao = datetime.strptime(atividade["data_execucao_atividade"], "%Y-%m-%d")
-            chave_mes_ano = data_execucao.strftime("%B %Y")  # Exemplo: "Janeiro 2025"
+            chave_mes_ano = data_execucao.strftime("%B %Y")  # Exemplo: "Janeiro 2025" em português
+            chave_mes_ano = chave_mes_ano.capitalize()  # Corrigir para maiúscula inicial
             atividades_ordenadas[chave_mes_ano].append({
                 "data": data_execucao.strftime("%d/%m/%Y"),
                 "titulo": atividade["titulo"],
