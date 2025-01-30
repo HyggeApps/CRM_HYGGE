@@ -444,7 +444,7 @@ def excluir_empresa(user, admin):
 
     # Se admin for True, pode excluir qualquer empresa
     # Se admin for False, só pode excluir as empresas que possui
-    pode_excluir = admin or (user == empresa["Proprietário"])
+    pode_excluir = admin
 
     if not pode_excluir:
         st.error("Você não tem permissão para excluir esta empresa.")
