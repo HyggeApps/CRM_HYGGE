@@ -51,7 +51,6 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         st.write(f'**{atividade['data']}**')
                         st.write(f'🔹 {atividade['titulo']}: {atividade['tipo']} para {atividade['contato']}')
                         st.write(f'📝 {atividade['descricao']}')
-                    st.write('----')
             st.write('----')
                 
 
