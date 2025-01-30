@@ -49,11 +49,11 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
             with st.popover('➕ Adicionar Atividade'):
                 with st.form("form_adicionar_atividade"):
                     st.subheader("➕ Nova Atividade")
-                    tipo = st.selectbox("Tipo de Atividade", ["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"])
-                    titulo = st.text_input("Título*")
+                    tipo = st.selectbox("Tipo de Atividade *", ["Contato inicial", "Whatsapp", "Ligação", "Email", "Linkedin", "Tarefa", "Reunião", "Blacklist"])
+                    titulo = st.text_input("Título *")
                     contato = st.selectbox("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
-                    observacoes = st.text_area("Observações*")
-                    descricao = st.text_area("Descrição*")
+                    observacoes = st.text_area("Observações")
+                    descricao = st.text_area("Descrição *")
                     data_execucao = st.date_input("Data de Execução")
                     data_retorno = st.date_input("Data de Retorno (Opcional)", value=None)
 
