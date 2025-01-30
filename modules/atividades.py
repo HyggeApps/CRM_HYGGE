@@ -44,9 +44,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
         with st.expander("📌 Histórico de Atividades", expanded=True):
             for mes_ano, atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena do mês mais recente para o mais antigo
-                st.markdown(f"## 📅 {mes_ano}")  # Título do mês e ano
+                st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
                 for atividade in atividades_lista:
                     with st.container():
+                        st.write(f'**📆 {atividade['data']}**')
                         st.markdown(f"""
                         **###📆 {atividade['data']}**  
                         **###🔹 {atividade['titulo']}**: {atividade['tipo']} para **{atividade['contato']}**  
