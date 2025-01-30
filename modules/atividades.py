@@ -50,6 +50,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         st.write(f'**{atividade['data']}**')
                         st.write(f'🔹 {atividade['titulo']}: {atividade['tipo']} para {atividade['contato']}')
                         st.write(f'📝 {atividade['descricao']}')
+                st.write('----')
 
             # Adicionar nova atividade (Apenas se o usuário for admin ou proprietário)
             if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
