@@ -47,13 +47,9 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
                 for atividade in atividades_lista:
                     with st.container():
-                        st.write(f'**📆 {atividade['data']}**')
-                        st.markdown(f"""
-                        **###📆 {atividade['data']}**  
-                        **###🔹 {atividade['titulo']}**: {atividade['tipo']} para **{atividade['contato']}**  
-                        ###📝 {atividade['descricao']}
-                        ---
-                        """)
+                        st.write(f'**{atividade['data']}**')
+                        st.write(f'🔹 {atividade['titulo']}: {atividade['tipo']} para {atividade['contato']}')
+                        st.write(f'📝 {atividade['descricao']}')
 
             # Adicionar nova atividade (Apenas se o usuário for admin ou proprietário)
             if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
