@@ -452,25 +452,34 @@ def excluir_empresa(user, admin):
 
     st.subheader("🗑️ Excluir Empresa")
 
-    st.warning(f"Tem certeza que deseja excluir a empresa **{empresa['Nome']}**? Esta ação não pode ser desfeita.")
+    # Criar variável de estado para confirmação
+    if "confirmar_exclusao" not in st.session_state:
+        st.session_state["confirmar_exclusao"] = False
 
-    col1, col2 = st.columns(2)
-    with col1:
-        confirmar = st.button("❌ Confirmar Exclusão", key="confirmar_exclusao")
-    with col2:
-        cancelar = st.button("🔙 Cancelar", key="cancelar_exclusao")
+    if not st.session_state["confirmar_exclusao"]:
+        st.warning(f"Tem certeza que deseja excluir a empresa **{empresa['Nome']}**? Esta ação não pode ser desfeita.")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("❌ Confirmar Exclusão"):
+                st.session_state["confirmar_exclusao"] = True  # Armazena a confirmação
 
-    if confirmar:
+        with col2:
+            if st.button("🔙 Cancelar"):
+                st.session_state["empresa_selecionada"] = None  # Cancela a seleção
+                st.session_state["confirmar_exclusao"] = False
+                st.rerun()
+    
+    else:
+        # Executa a exclusão
         collection_empresas = get_collection("empresas")
         collection_empresas.delete_one({"razao_social": empresa["Nome"]})
 
         st.success(f"Empresa **{empresa['Nome']}** foi removida com sucesso!")
         st.session_state["empresa_selecionada"] = None  # Limpa a seleção
+        st.session_state["confirmar_exclusao"] = False
         st.rerun()  # Recarrega a página
 
-    if cancelar:
-        st.session_state["empresa_selecionada"] = None  # Cancela a seleção
-        st.rerun()  # Recarrega a página
 
 
 def cadastrar_subempresa():
