@@ -2,7 +2,6 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 import streamlit as st
-from CRM_HYGGE.modules import contatos
 from modules import (
     usuarios,
     empresas,
