@@ -3,6 +3,7 @@ import pandas as pd
 from utils.database import get_collection
 
 def exibir_contatos_empresa(user, admin, empresa_cnpj):
+    st.write(11111, empresa_cnpj)
     collection_contatos = get_collection("contatos")
 
     # Buscar **apenas** os contatos vinculados à empresa atualmente selecionada
