@@ -437,7 +437,6 @@ def consultar_empresas(user, admin):
     else:
         st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
-
 def excluir_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
         st.warning("Nenhuma empresa selecionada para exclusão.")
