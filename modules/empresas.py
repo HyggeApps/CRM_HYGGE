@@ -209,9 +209,8 @@ def cadastrar_empresas(user, admin):
                     st.error("Empresa já cadastrada com este CNPJ!")
                 else:
                     # Obter a data e hora atuais
-                    data_criacao = datetime.today().strftime("%Y-%m-%d")  # Garante que a data seja uma string válida
+                    now = datetime.today().strftime("%Y-%m-%d")  # Garante formato apenas de data, sem horário
 
-                    # Insere os dados na coleção
                     document = {
                         "razao_social": razao_social,
                         "cnpj": cnpj,
@@ -228,8 +227,8 @@ def cadastrar_empresas(user, admin):
                         "produto_interesse": produto_interesse,
                         "grau_cliente": grau_cliente,
                         "usuario": user,
-                        "data_criacao": data_criacao,
-                        "ultima_atividade": data_criacao  # Inicialmente igual à data de criação
+                        "data_criacao": now,  # Agora ambas estão no formato YYYY-MM-DD
+                        "ultima_atividade": now,
                     }
                     collection_empresas.insert_one(document)
                     # Lista de chaves a serem resetadas
