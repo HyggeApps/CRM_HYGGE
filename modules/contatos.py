@@ -42,7 +42,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     email = st.text_input("E-mail")
                     telefone = st.text_input("Telefone")
 
-                    submit_adicionar = st.form_submit_button("Adicionar Contato")
+                    submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
 
                     if submit_adicionar:
                         if nome and email:
