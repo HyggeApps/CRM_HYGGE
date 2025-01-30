@@ -55,7 +55,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     observacoes = st.text_area("Observações")
                     descricao = st.text_area("Descrição *")
                     data_execucao = st.date_input("Data de Execução",disabled=True)
-                    data_retorno = st.date_input("Data de Retorno", value=data_execucao+7)
+                    data_retorno = st.date_input("Data de Retorno")
 
                     submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
