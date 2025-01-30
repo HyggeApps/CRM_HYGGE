@@ -16,13 +16,17 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
     collection_contatos = get_collection("contatos")
 
+    if not empresa_cnpj:
+        st.error("Erro: Nenhuma empresa selecionada para exibir atividades.")
+        return
+
     # Buscar contatos vinculados à empresa
     contatos_vinculados = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
 
     # Criar lista de contatos formatada
     lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
 
-    # Buscar atividades vinculadas à empresa selecionada
+    # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
     # Exibir atividades em formato de timeline
@@ -48,12 +52,11 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
                 for atividade in atividades_lista:
                     with st.container():
-                        st.write(f'**{atividade['data']}**')
-                        st.write(f'🔹 {atividade['titulo']}: {atividade['tipo']} para {atividade['contato']}')
-                        st.write(f'📝 {atividade['descricao']}')
+                        st.write(f'**{atividade["data"]}**')
+                        st.write(f'🔹 {atividade["titulo"]}: {atividade["tipo"]} para {atividade["contato"]}')
+                        st.write(f'📝 {atividade["descricao"]}')
             st.write('----')
                 
-
             # Adicionar nova atividade (Apenas se o usuário for admin ou proprietário)
             if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
                 with st.popover('➕ Adicionar Atividade'):
@@ -94,4 +97,5 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                                 st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
             else:
                 st.warning("Nenhuma atividade cadastrada para esta empresa.")
-
+    else:
+        st.warning("Nenhuma atividade cadastrada para esta empresa.")
