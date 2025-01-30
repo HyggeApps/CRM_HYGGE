@@ -310,7 +310,7 @@ def consultar_empresas(user, admin):
     if filtro_data_atividade:
         query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
 
-       # Buscar empresas no banco de dados com os filtros aplicados
+    # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
         collection_empresas.find(
             query,
