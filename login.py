@@ -67,6 +67,19 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
+st.markdown(
+    """
+    <style>
+    .stForm {
+        width: 80% !important; /* Ajusta a largura do formulário */
+        margin: auto; /* Centraliza o formulário */
+        padding: 20px; /* Adiciona mais espaço interno */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Adicionando CSS personalizado
 st.markdown(
     """
