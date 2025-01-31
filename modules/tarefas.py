@@ -168,7 +168,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "status": status_edit
                                         }}
                                     )
-                                    with st.spinner("Carregando..."): time.sleep(1)
+                                    
                                     st.success("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
 

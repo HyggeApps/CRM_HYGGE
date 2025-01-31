@@ -125,7 +125,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas.insert_one(nova_tarefa)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        with st.spinner("Carregando..."): time.sleep(1)
+                        
                         st.rerun()
                         
                     else:

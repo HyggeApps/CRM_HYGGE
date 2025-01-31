@@ -45,7 +45,7 @@ def gerenciamento_usuarios():
                             "hierarquia": hierarquia,
                         }
                         collection.insert_one(document)
-                        with st.spinner("Carregando..."): time.sleep(1)
+                        
                         st.success("Usuário cadastrado com sucesso!")
                         st.rerun()
                 else:
@@ -111,7 +111,7 @@ def gerenciamento_usuarios():
                                 "hierarquia": hierarquia
                             }}
                         )
-                        with st.spinner("Carregando..."): time.sleep(1)
+                        
                         st.success(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
                         st.rerun()
                         

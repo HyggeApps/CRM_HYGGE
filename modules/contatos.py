@@ -46,7 +46,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                             "fone": telefone,
                             "empresa": empresa_cnpj  # O contato pertence APENAS a essa empresa!
                         })
-                        with st.spinner("Carregando..."): time.sleep(1)
+                        
                         st.success("Contato adicionado com sucesso!")
                         st.rerun()
                         
@@ -92,7 +92,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                         "fone": telefone_edit
                                     }}
                                 )
-                                with st.spinner("Carregando..."): time.sleep(1)
+                                
                                 st.success("Contato atualizado com sucesso!")
                                 st.rerun()
                                 
