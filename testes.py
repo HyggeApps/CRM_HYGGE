@@ -14,7 +14,7 @@ def gerar_atividades_teste(empresa_cnpj):
 
     # Criar atividades distribuídas pelos últimos 12 meses
     for i in range(20):
-        meses_atras = random.randint(0, 11)  # Escolhe um mês dentro do último ano
+        meses_atras = random.randint(0, 30)  # Escolhe um mês dentro do último ano
         data_execucao = datetime.today() - timedelta(days=meses_atras * 30 + random.randint(1, 28))
 
         atividade_id = str(datetime.now().timestamp())  # ID único baseado no tempo
