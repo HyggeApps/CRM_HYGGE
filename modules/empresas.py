@@ -343,7 +343,7 @@ def consultar_empresas(user, admin):
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
                     editar_empresa(user, admin)
-                    st.rerun()
+                    st.rerun("fragment")
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
