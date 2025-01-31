@@ -65,7 +65,7 @@ def editar_empresa(user, admin):
                                  index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
                                  disabled=not eh_proprietario)
         with col6:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
+            produto_interesse = st.multiselect("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
                                              index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
                                              disabled=not eh_proprietario)
 

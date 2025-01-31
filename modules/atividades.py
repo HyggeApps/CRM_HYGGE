@@ -79,7 +79,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
 
 
-    with st.expander("🗓️ Atividades realizadas por período", expanded=True):
+    with st.expander("🗓️ Atividades realizadas por período", expanded=False):
 
         if atividades:
             atividades_ordenadas = defaultdict(list)
