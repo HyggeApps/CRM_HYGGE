@@ -197,7 +197,7 @@ def cadastrar_empresas(user, admin):
                         "empresa": cnpj,
                         "data_execucao": prazo_execucao.strftime("%Y-%m-%d"),
                         "observacoes": "Nova empresa cadastrada",
-                        "status": "Em andamento"
+                        "status": "🟨 Em andamento"
                     }
                     collection_tarefas.insert_one(tarefa_document)
 
