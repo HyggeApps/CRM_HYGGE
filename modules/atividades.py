@@ -108,7 +108,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_atividades.insert_one(nova_atividade)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun()
+                        
                         
                     elif titulo and tipo and status and descricao and contatos_vinculados:
                         atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
@@ -140,7 +140,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas.insert_one(nova_tarefa)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun()
+                        
                                 
                         
                     else:
