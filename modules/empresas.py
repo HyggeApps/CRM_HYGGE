@@ -21,6 +21,7 @@ def buscar_dados_cep(cep):
         return response.json()
     return None
 
+@st.fragment
 def editar_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
         st.warning("Nenhuma empresa selecionada para edição.")
@@ -90,7 +91,9 @@ def editar_empresa(user, admin):
                 }}
             )
             st.success("Dados da empresa atualizados com sucesso!")
-            
+            st.rerun()
+
+@st.fragment            
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
     collection_tarefas = get_collection("tarefas")  # Conectar com a coleção de tarefas
