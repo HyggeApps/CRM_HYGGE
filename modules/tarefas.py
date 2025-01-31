@@ -135,27 +135,32 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                         with st.form("form_editar_tarefa",):
                             st.subheader("✏️ Editar Tarefa")
 
-                            titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
-                            prazo_edit = st.selectbox(
-                                "Novo Prazo de Execução",
-                                ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"],
-                                index=3
-                            )
+                            # Criar duas colunas para organizar os campos
+                            col1, col2 = st.columns(2)
 
-                            data_execucao_edit = st.date_input(
-                                "Data de Execução",
-                                value=pd.to_datetime(tarefa_dados["data_execucao"]).date()
-                            ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+                            with col1:
+                                titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
+                                prazo_edit = st.selectbox(
+                                    "Novo Prazo de Execução",
+                                    ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"],
+                                    index=3
+                                )
+                                data_execucao_edit = st.date_input(
+                                    "Data de Execução",
+                                    value=pd.to_datetime(tarefa_dados["data_execucao"]).date()
+                                ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
 
-                            observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
-                            status_edit = st.selectbox(
-                                "Status",
-                                ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
-                                index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
-                            )
+                            with col2:
+                                status_edit = st.selectbox(
+                                    "Status",
+                                    ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
+                                    index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                                )
+                                observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
+                            # Botão para salvar as alterações
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
-                            
+                                                     
                             if submit_editar:
                                 # Verificar se o usuário está tentando concluir todas as tarefas
                                 tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
