@@ -160,6 +160,8 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                 if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
                                     st.error("⚠️ Erro: Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'. Cadastre uma nova atividade/tarefa antes de concluir todas.")
                                 else:
+                                    if status_edit == "🟩 Concluída":
+                                        data_execucao_edit = datetime.today().date()
                                     collection_tarefas.update_one(
                                         {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
                                         {"$set": {
@@ -169,7 +171,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "status": status_edit
                                         }}
                                     )
-                                    
                                     st.success("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
 
