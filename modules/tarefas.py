@@ -21,6 +21,7 @@ def calcular_data_execucao(opcao):
     
     return opcoes_prazo.get(opcao, hoje)
 
+@st.fragment
 def atualizar_status_tarefas(empresa_cnpj):
     collection_tarefas = get_collection("tarefas")
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
@@ -93,7 +94,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                         "status": status
                     }
                     collection_tarefas.insert_one(nova_tarefa)
-                    st.success("Tarefa criada com sucesso!")
+                    st.toast("Tarefa criada com sucesso!")
                     st.rerun()
                 else:
                     st.error("Preencha o campo obrigatório: Título da Tarefa.")
@@ -196,7 +197,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                         }}
                                     )
 
-                                    st.success("Tarefa atualizada com sucesso! 🔄")
+                                    st.toast("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
 
     else:

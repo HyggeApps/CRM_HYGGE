@@ -91,7 +91,7 @@ def editar_empresa(user, admin):
                 }}
             )
             
-            st.success("Dados da empresa atualizados com sucesso!")
+            st.toast("Dados da empresa atualizados com sucesso!")
             st.rerun()
 
 @st.fragment            
@@ -205,7 +205,7 @@ def cadastrar_empresas(user, admin):
                     collection_tarefas.insert_one(tarefa_document)
                     
                     
-                    st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
+                    st.toast("Empresa cadastrada com sucesso e tarefa inicial criada!")
                     st.rerun()
 
 @st.fragment
@@ -536,7 +536,7 @@ def cadastrar_subempresa():
                             {"cnpj": matriz_cnpj},
                             {"$push": {"subempresas": cnpj}}
                         )
-                        st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
+                        st.toast("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
                         
                         st.rerun()
                 else:
