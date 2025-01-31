@@ -100,22 +100,19 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
             df_tarefas = df_tarefas[["Status", "Data de Execução", "Título", "Observações"]]
 
             # Converter datas para formato legível
-            df_tarefas["Data de Execução"] = pd.to_datetime(df_tarefas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
-
-            # Atualizar status automaticamente
             hoje = datetime.today().date()
             df_tarefas["Data Execução Timestamp"] = pd.to_datetime(df_tarefas["Data de Execução"], format="%d/%m/%Y", errors="coerce")
 
-            # Atualizar status automaticamente
-            df_tarefas["Status"] = df_tarefas.apply(
+            # Atualizar status automaticamente antes de exibir a tabela
+            df_tarefas["Status Corrigido"] = df_tarefas.apply(
                 lambda row: "🟥 Atrasado" if row["Data Execução Timestamp"].date() < hoje and row["Status"] != "🟩 Concluída" else row["Status"], axis=1
             )
 
-            # Exibir tabela editável
+            # Criar tabela editável sem a coluna auxiliar
             edited_df = st.data_editor(
                 df_tarefas.drop(columns=["Data Execução Timestamp"]),  # Esconder coluna auxiliar
                 column_config={
-                    "Status": st.column_config.SelectboxColumn(
+                    "Status Corrigido": st.column_config.SelectboxColumn(
                         "Status",
                         options=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"]
                     )
@@ -124,19 +121,27 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 use_container_width=True
             )
 
-            # Atualizar banco de dados apenas se houver mudanças
+            # Verificar se houve mudanças antes de atualizar o banco de dados
             if not edited_df.equals(df_tarefas.drop(columns=["Data Execução Timestamp"])):
                 collection_tarefas = get_collection("tarefas")
-                
-                for index, row in edited_df.iterrows():
-                    # Atualizar no banco de dados
-                    collection_tarefas.update_one(
-                        {"titulo": row["Título"], "data_execucao": row["Data de Execução"]},
-                        {"$set": {"status": row["Status"]}}
-                    )
+                updates = []
 
-                st.success("Status atualizado com sucesso! 🔄")
-                st.rerun()
+                for index, row in edited_df.iterrows():
+                    if row["Status Corrigido"] != df_tarefas.loc[index, "Status"]:
+                        updates.append(
+                            {
+                                "filtro": {"titulo": row["Título"], "data_execucao": row["Data de Execução"]},
+                                "update": {"$set": {"status": row["Status Corrigido"]}}
+                            }
+                        )
+
+                if updates:
+                    for update in updates:
+                        collection_tarefas.update_one(update["filtro"], update["update"])
+
+                    st.success("Status atualizado com sucesso! 🔄")
+                    st.experimental_rerun()
+
 
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
