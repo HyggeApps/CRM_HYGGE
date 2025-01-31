@@ -34,15 +34,34 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
             with st.form("form_criar_tarefa", clear_on_submit=True):
                 st.subheader("➕ Nova Tarefa")
 
-                titulo = st.text_input("Título da Tarefa *")
-                prazo = st.selectbox("Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
-                
-                data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
-                
+                col1, col2 = st.columns(2)
+                with col1:
+                    titulo = st.text_input("Título da Tarefa *")
+                    prazo = st.selectbox("Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+
+                with col2:
+                    data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
+                    status = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=0)
+
                 observacoes = st.text_area("Observações da Tarefa")
-                status = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=0)
 
                 submit_criar = st.form_submit_button("✅ Criar Tarefa")
+
+        if submit_criar:
+            if titulo:
+                nova_tarefa = {
+                    "titulo": titulo,
+                    "empresa": empresa_cnpj,
+                    "data_execucao": data_execucao.strftime("%Y-%m-%d"),
+                    "observacoes": observacoes,
+                    "status": status
+                }
+                collection_tarefas.insert_one(nova_tarefa)
+                st.success("Tarefa criada com sucesso!")
+                st.rerun()
+            else:
+                st.error("Preencha o campo obrigatório: Título da Tarefa.")
+
 
                 if submit_criar:
                     if titulo:
