@@ -28,11 +28,42 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
         return
 
+    # 📌 Botão para adicionar nova tarefa
+    if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
+        with st.popover('➕ Criar Tarefa'):
+            with st.form("form_criar_tarefa", clear_on_submit=True):
+                st.subheader("➕ Nova Tarefa")
 
+                titulo = st.text_input("Título da Tarefa *")
+                prazo = st.selectbox("Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                
+                data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
+                
+                observacoes = st.text_area("Observações da Tarefa")
+                status = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=0)
+
+                submit_criar = st.form_submit_button("✅ Criar Tarefa")
+
+                if submit_criar:
+                    if titulo:
+                        nova_tarefa = {
+                            "titulo": titulo,
+                            "empresa": empresa_cnpj,
+                            "data_execucao": data_execucao.strftime("%Y-%m-%d"),
+                            "observacoes": observacoes,
+                            "status": status
+                        }
+                        collection_tarefas.insert_one(nova_tarefa)
+                        st.success("Tarefa criada com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("Preencha o campo obrigatório: Título da Tarefa.")
+
+    # 📌 Listagem das tarefas existentes
     tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
     if tarefas:
-        with st.expander('Tarefas registradas'):
+        with st.expander('📋 Tarefas Registradas', expanded=True):
             df_tarefas = pd.DataFrame(tarefas)
 
             df_tarefas = df_tarefas.rename(
@@ -40,15 +71,51 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     "titulo": "Título",
                     "data_execucao": "Data de Execução",
                     "observacoes": "Observações",
-                    "status": 'Status'
+                    "status": "Status"
                 }
             )
 
-            df_tarefas = df_tarefas[["Título", "Data de Execução", "Observações"]]
-            df_tarefas["Data Execução"] = pd.to_datetime(df_tarefas["Data Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
+            df_tarefas = df_tarefas[["Título", "Data de Execução", "Observações", "Status"]]
+            df_tarefas["Data de Execução"] = pd.to_datetime(df_tarefas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
 
             st.dataframe(df_tarefas, hide_index=True, use_container_width=True)
+
+            # 📌 Popover para editar tarefas existentes
+            with st.popover('✏️ Editar Tarefa'):
+                tarefa_selecionada = st.selectbox(
+                    "Selecione uma tarefa para editar",
+                    options=[t["titulo"] for t in tarefas],
+                    key="select_editar_tarefa"
+                )
+
+                if tarefa_selecionada:
+                    tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
+
+                    if tarefa_dados:
+                        with st.form("form_editar_tarefa", clear_on_submit=True):
+                            st.subheader("✏️ Editar Tarefa")
+
+                            titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
+                            prazo_edit = st.selectbox("Novo Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                            
+                            data_execucao_edit = st.date_input("Data de Execução", value=pd.to_datetime(tarefa_dados["data_execucao"]).date()) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+                            
+                            observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
+                            status_edit = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=["Pendente", "Em andamento", "Concluída"].index(tarefa_dados["status"]))
+
+                            submit_editar = st.form_submit_button("💾 Salvar Alterações")
+
+                            if submit_editar:
+                                collection_tarefas.update_one(
+                                    {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
+                                    {"$set": {
+                                        "titulo": titulo_edit,
+                                        "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                                        "observacoes": observacoes_edit,
+                                        "status": status_edit
+                                    }}
+                                )
+                                st.success("Tarefa atualizada com sucesso!")
+                                st.rerun()
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
-
-
