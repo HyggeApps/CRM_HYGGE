@@ -38,6 +38,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     }
 
     with st.expander("🗓️ Atividades realizadas por período", expanded=True):
+        st.write(1)
         # **Permitir que a atividade seja cadastrada sempre**
         if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
             with st.popover('➕ Registrar Atividade'):
