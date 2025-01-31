@@ -94,53 +94,24 @@ def editar_empresa(user, admin):
 
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
+    collection_tarefas = get_collection("tarefas")  # Conectar com a coleção de tarefas
 
-    # -------------------
-    # Aba: Cadastrar Empresa
-    # -------------------
     st.header('Cadastro de empresas')
     st.write('----')
-    # Variáveis para preenchimento automático
+
     if "dados_cnpj" not in st.session_state:
         st.session_state["dados_cnpj"] = {}
     if "dados_cep" not in st.session_state:
         st.session_state["dados_cep"] = {}
 
-    # Buscar CNPJ antes de exibir o formulário
     st.subheader("🔍 Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP (dois cliques para buscar)"):
         col1, col2 = st.columns(2)
         with col1:
             cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ", key="cnpj_input")
-            if st.button("🔍 Buscar Dados do CNPJ", key="buscar_cnpj"):
-                cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
-                if len(cnpj_limpo) == 14:
-                    dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
-                    if dados_cnpj and not dados_cnpj.get("erro"):
-                        st.success("Dados do CNPJ encontrados!")
-                        st.session_state["dados_cnpj"] = dados_cnpj
-                    else:
-                        st.error("CNPJ não encontrado ou inválido!")
-                        st.session_state["dados_cnpj"] = {}
-                else:
-                    st.error("CNPJ inválido! Certifique-se de que tem 14 dígitos.")
-
         with col2:
             cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP", key="cep_input")
-            if st.button("🔍 Buscar Dados do CEP", key="buscar_cep"):
-                cep_limpo = cep_input.replace("-", "").replace(" ", "")
-                if len(cep_limpo) == 8:
-                    dados_cep = buscar_dados_cep(cep_limpo)
-                    if dados_cep and not dados_cep.get("erro"):
-                        st.success("Dados do CEP encontrados!")
-                        st.session_state["dados_cep"] = dados_cep
-                    else:
-                        st.error("CEP não encontrado ou inválido!")
-                        st.session_state["dados_cep"] = {}
-                else:
-                    st.error("CEP inválido! Certifique-se de que tem 8 dígitos.")
 
-    # Formulário principal
     st.subheader("📃 Formulário de Cadastro")
     with st.form(key="form_cadastro_empresa"):
         col1, col2 = st.columns(2)
@@ -151,110 +122,63 @@ def cadastrar_empresas(user, admin):
 
         col3, col4 = st.columns(2)
         with col3:
-            rua = st.text_input("Rua", value=st.session_state["dados_cnpj"].get("logradouro", st.session_state["dados_cep"].get("logradouro", "")), key="rua")
-        with col4:
-            bairro = st.text_input("Bairro", value=st.session_state["dados_cnpj"].get("bairro", st.session_state["dados_cep"].get("bairro", "")), key="bairro")
-
-        col5, col6, col7 = st.columns(3)
-        with col5:
             cidade = st.text_input("Cidade *", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
-        with col6:
+        with col4:
             estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
+
+        col5, col6 = st.columns(2)
+        with col5:
+            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
+        with col6:
+            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], key="produto_interesse")
+
+        col7, col8 = st.columns(2)
         with col7:
-            cep = st.text_input("CEP", value=cep_input, max_chars=10, key="cep")
-
-        col8, col9 = st.columns(2)
+            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
         with col8:
-            fone = st.text_input("Telefone", value=st.session_state["dados_cnpj"].get("telefone", ""), key="fone")
-        with col9:
-            site = st.text_input("Site", key="site")
+            grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente", disabled=True)
 
-        col10, col11 = st.columns(2)
-        with col10:
-            insc_estadual = st.text_input("Inscrição Estadual", key="insc_estadual")
-        with col11:
-            setor = st.selectbox("Setor *", ["","Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
-
-        col12, col13, col14 = st.columns(3)
-        with col12:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["","NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], key="produto_interesse")
-        with col13:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["","Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
-        with col14:
-            grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente",disabled=True)
-
-        col_btn1, col_btn2, col_space = st.columns([0.2, 0.2, 0.4])  # Define tamanhos proporcionais
-
-        with col_btn1:
-            submit = st.form_submit_button("✅ Cadastrar")
-
-        with col_btn2:
-            clear = st.form_submit_button("❌ Limpar")
+        submit = st.form_submit_button("✅ Cadastrar")
 
         if submit:
-            # Verifica se os campos obrigatórios foram preenchidos
-            if not razao_social:
-                st.error("O campo 'Nome da Empresa' é obrigatório.")
-            elif not cnpj:
-                st.error("O campo 'CNPJ' é obrigatório.")
-            elif not cidade:
-                st.error("O campo 'Cidade' é obrigatório.")
-            elif not setor or setor == "":
-                st.error("O campo 'Setor' é obrigatório.")
-            elif not produto_interesse or produto_interesse == "":
-                st.error("O campo 'Produto de Interesse' é obrigatório.")
-            elif not tamanho_empresa or tamanho_empresa == "":
-                st.error("O campo 'Tamanho da Empresa' é obrigatório.")
+            if not razao_social or not cnpj or not cidade or not setor or not produto_interesse or not tamanho_empresa:
+                st.error("Preencha todos os campos obrigatórios!")
             else:
-                # Verifica se a empresa já está cadastrada
                 existing_company = collection_empresas.find_one({"cnpj": cnpj})
                 if existing_company:
                     st.error("Empresa já cadastrada com este CNPJ!")
                 else:
-                    # Obter a data e hora atuais
-                    now = datetime.today().strftime("%Y-%m-%d")  # Garante formato apenas de data, sem horário
-
+                    # Registrar empresa
+                    now = datetime.today().strftime("%Y-%m-%d")
                     document = {
                         "razao_social": razao_social,
                         "cnpj": cnpj,
-                        "rua": rua,
-                        "cep": cep,
-                        "bairro": bairro,
                         "cidade": cidade,
                         "estado": estado,
-                        "site": site,
-                        "fone": fone,
-                        "insc_estadual": insc_estadual,
                         "setor": setor,
                         "tamanho_empresa": tamanho_empresa,
                         "produto_interesse": produto_interesse,
                         "grau_cliente": grau_cliente,
                         "usuario": user,
-                        "data_criacao": now,  # Agora ambas estão no formato YYYY-MM-DD
+                        "data_criacao": now,
                         "ultima_atividade": now,
                     }
                     collection_empresas.insert_one(document)
 
-                    # Recarregar a página sem afetar o login
-                    st.success("Empresa cadastrada com sucesso!")
+                    # Criar automaticamente uma tarefa
+                    prazo_execucao = datetime.today().date() + timedelta(weeks=1)  # Adiciona 1 semana
+                    tarefa_document = {
+                        "titulo": "Identificar personas",
+                        "empresa": cnpj,
+                        "data_execucao": prazo_execucao.strftime("%Y-%m-%d"),
+                        "observacoes": "Nova empresa cadastrada",
+                        "status": "Em andamento"
+                    }
+                    collection_tarefas.insert_one(tarefa_document)
 
-                    
+                    st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
+                    st.rerun()
 
-        if clear:
-            # Lista de chaves a serem resetadas
-            keys_to_clear = [
-                "dados_cnpj", "dados_cep", "cnpj_input", "cep_input", "razao_social", "cnpj",
-                "rua", "bairro", "cidade", "estado", "cep", "fone", "site",
-                "insc_estadual", "setor", "produto_interesse", "tamanho_empresa", "grau_cliente"
-            ]
-
-            # Remover apenas os campos do formulário
-            for key in keys_to_clear:
-                if key in st.session_state:
-                    del st.session_state[key]
-
-            # Recarregar a página sem afetar o login
-            st.rerun()
 
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
