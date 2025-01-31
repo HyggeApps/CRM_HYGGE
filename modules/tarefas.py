@@ -37,6 +37,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
         
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
+            st.write('Entrei')
             collection_tarefas.update_one(
                 {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
