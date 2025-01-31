@@ -1,75 +1,46 @@
 import random
 from faker import Faker
-from datetime import datetime, timedelta
 from utils.database import get_collection
 
 fake = Faker("pt_BR")
 
-def gerar_cnpj_falso():
-    """Gera um CNPJ válido e aleatório"""
-    def calcular_digito(cnpj_parcial):
-        """Calcula os dois dígitos verificadores de um CNPJ"""
-        pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        pesos2 = [6] + pesos1
-
-        soma1 = sum(int(cnpj_parcial[i]) * pesos1[i] for i in range(12))
-        digito1 = 11 - soma1 % 11 if soma1 % 11 >= 2 else 0
-
-        soma2 = sum(int(cnpj_parcial[i]) * pesos2[i] for i in range(12)) + digito1 * pesos2[12]
-        digito2 = 11 - soma2 % 11 if soma2 % 11 >= 2 else 0
-
-        return str(digito1) + str(digito2)
-
-    base = f"{random.randint(10, 99)}{random.randint(100, 999)}{random.randint(100, 999)}0001"
-    return base + calcular_digito(base)
-
-def cadastrar_empresas_ficticias(qtd=1500):
-    """Cadastra empresas fictícias e cria tarefas associadas"""
+def cadastrar_contatos_ficticios():
+    """Gera de 0 a 5 contatos para cada empresa já cadastrada"""
     collection_empresas = get_collection("empresas")
-    collection_tarefas = get_collection("tarefas")
+    collection_contatos = get_collection("contatos")
 
-    setores = ["Comercial", "Residencial", "Residencial MCMV", "Industrial"]
-    produtos = ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"]
-    tamanhos = ["Tier 1", "Tier 2", "Tier 3", "Tier 4"]
-    graus = ["Lead", "Lead Qualificado", "Oportunidade", "Cliente"]
-    usuarios_ficticios = [fake.first_name() for _ in range(50)]  # Criar 50 usuários fictícios
+    # Buscar todas as empresas cadastradas
+    empresas = list(collection_empresas.find({}, {"_id": 0, "cnpj": 1, "razao_social": 1}))
 
-    empresas = []
-    tarefas = []
-    data_atual = datetime.today().strftime("%Y-%m-%d")
+    contatos = []
+    cargos_possiveis = ["CEO", "Diretor Comercial", "Gerente de Projetos", "Analista de Vendas", "Consultor Técnico"]
 
-    for _ in range(qtd):
-        cnpj = gerar_cnpj_falso()
+    for empresa in empresas:
+        cnpj = empresa["cnpj"]
+        num_contatos = random.randint(0, 5)  # Define entre 0 e 5 contatos por empresa
 
-        empresa = {
-            "razao_social": fake.company(),
-            "cnpj": cnpj,
-            "cidade": fake.city(),
-            "estado": fake.state_abbr(),
-            "setor": random.choice(setores),
-            "tamanho_empresa": random.choice(tamanhos),
-            "produto_interesse": random.choice(produtos),
-            "grau_cliente": random.choice(graus),
-            "usuario": random.choice(usuarios_ficticios),
-            "data_criacao": data_atual,
-            "ultima_atividade": data_atual,
-        }
-        empresas.append(empresa)
+        for _ in range(num_contatos):
+            nome = fake.first_name()
+            sobrenome = fake.last_name()
+            email = f"{nome.lower()}.{sobrenome.lower()}@{fake.domain_name()}"
+            telefone = fake.phone_number()
+            cargo = random.choice(cargos_possiveis)
 
-        tarefa = {
-            "titulo": "Identificar personas",
-            "empresa": cnpj,
-            "data_execucao": (datetime.today().date() + timedelta(days=7)).strftime("%Y-%m-%d"),
-            "observacoes": "Nova empresa cadastrada",
-            "status": "🟨 Em andamento"
-        }
-        tarefas.append(tarefa)
+            contato = {
+                "nome": nome,
+                "sobrenome": sobrenome,
+                "cargo": cargo,
+                "email": email,
+                "fone": telefone,
+                "empresa": cnpj  # Vincula contato ao CNPJ da empresa
+            }
+            contatos.append(contato)
 
-    # Inserir todas as empresas e tarefas no banco
-    collection_empresas.insert_many(empresas)
-    collection_tarefas.insert_many(tarefas)
+    if contatos:
+        collection_contatos.insert_many(contatos)
+        print(f"✅ {len(contatos)} contatos fictícios cadastrados com sucesso!")
+    else:
+        print("⚠️ Nenhum contato foi gerado.")
 
-    print(f"✅ {qtd} empresas fictícias cadastradas com sucesso!")
-
-# Executar o script para cadastrar 1.500 empresas
-cadastrar_empresas_ficticias(1500)
+# Executar o script para cadastrar contatos fictícios
+cadastrar_contatos_ficticios()
