@@ -415,7 +415,7 @@ def consultar_empresas(user, admin):
 
             with col2:
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
-                st.write("### 📌 Tarefas para a empresa")
+                st.write("### 📜 Tarefas para a empresa")
                 if empresa_cnpj:
                     gerenciamento_tarefas(user, admin, empresa_cnpj)
 
