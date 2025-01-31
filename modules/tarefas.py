@@ -131,26 +131,44 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                             st.subheader("✏️ Editar Tarefa")
 
                             titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
-                            prazo_edit = st.selectbox("Novo Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
-                            
-                            data_execucao_edit = st.date_input("Data de Execução", value=pd.to_datetime(tarefa_dados["data_execucao"]).date()) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
-                            
+                            prazo_edit = st.selectbox(
+                                "Novo Prazo de Execução",
+                                ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"],
+                                index=3
+                            )
+
+                            data_execucao_edit = st.date_input(
+                                "Data de Execução",
+                                value=pd.to_datetime(tarefa_dados["data_execucao"]).date()
+                            ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+
                             observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
-                            status_edit = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"]))
+                            status_edit = st.selectbox(
+                                "Status",
+                                ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
+                                index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                            )
 
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                             if submit_editar:
-                                collection_tarefas.update_one(
-                                    {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
-                                    {"$set": {
-                                        "titulo": titulo_edit,
-                                        "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
-                                        "observacoes": observacoes_edit,
-                                        "status": status_edit
-                                    }}
-                                )
-                                st.success("Tarefa atualizada com sucesso! 🔄")
-                                st.rerun()
+                                # Verificar se o usuário está tentando concluir todas as tarefas
+                                tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
+
+                                if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
+                                    st.error("⚠️ Erro: Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'. Cadastre uma nova atividade/tarefa antes de concluir todas.")
+                                else:
+                                    collection_tarefas.update_one(
+                                        {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
+                                        {"$set": {
+                                            "titulo": titulo_edit,
+                                            "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                                            "observacoes": observacoes_edit,
+                                            "status": status_edit
+                                        }}
+                                    )
+                                    st.success("Tarefa atualizada com sucesso! 🔄")
+                                    st.rerun()
+
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
