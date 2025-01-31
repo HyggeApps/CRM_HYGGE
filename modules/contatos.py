@@ -12,13 +12,20 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
 
         with st.popover('➕ Adicionar Contato'):
-            with st.form("form_adicionar_contato",clear_on_submit=True):
+            with st.form("form_adicionar_contato", clear_on_submit=True):
                 st.subheader("➕ Adicionar Contato")
-                nome = st.text_input("Nome *")
-                sobrenome = st.text_input("Sobrenome")
-                cargo = st.text_input("Cargo")
-                email = st.text_input("E-mail *")
-                telefone = st.text_input("Telefone")
+                
+                # Criar duas colunas para organização do formulário
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    nome = st.text_input("Nome *")
+                    cargo = st.text_input("Cargo")
+                    telefone = st.text_input("Telefone")
+
+                with col2:
+                    sobrenome = st.text_input("Sobrenome")
+                    email = st.text_input("E-mail *")
 
                 submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
 
