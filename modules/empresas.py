@@ -191,7 +191,7 @@ def cadastrar_empresas(user, admin):
                     collection_empresas.insert_one(document)
 
                     # Criar automaticamente uma tarefa associada à empresa
-                    prazo_execucao = datetime.today().date() + timedelta(weeks=1)  # Adiciona 1 semana
+                    prazo_execucao = datetime.today().date() + timedelta(days=1)  # Adiciona 1 semana
                     tarefa_document = {
                         "titulo": "Identificar personas",
                         "empresa": cnpj,
