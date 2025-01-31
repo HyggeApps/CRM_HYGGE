@@ -10,7 +10,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
     # Verifica permissão para adicionar, editar ou remover contatos
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-        col1, col2 = st.columns(2)
+        col1, col2, col_space = st.columns([2,2,6])
         with col1:
             with st.popover('➕ Adicionar Contato'):
                 with st.form("form_adicionar_contato"):
