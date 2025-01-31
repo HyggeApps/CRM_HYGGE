@@ -35,8 +35,9 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 st.subheader("➕ Nova Tarefa")
 
                 col1, col2 = st.columns(2)
+                
+                titulo = st.text_input("Título da Tarefa *")
                 with col1:
-                    titulo = st.text_input("Título da Tarefa *")
                     prazo = st.selectbox("Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
 
                 with col2:
