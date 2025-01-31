@@ -33,6 +33,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
         if atividades:
             atividades_ordenadas = defaultdict(list)
 
+            # Criar um dicionário agrupado por mês e ano
             for atividade in atividades:
                 data_execucao = datetime.strptime(atividade["data_execucao_atividade"], "%Y-%m-%d")
                 mes_ingles = data_execucao.strftime("%B")  # Nome do mês em inglês
@@ -44,12 +45,17 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     "titulo": atividade["titulo"],
                     "tipo": atividade["tipo_atividade"],
                     "contato": ", ".join(atividade["contato"]) if isinstance(atividade["contato"], list) else atividade["contato"],
-                    "descricao": atividade["descricao"]
+                    "descricao": atividade["descricao"],
+                    "data_execucao_timestamp": data_execucao.timestamp()  # Adiciona timestamp para ordenação
                 })
 
             # Criar um bloco separado para cada mês dentro do `st.expander()`
-            for mes_ano, atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena do mais recente para o mais antigo
+            for mes_ano, atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena os meses do mais recente para o mais antigo
                 st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
+                
+                # Ordena atividades dentro do mês do mais recente para o mais antigo
+                atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
+
                 with st.container():
                     for atividade in atividades_lista:
                         st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
@@ -57,6 +63,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
         else:
             st.warning("Nenhuma atividade cadastrada para esta empresa.")
+
 
 
     # **Permitir que a atividade seja cadastrada sempre**
