@@ -12,6 +12,14 @@ MESES_PT = {
     "October": "Outubro", "November": "Novembro", "December": "Dezembro"
 }
 
+# Dicionário de meses com valores numéricos para ordenação correta
+MESES_NUMERICOS = {
+    "Janeiro": 1, "Fevereiro": 2, "Março": 3,
+    "Abril": 4, "Maio": 5, "Junho": 6,
+    "Julho": 7, "Agosto": 8, "Setembro": 9,
+    "Outubro": 10, "Novembro": 11, "Dezembro": 12
+}
+
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
     collection_contatos = get_collection("contatos")
@@ -22,20 +30,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
     # Buscar contatos vinculados à empresa
     contatos_vinculados = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
-
-    # Criar lista de contatos formatada
     lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
 
     # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
-
-    # Dicionário de meses com valores numéricos para ordenação
-    MESES_NUMERICOS = {
-        "Janeiro": 1, "Fevereiro": 2, "Março": 3,
-        "Abril": 4, "Maio": 5, "Junho": 6,
-        "Julho": 7, "Agosto": 8, "Setembro": 9,
-        "Outubro": 10, "Novembro": 11, "Dezembro": 12
-    }
 
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
@@ -78,7 +76,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
 
-
+    # Criar um expander para exibição das atividades organizadas por período
     with st.expander("🗓️ Atividades realizadas por período", expanded=False):
 
         if atividades:
@@ -101,12 +99,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
             # Ordenar os blocos de meses do mais recente para o mais antigo
             for (ano, mes_num, mes_ano_str), atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena por ano e mês
-                st.subheader(f"📅 {mes_ano_str}")  # Título do mês e ano
-                
-                # Ordena atividades dentro do mês do mais recente para o mais antigo
-                atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
+                with st.expander(f"📅 {mes_ano_str}", expanded=False):  # Cada mês tem um expander próprio
+                    # Ordena atividades dentro do mês do mais recente para o mais antigo
+                    atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
 
-                with st.container():
                     for atividade in atividades_lista:
                         st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
                     st.write('---')
