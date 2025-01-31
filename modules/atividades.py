@@ -123,7 +123,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas.insert_one(nova_tarefa)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun()
+                        
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
 

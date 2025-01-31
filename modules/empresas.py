@@ -90,7 +90,7 @@ def editar_empresa(user, admin):
                 }}
             )
             st.success("Dados da empresa atualizados com sucesso!")
-            st.rerun()
+            
 
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
@@ -202,7 +202,7 @@ def cadastrar_empresas(user, admin):
                     collection_tarefas.insert_one(tarefa_document)
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
-                    st.rerun()
+                    
 
 
 
@@ -406,7 +406,7 @@ def excluir_empresa(user, admin):
         st.success(f"Empresa **{empresa['Nome']}** foi removida com sucesso!")
         st.session_state["empresa_selecionada"] = None  # Limpa a seleção
         st.session_state["confirmar_exclusao"] = False
-        st.rerun()  # Recarrega a página
+          # Recarrega a página
 
 
 

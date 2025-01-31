@@ -92,7 +92,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     }
                     collection_tarefas.insert_one(nova_tarefa)
                     st.success("Tarefa criada com sucesso!")
-                    st.rerun()
                 else:
                     st.error("Preencha o campo obrigatório: Título da Tarefa.")
 
@@ -127,7 +126,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
 
                     if tarefa_dados:
-                        with st.form("form_editar_tarefa"):
+                        with st.form("form_editar_tarefa",):
                             st.subheader("✏️ Editar Tarefa")
 
                             titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
@@ -168,7 +167,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                         }}
                                     )
                                     st.success("Tarefa atualizada com sucesso! 🔄")
-                                    st.rerun()
 
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
