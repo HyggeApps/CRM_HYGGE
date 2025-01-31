@@ -10,78 +10,76 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
     # Verifica permissão para adicionar, editar ou remover contatos
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-        col1, col2, col_space = st.columns([4,4,2])
-        with col1:
-            with st.popover('➕ Adicionar Contato'):
-                with st.form("form_adicionar_contato"):
-                    st.subheader("➕ Adicionar Contato")
-                    nome = st.text_input("Nome *")
-                    sobrenome = st.text_input("Sobrenome")
-                    cargo = st.text_input("Cargo")
-                    email = st.text_input("E-mail *")
-                    telefone = st.text_input("Telefone")
 
-                    submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
+        with st.popover('➕ Adicionar Contato'):
+            with st.form("form_adicionar_contato"):
+                st.subheader("➕ Adicionar Contato")
+                nome = st.text_input("Nome *")
+                sobrenome = st.text_input("Sobrenome")
+                cargo = st.text_input("Cargo")
+                email = st.text_input("E-mail *")
+                telefone = st.text_input("Telefone")
 
-                    if submit_adicionar:
-                        # Verificar se o contato já existe em **outra empresa**
-                        contato_existente = collection_contatos.find_one({"email": email})
-                        if contato_existente and contato_existente["empresa"] != empresa_cnpj:
-                            st.error(f"Erro: O contato '{email}' já está vinculado à empresa de CNPJ {contato_existente['empresa']}!")
-                        else:
-                            # Adicionar contato APENAS à empresa selecionada
-                            collection_contatos.insert_one({
-                                "nome": nome,
-                                "sobrenome": sobrenome,
-                                "cargo": cargo,
-                                "email": email,
-                                "fone": telefone,
-                                "empresa": empresa_cnpj  # O contato pertence APENAS a essa empresa!
-                            })
-                            st.success("Contato adicionado com sucesso!")
-                            st.rerun()
+                submit_adicionar = st.form_submit_button("✅ Adicionar Contato")
 
-        with col2:
-            # Se houver contatos cadastrados, exibir opções de edição/remoção
-            if contatos:
-                with st.popover('✏️ Editar contato'):
-                    contato_selecionado = st.selectbox(
-                        "Selecione um contato para editar/remover",
-                        options=[f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos]
-                    )
+                if submit_adicionar:
+                    # Verificar se o contato já existe em **outra empresa**
+                    contato_existente = collection_contatos.find_one({"email": email})
+                    if contato_existente and contato_existente["empresa"] != empresa_cnpj:
+                        st.error(f"Erro: O contato '{email}' já está vinculado à empresa de CNPJ {contato_existente['empresa']}!")
+                    else:
+                        # Adicionar contato APENAS à empresa selecionada
+                        collection_contatos.insert_one({
+                            "nome": nome,
+                            "sobrenome": sobrenome,
+                            "cargo": cargo,
+                            "email": email,
+                            "fone": telefone,
+                            "empresa": empresa_cnpj  # O contato pertence APENAS a essa empresa!
+                        })
+                        st.success("Contato adicionado com sucesso!")
+                        st.rerun()
 
-                    if contato_selecionado:
-                        email_editar = contato_selecionado.split("(")[-1].strip(")")
+        # Se houver contatos cadastrados, exibir opções de edição/remoção
+        if contatos:
+            with st.popover('✏️ Editar contato'):
+                contato_selecionado = st.selectbox(
+                    "Selecione um contato para editar/remover",
+                    options=[f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos]
+                )
 
-                        contato_dados = collection_contatos.find_one({"email": email_editar, "empresa": empresa_cnpj}, {"_id": 0})
+                if contato_selecionado:
+                    email_editar = contato_selecionado.split("(")[-1].strip(")")
 
-                        if contato_dados:
-                            with st.form("form_editar_contato"):
-                                st.subheader("✏️ Editar Contato")
-                                nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
-                                sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
-                                cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
-                                email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
-                                telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
+                    contato_dados = collection_contatos.find_one({"email": email_editar, "empresa": empresa_cnpj}, {"_id": 0})
 
-                                submit_editar = st.form_submit_button("💾 Salvar Alterações")
-                                if submit_editar:
-                                    collection_contatos.update_one(
-                                        {"email": email_editar, "empresa": empresa_cnpj},  # Apenas para a empresa correta
-                                        {"$set": {
-                                            "nome": nome_edit,
-                                            "sobrenome": sobrenome_edit,
-                                            "cargo": cargo_edit,
-                                            "fone": telefone_edit
-                                        }}
-                                    )
-                                    st.success("Contato atualizado com sucesso!")
-                                    st.rerun()
+                    if contato_dados:
+                        with st.form("form_editar_contato"):
+                            st.subheader("✏️ Editar Contato")
+                            nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
+                            sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
+                            cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
+                            email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
+                            telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
 
-                        if st.button("🗑️ Remover Contato"):
-                            collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
-                            st.success(f"Contato {contato_selecionado} removido com sucesso!")
-                            st.rerun()
+                            submit_editar = st.form_submit_button("💾 Salvar Alterações")
+                            if submit_editar:
+                                collection_contatos.update_one(
+                                    {"email": email_editar, "empresa": empresa_cnpj},  # Apenas para a empresa correta
+                                    {"$set": {
+                                        "nome": nome_edit,
+                                        "sobrenome": sobrenome_edit,
+                                        "cargo": cargo_edit,
+                                        "fone": telefone_edit
+                                    }}
+                                )
+                                st.success("Contato atualizado com sucesso!")
+                                st.rerun()
+
+                    if st.button("🗑️ Remover Contato"):
+                        collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
+                        st.success(f"Contato {contato_selecionado} removido com sucesso!")
+                        st.rerun()
 
     with st.expander("📞 Contatos", expanded=True):
         if contatos:
