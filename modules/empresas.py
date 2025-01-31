@@ -202,6 +202,72 @@ def cadastrar_empresas(user, admin):
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
 
+def consultar_empresas(user, admin):
+    collection_empresas = get_collection("empresas")
+
+    # Obter lista de vendedores
+    vendedores = list(collection_empresas.distinct("usuario"))
+    vendedores = [v for v in vendedores if v]
+
+    # Filtros
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    with col1:
+        filtro_razao_social = st.text_input("Nome", placeholder="Parte do nome da empresa")
+    with col2:
+        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
+    with col3:
+        filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+    with col4:
+        filtro_tamanho = st.multiselect(
+            "Tamanho",
+            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
+            default=[],
+        )
+    with col5:
+        filtro_vendedor = st.selectbox(
+            "Proprietário",
+            options=["Todos"] + vendedores,
+            index=0,
+        )
+    with col6:
+        filtro_data_atividade = st.date_input("Data da última atividade", value=None)
+
+    # Construir query de filtro
+    query = {}
+    if filtro_razao_social:
+        query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
+    if filtro_cidade:
+        query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
+    if filtro_estado:
+        query["estado"] = filtro_estado.upper()
+    if filtro_tamanho:
+        query["tamanho_empresa"] = {"$in": filtro_tamanho}
+    if filtro_vendedor and filtro_vendedor != "Todos":
+        query["usuario"] = filtro_vendedor
+    if filtro_data_atividade:
+        query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
+
+    # Buscar empresas no banco de dados com os filtros aplicados
+    empresas_filtradas = list(
+        collection_empresas.find(
+            query,
+            {
+                "_id": 0,  # Garante que o MongoDB não traga o _id
+                "razao_social": 1,
+                "usuario": 1,
+                "data_criacao": 1,
+                "ultima_atividade": 1,
+                "cidade": 1,
+                "estado": 1,
+                "setor": 1,
+                "tamanho_empresa": 1,
+                "produto_interesse": 1,
+                "grau_cliente": 1,
+                "cnpj": 1  # Certifica-se de que o campo "cnpj" está presente
+            },
+        )
+    )
+
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
 
@@ -309,6 +375,7 @@ def cadastrar_empresas(user, admin):
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
+
 
 
 def excluir_empresa(user, admin):
