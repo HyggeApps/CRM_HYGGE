@@ -398,11 +398,11 @@ def consultar_empresas(user, admin):
             col1, col2 = st.columns([3.5,6.5])
             with col1:
                 st.write("### 🔍 Detalhes da Empresa Selecionada")
-                col1, col2, col_space = st.columns([0.15,0.15,0.7])
-                with col1:
+                col3, col4, col_space = st.columns([0.15,0.15,0.7])
+                with col3:
                     with st.popover('✏️ Editar empresa'):
                         editar_empresa(user, admin)
-                with col2:
+                with col4:
                     if st.button('🗑️ Remover empresa'):
                         excluir_empresa(user, admin)
                 with st.expander("📋 Dados da Empresa", expanded=True):
