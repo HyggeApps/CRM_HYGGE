@@ -46,7 +46,7 @@ def gerenciamento_usuarios():
                         }
                         collection.insert_one(document)
                         
-                        st.toast("Usuário cadastrado com sucesso!")
+                        st.success("Usuário cadastrado com sucesso!")
                         st.rerun()
                 else:
                     st.error("Preencha todos os campos obrigatórios (Nome, Sobrenome, Email, Login, Senha).")
@@ -112,7 +112,7 @@ def gerenciamento_usuarios():
                             }}
                         )
                         
-                        st.toast(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
+                        st.success(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
                         st.rerun()
                         
 

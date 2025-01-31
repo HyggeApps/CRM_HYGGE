@@ -94,7 +94,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                         "status": status
                     }
                     collection_tarefas.insert_one(nova_tarefa)
-                    st.toast("Tarefa criada com sucesso!")
+                    st.success("Tarefa criada com sucesso!")
                     st.rerun()
                 else:
                     st.error("Preencha o campo obrigatório: Título da Tarefa.")
@@ -197,7 +197,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                         }}
                                     )
 
-                                    st.toast("Tarefa atualizada com sucesso! 🔄")
+                                    st.success("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
 
     else:

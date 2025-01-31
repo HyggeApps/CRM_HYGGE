@@ -107,7 +107,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         }
                         collection_atividades.insert_one(nova_atividade)
 
-                        st.toast("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
                         st.rerun()
                         
                     elif titulo and tipo and status and descricao and contatos_vinculados:
@@ -139,7 +139,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas = get_collection("tarefas")
                         collection_tarefas.insert_one(nova_tarefa)
 
-                        st.toast("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
                         st.rerun()
                                 
                         
