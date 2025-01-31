@@ -48,7 +48,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                         })
                         
                         st.successy("Contato adicionado com sucesso!")
-                        st.rerun()
+                        
                         
 
         # Se houver contatos cadastrados, exibir opções de edição/remoção
@@ -94,7 +94,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                 )
                                 
                                 st.success("Contato atualizado com sucesso!")
-                                st.rerun()
+                                
                                 
 
                     if st.button("🗑️ Remover Contato"):
