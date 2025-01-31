@@ -393,19 +393,18 @@ def consultar_empresas(user, admin):
             empresa = st.session_state["empresa_selecionada"]
 
             st.write('----')
-
+            col3, col4 = st.columns([5,5])
+            with col3:
+                with st.popover('✏️ Editar empresa'):
+                    editar_empresa(user, admin)
+            with col4:
+                if st.button('🗑️ Remover empresa'):
+                    excluir_empresa(user, admin)
 
             col1, col2 = st.columns([3.5,6.5])
             with col1:
                 st.write(1)
                 st.write("### 🔍 Detalhes da Empresa Selecionada")
-                col3, col4 = st.columns([5,5])
-                with col3:
-                    with st.popover('✏️ Editar empresa'):
-                        editar_empresa(user, admin)
-                with col4:
-                    if st.button('🗑️ Remover empresa'):
-                        excluir_empresa(user, admin)
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     dados_empresa = {
                         "Nome": empresa['Nome'],
