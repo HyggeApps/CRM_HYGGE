@@ -121,7 +121,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "status": status,
                             "titulo": titulo,
                             "empresa": empresa_cnpj,
-                            "contato": contato,
+                            "contato": ", ".join(atividade.get("contato", "")) if isinstance(atividade.get("contato", []), list) else atividade.get("contato", ""),
                             "descricao": descricao,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
                             "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
