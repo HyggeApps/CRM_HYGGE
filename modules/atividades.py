@@ -82,8 +82,9 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 with col3:
                     titulo_tarefa = st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
                 with col4:
-                    data_execucao_tarefa = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
-
+                    prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                    data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
+                    
 
                 observacoes_tarefa = st.text_area("Observações da Tarefa", value="", disabled=True)
                 status_tarefa = "🟨 Em andamento"  # Status fixo para a tarefa
