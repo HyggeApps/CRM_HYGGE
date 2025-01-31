@@ -396,7 +396,7 @@ def consultar_empresas(user, admin):
 
             col1, col2 = st.columns([3.5,6.5])
             with col1:
-                st.write("### 🔍 Detalhes da Empresa Selecionada")
+                st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
                     editar_empresa(user, admin)
                 with st.expander("📋 Dados da Empresa", expanded=True):
@@ -418,13 +418,13 @@ def consultar_empresas(user, admin):
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 if empresa_cnpj:
-                    st.subheader("☎️ Contatos")
+                    st.subheader("☎️ Informações sobre contatos")
                     exibir_contatos_empresa(user, admin, empresa_cnpj)
                 else:
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
             with col2:
-                st.write("### 📌 Histórico de Atividades")
+                st.write("### 📌 Histórico de atividades")
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 if empresa_cnpj:
                     exibir_atividades_empresa(user, admin, empresa_cnpj)
