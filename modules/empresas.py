@@ -344,6 +344,7 @@ def consultar_empresas(user, admin):
                 with st.popover('✏️ Editar empresa'):
                     editar_empresa(user, admin)
                 with st.expander("📋 Dados da Empresa", expanded=True):
+                    st.toast("Carregando...")
                     dados_empresa = {
                         "Nome": empresa['Nome'],
                         "Proprietário": empresa['Proprietário'],
