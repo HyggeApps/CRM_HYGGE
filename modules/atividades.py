@@ -178,7 +178,11 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
                 with st.container():
                     for atividade in atividades_lista:
-                        st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
+                        if atividade["tipo"] != 'Observação':
+                            st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
+                        else:
+                            st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]}. 📝 {atividade["descricao"]}')
+
                     st.write('---')
 
         else:
