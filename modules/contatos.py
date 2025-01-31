@@ -96,7 +96,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                         st.success(f"Contato {contato_selecionado} removido com sucesso!")
                         st.rerun()
 
-    with st.expander("📞 Contatos", expanded=True):
+    with st.expander("📞 Contatos cadastrados", expanded=True):
         if contatos:
             df_contatos = pd.DataFrame(contatos)
 
