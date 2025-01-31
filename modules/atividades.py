@@ -121,7 +121,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "status": status,
                             "titulo": titulo,
                             "empresa": empresa_cnpj,
-                            "contato": "",
+                            "contato": contato,
                             "descricao": descricao,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
                             "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
@@ -164,7 +164,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     "data": data_execucao.strftime("%d/%m/%Y"),
                     "titulo": atividade["titulo"],
                     "tipo": atividade["tipo_atividade"],
-                    "contato": ", ".join(atividade["contato"]) if isinstance(atividade["contato"], list) else atividade["contato"],
+                    "contato": ", ".join(atividade.get("contato", "")) if isinstance(atividade.get("contato", []), list) else atividade.get("contato", ""),
                     "descricao": atividade["descricao"],
                     "data_execucao_timestamp": data_execucao.timestamp()  # Adiciona timestamp para ordenação dentro do mês
                 })
