@@ -92,6 +92,7 @@ def editar_empresa(user, admin):
             )
             
             st.success("Dados da empresa atualizados com sucesso!")
+            st.rerun(scope="fragment")
             
 
 @st.fragment            
@@ -206,6 +207,7 @@ def cadastrar_empresas(user, admin):
                     
                     
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
+                    st.rerun(scope="fragment")
                     
 
 @st.fragment
@@ -343,7 +345,6 @@ def consultar_empresas(user, admin):
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
                     editar_empresa(user, admin)
-                    st.rerun("fragment")
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
@@ -539,6 +540,7 @@ def cadastrar_subempresa():
                             {"$push": {"subempresas": cnpj}}
                         )
                         st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
+                        st.rerun(scope="fragment")
                         
                         
                 else:
