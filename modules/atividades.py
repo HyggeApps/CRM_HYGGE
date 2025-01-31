@@ -65,7 +65,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    tipo = st.selectbox("Tipo de Atividade *", ["", "Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
+                    tipo = st.selectbox("Tipo de Atividade *", ["","Observação","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
                     titulo = st.text_input("Título *")
                     descricao = st.text_area("Descrição *")
 
