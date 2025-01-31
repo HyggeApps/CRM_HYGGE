@@ -408,6 +408,7 @@ def consultar_empresas(user, admin):
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 if empresa_cnpj:
+                    st.write('----')
                     st.subheader("☎️ Informações sobre contatos")
                     exibir_contatos_empresa(user, admin, empresa_cnpj)
                 else:
@@ -418,7 +419,7 @@ def consultar_empresas(user, admin):
                 st.write("### 📜 Tarefas para a empresa")
                 if empresa_cnpj:
                     gerenciamento_tarefas(user, admin, empresa_cnpj)
-
+                st.write('----')
                 st.write("### 📌 Histórico de atividades")
                 
                 if empresa_cnpj:
