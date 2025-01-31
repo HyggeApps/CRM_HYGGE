@@ -45,7 +45,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                             "empresa": empresa_cnpj  # O contato pertence APENAS a essa empresa!
                         })
                         st.success("Contato adicionado com sucesso!")
-                        st.rerun()
+                        
 
         # Se houver contatos cadastrados, exibir opções de edição/remoção
         if contatos:
@@ -89,12 +89,12 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                     }}
                                 )
                                 st.success("Contato atualizado com sucesso!")
-                                st.rerun()
+                                
 
                     if st.button("🗑️ Remover Contato"):
                         collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
                         st.success(f"Contato {contato_selecionado} removido com sucesso!")
-                        st.rerun()
+                        
 
     with st.expander("📞 Contatos cadastrados", expanded=True):
         if contatos:
