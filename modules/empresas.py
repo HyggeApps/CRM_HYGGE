@@ -203,8 +203,10 @@ def cadastrar_empresas(user, admin):
                         "status": "🟨 Em andamento"
                     }
                     collection_tarefas.insert_one(tarefa_document)
-
+                    
+                    with st.spinner("Carregando..."): time.sleep(1)
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
+                    st.rerun()
 
 @st.fragment
 def consultar_empresas(user, admin):
@@ -534,8 +536,8 @@ def cadastrar_subempresa():
                             {"cnpj": matriz_cnpj},
                             {"$push": {"subempresas": cnpj}}
                         )
-                        st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
                         with st.spinner("Carregando..."): time.sleep(1)
+                        st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
                         st.rerun()
                 else:
                     st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
