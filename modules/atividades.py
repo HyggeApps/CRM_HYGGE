@@ -29,16 +29,23 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
+    # Dicionário de meses com valores numéricos para ordenação
+    MESES_NUMERICOS = {
+        "Janeiro": 1, "Fevereiro": 2, "Março": 3,
+        "Abril": 4, "Maio": 5, "Junho": 6,
+        "Julho": 7, "Agosto": 8, "Setembro": 9,
+        "Outubro": 10, "Novembro": 11, "Dezembro": 12
+    }
+
     with st.expander("🗓️ Atividades realizadas por período", expanded=True):
         if atividades:
             atividades_ordenadas = defaultdict(list)
 
-            # Criar um dicionário agrupado por mês e ano
             for atividade in atividades:
                 data_execucao = datetime.strptime(atividade["data_execucao_atividade"], "%Y-%m-%d")
                 mes_ingles = data_execucao.strftime("%B")  # Nome do mês em inglês
                 mes_portugues = MESES_PT.get(mes_ingles, mes_ingles)  # Traduz para PT-BR
-                chave_mes_ano = f"{mes_portugues} {data_execucao.strftime('%Y')}"  # Exemplo: "Janeiro 2025"
+                chave_mes_ano = (data_execucao.year, MESES_NUMERICOS[mes_portugues], f"{mes_portugues} {data_execucao.year}")
 
                 atividades_ordenadas[chave_mes_ano].append({
                     "data": data_execucao.strftime("%d/%m/%Y"),
@@ -46,12 +53,12 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     "tipo": atividade["tipo_atividade"],
                     "contato": ", ".join(atividade["contato"]) if isinstance(atividade["contato"], list) else atividade["contato"],
                     "descricao": atividade["descricao"],
-                    "data_execucao_timestamp": data_execucao.timestamp()  # Adiciona timestamp para ordenação
+                    "data_execucao_timestamp": data_execucao.timestamp()  # Adiciona timestamp para ordenação dentro do mês
                 })
 
-            # Criar um bloco separado para cada mês dentro do `st.expander()`
-            for mes_ano, atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena os meses do mais recente para o mais antigo
-                st.subheader(f"📅 {mes_ano}")  # Título do mês e ano
+            # Ordenar os blocos de meses do mais recente para o mais antigo
+            for (ano, mes_num, mes_ano_str), atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena por ano e mês
+                st.subheader(f"📅 {mes_ano_str}")  # Título do mês e ano
                 
                 # Ordena atividades dentro do mês do mais recente para o mais antigo
                 atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
@@ -63,7 +70,6 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
         else:
             st.warning("Nenhuma atividade cadastrada para esta empresa.")
-
 
 
     # **Permitir que a atividade seja cadastrada sempre**
