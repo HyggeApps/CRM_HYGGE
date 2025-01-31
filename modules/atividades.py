@@ -22,14 +22,12 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
     # Buscar contatos vinculados à empresa
     contatos_vinculados = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
-
-    # Criar lista de contatos formatada
     lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
 
     # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
-    # Dicionário de meses com valores numéricos para ordenação
+    # Dicionário de meses com valores numéricos para ordenação correta
     MESES_NUMERICOS = {
         "Janeiro": 1, "Fevereiro": 2, "Março": 3,
         "Abril": 4, "Maio": 5, "Junho": 6,
@@ -40,56 +38,50 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
 
-        # Criar popovers para cada tipo de atividade
+        # Criar colunas para os botões de popover
+        col1, col2, col3, col4, col5 = st.columns(5)
+
         tipos_atividades = ["Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"]
-        col1, col2, col3, col4, col5 = st.columns(5)  # Criar colunas para popovers
+        botoes_popover = [col1, col2, col3, col4, col5]  # Alinha os botões às colunas
 
         for idx, tipo in enumerate(tipos_atividades):
-            with [col1, col2, col3, col4, col5][idx]:  # Distribuir popovers nas colunas
+            with botoes_popover[idx]:  # Criar popover para cada tipo de atividade
                 with st.popover(f"➕ {tipo}"):
-                    with st.form(f"form_adicionar_{tipo.lower()}"):
-                        st.subheader(f"➕ Nova Atividade - {tipo}")
+                    st.subheader(f"➕ Nova Atividade - {tipo}")
 
-                        # Criar duas colunas para organizar os campos
-                        col_a, col_b = st.columns(2)
+                    titulo = st.text_input(f"Título * ({tipo})", key=f"titulo_{tipo.lower()}")
+                    descricao = st.text_area(f"Descrição * ({tipo})", key=f"descricao_{tipo.lower()}")
+                    status = st.selectbox(
+                        f"Status * ({tipo})",
+                        ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
+                        key=f"status_{tipo.lower()}"
+                    )
+                    contato = st.multiselect(f"Contato Vinculado * ({tipo})", lista_contatos, key=f"contato_{tipo.lower()}")
+                    data_execucao = st.date_input(f"Data de Execução ({tipo})", value=datetime.today().date(), key=f"data_execucao_{tipo.lower()}")
 
-                        with col_a:
-                            titulo = st.text_input("Título *", key=f"titulo_{tipo.lower()}")
-                            descricao = st.text_area("Descrição *", key=f"descricao_{tipo.lower()}")
+                    submit_atividade = st.button(f"✅ Adicionar {tipo}", key=f"submit_{tipo.lower()}")
 
-                        with col_b:
-                            status = st.selectbox(
-                                "Status *",
-                                ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
-                                key=f"status_{tipo.lower()}"
-                            )
-                            contato = st.multiselect("Contato Vinculado *", lista_contatos, key=f"contato_{tipo.lower()}")
-                            data_execucao = st.date_input("Data de Execução", value=datetime.today().date(), key=f"data_execucao_{tipo.lower()}")
+                    if submit_atividade:
+                        if titulo and status and descricao and contato:
+                            atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
+                            nova_atividade = {
+                                "atividade_id": atividade_id,
+                                "tipo_atividade": tipo,
+                                "status": status,
+                                "titulo": titulo,
+                                "empresa": empresa_cnpj,
+                                "contato": contato,
+                                "descricao": descricao,
+                                "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
+                                "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
+                            }
+                            collection_atividades.insert_one(nova_atividade)
+                            st.success(f"Atividade '{tipo}' adicionada com sucesso!")
+                            st.rerun()
+                        else:
+                            st.error("Preencha os campos obrigatórios: Título, Status, Contato e Descrição.")
 
-                        submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
-
-                        if submit_atividade:
-                            if titulo and status and descricao and contato:
-                                atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
-                                nova_atividade = {
-                                    "atividade_id": atividade_id,
-                                    "tipo_atividade": tipo,
-                                    "status": status,
-                                    "titulo": titulo,
-                                    "empresa": empresa_cnpj,
-                                    "contato": contato,
-                                    "descricao": descricao,
-                                    "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
-                                    "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
-                                }
-                                collection_atividades.insert_one(nova_atividade)
-                                st.success(f"Atividade '{tipo}' adicionada com sucesso!")
-                                st.rerun()
-                            else:
-                                st.error("Preencha os campos obrigatórios: Título, Status, Contato e Descrição.")
-
-
-
+    # Criar um expander para exibição das atividades organizadas por período
     with st.expander("🗓️ Atividades realizadas por período", expanded=False):
 
         if atividades:
@@ -112,12 +104,10 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
             # Ordenar os blocos de meses do mais recente para o mais antigo
             for (ano, mes_num, mes_ano_str), atividades_lista in sorted(atividades_ordenadas.items(), reverse=True):  # Ordena por ano e mês
-                st.subheader(f"📅 {mes_ano_str}")  # Título do mês e ano
-                
-                # Ordena atividades dentro do mês do mais recente para o mais antigo
-                atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
+                with st.expander(f"📅 {mes_ano_str}", expanded=False):  # Cada mês tem um expander próprio
+                    # Ordena atividades dentro do mês do mais recente para o mais antigo
+                    atividades_lista.sort(key=lambda x: x["data_execucao_timestamp"], reverse=True)
 
-                with st.container():
                     for atividade in atividades_lista:
                         st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
                     st.write('---')
