@@ -91,7 +91,6 @@ def editar_empresa(user, admin):
             )
             st.success("Dados da empresa atualizados com sucesso!")
             
-
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
     collection_tarefas = get_collection("tarefas")  # Conectar com a coleção de tarefas
@@ -202,75 +201,6 @@ def cadastrar_empresas(user, admin):
                     collection_tarefas.insert_one(tarefa_document)
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
-                    
-
-
-
-def consultar_empresas(user, admin):
-    collection_empresas = get_collection("empresas")
-
-    # Obter lista de vendedores
-    vendedores = list(collection_empresas.distinct("usuario"))
-    vendedores = [v for v in vendedores if v]
-
-    # Filtros
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
-    with col1:
-        filtro_razao_social = st.text_input("Nome", placeholder="Parte do nome da empresa")
-    with col2:
-        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
-    with col3:
-        filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
-    with col4:
-        filtro_tamanho = st.multiselect(
-            "Tamanho",
-            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
-            default=[],
-        )
-    with col5:
-        filtro_vendedor = st.selectbox(
-            "Proprietário",
-            options=["Todos"] + vendedores,
-            index=0,
-        )
-    with col6:
-        filtro_data_atividade = st.date_input("Data da última atividade", value=None)
-
-    # Construir query de filtro
-    query = {}
-    if filtro_razao_social:
-        query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
-    if filtro_cidade:
-        query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
-    if filtro_estado:
-        query["estado"] = filtro_estado.upper()
-    if filtro_tamanho:
-        query["tamanho_empresa"] = {"$in": filtro_tamanho}
-    if filtro_vendedor and filtro_vendedor != "Todos":
-        query["usuario"] = filtro_vendedor
-    if filtro_data_atividade:
-        query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
-
-    # Buscar empresas no banco de dados com os filtros aplicados
-    empresas_filtradas = list(
-        collection_empresas.find(
-            query,
-            {
-                "_id": 0,  # Garante que o MongoDB não traga o _id
-                "razao_social": 1,
-                "usuario": 1,
-                "data_criacao": 1,
-                "ultima_atividade": 1,
-                "cidade": 1,
-                "estado": 1,
-                "setor": 1,
-                "tamanho_empresa": 1,
-                "produto_interesse": 1,
-                "grau_cliente": 1,
-                "cnpj": 1  # Certifica-se de que o campo "cnpj" está presente
-            },
-        )
-    )
 
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
@@ -289,7 +219,7 @@ def consultar_empresas(user, admin):
                     "tamanho_empresa": "Tamanho",
                     "produto_interesse": "Produto Interesse",
                     "grau_cliente": "Grau Cliente",
-                    "cnpj": "CNPJ"  # Mantém "cnpj" com o nome correto
+                    "cnpj": "CNPJ"
                 }
             )
         else:
@@ -298,18 +228,13 @@ def consultar_empresas(user, admin):
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
 
-        # Reordenar colunas
-        df_empresas = df_empresas[["Visualizar", "Nome", "Proprietário", "Data de Criação", "Última Atividade",
-                                   "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse",
-                                   "Grau Cliente", "CNPJ"]]
+        # Verificar se há empresa previamente selecionada no session_state
+        if "empresa_cnpj_selecionada" in st.session_state and st.session_state["empresa_cnpj_selecionada"]:
+            cnpj_pre_selecionado = st.session_state["empresa_cnpj_selecionada"]
+            if cnpj_pre_selecionado in df_empresas["CNPJ"].values:
+                df_empresas.loc[df_empresas["CNPJ"] == cnpj_pre_selecionado, "Visualizar"] = True
 
-        # Converter as datas para formato legível
-        df_empresas["Data de Criação"] = pd.to_datetime(df_empresas["Data de Criação"], errors="coerce").dt.strftime("%d/%m/%Y")
-        df_empresas["Última Atividade"] = pd.to_datetime(df_empresas["Última Atividade"], errors="coerce").dt.strftime("%d/%m/%Y")
-
-        if "empresa_selecionada" not in st.session_state:
-            st.session_state["empresa_selecionada"] = None
-
+        # Criar editor de dados interativo
         edited_df = st.data_editor(
             df_empresas,
             column_config={
@@ -323,14 +248,20 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
+        # Atualizar a empresa selecionada no session_state
         if edited_df["Visualizar"].any():
             selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
+            st.session_state["empresa_cnpj_selecionada"] = st.session_state["empresa_selecionada"]["CNPJ"]  # ✅ Salvar o CNPJ
+
         else:
             st.session_state["empresa_selecionada"] = None
+            st.session_state["empresa_cnpj_selecionada"] = None  # ✅ Resetar se nenhuma estiver selecionada
 
+        # Exibir detalhes da empresa selecionada
         if st.session_state["empresa_selecionada"]:
             empresa = st.session_state["empresa_selecionada"]
+            empresa_cnpj = empresa["CNPJ"]
 
             st.write('----')
 
@@ -350,13 +281,12 @@ def consultar_empresas(user, admin):
                         "Tamanho": empresa["Tamanho"],
                         "Produto Interesse": empresa["Produto Interesse"],
                         "Grau Cliente": empresa["Grau Cliente"],
-                        "CNPJ": empresa["CNPJ"]  # ✅ Garantir que "CNPJ" é acessado corretamente
+                        "CNPJ": empresa["CNPJ"]
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
 
                 # Integrando a função de exibir contatos
-                empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 if empresa_cnpj:
                     st.write('----')
                     st.subheader("☎️ Informações sobre contatos")
@@ -365,7 +295,6 @@ def consultar_empresas(user, admin):
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
             with col2:
-                empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 st.write("### 📜 Tarefas para a empresa")
                 if empresa_cnpj:
                     gerenciamento_tarefas(user, admin, empresa_cnpj)
@@ -380,9 +309,6 @@ def consultar_empresas(user, admin):
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
-
-    else:
-        st.warning("Nenhuma empresa encontrada com os critérios aplicados.")
 
 
 def excluir_empresa(user, admin):
