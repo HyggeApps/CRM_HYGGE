@@ -44,6 +44,7 @@ def atualizar_status_tarefas(empresa_cnpj):
 @st.fragment
 def gerenciamento_tarefas(user, admin, empresa_cnpj):
     collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
+    collection_atividades = get_collection("atividades")
 
     if not empresa_cnpj:
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
@@ -154,7 +155,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                             )
 
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
-
+                            
                             if submit_editar:
                                 # Verificar se o usuário está tentando concluir todas as tarefas
                                 tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
@@ -164,6 +165,23 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                 else:
                                     if status_edit == "🟩 Concluída":
                                         data_execucao_edit = datetime.today().date()
+
+                                        # Criar uma nova atividade informando que a tarefa foi concluída
+                                        nova_atividade = {
+                                            "atividade_id": str(datetime.now().timestamp()),  
+                                            "tipo_atividade": "Observação",
+                                            "status": "Registrado",
+                                            "titulo": f"Tarefa '{titulo_edit}' concluída",
+                                            "empresa": empresa_cnpj,
+                                            "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
+                                            "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                                        }
+
+                                        # Inserir no banco de atividades
+                                        collection_atividades.insert_one(nova_atividade)
+
+                                    # Atualizar a tarefa no banco
                                     collection_tarefas.update_one(
                                         {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
                                         {"$set": {
@@ -173,6 +191,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "status": status_edit
                                         }}
                                     )
+
                                     st.success("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
 
