@@ -8,29 +8,10 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
     # Buscar **apenas** os contatos vinculados à empresa atualmente selecionada
     contatos = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0}))
 
-    with st.expander("📞 Contatos", expanded=True):
-        if contatos:
-            df_contatos = pd.DataFrame(contatos)
-
-            df_contatos = df_contatos.rename(
-                columns={
-                    "nome": "Nome",
-                    "sobrenome": "Sobrenome",
-                    "cargo": "Cargo",
-                    "email": "E-mail",
-                    "fone": "Telefone"
-                }
-            )
-
-            df_contatos = df_contatos[["Nome", "Sobrenome", "Cargo", "E-mail", "Telefone"]]
-
-            st.dataframe(df_contatos, hide_index=True, use_container_width=True)
-        else:
-            st.warning("Nenhum contato cadastrado para esta empresa.")
-
-        # Verifica permissão para adicionar, editar ou remover contatos
-        if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-
+    # Verifica permissão para adicionar, editar ou remover contatos
+    if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
+        col1, col2 = st.columns(2)
+        with col1:
             with st.popover('➕ Adicionar Contato'):
                 with st.form("form_adicionar_contato"):
                     st.subheader("➕ Adicionar Contato")
@@ -60,6 +41,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                             st.success("Contato adicionado com sucesso!")
                             st.rerun()
 
+        with col2:
             # Se houver contatos cadastrados, exibir opções de edição/remoção
             if contatos:
                 with st.popover('✏️ Editar contato'):
@@ -100,3 +82,25 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                             collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
                             st.success(f"Contato {contato_selecionado} removido com sucesso!")
                             st.rerun()
+
+    with st.expander("📞 Contatos", expanded=True):
+        if contatos:
+            df_contatos = pd.DataFrame(contatos)
+
+            df_contatos = df_contatos.rename(
+                columns={
+                    "nome": "Nome",
+                    "sobrenome": "Sobrenome",
+                    "cargo": "Cargo",
+                    "email": "E-mail",
+                    "fone": "Telefone"
+                }
+            )
+
+            df_contatos = df_contatos[["Nome", "Sobrenome", "Cargo", "E-mail", "Telefone"]]
+
+            st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+        else:
+            st.warning("Nenhum contato cadastrado para esta empresa.")
+
+        
