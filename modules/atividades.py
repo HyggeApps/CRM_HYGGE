@@ -78,7 +78,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
                 # **Configuração da Tarefa Vinculada**
                 st.markdown("---")  # Separador visual
-                st.subheader("📌 Prazo da tarefa")
+                st.subheader("📌 Prazo para o acompanhamento")
                 
                 titulo_tarefa = "Acompanhar " + tipo #st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
                 prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
