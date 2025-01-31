@@ -25,8 +25,7 @@ def calcular_data_execucao(opcao):
         "2 semanas": hoje + timedelta(weeks=2),
         "1 mês": hoje + timedelta(days=30),
         "2 meses": hoje + timedelta(days=60),
-        "3 meses": hoje + timedelta(days=90),
-        "Personalizada": None  # Será definida manualmente
+        "3 meses": hoje + timedelta(days=90)
     }
     
     return opcoes_prazo.get(opcao, hoje)
@@ -81,7 +80,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 st.subheader("📌 Prazo para o acompanhamento")
                 
                 titulo_tarefa = "Acompanhar " + tipo #st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
-                prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
                 data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
                     
 
