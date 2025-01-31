@@ -96,7 +96,7 @@ def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
     collection_tarefas = get_collection("tarefas")  # Conectar com a coleção de tarefas
 
-    st.header('Cadastro de empresas')
+    st.header('Cadastro de Empresas')
     st.write('----')
 
     if "dados_cnpj" not in st.session_state:
@@ -104,14 +104,39 @@ def cadastrar_empresas(user, admin):
     if "dados_cep" not in st.session_state:
         st.session_state["dados_cep"] = {}
 
+    # 🔍 Busca CNPJ e CEP antes de exibir o formulário
     st.subheader("🔍 Busca Automática de CNPJ e CEP")
     with st.expander("Preencher Dados com CNPJ e CEP (dois cliques para buscar)"):
         col1, col2 = st.columns(2)
         with col1:
             cnpj_input = st.text_input("CNPJ", max_chars=18, placeholder="Digite o CNPJ", key="cnpj_input")
+            if st.button("🔍 Buscar CNPJ", key="buscar_cnpj"):
+                cnpj_limpo = cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", "")
+                if len(cnpj_limpo) == 14:
+                    dados_cnpj = buscar_dados_cnpj(cnpj_limpo)
+                    if dados_cnpj:
+                        st.success("Dados do CNPJ encontrados!")
+                        st.session_state["dados_cnpj"] = dados_cnpj
+                    else:
+                        st.error("CNPJ não encontrado!")
+                else:
+                    st.error("CNPJ inválido! Certifique-se de que tem 14 dígitos.")
+
         with col2:
             cep_input = st.text_input("CEP", max_chars=10, placeholder="Digite o CEP", key="cep_input")
+            if st.button("🔍 Buscar CEP", key="buscar_cep"):
+                cep_limpo = cep_input.replace("-", "").replace(" ", "")
+                if len(cep_limpo) == 8:
+                    dados_cep = buscar_dados_cep(cep_limpo)
+                    if dados_cep:
+                        st.success("Dados do CEP encontrados!")
+                        st.session_state["dados_cep"] = dados_cep
+                    else:
+                        st.error("CEP não encontrado!")
+                else:
+                    st.error("CEP inválido! Certifique-se de que tem 8 dígitos.")
 
+    # 📃 Formulário de Cadastro
     st.subheader("📃 Formulário de Cadastro")
     with st.form(key="form_cadastro_empresa"):
         col1, col2 = st.columns(2)
@@ -136,7 +161,7 @@ def cadastrar_empresas(user, admin):
         with col7:
             tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
         with col8:
-            grau_cliente = st.selectbox("Grau do cliente", ["Lead", "Lead qualificado", "Oportunidade", "Cliente"], key="grau_cliente", disabled=True)
+            grau_cliente = st.selectbox("Grau do Cliente", ["Lead", "Lead Qualificado", "Oportunidade", "Cliente"], key="grau_cliente", disabled=True)
 
         submit = st.form_submit_button("✅ Cadastrar")
 
@@ -165,7 +190,7 @@ def cadastrar_empresas(user, admin):
                     }
                     collection_empresas.insert_one(document)
 
-                    # Criar automaticamente uma tarefa
+                    # Criar automaticamente uma tarefa associada à empresa
                     prazo_execucao = datetime.today().date() + timedelta(weeks=1)  # Adiciona 1 semana
                     tarefa_document = {
                         "titulo": "Identificar personas",
@@ -178,6 +203,7 @@ def cadastrar_empresas(user, admin):
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
                     st.rerun()
+
 
 
 def consultar_empresas(user, admin):
