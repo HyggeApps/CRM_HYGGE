@@ -63,13 +63,21 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     if contato_dados:
                         with st.form("form_editar_contato", clear_on_submit=True):
                             st.subheader("✏️ Editar Contato")
-                            nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
-                            sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
-                            cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
-                            email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
-                            telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
+
+                            # Criar duas colunas para melhor organização dos campos
+                            col1, col2 = st.columns(2)
+
+                            with col1:
+                                nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
+                                cargo_edit = st.text_input("Cargo", value=contato_dados.get("cargo", ""))
+                                telefone_edit = st.text_input("Telefone", value=contato_dados.get("fone", ""))
+
+                            with col2:
+                                sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
+                                email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
 
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
+
                             if submit_editar:
                                 collection_contatos.update_one(
                                     {"email": email_editar, "empresa": empresa_cnpj},  # Apenas para a empresa correta
