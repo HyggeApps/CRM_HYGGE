@@ -44,7 +44,7 @@ def editar_empresa(user, admin):
     lista_usuarios = [f'{usuario["nome"]} {usuario["sobrenome"]} ({usuario["email"]})' for usuario in usuarios]
     lista_usuarios.sort()
 
-    with st.form(key="form_edicao_empresa", clear_on_submit=True):
+    with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
@@ -142,7 +142,7 @@ def cadastrar_empresas(user, admin):
 
     # Formulário principal
     st.subheader("📃 Formulário de Cadastro")
-    with st.form(key="form_cadastro_empresa", clear_on_submit=True):
+    with st.form(key="form_cadastro_empresa"):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
@@ -527,7 +527,7 @@ def cadastrar_subempresa():
                 st.session_state["buscar_cep_sub_clicked"] = False
 
         # Formulário de Cadastro de sub-empresa
-        with st.form(key="form_cadastro_subempresa", clear_on_submit=True):
+        with st.form(key="form_cadastro_subempresa"):
             st.subheader("📃 Formulário de Cadastro de sub-empresa")
 
             # Linha 1: Empresa Matriz e Razão Social

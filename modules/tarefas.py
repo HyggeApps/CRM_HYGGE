@@ -31,7 +31,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
     # 📌 Botão para adicionar nova tarefa
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         with st.popover('➕ Criar Tarefa'):
-            with st.form("form_criar_tarefa", clear_on_submit=True):
+            with st.form("form_criar_tarefa"):
                 st.subheader("➕ Nova Tarefa")
 
 
@@ -113,7 +113,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
 
                     if tarefa_dados:
-                        with st.form("form_editar_tarefa", clear_on_submit=True):
+                        with st.form("form_editar_tarefa"):
                             st.subheader("✏️ Editar Tarefa")
 
                             titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
