@@ -42,16 +42,19 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
         with st.popover('➕ Registrar Atividade'):
             with st.form("form_adicionar_atividade", clear_on_submit=True):
                 st.subheader("➕ Nova Atividade")
-                tipo = st.selectbox("Tipo de Atividade *", ["", "Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
-                status = st.selectbox("Status *", ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-                titulo = st.text_input("Título *")
-                contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
-                descricao = st.text_area("Descrição *")
 
-                # Definir data de criação como hoje
-                data_criacao = datetime.today().date()
-                # Criar campo de data de execução com sugestão
-                data_execucao = st.date_input("Data de Execução", value=data_criacao)
+                # Criar duas colunas para organizar os campos
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    tipo = st.selectbox("Tipo de Atividade *", ["", "Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
+                    titulo = st.text_input("Título *")
+                    descricao = st.text_area("Descrição *")
+
+                with col2:
+                    status = st.selectbox("Status *", ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
+                    data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
 
                 submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
@@ -74,6 +77,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         st.rerun()
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
+
 
     with st.expander("🗓️ Atividades realizadas por período", expanded=True):
 
