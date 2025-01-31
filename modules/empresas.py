@@ -418,6 +418,7 @@ def consultar_empresas(user, admin):
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
                 if empresa_cnpj:
+                    st.write("###☎️ Contatos")
                     exibir_contatos_empresa(user, admin, empresa_cnpj)
                 else:
                     st.error("Erro ao carregar o CNPJ da empresa.")
