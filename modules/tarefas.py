@@ -42,10 +42,8 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
             )
-            atualizacoes_realizadas = True
-
-    if atualizacoes_realizadas:
-        st.rerun()  # Atualiza a interface após modificar os status no banco
+    
+    collection_tarefas = get_collection("tarefas")
 
     # 📌 Botão para adicionar nova tarefa
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
