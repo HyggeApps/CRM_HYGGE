@@ -71,14 +71,12 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                    prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
 
                 with col2:
                     data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
                     hoje = datetime.today().date()
-
-                    if data_execucao > hoje: status = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=1)
-                    else: status = status = st.selectbox("Status", ["🟥 Atrasado"], index=1,disabled=True)
+                    status = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=1)
                 observacoes = st.text_area("Observações da Tarefa")
 
                 submit_criar = st.form_submit_button("✅ Criar Tarefa")
