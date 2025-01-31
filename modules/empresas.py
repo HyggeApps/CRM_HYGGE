@@ -393,6 +393,13 @@ def consultar_empresas(user, admin):
             empresa = st.session_state["empresa_selecionada"]
 
             st.write('----')
+            col1, col2, col_space = st.columns([0.1,0.1,0.8])
+            with col1:
+                with st.popover('✏️ Editar empresa'):
+                    editar_empresa(user, admin)
+            with col2:
+                if st.button('🗑️ Remover empresa'):
+                    excluir_empresa(user, admin)
 
             col1, col2 = st.columns([3.5,6.5])
             with col1:
@@ -412,11 +419,6 @@ def consultar_empresas(user, admin):
                     }
                     df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
                     st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
-
-                    with st.popover('✏️ Editar empresa'):
-                        editar_empresa(user, admin)
-                    if st.button('🗑️ Remover empresa'):
-                        excluir_empresa(user, admin)
 
                 # Integrando a função de exibir contatos
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
