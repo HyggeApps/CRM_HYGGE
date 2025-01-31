@@ -71,9 +71,9 @@ st.markdown(
     """
     <style>
     .stForm {
-        width: 80% !important; /* Ajusta a largura do formulário */
+        width: 95% !important; /* Ajusta a largura do formulário */
         margin: auto; /* Centraliza o formulário */
-        padding: 20px; /* Adiciona mais espaço interno */
+        padding: 10px; /* Adiciona mais espaço interno */
     }
     </style>
     """,
