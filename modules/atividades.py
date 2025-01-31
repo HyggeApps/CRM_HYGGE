@@ -56,11 +56,26 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
 
+                # **Configuração da Tarefa Vinculada**
+                st.markdown("---")  # Separador visual
+                st.subheader("📌 Configuração da Tarefa Vinculada")
+                
+                col3, col4 = st.columns(2)
+                with col3:
+                    titulo_tarefa = st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
+                with col4:
+                    data_execucao_tarefa = st.date_input("Data de Execução da Tarefa", value=datetime.today().date())
+
+                observacoes_tarefa = st.text_area("Observações da Tarefa", value="", disabled=True)
+                status_tarefa = "🟨 Em andamento"  # Status fixo para a tarefa
+
                 submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
 
                 if submit_atividade:
                     if titulo and tipo and status and descricao and contatos_vinculados:
                         atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
+
+                        # Criar a atividade
                         nova_atividade = {
                             "atividade_id": atividade_id,
                             "tipo_atividade": tipo,
@@ -73,10 +88,25 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
                         }
                         collection_atividades.insert_one(nova_atividade)
-                        st.success("Atividade adicionada com sucesso!")
+
+                        # Criar a tarefa vinculada
+                        nova_tarefa = {
+                            "tarefa_id": str(datetime.now().timestamp()),  # Gerar um ID único baseado no tempo
+                            "titulo": titulo_tarefa,
+                            "empresa": empresa_cnpj,
+                            "atividade_vinculada": atividade_id,  # Relacionar com a atividade criada
+                            "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
+                            "status": status_tarefa,
+                            "observacoes": observacoes_tarefa
+                        }
+                        collection_tarefas = get_collection("tarefas")
+                        collection_tarefas.insert_one(nova_tarefa)
+
+                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
                         st.rerun()
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
+
 
 
     with st.expander("🗓️ Atividades realizadas por período", expanded=False):
