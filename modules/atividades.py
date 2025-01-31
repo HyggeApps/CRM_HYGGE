@@ -1,7 +1,7 @@
 from utils.database import get_collection
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 
 # Dicionário de meses em português
@@ -11,6 +11,24 @@ MESES_PT = {
     "July": "Julho", "August": "Agosto", "September": "Setembro",
     "October": "Outubro", "November": "Novembro", "December": "Dezembro"
 }
+
+def calcular_data_execucao(opcao):
+    """Calcula a data de execução da tarefa com base na opção selecionada"""
+    hoje = datetime.today().date()
+    
+    opcoes_prazo = {
+        "1 dia útil": hoje + timedelta(days=1),
+        "2 dias úteis": hoje + timedelta(days=2),
+        "3 dias úteis": hoje + timedelta(days=3),
+        "1 semana": hoje + timedelta(weeks=1),
+        "2 semanas": hoje + timedelta(weeks=2),
+        "1 mês": hoje + timedelta(days=30),
+        "2 meses": hoje + timedelta(days=60),
+        "3 meses": hoje + timedelta(days=90),
+        "Personalizada": None  # Será definida manualmente
+    }
+    
+    return opcoes_prazo.get(opcao, hoje)
 
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
@@ -64,7 +82,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                 with col3:
                     titulo_tarefa = st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
                 with col4:
-                    data_execucao_tarefa = st.date_input("Data de Execução da Tarefa", value=datetime.today().date())
+                    data_execucao_tarefa = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+
 
                 observacoes_tarefa = st.text_area("Observações da Tarefa", value="", disabled=True)
                 status_tarefa = "🟨 Em andamento"  # Status fixo para a tarefa
