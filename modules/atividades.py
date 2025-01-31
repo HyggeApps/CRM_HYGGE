@@ -107,23 +107,25 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
                         }
                         collection_atividades.insert_one(nova_atividade)
+                        if tipo != 'Observação':
+                                # Criar a tarefa vinculada
+                                nova_tarefa = {
+                                    "tarefa_id": str(datetime.now().timestamp()),  # Gerar um ID único baseado no tempo
+                                    "titulo": titulo_tarefa,
+                                    "empresa": empresa_cnpj,
+                                    "atividade_vinculada": atividade_id,  # Relacionar com a atividade criada
+                                    "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
+                                    "status": status_tarefa,
+                                    "observacoes": observacoes_tarefa
+                                }
+                                collection_tarefas = get_collection("tarefas")
+                                collection_tarefas.insert_one(nova_tarefa)
 
-                        # Criar a tarefa vinculada
-                        nova_tarefa = {
-                            "tarefa_id": str(datetime.now().timestamp()),  # Gerar um ID único baseado no tempo
-                            "titulo": titulo_tarefa,
-                            "empresa": empresa_cnpj,
-                            "atividade_vinculada": atividade_id,  # Relacionar com a atividade criada
-                            "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
-                            "status": status_tarefa,
-                            "observacoes": observacoes_tarefa
-                        }
-                        collection_tarefas = get_collection("tarefas")
-                        collection_tarefas.insert_one(nova_tarefa)
-
-                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        
-                        st.rerun()
+                                st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                                st.rerun()
+                        else: 
+                                st.success("Atividade criada com sucesso! 📌")
+                                st.rerun()
                         
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
