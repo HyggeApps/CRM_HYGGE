@@ -14,7 +14,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
 
         with st.popover('➕ Adicionar Contato'):
-            with st.form("form_adicionar_contato", clear_on_submit=True):
+            with st.form("form_adicionar_contato"):
                 st.subheader("➕ Adicionar Contato")
                 
                 # Criar duas colunas para organização do formulário
@@ -65,7 +65,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     contato_dados = collection_contatos.find_one({"email": email_editar, "empresa": empresa_cnpj}, {"_id": 0})
 
                     if contato_dados:
-                        with st.form("form_editar_contato", clear_on_submit=True):
+                        with st.form("form_editar_contato"):
                             st.subheader("✏️ Editar Contato")
 
                             # Criar duas colunas para melhor organização dos campos
