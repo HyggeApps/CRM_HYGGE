@@ -12,7 +12,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
 
         with st.popover('➕ Adicionar Contato'):
-            with st.form("form_adicionar_contato"):
+            with st.form("form_adicionar_contato",clear_on_submit=True):
                 st.subheader("➕ Adicionar Contato")
                 nome = st.text_input("Nome *")
                 sobrenome = st.text_input("Sobrenome")
@@ -54,7 +54,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     contato_dados = collection_contatos.find_one({"email": email_editar, "empresa": empresa_cnpj}, {"_id": 0})
 
                     if contato_dados:
-                        with st.form("form_editar_contato"):
+                        with st.form("form_editar_contato", clear_on_submit=True):
                             st.subheader("✏️ Editar Contato")
                             nome_edit = st.text_input("Nome", value=contato_dados.get("nome", ""))
                             sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))

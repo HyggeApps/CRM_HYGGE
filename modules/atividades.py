@@ -40,7 +40,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         with st.popover('➕ Registrar Atividade'):
-            with st.form("form_adicionar_atividade"):
+            with st.form("form_adicionar_atividade", clear_on_submit=True):
                 st.subheader("➕ Nova Atividade")
                 tipo = st.selectbox("Tipo de Atividade *", ["", "Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
                 status = st.selectbox("Status *", ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])

@@ -43,7 +43,7 @@ def editar_empresa(user, admin):
     lista_usuarios = [f'{usuario["nome"]} {usuario["sobrenome"]} ({usuario["email"]})' for usuario in usuarios]
     lista_usuarios.sort()
 
-    with st.form(key="form_edicao_empresa"):
+    with st.form(key="form_edicao_empresa", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
@@ -141,7 +141,7 @@ def cadastrar_empresas(user, admin):
 
     # Formulário principal
     st.subheader("📃 Formulário de Cadastro")
-    with st.form(key="form_cadastro_empresa"):
+    with st.form(key="form_cadastro_empresa", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
@@ -233,21 +233,10 @@ def cadastrar_empresas(user, admin):
                         "ultima_atividade": now,
                     }
                     collection_empresas.insert_one(document)
-                    # Lista de chaves a serem resetadas
-                    keys_to_clear = [
-                        "dados_cnpj", "dados_cep", "cnpj_input", "cep_input", "razao_social", "cnpj",
-                        "rua", "bairro", "cidade", "estado", "cep", "fone", "site",
-                        "insc_estadual", "setor", "produto_interesse", "tamanho_empresa", "grau_cliente"
-                    ]
-
-                    # Remover apenas os campos do formulário
-                    for key in keys_to_clear:
-                        if key in st.session_state:
-                            del st.session_state[key]
 
                     # Recarregar a página sem afetar o login
                     st.success("Empresa cadastrada com sucesso!")
-                    st.rerun()
+
                     
 
         if clear:
@@ -531,7 +520,7 @@ def cadastrar_subempresa():
                 st.session_state["buscar_cep_sub_clicked"] = False
 
         # Formulário de Cadastro de sub-empresa
-        with st.form(key="form_cadastro_subempresa"):
+        with st.form(key="form_cadastro_subempresa", clear_on_submit=True):
             st.subheader("📃 Formulário de Cadastro de sub-empresa")
 
             # Linha 1: Empresa Matriz e Razão Social
