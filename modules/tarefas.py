@@ -87,7 +87,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         with st.expander('📋 Tarefas Registradas', expanded=True):
             df_tarefas = pd.DataFrame(tarefas)
 
-            # Renomear colunas para exibição
             df_tarefas = df_tarefas.rename(
                 columns={
                     "titulo": "Título",
@@ -97,51 +96,47 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 }
             )
 
-            df_tarefas = df_tarefas[["Status", "Data de Execução", "Título", "Observações"]]
+            df_tarefas = df_tarefas[["Status", "Data de Execução", "Título", "Observações", "Status"]]
+            df_tarefas["Data de Execução"] = pd.to_datetime(df_tarefas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
 
-            # Converter datas para formato legível
-            hoje = datetime.today().date()
-            df_tarefas["Data Execução Timestamp"] = pd.to_datetime(df_tarefas["Data de Execução"], format="%d/%m/%Y", errors="coerce")
+            st.dataframe(df_tarefas, hide_index=True, use_container_width=True)
 
-            # Atualizar status automaticamente antes de exibir a tabela
-            df_tarefas["Status Corrigido"] = df_tarefas.apply(
-                lambda row: "🟥 Atrasado" if row["Data Execução Timestamp"].date() < hoje and row["Status"] != "🟩 Concluída" else row["Status"], axis=1
-            )
+            # 📌 Popover para editar tarefas existentes
+            with st.popover('✏️ Editar Tarefa'):
+                tarefa_selecionada = st.selectbox(
+                    "Selecione uma tarefa para editar",
+                    options=[t["titulo"] for t in tarefas],
+                    key="select_editar_tarefa"
+                )
 
-            # Criar tabela editável sem a coluna auxiliar
-            edited_df = st.data_editor(
-                df_tarefas.drop(columns=["Data Execução Timestamp"]),  # Esconder coluna auxiliar
-                column_config={
-                    "Status Corrigido": st.column_config.SelectboxColumn(
-                        "Status",
-                        options=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"]
-                    )
-                },
-                hide_index=True,
-                use_container_width=True
-            )
+                if tarefa_selecionada:
+                    tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
 
-            # Verificar se houve mudanças antes de atualizar o banco de dados
-            if not edited_df.equals(df_tarefas.drop(columns=["Data Execução Timestamp"])):
-                collection_tarefas = get_collection("tarefas")
-                updates = []
+                    if tarefa_dados:
+                        with st.form("form_editar_tarefa"):
+                            st.subheader("✏️ Editar Tarefa")
 
-                for index, row in edited_df.iterrows():
-                    if row["Status Corrigido"] != df_tarefas.loc[index, "Status"]:
-                        updates.append(
-                            {
-                                "filtro": {"titulo": row["Título"], "data_execucao": row["Data de Execução"]},
-                                "update": {"$set": {"status": row["Status Corrigido"]}}
-                            }
-                        )
+                            titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
+                            prazo_edit = st.selectbox("Novo Prazo de Execução", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses", "Personalizada"], index=3)
+                            
+                            data_execucao_edit = st.date_input("Data de Execução", value=pd.to_datetime(tarefa_dados["data_execucao"]).date()) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+                            
+                            observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
+                            status_edit = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"]))
 
-                if updates:
-                    for update in updates:
-                        collection_tarefas.update_one(update["filtro"], update["update"])
+                            submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
-                    st.success("Status atualizado com sucesso! 🔄")
-                    st.experimental_rerun()
-
-
+                            if submit_editar:
+                                collection_tarefas.update_one(
+                                    {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
+                                    {"$set": {
+                                        "titulo": titulo_edit,
+                                        "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                                        "observacoes": observacoes_edit,
+                                        "status": status_edit
+                                    }}
+                                )
+                                st.success("Tarefa atualizada com sucesso!")
+                                st.rerun()
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
