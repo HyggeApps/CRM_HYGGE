@@ -102,26 +102,41 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 atividades_registradas = []
 
                 for index, row in edited_df.iterrows():
-                    if row["Status"] != df_tarefas.loc[index, "Status"]:  # Se o status mudou
-                        status_antigo = df_tarefas.loc[index, "Status"]
-                        status_novo = row["Status"]
+                    descricao_alteracao = []
+                    filtro = {"titulo": row["Título"], "data_execucao": row["Data de Execução"]}
+                    tarefa_original = df_tarefas.loc[index]
+
+                    # Comparação campo a campo
+                    if row["Status"] != tarefa_original["Status"]:
+                        descricao_alteracao.append(f"Status alterado de {tarefa_original['Status']} para {row['Status']}")
+
+                    if row["Observações"] != tarefa_original["Observações"]:
+                        descricao_alteracao.append(f"Observações alteradas: '{tarefa_original['Observações']}' → '{row['Observações']}'")
+
+                    if descricao_alteracao:
+                        descricao_texto = " | ".join(descricao_alteracao)
 
                         # Criar a atualização no banco de dados
                         updates.append(
                             {
-                                "filtro": {"titulo": row["Título"], "data_execucao": row["Data de Execução"]},
-                                "update": {"$set": {"status": status_novo}}
+                                "filtro": filtro,
+                                "update": {
+                                    "$set": {
+                                        "status": row["Status"],
+                                        "observacoes": row["Observações"]
+                                    }
+                                }
                             }
                         )
 
-                        # Criar uma nova atividade relacionada à mudança de status
+                        # Criar uma nova atividade relacionada à mudança da tarefa
                         nova_atividade = {
                             "atividade_id": str(datetime.now().timestamp()),
-                            "tipo_atividade": "Atualização de Status",
+                            "tipo_atividade": "Observação",
                             "status": "Registrado",
-                            "titulo": f"Status alterado de {status_antigo} para {status_novo}",
+                            "titulo": f"Alteração na Tarefa: {row['Título']}",
                             "empresa": empresa_cnpj,
-                            "descricao": f"O status da tarefa '{row['Título']}' foi alterado de {status_antigo} para {status_novo}.",
+                            "descricao": descricao_texto,
                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                         }
@@ -137,10 +152,10 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 if atividades_registradas:
                     collection_atividades.insert_many(atividades_registradas)
 
-                st.success("Status atualizado e atividades registradas com sucesso! 🔄")
+                st.success("Tarefa atualizada e atividade registrada com sucesso! 🔄")
                 st.experimental_rerun()
 
-            # 📌 Popover para editar tarefas existentes
+            # 📌 Popover para editar tarefas existentes manualmente
             with st.popover('✏️ Editar Tarefa'):
                 tarefa_selecionada = st.selectbox(
                     "Selecione uma tarefa para editar",
