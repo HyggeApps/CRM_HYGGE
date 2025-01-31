@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 from modules.contatos import *
 from modules.atividades import *
+from modules.tarefas import *
 
 def buscar_dados_cnpj(cnpj):
     url = f"https://www.receitaws.com.br/v1/cnpj/{cnpj}"
@@ -413,8 +414,13 @@ def consultar_empresas(user, admin):
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
             with col2:
-                st.write("### 📌 Histórico de atividades")
                 empresa_cnpj = empresa.get("CNPJ", "")  # ✅ Pegando corretamente o CNPJ
+                st.write("### 📌 Tarefas para a empresa")
+                if empresa_cnpj:
+                    gerenciamento_tarefas(user, admin, empresa_cnpj)
+
+                st.write("### 📌 Histórico de atividades")
+                
                 if empresa_cnpj:
                     exibir_atividades_empresa(user, admin, empresa_cnpj)
                 else:
