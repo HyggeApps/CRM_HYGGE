@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 from collections import defaultdict
+import time
 
 # Dicionário de meses em português
 MESES_PT = {
@@ -30,6 +31,7 @@ def calcular_data_execucao(opcao):
     
     return opcoes_prazo.get(opcao, hoje)
 
+@st.fragment
 def exibir_atividades_empresa(user, admin, empresa_cnpj):
     collection_atividades = get_collection("atividades")
     collection_contatos = get_collection("contatos")
@@ -123,6 +125,8 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas.insert_one(nova_tarefa)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                        with st.spinner("Carregando..."): time.sleep(1)
+                        st.rerun()
                         
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")

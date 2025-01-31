@@ -90,6 +90,7 @@ def editar_empresa(user, admin):
                     "tamanho_empresa": tamanho_empresa,
                 }}
             )
+            with st.spinner("Carregando..."): time.sleep(1)
             st.success("Dados da empresa atualizados com sucesso!")
             st.rerun()
 
@@ -205,6 +206,7 @@ def cadastrar_empresas(user, admin):
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
 
+@st.fragment
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
@@ -380,7 +382,7 @@ def consultar_empresas(user, admin):
             st.info("Selecione uma empresa para ver os detalhes.")
 
 
-
+@st.fragment
 def excluir_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
         st.warning("Nenhuma empresa selecionada para exclusão.")
@@ -405,9 +407,8 @@ def excluir_empresa(user, admin):
           # Recarrega a página
 
 
-
+@st.fragment
 def cadastrar_subempresa():
-    
     collection_empresas = get_collection("empresas")
     collection_subempresas = get_collection("subempresas")
 
@@ -534,5 +535,7 @@ def cadastrar_subempresa():
                             {"$push": {"subempresas": cnpj}}
                         )
                         st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
+                        with st.spinner("Carregando..."): time.sleep(1)
+                        st.rerun()
                 else:
                     st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")

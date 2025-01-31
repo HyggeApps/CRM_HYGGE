@@ -1,7 +1,9 @@
 import streamlit as st
 from utils.database import get_collection
 import pandas as pd
+import time
 
+@st.fragment
 def gerenciamento_usuarios():
     collection = get_collection("usuarios")
     st.info("Cadastre, remova, altere ou liste os usuários a partir das opções abaixo.")
@@ -43,7 +45,9 @@ def gerenciamento_usuarios():
                             "hierarquia": hierarquia,
                         }
                         collection.insert_one(document)
+                        with st.spinner("Carregando..."): time.sleep(1)
                         st.success("Usuário cadastrado com sucesso!")
+                        st.rerun()
                 else:
                     st.error("Preencha todos os campos obrigatórios (Nome, Sobrenome, Email, Login, Senha).")
 
@@ -107,7 +111,10 @@ def gerenciamento_usuarios():
                                 "hierarquia": hierarquia
                             }}
                         )
+                        with st.spinner("Carregando..."): time.sleep(1)
                         st.success(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
+                        st.rerun()
+                        
 
     # Aba: Exibir Usuários
     with tab4:

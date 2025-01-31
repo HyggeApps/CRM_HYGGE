@@ -2,6 +2,7 @@ import streamlit as st
 from utils.database import get_collection
 from datetime import datetime, timedelta
 import pandas as pd
+import time
 
 def calcular_data_execucao(opcao):
     """Calcula a data de execução da tarefa com base na opção selecionada"""
@@ -40,6 +41,7 @@ def atualizar_status_tarefas(empresa_cnpj):
     collection_tarefas = get_collection("tarefas")
     return collection_tarefas
 
+@st.fragment
 def gerenciamento_tarefas(user, admin, empresa_cnpj):
     collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
 
@@ -166,7 +168,9 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "status": status_edit
                                         }}
                                     )
+                                    with st.spinner("Carregando..."): time.sleep(1)
                                     st.success("Tarefa atualizada com sucesso! 🔄")
+                                    st.rerun()
 
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
