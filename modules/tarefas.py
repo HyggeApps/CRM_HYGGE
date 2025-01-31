@@ -119,15 +119,17 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
             # 📌 Popover para editar tarefas existentes
             with st.popover('✏️ Editar Tarefa'):
+                # Filtrar apenas as tarefas que não estão concluídas
+                tarefas_nao_concluidas = [t for t in tarefas if t["status"] != "🟩 Concluída"]
+
                 tarefa_selecionada = st.selectbox(
                     "Selecione uma tarefa para editar",
-                    options=[t["titulo"] for t in tarefas],
+                    options=[t["titulo"] for t in tarefas_nao_concluidas],  # Apenas tarefas em andamento ou atrasadas
                     key="select_editar_tarefa"
                 )
 
                 if tarefa_selecionada:
                     tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
-
                     if tarefa_dados:
                         with st.form("form_editar_tarefa",):
                             st.subheader("✏️ Editar Tarefa")
