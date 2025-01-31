@@ -39,44 +39,55 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
 
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-        with st.popover('➕ Registrar Atividade'):
-            with st.form("form_adicionar_atividade"):
-                st.subheader("➕ Nova Atividade")
 
-                # Criar duas colunas para organizar os campos
-                col1, col2 = st.columns(2)
+        # Criar popovers para cada tipo de atividade
+        tipos_atividades = ["Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"]
+        col1, col2, col3, col4, col5 = st.columns(5)  # Criar colunas para popovers
 
-                with col1:
-                    tipo = st.selectbox("Tipo de Atividade *", ["", "Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
-                    titulo = st.text_input("Título *")
-                    descricao = st.text_area("Descrição *")
+        for idx, tipo in enumerate(tipos_atividades):
+            with [col1, col2, col3, col4, col5][idx]:  # Distribuir popovers nas colunas
+                with st.popover(f"➕ {tipo}"):
+                    with st.form(f"form_adicionar_{tipo.lower()}"):
+                        st.subheader(f"➕ Nova Atividade - {tipo}")
 
-                with col2:
-                    status = st.selectbox("Status *", ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-                    contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
-                    data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
+                        # Criar duas colunas para organizar os campos
+                        col_a, col_b = st.columns(2)
 
-                submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
+                        with col_a:
+                            titulo = st.text_input("Título *", key=f"titulo_{tipo.lower()}")
+                            descricao = st.text_area("Descrição *", key=f"descricao_{tipo.lower()}")
 
-                if submit_atividade:
-                    if titulo and tipo and status and descricao and contatos_vinculados:
-                        atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
-                        nova_atividade = {
-                            "atividade_id": atividade_id,
-                            "tipo_atividade": tipo,
-                            "status": status,
-                            "titulo": titulo,
-                            "empresa": empresa_cnpj,
-                            "contato": contato,
-                            "descricao": descricao,
-                            "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
-                            "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
-                        }
-                        collection_atividades.insert_one(nova_atividade)
-                        st.success("Atividade adicionada com sucesso!")
-                        st.rerun()
-                    else:
-                        st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
+                        with col_b:
+                            status = st.selectbox(
+                                "Status *",
+                                ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
+                                key=f"status_{tipo.lower()}"
+                            )
+                            contato = st.multiselect("Contato Vinculado *", lista_contatos, key=f"contato_{tipo.lower()}")
+                            data_execucao = st.date_input("Data de Execução", value=datetime.today().date(), key=f"data_execucao_{tipo.lower()}")
+
+                        submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
+
+                        if submit_atividade:
+                            if titulo and status and descricao and contato:
+                                atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
+                                nova_atividade = {
+                                    "atividade_id": atividade_id,
+                                    "tipo_atividade": tipo,
+                                    "status": status,
+                                    "titulo": titulo,
+                                    "empresa": empresa_cnpj,
+                                    "contato": contato,
+                                    "descricao": descricao,
+                                    "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
+                                    "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
+                                }
+                                collection_atividades.insert_one(nova_atividade)
+                                st.success(f"Atividade '{tipo}' adicionada com sucesso!")
+                                st.rerun()
+                            else:
+                                st.error("Preencha os campos obrigatórios: Título, Status, Contato e Descrição.")
+
 
 
     with st.expander("🗓️ Atividades realizadas por período", expanded=False):
