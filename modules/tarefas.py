@@ -43,7 +43,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
                 with col2:
                     data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
-                    status = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=0)
+                    status = st.selectbox("Status", ["🟥 Pendente", "🟨 Em andamento", "🟩 Concluída"], index=0)
 
                 observacoes = st.text_area("Observações da Tarefa")
 
@@ -122,7 +122,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                             data_execucao_edit = st.date_input("Data de Execução", value=pd.to_datetime(tarefa_dados["data_execucao"]).date()) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
                             
                             observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
-                            status_edit = st.selectbox("Status", ["Pendente", "Em andamento", "Concluída"], index=["Pendente", "Em andamento", "Concluída"].index(tarefa_dados["status"]))
+                            status_edit = st.selectbox("Status", ["🟥 Pendente", "🟨 Em andamento", "🟩 Concluída"], index=["🟥 Pendente", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"]))
 
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
