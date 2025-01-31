@@ -28,12 +28,29 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
         return
 
+    # 📌 Verificar e atualizar tarefas atrasadas automaticamente
+    tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
+    hoje = datetime.today().date()
+    atualizacoes_realizadas = False
+
+    for tarefa in tarefas:
+        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
+        
+        if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
+            collection_tarefas.update_one(
+                {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
+                {"$set": {"status": "🟥 Atrasado"}}
+            )
+            atualizacoes_realizadas = True
+
+    if atualizacoes_realizadas:
+        st.rerun()  # Atualiza a interface após modificar os status no banco
+
     # 📌 Botão para adicionar nova tarefa
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         with st.popover('➕ Criar Tarefa'):
             with st.form("form_criar_tarefa"):
                 st.subheader("➕ Nova Tarefa")
-
 
                 titulo = st.text_input("Título da Tarefa *")
                 col1, col2 = st.columns(2)
@@ -43,46 +60,28 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
                 with col2:
                     data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
-                    status = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=0)
+                    status = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=1)
 
                 observacoes = st.text_area("Observações da Tarefa")
 
                 submit_criar = st.form_submit_button("✅ Criar Tarefa")
 
-        if submit_criar:
-            if titulo:
-                nova_tarefa = {
-                    "titulo": titulo,
-                    "empresa": empresa_cnpj,
-                    "data_execucao": data_execucao.strftime("%Y-%m-%d"),
-                    "observacoes": observacoes,
-                    "status": status
-                }
-                collection_tarefas.insert_one(nova_tarefa)
-                st.success("Tarefa criada com sucesso!")
-                st.rerun()
-            else:
-                st.error("Preencha o campo obrigatório: Título da Tarefa.")
-
-
-                if submit_criar:
-                    if titulo:
-                        nova_tarefa = {
-                            "titulo": titulo,
-                            "empresa": empresa_cnpj,
-                            "data_execucao": data_execucao.strftime("%Y-%m-%d"),
-                            "observacoes": observacoes,
-                            "status": status
-                        }
-                        collection_tarefas.insert_one(nova_tarefa)
-                        st.success("Tarefa criada com sucesso!")
-                        st.rerun()
-                    else:
-                        st.error("Preencha o campo obrigatório: Título da Tarefa.")
+            if submit_criar:
+                if titulo:
+                    nova_tarefa = {
+                        "titulo": titulo,
+                        "empresa": empresa_cnpj,
+                        "data_execucao": data_execucao.strftime("%Y-%m-%d"),
+                        "observacoes": observacoes,
+                        "status": status
+                    }
+                    collection_tarefas.insert_one(nova_tarefa)
+                    st.success("Tarefa criada com sucesso!")
+                    st.rerun()
+                else:
+                    st.error("Preencha o campo obrigatório: Título da Tarefa.")
 
     # 📌 Listagem das tarefas existentes
-    tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
-
     if tarefas:
         with st.expander('📋 Tarefas Registradas', expanded=True):
             df_tarefas = pd.DataFrame(tarefas)
@@ -136,7 +135,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                         "status": status_edit
                                     }}
                                 )
-                                st.success("Tarefa atualizada com sucesso!")
+                                st.success("Tarefa atualizada com sucesso! 🔄")
                                 st.rerun()
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
