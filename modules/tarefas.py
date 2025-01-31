@@ -96,7 +96,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 }
             )
 
-            df_tarefas = df_tarefas[["Título", "Data de Execução", "Observações", "Status"]]
+            df_tarefas = df_tarefas[["Status", "Data de Execução", "Título", "Observações"]]
             df_tarefas["Data de Execução"] = pd.to_datetime(df_tarefas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
 
             st.dataframe(df_tarefas, hide_index=True, use_container_width=True)
