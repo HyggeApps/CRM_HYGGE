@@ -92,7 +92,7 @@ def editar_empresa(user, admin):
             )
             
             st.success("Dados da empresa atualizados com sucesso!")
-            st.rerun()
+            
 
 @st.fragment            
 def cadastrar_empresas(user, admin):
@@ -206,7 +206,7 @@ def cadastrar_empresas(user, admin):
                     
                     
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
-                    st.rerun()
+                    
 
 @st.fragment
 def consultar_empresas(user, admin):
@@ -538,6 +538,6 @@ def cadastrar_subempresa():
                         )
                         st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
                         
-                        st.rerun()
+                        
                 else:
                     st.error("Preencha todos os campos obrigatórios (Razão Social, CNPJ, Empresa Matriz).")
