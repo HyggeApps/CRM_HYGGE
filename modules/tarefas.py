@@ -21,13 +21,8 @@ def calcular_data_execucao(opcao):
     
     return opcoes_prazo.get(opcao, hoje)
 
-def gerenciamento_tarefas(user, admin, empresa_cnpj):
+def atualizar_status_tarefas(empresa_cnpj):
     collection_tarefas = get_collection("tarefas")
-
-    if not empresa_cnpj:
-        st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
-        return
-
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
     tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
     hoje = datetime.today().date()
@@ -37,13 +32,34 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
         
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
-            st.write('Entrei')
             collection_tarefas.update_one(
                 {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
             )
     
     collection_tarefas = get_collection("tarefas")
+    return collection_tarefas
+
+def gerenciamento_tarefas(user, admin, empresa_cnpj):
+    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
+
+    if not empresa_cnpj:
+        st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
+        return
+
+    # 📌 Verificar e atualizar tarefas atrasadas automaticamente
+    tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
+    hoje = datetime.today().date()
+
+    for tarefa in tarefas:
+        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
+        
+        if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
+            collection_tarefas.update_one(
+                {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
+                {"$set": {"status": "🟥 Atrasado"}}
+            )
+
 
     # 📌 Botão para adicionar nova tarefa
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
