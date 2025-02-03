@@ -345,11 +345,6 @@ def visualizar_tarefas_por_usuario(user, admin):
         else:
             st.info("Nenhuma tarefa registrada.")
 
-    with col2:
-        st.metric("🟩 Finalizadas", total_finalizadas)
-        st.metric("🟨 Em andamento", total_andamento)
-        st.metric("🟥 Atrasadas", total_atrasadas)
-
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
     for aba, tarefas_periodo, titulo in zip(
