@@ -333,13 +333,13 @@ def consultar_empresas(user, admin):
             if empresa_cnpj_selecionada != nova_empresa["CNPJ"]:
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
-                st.rerun(scope="fragment")
+                st.rerun()
 
         # Se nenhuma empresa estiver marcada, limpar o session_state corretamente
         elif empresa_cnpj_selecionada:
             del st.session_state["empresa_selecionada"]
             del st.session_state["empresa_cnpj_selecionada"]
-            st.rerun(scope="fragment")
+            st.rerun()
 
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
