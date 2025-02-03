@@ -337,19 +337,15 @@ def visualizar_tarefas_por_usuario(user, admin):
                 media_andamento = total_outros_andamento / num_outros
                 media_atrasadas = total_outros_atrasadas / num_outros
 
-                # Adicionar a média ao gráfico
-                chart_data = chart_data.append(pd.DataFrame({
+                # Criar DataFrame da média dos vendedores
+                chart_data_outros = pd.DataFrame({
                     "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
                     "Quantidade": [media_finalizadas, media_andamento, media_atrasadas],
                     "Tipo": ["Média dos Vendedores"] * 3
-                }), ignore_index=True)
+                })
 
-            # Mapeamento de cores personalizadas
-            cores_mapeadas = {
-                "Finalizadas": "#2ECC71",
-                "Em andamento": "#F1C40F",
-                "Atrasadas": "#E74C3C"
-            }
+                # Concatenar com os dados do usuário
+                chart_data = pd.concat([chart_data, chart_data_outros], ignore_index=True)
 
             # Criar um gráfico de barras comparativo
             st.vega_lite_chart(
@@ -371,6 +367,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         else:
             st.info("Nenhuma tarefa registrada.")
+
 
 
 
