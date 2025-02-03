@@ -209,7 +209,6 @@ def cadastrar_empresas(user, admin):
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
                     
                     
-
 @st.fragment
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
@@ -227,17 +226,9 @@ def consultar_empresas(user, admin):
     with col3:
         filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
     with col4:
-        filtro_tamanho = st.multiselect(
-            "Tamanho",
-            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
-            default=[],
-        )
+        filtro_tamanho = st.multiselect("Tamanho", options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"], default=[])
     with col5:
-        filtro_vendedor = st.selectbox(
-            "Proprietário",
-            options=["Todos"] + vendedores,
-            index=0,
-        )
+        filtro_vendedor = st.selectbox("Proprietário", options=["Todos"] + vendedores, index=0)
     with col6:
         filtro_data_atividade = st.date_input("Data da última atividade", value=None)
 
@@ -261,7 +252,7 @@ def consultar_empresas(user, admin):
         collection_empresas.find(
             query,
             {
-                "_id": 0,  # Garante que o MongoDB não traga o _id
+                "_id": 0,
                 "razao_social": 1,
                 "usuario": 1,
                 "data_criacao": 1,
@@ -272,7 +263,7 @@ def consultar_empresas(user, admin):
                 "tamanho_empresa": 1,
                 "produto_interesse": 1,
                 "grau_cliente": 1,
-                "cnpj": 1  # Certifica-se de que o campo "cnpj" está presente
+                "cnpj": 1  
             },
         )
     )
@@ -280,7 +271,7 @@ def consultar_empresas(user, admin):
     if empresas_filtradas:
         df_empresas = pd.DataFrame(empresas_filtradas)
 
-        # ✅ Garantir que "cnpj" existe antes de renomear colunas
+        # ✅ Garantir que "CNPJ" existe antes de renomear colunas
         if "cnpj" in df_empresas.columns:
             df_empresas = df_empresas.rename(
                 columns={
@@ -303,11 +294,11 @@ def consultar_empresas(user, admin):
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
 
-        # Verificar se há empresa previamente selecionada no session_state
-        if "empresa_cnpj_selecionada" in st.session_state and st.session_state["empresa_cnpj_selecionada"]:
-            cnpj_pre_selecionado = st.session_state["empresa_cnpj_selecionada"]
-            if cnpj_pre_selecionado in df_empresas["CNPJ"].values:
-                df_empresas.loc[df_empresas["CNPJ"] == cnpj_pre_selecionado, "Visualizar"] = True
+        # ✅ Corrigir seleção no session_state
+        empresa_cnpj_selecionada = st.session_state.get("empresa_cnpj_selecionada", None)
+
+        if empresa_cnpj_selecionada and empresa_cnpj_selecionada in df_empresas["CNPJ"].values:
+            df_empresas.loc[df_empresas["CNPJ"] == empresa_cnpj_selecionada, "Visualizar"] = True
 
         # Criar editor de dados interativo
         edited_df = st.data_editor(
@@ -323,15 +314,21 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
-        # Atualizar a empresa selecionada no session_state
-        if edited_df["Visualizar"].any():
-            selected_index = edited_df[edited_df["Visualizar"]].index[0]
-            st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
-            st.session_state["empresa_cnpj_selecionada"] = st.session_state["empresa_selecionada"]["CNPJ"]  # ✅ Salvar o CNPJ
-            st.rerun()
+        # 🔹 Atualiza a empresa selecionada corretamente
+        novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
+
+        if novas_selecoes:
+            selected_index = novas_selecoes[0]
+            nova_empresa = edited_df.iloc[selected_index].to_dict()
+
+            if st.session_state.get("empresa_selecionada") != nova_empresa:
+                st.session_state["empresa_selecionada"] = nova_empresa
+                st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
+                st.rerun()  # ✅ Garante a atualização imediata
+
         else:
             st.session_state["empresa_selecionada"] = None
-            st.session_state["empresa_cnpj_selecionada"] = None  # ✅ Resetar se nenhuma estiver selecionada
+            st.session_state["empresa_cnpj_selecionada"] = None  
 
         # Exibir detalhes da empresa selecionada
         if st.session_state["empresa_selecionada"]:
@@ -340,7 +337,7 @@ def consultar_empresas(user, admin):
 
             st.write('----')
 
-            col1, col2 = st.columns([3.5,6.5])
+            col1, col2 = st.columns([3.5, 6.5])
             with col1:
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
