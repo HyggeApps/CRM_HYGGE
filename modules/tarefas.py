@@ -261,7 +261,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Construir query para buscar tarefas
     query = {}
     if usuario_selecionado != "Todos":
-        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
+        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuarios": usuario_selecionado}, {"cnpj": 1})]}
 
     # Buscar tarefas filtradas
     tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))
