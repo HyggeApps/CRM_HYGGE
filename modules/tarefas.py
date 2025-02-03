@@ -266,7 +266,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Adicionar o Nome da Empresa e converter data
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
-        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"])
+        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
 
     # 📅 Criar filtros de período
     hoje = datetime.today().date()
@@ -284,74 +284,72 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # Seleção de período
     filtro_tipo = st.radio("📅 Filtrar por:", ["Mês", "Trimestre", "Semestre", "Ano"], horizontal=True)
+    
     if filtro_tipo == "Mês":
         periodo_selecionado = st.selectbox("Escolha o mês", meses_opcoes, index=mes_atual - 1)
-        mes_inicio = int(periodo_selecionado.split()[1])
-        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month == mes_inicio and t["Data de Execução"].year == ano_atual]
+        mes_inicio = list(MESES_PT.keys())[list(MESES_PT.values()).index(periodo_selecionado.split()[0])]
+        inicio_periodo = datetime(ano_atual, mes_inicio, 1).date()
+        fim_periodo = datetime(ano_atual, mes_inicio + 1, 1).date() - timedelta(days=1)
 
     elif filtro_tipo == "Trimestre":
         periodo_selecionado = st.selectbox("Escolha o trimestre", trimestres_opcoes)
         trimestre = int(periodo_selecionado.split()[1])
         meses_trimestre = list(range((trimestre - 1) * 3 + 1, trimestre * 3 + 1))
-        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month in meses_trimestre and t["Data de Execução"].year == ano_atual]
+        inicio_periodo = datetime(ano_atual, meses_trimestre[0], 1).date()
+        fim_periodo = datetime(ano_atual, meses_trimestre[-1] + 1, 1).date() - timedelta(days=1)
 
     elif filtro_tipo == "Semestre":
         periodo_selecionado = st.selectbox("Escolha o semestre", semestres_opcoes)
         semestre = int(periodo_selecionado.split()[1])
         meses_semestre = list(range((semestre - 1) * 6 + 1, semestre * 6 + 1))
-        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month in meses_semestre and t["Data de Execução"].year == ano_atual]
+        inicio_periodo = datetime(ano_atual, meses_semestre[0], 1).date()
+        fim_periodo = datetime(ano_atual, meses_semestre[-1] + 1, 1).date() - timedelta(days=1)
 
     else:  # Ano
         periodo_selecionado = st.selectbox("Escolha o ano", anos_opcoes, index=4)
         ano_escolhido = int(periodo_selecionado)
-        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].year == ano_escolhido]
+        inicio_periodo = datetime(ano_escolhido, 1, 1).date()
+        fim_periodo = datetime(ano_escolhido, 12, 31).date()
+
+    # Filtragem correta
+    tarefas_periodo = [t for t in tarefas if inicio_periodo <= t["Data de Execução"] <= fim_periodo]
+
+    # Depuração - Log de tarefas
+    if not tarefas_periodo:
+        st.warning(f"Nenhuma tarefa encontrada para o período de {inicio_periodo.strftime('%d/%m/%Y')} a {fim_periodo.strftime('%d/%m/%Y')}.")
+        return
 
     # Contagem de status para gráficos
     total_finalizadas = sum(1 for t in tarefas_periodo if t["status"] == "🟩 Concluída")
     total_andamento = sum(1 for t in tarefas_periodo if t["status"] == "🟨 Em andamento")
     total_atrasadas = sum(1 for t in tarefas_periodo if t["status"] == "🟥 Atrasado")
 
-    # **Corrigir valores NaN**
+    # **Correção para NaN**
     valores = [total_finalizadas, total_andamento, total_atrasadas]
-    valores = [0 if pd.isna(v) else v for v in valores]  # Substituir NaN por 0
+    valores = [0 if pd.isna(v) else v for v in valores]  
 
     st.subheader("📊 Resumo das Tarefas")
 
-    col1, col2 = st.columns([2, 3])  # Ajuste de tamanho das colunas
+    col1, col2 = st.columns([2, 3])
 
     with col1:
-        # **Evitar erro de divisão por zero**
         if sum(valores) > 0:
             fig, ax = plt.subplots(figsize=(3, 3))
             labels = ["Finalizadas", "Em andamento", "Atrasadas"]
             cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
             ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
-            ax.axis("equal")  # Mantém formato circular
-            fig.patch.set_alpha(0)  # Fundo transparente
+            ax.axis("equal")
+            fig.patch.set_alpha(0)
             st.pyplot(fig)
         else:
             st.info("Nenhuma tarefa registrada para este período.")
 
     with col2:
-        # Exibir contagem total
         col1, col2, col3 = st.columns(3)
         col1.metric("🟩 Finalizadas", total_finalizadas)
         col2.metric("🟨 Em andamento", total_andamento)
         col3.metric("🟥 Atrasadas", total_atrasadas)
 
-    if admin and usuario_selecionado == "Todos":
-        st.subheader("📊 Comparativo por Usuário")
-
-        df_tarefas = pd.DataFrame(tarefas_periodo)
-        if not df_tarefas.empty:
-            tarefas_por_usuario = df_tarefas.groupby(["empresa", "status"]).size().unstack(fill_value=0)
-
-            fig, ax = plt.subplots(figsize=(6, 3))
-            tarefas_por_usuario.plot(kind="bar", stacked=True, color=["#2ECC71", "#F1C40F", "#E74C3C"], ax=ax)
-            ax.set_xlabel("Usuário")
-            ax.set_ylabel("Quantidade de Tarefas")
-            ax.set_title("Comparativo de Tarefas por Usuário")
-            st.pyplot(fig)
 
 
