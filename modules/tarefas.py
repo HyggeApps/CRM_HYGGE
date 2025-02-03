@@ -312,10 +312,17 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         with col1:
             if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(3, 3))
-                ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
+                fig, ax = plt.subplots(figsize=(1, 1))
+                wedges, texts, autotexts = ax.pie(
+                    valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90
+                )
+
+                # Alterar a cor do texto para branco
+                for text in texts + autotexts:
+                    text.set_color("white")
+
                 ax.axis("equal")
-                fig.patch.set_alpha(0)
+                fig.patch.set_alpha(0)  # Fundo transparente
                 st.pyplot(fig)
             else:
                 st.info("Nenhuma tarefa registrada.")
