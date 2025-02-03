@@ -199,7 +199,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                     )
 
                                     st.success("Tarefa atualizada com sucesso! 🔄")
-                                    st.rerun(scope="fragment")
                                     
                                     
 

@@ -108,7 +108,6 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_atividades.insert_one(nova_atividade)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun(scope="fragment")
                         
                         
                         
@@ -142,7 +141,6 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas.insert_one(nova_tarefa)
 
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun(scope="fragment")
                         
                         
                                 

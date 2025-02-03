@@ -92,7 +92,6 @@ def editar_empresa(user, admin):
             )
             
             st.success("Dados da empresa atualizados com sucesso!")
-            st.rerun(scope="fragment")
             
             
 
@@ -208,7 +207,6 @@ def cadastrar_empresas(user, admin):
                     
                     
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
-                    st.rerun(scope="fragment")
                     
                     
 
@@ -542,7 +540,7 @@ def cadastrar_subempresa():
                             {"$push": {"subempresas": cnpj}}
                         )
                         st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
-                        st.rerun(scope="fragment")
+                        
                         
                         
                         
