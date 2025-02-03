@@ -281,7 +281,6 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # **Criar filtros rápidos por abas**
     abas = st.tabs([
-        f"Resumo 📊",
         f"Hoje ({hoje.strftime('%d/%m')})",
         f"Amanhã ({amanha.strftime('%d/%m')})",
         f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
