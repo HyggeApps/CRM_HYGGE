@@ -312,7 +312,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         with col1:
             if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(2, 2))  # Ajustado para um tamanho compacto sem distorção
+                fig, ax = plt.subplots(figsize=(1, 1))  # Ajustado para um tamanho compacto sem distorção
                 labels = ["Finalizadas", "Em andamento", "Atrasadas"]
                 cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
@@ -320,7 +320,6 @@ def visualizar_tarefas_por_usuario(user, admin):
                 wedges, texts, autotexts = ax.pie(
                     valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
                     textprops={"fontsize": 8, "color": "white"},  # Fonte ajustada
-                    wedgeprops={'linewidth': 1, 'edgecolor': 'black'}  # Mantém melhor proporção
                 )
 
                 # Ajustar a posição dos rótulos para evitar cortes
