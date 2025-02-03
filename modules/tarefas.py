@@ -238,8 +238,6 @@ def visualizar_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
 
-    st.subheader("📋 Minhas Tarefas")
-
     # Para admin, permitir selecionar qualquer usuário. Para vendedor, apenas suas tarefas
     if admin:
         usuarios = list(collection_empresas.distinct("usuario"))
