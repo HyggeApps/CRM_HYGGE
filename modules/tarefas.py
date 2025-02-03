@@ -222,3 +222,68 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
+
+
+@st.fragment
+def visualizar_tarefas_por_usuario(user, admin):
+    collection_tarefas = get_collection("tarefas")
+    collection_empresas = get_collection("empresas")
+
+    st.subheader("📋 Minhas Tarefas")
+
+    # Para admin, permitir selecionar qualquer usuário. Para vendedor, apenas suas tarefas
+    if admin:
+        usuarios = list(collection_empresas.distinct("usuario"))
+        usuario_selecionado = st.selectbox("Filtrar por usuário", ["Todos"] + usuarios, index=0)
+    else:
+        usuario_selecionado = user  # Vendedor só vê suas próprias tarefas
+
+    # Construir query para buscar tarefas
+    query = {}
+    if usuario_selecionado != "Todos":
+        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
+    
+    # Buscar tarefas filtradas
+    tarefas = list(collection_tarefas.find(query, {"_id": 0}))
+
+    if not tarefas:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    # Separar tarefas por status
+    tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento"]
+    tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado"]
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("🟨 Em andamento")
+        if tarefas_em_andamento:
+            df_em_andamento = pd.DataFrame(tarefas_em_andamento)
+            df_em_andamento = df_em_andamento.rename(columns={
+                "titulo": "Título",
+                "empresa": "CNPJ",
+                "data_execucao": "Data de Execução",
+                "observacoes": "Observações",
+                "status": "Status"
+            })
+            df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"]).dt.strftime("%d/%m/%Y")
+            st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+        else:
+            st.info("Nenhuma tarefa em andamento.")
+
+    with col2:
+        st.subheader("🟥 Atrasado")
+        if tarefas_atrasadas:
+            df_atrasadas = pd.DataFrame(tarefas_atrasadas)
+            df_atrasadas = df_atrasadas.rename(columns={
+                "titulo": "Título",
+                "empresa": "CNPJ",
+                "data_execucao": "Data de Execução",
+                "observacoes": "Observações",
+                "status": "Status"
+            })
+            df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"]).dt.strftime("%d/%m/%Y")
+            st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
+        else:
+            st.info("Nenhuma tarefa atrasada.")

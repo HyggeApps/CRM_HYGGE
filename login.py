@@ -5,6 +5,7 @@ import streamlit as st
 from modules import (
     usuarios,
     empresas,
+    tarefas,
     contatos,
     cadastro_produtos,
     cadastro_oportunidades,
@@ -217,6 +218,9 @@ if st.session_state['authentication_status']:
         st.info('Acompanhe aqui suas tarefas e seus números.')
 
         tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
+        with tela_tarefas:
+            if 'admin' in st.session_state["roles"]: tarefas.visualizar_tarefas_por_usuario(usuario_ativo,admin=True)
+            else: tarefas.visualizar_tarefas_por_usuario(usuario_ativo,admin=False)
     elif selected == "Empresas":
         st.header("🏢 Empresas")
         st.info('Consulte, cadastre e edite suas empresas.')
