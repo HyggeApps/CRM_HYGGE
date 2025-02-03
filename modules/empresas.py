@@ -346,6 +346,10 @@ def consultar_empresas(user, admin):
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
                     editar_empresa(user, admin)
+                    # Buscar os dados atualizados da empresa no banco após edição
+                    empresa_atualizada = collection_empresas.find_one({"cnpj": empresa_cnpj}, {"_id": 0})
+                    if empresa_atualizada:
+                        st.session_state["empresa_selecionada"] = empresa_atualizada
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
