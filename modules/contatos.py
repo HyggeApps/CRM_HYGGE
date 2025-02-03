@@ -107,7 +107,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                         
                         
                         
-
+    contatos = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0}))
     with st.expander("📞 Contatos cadastrados", expanded=True):
         if contatos:
             df_contatos = pd.DataFrame(contatos)
