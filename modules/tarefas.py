@@ -251,22 +251,8 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Construir query para buscar tarefas
     query = {}
     if usuario_selecionado != "Todos":
-        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
-
-    # Buscar tarefas filtradas
-    tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))
-
-    if not tarefas:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
-    # Criar um dicionário com Nome da Empresa baseado no CNPJ
-    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find({}, {"cnpj": 1, "razao_social": 1})}
-
-    # Adicionar o Nome da Empresa e converter data
-    for tarefa in tarefas:
-        tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
-        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
+        cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})}
+        query["empresa"] = {"$in": list(cnpjs_usuario)}
 
     # 📅 Criar filtros de período
     hoje = datetime.today().date()
@@ -276,80 +262,99 @@ def visualizar_tarefas_por_usuario(user, admin):
     ano_atual = hoje.year
     mes_atual = hoje.month
 
-    # Opções de Filtro
-    meses_opcoes = [f"{MESES_PT[m]} {ano_atual}" for m in range(1, 13)]
-    trimestres_opcoes = [f"Trimestre {i} ({MESES_PT[i*3-2]} - {MESES_PT[i*3]}) {ano_atual}" for i in range(1, 5)]
-    semestres_opcoes = [f"Semestre {i} ({MESES_PT[i*6-5]} - {MESES_PT[i*6]}) {ano_atual}" for i in range(1, 3)]
-    anos_opcoes = [str(y) for y in range(ano_atual - 4, ano_atual + 1)]
+    # **Filtragem no banco** para acelerar carregamento
+    tarefas = list(collection_tarefas.find(
+        query, 
+        {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
+    ))
 
-    # Seleção de período
-    filtro_tipo = st.radio("📅 Filtrar por:", ["Mês", "Trimestre", "Semestre", "Ano"], horizontal=True)
-    
-    if filtro_tipo == "Mês":
-        periodo_selecionado = st.selectbox("Escolha o mês", meses_opcoes, index=mes_atual - 1)
-        mes_inicio = list(MESES_PT.keys())[list(MESES_PT.values()).index(periodo_selecionado.split()[0])]
-        inicio_periodo = datetime(ano_atual, mes_inicio, 1).date()
-        fim_periodo = datetime(ano_atual, mes_inicio + 1, 1).date() - timedelta(days=1)
-
-    elif filtro_tipo == "Trimestre":
-        periodo_selecionado = st.selectbox("Escolha o trimestre", trimestres_opcoes)
-        trimestre = int(periodo_selecionado.split()[1])
-        meses_trimestre = list(range((trimestre - 1) * 3 + 1, trimestre * 3 + 1))
-        inicio_periodo = datetime(ano_atual, meses_trimestre[0], 1).date()
-        fim_periodo = datetime(ano_atual, meses_trimestre[-1] + 1, 1).date() - timedelta(days=1)
-
-    elif filtro_tipo == "Semestre":
-        periodo_selecionado = st.selectbox("Escolha o semestre", semestres_opcoes)
-        semestre = int(periodo_selecionado.split()[1])
-        meses_semestre = list(range((semestre - 1) * 6 + 1, semestre * 6 + 1))
-        inicio_periodo = datetime(ano_atual, meses_semestre[0], 1).date()
-        fim_periodo = datetime(ano_atual, meses_semestre[-1] + 1, 1).date() - timedelta(days=1)
-
-    else:  # Ano
-        periodo_selecionado = st.selectbox("Escolha o ano", anos_opcoes, index=4)
-        ano_escolhido = int(periodo_selecionado)
-        inicio_periodo = datetime(ano_escolhido, 1, 1).date()
-        fim_periodo = datetime(ano_escolhido, 12, 31).date()
-
-    # Filtragem correta
-    tarefas_periodo = [t for t in tarefas if inicio_periodo <= t["Data de Execução"] <= fim_periodo]
-
-    # Depuração - Log de tarefas
-    if not tarefas_periodo:
-        st.warning(f"Nenhuma tarefa encontrada para o período de {inicio_periodo.strftime('%d/%m/%Y')} a {fim_periodo.strftime('%d/%m/%Y')}.")
+    if not tarefas:
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Contagem de status para gráficos
-    total_finalizadas = sum(1 for t in tarefas_periodo if t["status"] == "🟩 Concluída")
-    total_andamento = sum(1 for t in tarefas_periodo if t["status"] == "🟨 Em andamento")
-    total_atrasadas = sum(1 for t in tarefas_periodo if t["status"] == "🟥 Atrasado")
+    # Criar um dicionário com Nome da Empresa baseado no CNPJ
+    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find({}, {"cnpj": 1, "razao_social": 1})}
 
-    # **Correção para NaN**
-    valores = [total_finalizadas, total_andamento, total_atrasadas]
-    valores = [0 if pd.isna(v) else v for v in valores]  
+    # Adicionar Nome da Empresa e converter datas
+    for tarefa in tarefas:
+        tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
+        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
 
-    st.subheader("📊 Resumo das Tarefas")
+    # **Criar filtros rápidos por abas**
+    abas = st.tabs([
+        f"Resumo 📊",
+        f"Hoje ({hoje.strftime('%d/%m')})",
+        f"Amanhã ({amanha.strftime('%d/%m')})",
+        f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
+        f"Neste mês (até {fim_mes.strftime('%d/%m')})"
+    ])
 
-    col1, col2 = st.columns([2, 3])
+    def filtrar_tarefas(data_inicio, data_fim):
+        return [t for t in tarefas if data_inicio <= t["Data de Execução"] <= data_fim]
 
-    with col1:
-        if sum(valores) > 0:
-            fig, ax = plt.subplots(figsize=(3, 3))
-            labels = ["Finalizadas", "Em andamento", "Atrasadas"]
-            cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+    tarefas_hoje = filtrar_tarefas(hoje, hoje)
+    tarefas_amanha = filtrar_tarefas(amanha, amanha)
+    tarefas_semana = filtrar_tarefas(hoje, fim_semana)
+    tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
-            ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
-            ax.axis("equal")
-            fig.patch.set_alpha(0)
-            st.pyplot(fig)
-        else:
-            st.info("Nenhuma tarefa registrada para este período.")
+    # 📊 **Aba de Resumo**
+    with abas[0]:
+        st.subheader("📊 Resumo das Tarefas")
+        total_finalizadas = sum(1 for t in tarefas if t["status"] == "🟩 Concluída")
+        total_andamento = sum(1 for t in tarefas if t["status"] == "🟨 Em andamento")
+        total_atrasadas = sum(1 for t in tarefas if t["status"] == "🟥 Atrasado")
 
-    with col2:
-        col1, col2, col3 = st.columns(3)
-        col1.metric("🟩 Finalizadas", total_finalizadas)
-        col2.metric("🟨 Em andamento", total_andamento)
-        col3.metric("🟥 Atrasadas", total_atrasadas)
+        valores = [total_finalizadas, total_andamento, total_atrasadas]
+        labels = ["Finalizadas", "Em andamento", "Atrasadas"]
+        cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+
+        col1, col2 = st.columns([2, 3])
+
+        with col1:
+            if sum(valores) > 0:
+                fig, ax = plt.subplots(figsize=(3, 3))
+                ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
+                ax.axis("equal")
+                fig.patch.set_alpha(0)
+                st.pyplot(fig)
+            else:
+                st.info("Nenhuma tarefa registrada.")
+
+        with col2:
+            col1, col2, col3 = st.columns(3)
+            col1.metric("🟩 Finalizadas", total_finalizadas)
+            col2.metric("🟨 Em andamento", total_andamento)
+            col3.metric("🟥 Atrasadas", total_atrasadas)
+
+    # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
+    for aba, tarefas_periodo, titulo in zip(
+        abas[1:], [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
+        ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"]
+    ):
+        with aba:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader(f"🟥 Atrasado - {titulo}")
+                tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+                if tarefas_atrasadas:
+                    df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                    df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
+                    df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
+                else:
+                    st.success(f"Nenhuma tarefa atrasada para {titulo}.")
+
+            with col2:
+                st.subheader(f"🟨 Em andamento - {titulo}")
+                tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
+                if tarefas_em_andamento:
+                    df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                    df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
+                    df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+                else:
+                    st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 
 
