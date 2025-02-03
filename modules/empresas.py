@@ -330,7 +330,7 @@ def consultar_empresas(user, admin):
             selected_index = novas_selecoes[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
             st.session_state["empresa_cnpj_selecionada"] = st.session_state["empresa_selecionada"]["CNPJ"]
-            st.rerun(scope="fragment")  # 🔄 Atualiza o fragmento sem recarregar a página
+            st.rerun()
         else:
             st.session_state["empresa_selecionada"] = None
             st.session_state["empresa_cnpj_selecionada"] = None  # ✅ Resetar se nenhuma estiver selecionada
