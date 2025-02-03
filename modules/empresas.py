@@ -25,18 +25,23 @@ def buscar_dados_cep(cep):
 def editar_empresa(user, admin):
     if "empresa_selecionada" not in st.session_state or not st.session_state["empresa_selecionada"]:
         st.warning("Nenhuma empresa selecionada para edição.")
-        return None  # Retorna None caso não haja empresa selecionada
+        return
     
     empresa = st.session_state["empresa_selecionada"]
 
+    # Se admin for True, pode editar qualquer empresa
+    # Se admin for False, só pode editar as empresas que possui
     eh_proprietario = admin or (user == empresa["Proprietário"])
 
     st.subheader("✏️ Editar Empresa")
 
-    collection_usuarios = get_collection("usuarios")
+    collection_usuarios = get_collection("usuarios")  # Coleção de usuários
     collection_empresas = get_collection("empresas")
 
+    # Buscar os campos "nome", "sobrenome" e "email" para cada usuário
     usuarios = list(collection_usuarios.find({}, {"nome": 1, "sobrenome": 1, "email": 1}))
+
+    # Formatar a lista de usuários para o formato: "nome sobrenome (email)"
     lista_usuarios = [f'{usuario["nome"]} {usuario["sobrenome"]} ({usuario["email"]})' for usuario in usuarios]
     lista_usuarios.sort()
 
@@ -45,49 +50,38 @@ def editar_empresa(user, admin):
         with col1:
             razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
         with col2:
-            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=True)
+            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=True)  # Cidade não editável
         
         col3, col4 = st.columns(2)
         with col3:
-            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)
+            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)  # Estado não editável
         with col4:
-            novo_usuario = st.selectbox(
-                "Usuário (Vendedor)", 
-                options=lista_usuarios, 
-                index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
-                disabled=not eh_proprietario
-            )
+            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, 
+                                        index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
+                                        disabled=not eh_proprietario)
 
         col5, col6 = st.columns(2)
         with col5:
-            setor = st.selectbox(
-                "Setor *", 
-                ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
-                disabled=not eh_proprietario
-            )
+            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
+                                 disabled=not eh_proprietario)
         with col6:
-            produto_interesse = st.selectbox(
-                "Produto de Interesse *", 
-                ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
-                index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
-                disabled=not eh_proprietario
-            )
+            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
+                                             index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
+                                             disabled=not eh_proprietario)
 
         col7, col8 = st.columns(2)
         with col7:
-            tamanho_empresa = st.selectbox(
-                "Tamanho da Empresa *", 
-                ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
-                index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
-                disabled=not eh_proprietario
-            )
+            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
+                                           index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
+                                           disabled=not eh_proprietario)
 
         submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
         if submit and eh_proprietario:
+            # Atualiza os dados no banco de dados
             collection_empresas.update_one(
-                {"cnpj": empresa["CNPJ"]},
+                {"razao_social": empresa["Nome"]},
                 {"$set": {
                     "razao_social": razao_social,
                     "usuario": novo_usuario,
@@ -97,52 +91,7 @@ def editar_empresa(user, admin):
                 }}
             )
             
-            st.success("Dados da empresa atualizados com sucesso!")
-
-            # Buscar a lista atualizada de empresas e formatar para exibição
-            empresas_atualizadas = list(
-                collection_empresas.find(
-                    {},
-                    {
-                        "_id": 0,
-                        "razao_social": 1,
-                        "usuario": 1,
-                        "data_criacao": 1,
-                        "ultima_atividade": 1,
-                        "cidade": 1,
-                        "estado": 1,
-                        "setor": 1,
-                        "tamanho_empresa": 1,
-                        "produto_interesse": 1,
-                        "grau_cliente": 1,
-                        "cnpj": 1
-                    }
-                )
-            )
-
-            df_empresas = pd.DataFrame(empresas_atualizadas)
-            if "cnpj" in df_empresas.columns:
-                df_empresas = df_empresas.rename(
-                    columns={
-                        "razao_social": "Nome",
-                        "usuario": "Proprietário",
-                        "data_criacao": "Data de Criação",
-                        "ultima_atividade": "Última Atividade",
-                        "cidade": "Cidade",
-                        "estado": "UF",
-                        "setor": "Setor",
-                        "tamanho_empresa": "Tamanho",
-                        "produto_interesse": "Produto Interesse",
-                        "grau_cliente": "Grau Cliente",
-                        "cnpj": "CNPJ"
-                    }
-                )
-
-            return df_empresas  # Retorna o DataFrame atualizado
-
-    return None  # Retorna None caso nenhuma alteração tenha sido feita
-            
-            
+            st.success("Dados da empresa atualizados com sucesso!")       
 
 @st.fragment            
 def cadastrar_empresas(user, admin):
@@ -394,10 +343,8 @@ def consultar_empresas(user, admin):
             with col1:
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
-                    df_atualizado = editar_empresa(user, admin)
-                    if df_atualizado is not None:
-                        st.rerun()
-                        
+                    editar_empresa(user, admin)
+
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
