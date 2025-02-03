@@ -95,7 +95,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     }
                     collection_tarefas.insert_one(nova_tarefa)
                     st.success("Tarefa criada com sucesso!")
-                    
+                    st.rerun(scope="fragment")
                     
                 else:
                     st.error("Preencha o campo obrigatório: Título da Tarefa.")
@@ -199,6 +199,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                     )
 
                                     st.success("Tarefa atualizada com sucesso! 🔄")
+                                    st.rerun(scope="fragment")
                                     
                                     
 

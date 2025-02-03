@@ -47,6 +47,7 @@ def gerenciamento_usuarios():
                         collection.insert_one(document)
                         
                         st.success("Usuário cadastrado com sucesso!")
+                        st.rerun(scope="fragment")
                         
                         
                 else:
@@ -114,9 +115,8 @@ def gerenciamento_usuarios():
                         )
                         
                         st.success(f"Usuário '{nome} {sobrenome}' atualizado com sucesso!")
-                        
-                        
-                        
+                        st.rerun(scope="fragment")
+                                  
 
     # Aba: Exibir Usuários
     with tab4:
