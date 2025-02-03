@@ -213,7 +213,9 @@ if st.session_state['authentication_status']:
     st.write('----')
 
     if selected == "Tarefas":
+        st.header("📜 Tarefas")
         st.info('Acompanhe aqui suas tarefas e seus números.')
+
         tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
     elif selected == "Empresas":
         st.header("🏢 Empresas")
