@@ -224,6 +224,12 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
 
 
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+from utils.database import get_collection
+
 @st.fragment
 def visualizar_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
@@ -242,7 +248,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     query = {}
     if usuario_selecionado != "Todos":
         query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
-    
+
     # Buscar tarefas filtradas
     tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))  # Removendo os campos desnecessários
 
@@ -273,14 +279,40 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_semana = filtrar_tarefas(hoje, fim_semana)
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
+    # Contagem de status para gráficos
+    total_finalizadas = sum(1 for t in tarefas if t["status"] == "🟩 Concluída")
+    total_andamento = sum(1 for t in tarefas if t["status"] == "🟨 Em andamento")
+    total_atrasadas = sum(1 for t in tarefas if t["status"] == "🟥 Atrasado")
+
     abas = st.tabs([
+        "📊 Resumo",
         f"Hoje ({hoje.strftime('%d/%m')})",
         f"Amanhã ({amanha.strftime('%d/%m')})",
         f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
         f"Neste mês (até {fim_mes.strftime('%d/%m')})"
     ])
 
-    for aba, tarefas_periodo, titulo in zip(abas, [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes], 
+    with abas[0]:  # Aba Resumo
+        st.subheader("📊 Resumo das Tarefas")
+
+        # Criar gráfico de status
+        fig, ax = plt.subplots(figsize=(4, 4))
+        labels = ["Finalizadas", "Em andamento", "Atrasadas"]
+        valores = [total_finalizadas, total_andamento, total_atrasadas]
+        cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+
+        ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
+        ax.axis("equal")  # Mantém formato circular
+
+        st.pyplot(fig)
+
+        # Exibir contagem total
+        col1, col2, col3 = st.columns(3)
+        col1.metric("🟩 Finalizadas", total_finalizadas)
+        col2.metric("🟨 Em andamento", total_andamento)
+        col3.metric("🟥 Atrasadas", total_atrasadas)
+
+    for aba, tarefas_periodo, titulo in zip(abas[1:], [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes], 
                                              ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"]):
         with aba:
             col1, col2 = st.columns(2)
@@ -314,3 +346,4 @@ def visualizar_tarefas_por_usuario(user, admin):
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+
