@@ -350,6 +350,7 @@ def consultar_empresas(user, admin):
                     if empresa_atualizada:
                         st.session_state["empresa_selecionada"] = empresa_atualizada
                         empresa = st.session_state["empresa_selecionada"]
+                        st.write(empresa)
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
