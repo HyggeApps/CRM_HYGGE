@@ -295,6 +295,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_semana = filtrar_tarefas(hoje, fim_semana)
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
+    st.write(1)
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
     for aba, tarefas_periodo, titulo, data_limite in zip(
         abas[0:],
