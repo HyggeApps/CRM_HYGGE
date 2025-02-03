@@ -319,7 +319,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 # Criar o gráfico de pizza com fonte branca e tamanho ajustado
                 wedges, texts, autotexts = ax.pie(
                     valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
-                    textprops={"fontsize": 8, "color": "white"}  # Ajuste do tamanho e cor da fonte
+                    textprops={"fontsize": 4, "color": "white"}  # Ajuste do tamanho e cor da fonte
                 )
 
                 ax.axis("equal")
