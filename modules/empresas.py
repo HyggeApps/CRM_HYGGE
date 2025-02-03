@@ -337,35 +337,37 @@ def consultar_empresas(user, admin):
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
             empresa = st.session_state["empresa_selecionada"]
-            empresa_cnpj = empresa["CNPJ"]
+            empresa_cnpj = empresa.get("CNPJ")  # Usa .get() para evitar KeyError
 
-            st.write('----')
+            if empresa_cnpj:
+                st.write('----')
 
-            col1, col2 = st.columns([3.5, 6.5])
-            with col1:
-                st.write("### 🔍 Detalhes da empresa selecionada")
-                with st.popover('✏️ Editar empresa'):
-                    editar_empresa(user, admin)
-                    # Buscar os dados atualizados da empresa no banco após edição
-                    empresa_atualizada = collection_empresas.find_one({"cnpj": empresa_cnpj}, {"_id": 0})
-                    if empresa_atualizada:
-                        st.session_state["empresa_selecionada"] = empresa_atualizada
-                with st.expander("📋 Dados da Empresa", expanded=True):
-                    
-                    dados_empresa = {
-                        "Nome": empresa['Nome'],
-                        "Proprietário": empresa['Proprietário'],
-                        "Última Atividade": empresa['Última Atividade'],
-                        "Data de Criação": empresa['Data de Criação'],
-                        "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
-                        "Setor": empresa["Setor"],
-                        "Tamanho": empresa["Tamanho"],
-                        "Produto Interesse": empresa["Produto Interesse"],
-                        "Grau Cliente": empresa["Grau Cliente"],
-                        "CNPJ": empresa["CNPJ"]
-                    }
-                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
-                    st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+                col1, col2 = st.columns([3.5, 6.5])
+                with col1:
+                    st.write("### 🔍 Detalhes da empresa selecionada")
+                    with st.popover('✏️ Editar empresa'):
+                        editar_empresa(user, admin)
+                        # Buscar os dados atualizados da empresa no banco após edição
+                        empresa_atualizada = collection_empresas.find_one({"cnpj": empresa_cnpj}, {"_id": 0})
+                        if empresa_atualizada:
+                            st.session_state["empresa_selecionada"] = empresa_atualizada
+                            st.session_state["empresa_cnpj_selecionada"] = empresa_atualizada["cnpj"]
+
+                    with st.expander("📋 Dados da Empresa", expanded=True):
+                        dados_empresa = {
+                            "Nome": empresa.get("Nome", ""),
+                            "Proprietário": empresa.get("Proprietário", ""),
+                            "Última Atividade": empresa.get("Última Atividade", ""),
+                            "Data de Criação": empresa.get("Data de Criação", ""),
+                            "Cidade/UF": f"{empresa.get('Cidade', '')}, {empresa.get('UF', '')}",
+                            "Setor": empresa.get("Setor", ""),
+                            "Tamanho": empresa.get("Tamanho", ""),
+                            "Produto Interesse": empresa.get("Produto Interesse", ""),
+                            "Grau Cliente": empresa.get("Grau Cliente", ""),
+                            "CNPJ": empresa_cnpj
+                        }
+                        df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
+                        st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
 
                 # Integrando a função de exibir contatos
                 if empresa_cnpj:
@@ -375,17 +377,17 @@ def consultar_empresas(user, admin):
                 else:
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
-            with col2:
-                st.write("### 📜 Tarefas para a empresa")
-                if empresa_cnpj:
-                    gerenciamento_tarefas(user, admin, empresa_cnpj)
-                st.write('----')
-                st.write("### 📌 Histórico de atividades")
-                
-                if empresa_cnpj:
-                    exibir_atividades_empresa(user, admin, empresa_cnpj)
-                else:
-                    st.error("Erro ao carregar o CNPJ da empresa.")
+                with col2:
+                    st.write("### 📜 Tarefas para a empresa")
+                    if empresa_cnpj:
+                        gerenciamento_tarefas(user, admin, empresa_cnpj)
+                    st.write('----')
+                    st.write("### 📌 Histórico de atividades")
+
+                    if empresa_cnpj:
+                        exibir_atividades_empresa(user, admin, empresa_cnpj)
+                    else:
+                        st.error("Erro ao carregar o CNPJ da empresa.")
 
         else:
             st.write('----')
