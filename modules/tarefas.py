@@ -296,92 +296,25 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_semana = filtrar_tarefas(hoje, fim_semana)
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
-    # 📊 **Aba de Resumo**
-    with abas[0]:
-        st.subheader("📊 Resumo das Tarefas")
-        total_finalizadas = sum(1 for t in tarefas if t["status"] == "🟩 Concluída")
-        total_andamento = sum(1 for t in tarefas if t["status"] == "🟨 Em andamento")
-        total_atrasadas = sum(1 for t in tarefas if t["status"] == "🟥 Atrasado")
-
-        valores = [total_finalizadas, total_andamento, total_atrasadas]
-        labels = ["Finalizadas", "Em andamento", "Atrasadas"]
-        cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
-
-        if sum(valores) > 0:
-            # Criar DataFrame com os dados das tarefas do usuário atual
-            chart_data = pd.DataFrame({
-                "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
-                "Quantidade": [total_finalizadas, total_andamento, total_atrasadas],
-                "Tipo": ["Usuário"] * 3  # Para diferenciar no gráfico
-            })
-
-            # Calcular média dos demais vendedores
-            if admin:
-                todas_tarefas = list(collection_tarefas.find({}, {"_id": 0, "status": 1, "empresa": 1}))
-
-                # Filtrar empresas do usuário atual
-                empresas_usuario = [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]
-                
-                # Filtrar tarefas que não pertencem ao usuário atual
-                tarefas_outros = [t for t in todas_tarefas if t["empresa"] not in empresas_usuario]
-
-                # Contar status para os demais vendedores
-                total_outros_finalizadas = sum(1 for t in tarefas_outros if t["status"] == "🟩 Concluída")
-                total_outros_andamento = sum(1 for t in tarefas_outros if t["status"] == "🟨 Em andamento")
-                total_outros_atrasadas = sum(1 for t in tarefas_outros if t["status"] == "🟥 Atrasado")
-
-                # Calcular média por status (evita divisão por zero)
-                num_outros = max(1, len(set([emp["usuario"] for emp in collection_empresas.find({}, {"usuario": 1}) if emp["usuario"] != usuario_selecionado])))
-
-                media_finalizadas = total_outros_finalizadas / num_outros
-                media_andamento = total_outros_andamento / num_outros
-                media_atrasadas = total_outros_atrasadas / num_outros
-
-                # Criar DataFrame da média dos vendedores
-                chart_data_outros = pd.DataFrame({
-                    "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
-                    "Quantidade": [media_finalizadas, media_andamento, media_atrasadas],
-                    "Tipo": ["Média dos Vendedores"] * 3
-                })
-
-                # Concatenar com os dados do usuário
-                chart_data = pd.concat([chart_data, chart_data_outros], ignore_index=True)
-
-            # Criar um gráfico de barras comparativo
-            st.vega_lite_chart(
-                chart_data,
-                {
-                    "mark": "bar",
-                    "encoding": {
-                        "x": {"field": "Status", "type": "nominal"},
-                        "y": {"field": "Quantidade", "type": "quantitative"},
-                        "color": {
-                            "field": "Tipo",
-                            "type": "nominal",
-                            "scale": {"domain": ["Usuário", "Média dos Vendedores"], "range": ["#3498DB", "#95A5A6"]}  # Azul para o usuário, cinza para média
-                        }
-                    }
-                },
-                use_container_width=True
-            )
-
-        else:
-            st.info("Nenhuma tarefa registrada.")
-
-
-
-
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
-    for aba, tarefas_periodo, titulo in zip(
-        abas[1:], [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
-        ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"]
+    for aba, tarefas_periodo, titulo, data_inicio, data_fim in zip(
+        abas[1:],
+        [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
+        ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
+        [hoje, amanha, hoje, hoje],
+        [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
             col1, col2 = st.columns(2)
 
             with col1:
                 st.subheader(f"🟥 Atrasado - {titulo}")
-                tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+
+                if titulo == "Hoje":
+                    tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]  # Todas vencidas
+                else:
+                    tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+
                 if tarefas_atrasadas:
                     df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
                     df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
@@ -400,6 +333,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+
 
 
 
