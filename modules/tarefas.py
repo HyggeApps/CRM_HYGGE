@@ -294,7 +294,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
     st.write(1)
-    # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
+    # 📌 Criar abas para Hoje, Amanhã, Semana, Mês
     for aba, tarefas_periodo, titulo, data_limite in zip(
         abas[0:],
         [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
@@ -315,6 +315,10 @@ def visualizar_tarefas_por_usuario(user, admin):
                     df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
                     df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                     st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
+
+                    # 📌 Botão para editar tarefas atrasadas
+                    if st.button(f"✏️ Editar Tarefas Atrasadas - {titulo}", key=f"editar_atrasadas_{titulo}"):
+                        editar_tarefa_modal(tarefas_atrasadas, cnpjs_usuario)
                 else:
                     st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -329,9 +333,99 @@ def visualizar_tarefas_por_usuario(user, admin):
                     df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
                     df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+
+                    # 📌 Botão para editar tarefas em andamento
+                    if st.button(f"✏️ Editar Tarefas Em Andamento - {titulo}", key=f"editar_em_andamento_{titulo}"):
+                        editar_tarefa_modal(tarefas_em_andamento, cnpjs_usuario)
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
+
+
+def editar_tarefa_modal(tarefas, empresa_cnpj):
+    """
+    Exibe um pop-up/modal para edição de tarefas selecionadas.
+    """
+    collection_tarefas = get_collection("tarefas")
+    collection_atividades = get_collection("atividades")
+
+    with st.popover("✏️ Editar Tarefa"):
+        tarefas_opcoes = {t["titulo"]: t for t in tarefas}
+        tarefa_selecionada = st.selectbox(
+            "Selecione uma tarefa para editar",
+            options=list(tarefas_opcoes.keys()),
+            key="select_editar_tarefa"
+        )
+
+        if tarefa_selecionada:
+            tarefa_dados = tarefas_opcoes[tarefa_selecionada]
+            with st.form("form_editar_tarefa"):
+                st.subheader("✏️ Editar Tarefa")
+
+                col1, col2 = st.columns(2)
+                with col1:
+                    titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
+                    prazo_edit = st.selectbox(
+                        "Novo Prazo de Execução",
+                        ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
+                        index=3
+                    )
+                    data_execucao_edit = st.date_input(
+                        "Data de Execução",
+                        value=pd.to_datetime(tarefa_dados["Data de Execução"]).date()
+                    ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+
+                with col2:
+                    status_edit = st.selectbox(
+                        "Status",
+                        ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
+                        index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                    )
+                    observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
+
+                submit_editar = st.form_submit_button("💾 Salvar Alterações")
+
+                if submit_editar:
+                    # Se for concluir a última tarefa, impedir a ação
+                    tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
+                    if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
+                        st.error("⚠️ Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'.")
+                    else:
+                        if status_edit == "🟩 Concluída":
+                            data_execucao_edit = datetime.today().date()
+                            nova_atividade = {
+                                "atividade_id": str(datetime.now().timestamp()),
+                                "tipo_atividade": "Observação",
+                                "status": "Registrado",
+                                "titulo": f"Tarefa '{titulo_edit}' concluída",
+                                "empresa": empresa_cnpj,
+                                "descricao": f"O vendedor concluiu a tarefa '{titulo_edit}'.",
+                                "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                                "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                            }
+                            collection_atividades.insert_one(nova_atividade)
+
+                        # Atualizar a tarefa no banco
+                        collection_tarefas.update_one(
+                            {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
+                            {"$set": {
+                                "titulo": titulo_edit,
+                                "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                                "observacoes": observacoes_edit,
+                                "status": status_edit
+                            }}
+                        )
+
+                        # 🔄 Atualizar a última atividade da empresa
+                        data_hoje = datetime.now().strftime("%Y-%m-%d")
+                        collection_empresas = get_collection("empresas")
+                        collection_empresas.update_one(
+                            {"cnpj": empresa_cnpj},
+                            {"$set": {"ultima_atividade": data_hoje}}
+                        )
+
+                        st.success("Tarefa atualizada com sucesso! 🔄")
+                        st.rerun()
 
 
 
