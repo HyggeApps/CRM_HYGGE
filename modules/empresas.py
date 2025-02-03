@@ -56,25 +56,37 @@ def editar_empresa(user, admin):
         with col3:
             estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)  # Estado não editável
         with col4:
-            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, 
-                                        index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
-                                        disabled=not eh_proprietario)
+            novo_usuario = st.selectbox(
+                "Usuário (Vendedor)", 
+                options=lista_usuarios, 
+                index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
+                disabled=not eh_proprietario
+            )
 
         col5, col6 = st.columns(2)
         with col5:
-            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
-                                 disabled=not eh_proprietario)
+            setor = st.selectbox(
+                "Setor *", 
+                ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
+                disabled=not eh_proprietario
+            )
         with col6:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
-                                             index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
-                                             disabled=not eh_proprietario)
+            produto_interesse = st.multiselect(
+                "Produto de Interesse *", 
+                ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
+                default=empresa.get("Produto de Interesse", []) if isinstance(empresa.get("Produto de Interesse"), list) else [empresa.get("Produto de Interesse", "NBR Fast")],
+                disabled=not eh_proprietario
+            )
 
         col7, col8 = st.columns(2)
         with col7:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
-                                           index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
-                                           disabled=not eh_proprietario)
+            tamanho_empresa = st.selectbox(
+                "Tamanho da Empresa *", 
+                ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
+                index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
+                disabled=not eh_proprietario
+            )
 
         submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
@@ -86,13 +98,14 @@ def editar_empresa(user, admin):
                     "razao_social": razao_social,
                     "usuario": novo_usuario,
                     "setor": setor,
-                    "produto_interesse": produto_interesse,
+                    "produto_interesse": produto_interesse,  # ✅ Agora salva como lista
                     "tamanho_empresa": tamanho_empresa,
                 }}
             )
-            
+
             st.success("Dados da empresa atualizados com sucesso!")
-            st.rerun()     
+            st.rerun()
+  
 
 @st.fragment            
 def cadastrar_empresas(user, admin):
