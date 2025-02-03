@@ -308,11 +308,11 @@ def visualizar_tarefas_por_usuario(user, admin):
         labels = ["Finalizadas", "Em andamento", "Atrasadas"]
         cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-        col1, col2 = st.columns([2, 3])
+        col1, col2 = st.columns([8, 2])
 
         with col1:
             if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(3, 3))  # Ajustado para um tamanho compacto sem distorção
+                fig, ax = plt.subplots(figsize=(2, 2))  # Ajustado para um tamanho compacto sem distorção
                 labels = ["Finalizadas", "Em andamento", "Atrasadas"]
                 cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
