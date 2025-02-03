@@ -107,6 +107,14 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         }
                         collection_atividades.insert_one(nova_atividade)
 
+                        # 🔄 Atualizar a última atividade da empresa
+                        data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
+                        collection_empresas = get_collection("empresas")
+                        collection_empresas.update_one(
+                            {"cnpj": empresa_cnpj},
+                            {"$set": {"ultima_atividade": data_hoje}}
+                        )
+
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
                         st.rerun()
                         
@@ -141,11 +149,16 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         collection_tarefas = get_collection("tarefas")
                         collection_tarefas.insert_one(nova_tarefa)
 
+                        # 🔄 Atualizar a última atividade da empresa
+                        data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
+                        collection_empresas = get_collection("empresas")
+                        collection_empresas.update_one(
+                            {"cnpj": empresa_cnpj},
+                            {"$set": {"ultima_atividade": data_hoje}}
+                        )
+
                         st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
-                        st.rerun()
-                        
-                        
-                                
+                        st.rerun()       
                         
                     else:
                         st.error("Preencha os campos obrigatórios: Tipo, Status, Título, Contato, Descrição e Datas.")
