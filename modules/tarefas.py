@@ -307,73 +307,70 @@ def visualizar_tarefas_por_usuario(user, admin):
         labels = ["Finalizadas", "Em andamento", "Atrasadas"]
         cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-        col1, col2 = st.columns([8, 2])
+        if sum(valores) > 0:
+            # Criar DataFrame com os dados das tarefas do usuário atual
+            chart_data = pd.DataFrame({
+                "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
+                "Quantidade": [total_finalizadas, total_andamento, total_atrasadas],
+                "Tipo": ["Usuário"] * 3  # Para diferenciar no gráfico
+            })
 
-        with col1:
-            if sum(valores) > 0:
-                # Criar DataFrame com os dados das tarefas do usuário atual
-                chart_data = pd.DataFrame({
+            # Calcular média dos demais vendedores
+            if admin:
+                todas_tarefas = list(collection_tarefas.find({}, {"_id": 0, "status": 1, "empresa": 1}))
+
+                # Filtrar empresas do usuário atual
+                empresas_usuario = [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]
+                
+                # Filtrar tarefas que não pertencem ao usuário atual
+                tarefas_outros = [t for t in todas_tarefas if t["empresa"] not in empresas_usuario]
+
+                # Contar status para os demais vendedores
+                total_outros_finalizadas = sum(1 for t in tarefas_outros if t["status"] == "🟩 Concluída")
+                total_outros_andamento = sum(1 for t in tarefas_outros if t["status"] == "🟨 Em andamento")
+                total_outros_atrasadas = sum(1 for t in tarefas_outros if t["status"] == "🟥 Atrasado")
+
+                # Calcular média por status (evita divisão por zero)
+                num_outros = max(1, len(set([emp["usuario"] for emp in collection_empresas.find({}, {"usuario": 1}) if emp["usuario"] != usuario_selecionado])))
+
+                media_finalizadas = total_outros_finalizadas / num_outros
+                media_andamento = total_outros_andamento / num_outros
+                media_atrasadas = total_outros_atrasadas / num_outros
+
+                # Adicionar a média ao gráfico
+                chart_data = chart_data.append(pd.DataFrame({
                     "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
-                    "Quantidade": [total_finalizadas, total_andamento, total_atrasadas],
-                    "Tipo": ["Usuário"] * 3  # Para diferenciar no gráfico
-                })
+                    "Quantidade": [media_finalizadas, media_andamento, media_atrasadas],
+                    "Tipo": ["Média dos Vendedores"] * 3
+                }), ignore_index=True)
 
-                # Calcular média dos demais vendedores
-                if admin:
-                    todas_tarefas = list(collection_tarefas.find({}, {"_id": 0, "status": 1, "empresa": 1}))
+            # Mapeamento de cores personalizadas
+            cores_mapeadas = {
+                "Finalizadas": "#2ECC71",
+                "Em andamento": "#F1C40F",
+                "Atrasadas": "#E74C3C"
+            }
 
-                    # Filtrar empresas do usuário atual
-                    empresas_usuario = [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]
-                    
-                    # Filtrar tarefas que não pertencem ao usuário atual
-                    tarefas_outros = [t for t in todas_tarefas if t["empresa"] not in empresas_usuario]
-
-                    # Contar status para os demais vendedores
-                    total_outros_finalizadas = sum(1 for t in tarefas_outros if t["status"] == "🟩 Concluída")
-                    total_outros_andamento = sum(1 for t in tarefas_outros if t["status"] == "🟨 Em andamento")
-                    total_outros_atrasadas = sum(1 for t in tarefas_outros if t["status"] == "🟥 Atrasado")
-
-                    # Calcular média por status (evita divisão por zero)
-                    num_outros = max(1, len(set([emp["usuario"] for emp in collection_empresas.find({}, {"usuario": 1}) if emp["usuario"] != usuario_selecionado])))
-
-                    media_finalizadas = total_outros_finalizadas / num_outros
-                    media_andamento = total_outros_andamento / num_outros
-                    media_atrasadas = total_outros_atrasadas / num_outros
-
-                    # Adicionar a média ao gráfico
-                    chart_data = chart_data.append(pd.DataFrame({
-                        "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
-                        "Quantidade": [media_finalizadas, media_andamento, media_atrasadas],
-                        "Tipo": ["Média dos Vendedores"] * 3
-                    }), ignore_index=True)
-
-                # Mapeamento de cores personalizadas
-                cores_mapeadas = {
-                    "Finalizadas": "#2ECC71",
-                    "Em andamento": "#F1C40F",
-                    "Atrasadas": "#E74C3C"
-                }
-
-                # Criar um gráfico de barras comparativo
-                st.vega_lite_chart(
-                    chart_data,
-                    {
-                        "mark": "bar",
-                        "encoding": {
-                            "x": {"field": "Status", "type": "nominal"},
-                            "y": {"field": "Quantidade", "type": "quantitative"},
-                            "color": {
-                                "field": "Tipo",
-                                "type": "nominal",
-                                "scale": {"domain": ["Usuário", "Média dos Vendedores"], "range": ["#3498DB", "#95A5A6"]}  # Azul para o usuário, cinza para média
-                            }
+            # Criar um gráfico de barras comparativo
+            st.vega_lite_chart(
+                chart_data,
+                {
+                    "mark": "bar",
+                    "encoding": {
+                        "x": {"field": "Status", "type": "nominal"},
+                        "y": {"field": "Quantidade", "type": "quantitative"},
+                        "color": {
+                            "field": "Tipo",
+                            "type": "nominal",
+                            "scale": {"domain": ["Usuário", "Média dos Vendedores"], "range": ["#3498DB", "#95A5A6"]}  # Azul para o usuário, cinza para média
                         }
-                    },
-                    use_container_width=True
-                )
+                    }
+                },
+                use_container_width=True
+            )
 
-            else:
-                st.info("Nenhuma tarefa registrada.")
+        else:
+            st.info("Nenhuma tarefa registrada.")
 
 
 
