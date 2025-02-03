@@ -314,32 +314,25 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
-        # Atualiza a empresa selecionada corretamente
+        # 🔹 Atualiza a empresa selecionada corretamente
         novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
 
         if novas_selecoes:
             selected_index = novas_selecoes[0]
             nova_empresa = edited_df.iloc[selected_index].to_dict()
 
-            # Evita resetar a seleção ao primeiro clique
-            if (
-                "empresa_selecionada" not in st.session_state
-                or st.session_state["empresa_selecionada"]["CNPJ"] != nova_empresa["CNPJ"]
-            ):
+            if st.session_state.get("empresa_selecionada") != nova_empresa:
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
-                st.rerun()
 
         else:
-            if "empresa_selecionada" in st.session_state:
-                del st.session_state["empresa_selecionada"]
-            if "empresa_cnpj_selecionada" in st.session_state:
-                del st.session_state["empresa_cnpj_selecionada"]
+            st.session_state["empresa_selecionada"] = None
+            st.session_state["empresa_cnpj_selecionada"] = None  
 
-            # Exibir detalhes da empresa selecionada
-            if st.session_state["empresa_selecionada"]:
-                empresa = st.session_state["empresa_selecionada"]
-                empresa_cnpj = empresa["CNPJ"]
+        # Exibir detalhes da empresa selecionada
+        if st.session_state["empresa_selecionada"]:
+            empresa = st.session_state["empresa_selecionada"]
+            empresa_cnpj = empresa["CNPJ"]
 
             st.write('----')
 
