@@ -324,11 +324,11 @@ def visualizar_tarefas_por_usuario(user, admin):
 
                 # Ajustar a posição dos rótulos para evitar cortes
                 for text in texts:
-                    text.set_fontsize(7)  # Reduz tamanho das labels externas
+                    text.set_fontsize(4)  # Reduz tamanho das labels externas
                     text.set_color("white")  
 
                 for autotext in autotexts:
-                    autotext.set_fontsize(8)  # Fonte maior para porcentagens
+                    autotext.set_fontsize(4)  # Fonte maior para porcentagens
 
                 ax.axis("equal")  # Mantém o formato do círculo
                 fig.patch.set_alpha(0)  # Fundo transparente
