@@ -312,17 +312,26 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         with col1:
             if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(1, 1))
+                fig, ax = plt.subplots(figsize=(2.5, 2.5))  # Ajustado para um tamanho compacto sem distorção
                 labels = ["Finalizadas", "Em andamento", "Atrasadas"]
                 cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-                # Criar o gráfico de pizza com fonte branca e tamanho ajustado
+                # Criar o gráfico de pizza ajustado
                 wedges, texts, autotexts = ax.pie(
                     valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
-                    textprops={"fontsize": 4, "color": "white"}  # Ajuste do tamanho e cor da fonte
+                    textprops={"fontsize": 8, "color": "white"},  # Fonte ajustada
+                    wedgeprops={'linewidth': 1, 'edgecolor': 'black'}  # Mantém melhor proporção
                 )
 
-                ax.axis("equal")
+                # Ajustar a posição dos rótulos para evitar cortes
+                for text in texts:
+                    text.set_fontsize(7)  # Reduz tamanho das labels externas
+                    text.set_color("white")  
+
+                for autotext in autotexts:
+                    autotext.set_fontsize(8)  # Fonte maior para porcentagens
+
+                ax.axis("equal")  # Mantém o formato do círculo
                 fig.patch.set_alpha(0)  # Fundo transparente
                 st.pyplot(fig)
 
