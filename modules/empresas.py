@@ -334,6 +334,11 @@ def consultar_empresas(user, admin):
                 st.session_state["empresa_cnpj_selecionada"] = None
                 st.rerun()
 
+        # Exibir detalhes da empresa selecionada
+        if st.session_state.get("empresa_selecionada"):
+            empresa = st.session_state["empresa_selecionada"]
+            empresa_cnpj = empresa["CNPJ"]
+
             st.write('----')
 
             col1, col2 = st.columns([3.5, 6.5])
