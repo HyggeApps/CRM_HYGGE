@@ -296,11 +296,10 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
-    for aba, tarefas_periodo, titulo, data_inicio, data_fim in zip(
+    for aba, tarefas_periodo, titulo, data_limite in zip(
         abas[0:],
         [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
         ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
-        [hoje, amanha, hoje, hoje],
         [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
@@ -309,10 +308,8 @@ def visualizar_tarefas_por_usuario(user, admin):
             with col1:
                 st.subheader(f"🟥 Atrasado - {titulo}")
 
-                if titulo == "Hoje":
-                    tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]  # Todas vencidas
-                else:
-                    tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+                # 📌 Atrasado = Tudo que venceu ANTES de hoje (dia anterior)
+                tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]
 
                 if tarefas_atrasadas:
                     df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
@@ -324,7 +321,10 @@ def visualizar_tarefas_por_usuario(user, admin):
 
             with col2:
                 st.subheader(f"🟨 Em andamento - {titulo}")
-                tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
+
+                # 📌 Em andamento = Tudo que está "🟨 Em andamento" E tem data ATÉ o limite do período
+                tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento" and t["Data de Execução"] <= data_limite]
+
                 if tarefas_em_andamento:
                     df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
                     df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
@@ -332,6 +332,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+
 
 
 
