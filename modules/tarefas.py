@@ -2,7 +2,9 @@ import streamlit as st
 from utils.database import get_collection
 from datetime import datetime, timedelta
 import pandas as pd
-import time
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 def calcular_data_execucao(opcao):
     """Calcula a data de execução da tarefa com base na opção selecionada"""
@@ -224,18 +226,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
 
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
-from utils.database import get_collection
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime, timedelta
-from utils.database import get_collection
 
 MESES_PT = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março",
@@ -261,7 +251,7 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Construir query para buscar tarefas
     query = {}
     if usuario_selecionado != "Todos":
-        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuarios": usuario_selecionado}, {"cnpj": 1})]}
+        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
 
     # Buscar tarefas filtradas
     tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))
@@ -321,21 +311,27 @@ def visualizar_tarefas_por_usuario(user, admin):
     total_andamento = sum(1 for t in tarefas_periodo if t["status"] == "🟨 Em andamento")
     total_atrasadas = sum(1 for t in tarefas_periodo if t["status"] == "🟥 Atrasado")
 
+    # **Corrigir valores NaN**
+    valores = [total_finalizadas, total_andamento, total_atrasadas]
+    valores = [0 if pd.isna(v) else v for v in valores]  # Substituir NaN por 0
+
     st.subheader("📊 Resumo das Tarefas")
 
     col1, col2 = st.columns([2, 3])  # Ajuste de tamanho das colunas
 
     with col1:
-        # Criar gráfico de pizza menor e com fundo transparente
-        fig, ax = plt.subplots(figsize=(3, 3))
-        labels = ["Finalizadas", "Em andamento", "Atrasadas"]
-        valores = [total_finalizadas, total_andamento, total_atrasadas]
-        cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+        # **Evitar erro de divisão por zero**
+        if sum(valores) > 0:
+            fig, ax = plt.subplots(figsize=(3, 3))
+            labels = ["Finalizadas", "Em andamento", "Atrasadas"]
+            cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-        ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
-        ax.axis("equal")  # Mantém formato circular
-        fig.patch.set_alpha(0)  # Fundo transparente
-        st.pyplot(fig)
+            ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
+            ax.axis("equal")  # Mantém formato circular
+            fig.patch.set_alpha(0)  # Fundo transparente
+            st.pyplot(fig)
+        else:
+            st.info("Nenhuma tarefa registrada para este período.")
 
     with col2:
         # Exibir contagem total
@@ -347,16 +343,15 @@ def visualizar_tarefas_por_usuario(user, admin):
     if admin and usuario_selecionado == "Todos":
         st.subheader("📊 Comparativo por Usuário")
 
-        # Contar tarefas por usuário
         df_tarefas = pd.DataFrame(tarefas_periodo)
-        tarefas_por_usuario = df_tarefas.groupby(["empresa", "status"]).size().unstack(fill_value=0)
+        if not df_tarefas.empty:
+            tarefas_por_usuario = df_tarefas.groupby(["empresa", "status"]).size().unstack(fill_value=0)
 
-        # Criar gráfico de barras comparativo
-        fig, ax = plt.subplots(figsize=(6, 3))
-        tarefas_por_usuario.plot(kind="bar", stacked=True, color=["#2ECC71", "#F1C40F", "#E74C3C"], ax=ax)
-        ax.set_xlabel("Usuário")
-        ax.set_ylabel("Quantidade de Tarefas")
-        ax.set_title("Comparativo de Tarefas por Usuário")
-        st.pyplot(fig)
+            fig, ax = plt.subplots(figsize=(6, 3))
+            tarefas_por_usuario.plot(kind="bar", stacked=True, color=["#2ECC71", "#F1C40F", "#E74C3C"], ax=ax)
+            ax.set_xlabel("Usuário")
+            ax.set_ylabel("Quantidade de Tarefas")
+            ax.set_title("Comparativo de Tarefas por Usuário")
+            st.pyplot(fig)
 
 
