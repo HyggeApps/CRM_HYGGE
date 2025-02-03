@@ -241,27 +241,18 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Construir query para buscar tarefas
     query = {}
     if usuario_selecionado != "Todos":
-        query["empresa"] = {
-            "$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]
-        }
+        query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
     
     # Buscar tarefas filtradas
-    tarefas = list(collection_tarefas.find(query, {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "observacoes": 1}))
+    tarefas = list(collection_tarefas.find(query, {"_id": 0}))
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Obter os nomes das empresas para exibição
-    empresas_dict = {e["cnpj"]: e["razao_social"] for e in collection_empresas.find({}, {"_id": 0, "cnpj": 1, "razao_social": 1})}
-
-    # Adicionar nome da empresa às tarefas
-    for tarefa in tarefas:
-        tarefa["nome_empresa"] = empresas_dict.get(tarefa["empresa"], "Desconhecido")
-
     # Separar tarefas por status
-    tarefas_em_andamento = [t for t in tarefas if t.get("status") == "🟨 Em andamento"]
-    tarefas_atrasadas = [t for t in tarefas if t.get("status") == "🟥 Atrasado"]
+    tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento"]
+    tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado"]
 
     col1, col2 = st.columns(2)
 
@@ -271,13 +262,12 @@ def visualizar_tarefas_por_usuario(user, admin):
             df_em_andamento = pd.DataFrame(tarefas_em_andamento)
             df_em_andamento = df_em_andamento.rename(columns={
                 "titulo": "Título",
-                "data_execucao": "Data",
-                "nome_empresa": "Nome da Empresa",
                 "empresa": "CNPJ",
-                "observacoes": "Observações"
+                "data_execucao": "Data de Execução",
+                "observacoes": "Observações",
+                "status": "Status"
             })
-            df_em_andamento = df_em_andamento[["Título", "Data", "Nome da Empresa", "CNPJ", "Observações"]]
-            df_em_andamento["Data"] = pd.to_datetime(df_em_andamento["Data"]).dt.strftime("%d/%m/%Y")
+            df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"]).dt.strftime("%d/%m/%Y")
             st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
         else:
             st.info("Nenhuma tarefa em andamento.")
@@ -288,13 +278,12 @@ def visualizar_tarefas_por_usuario(user, admin):
             df_atrasadas = pd.DataFrame(tarefas_atrasadas)
             df_atrasadas = df_atrasadas.rename(columns={
                 "titulo": "Título",
-                "data_execucao": "Data",
-                "nome_empresa": "Nome da Empresa",
                 "empresa": "CNPJ",
-                "observacoes": "Observações"
+                "data_execucao": "Data de Execução",
+                "observacoes": "Observações",
+                "status": "Status"
             })
-            df_atrasadas = df_atrasadas[["Título", "Data", "Nome da Empresa", "CNPJ", "Observações"]]
-            df_atrasadas["Data"] = pd.to_datetime(df_atrasadas["Data"]).dt.strftime("%d/%m/%Y")
+            df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"]).dt.strftime("%d/%m/%Y")
             st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
         else:
             st.info("Nenhuma tarefa atrasada.")
