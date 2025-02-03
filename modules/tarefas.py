@@ -298,7 +298,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                     df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].dt.strftime("%d/%m/%Y")
                     st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
                 else:
-                    st.info(f"Nenhuma tarefa atrasada para {titulo}.")
+                    st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
             with col2:
                 st.subheader(f"🟨 Em andamento - {titulo}")
@@ -313,4 +313,4 @@ def visualizar_tarefas_por_usuario(user, admin):
                     df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].dt.strftime("%d/%m/%Y")
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
                 else:
-                    st.info(f"Nenhuma tarefa em andamento para {titulo}.")
+                    st.success(f"Nenhuma tarefa em andamento para {titulo}.")
