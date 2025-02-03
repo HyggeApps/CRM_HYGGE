@@ -2,8 +2,6 @@ import streamlit as st
 from utils.database import get_collection
 from datetime import datetime, timedelta
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def calcular_data_execucao(opcao):
@@ -312,30 +310,17 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     with col1:
         if sum(valores) > 0:
-            fig, ax = plt.subplots(figsize=(2, 2))  # Tamanho compacto adequado à coluna
-            labels = ["Finalizadas", "Em andamento", "Atrasadas"]
-            cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+            # Criar DataFrame para o gráfico de barras
+            df_tarefas = pd.DataFrame({
+                "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
+                "Quantidade": [total_finalizadas, total_andamento, total_atrasadas]
+            })
 
-            # Criar gráfico de pizza compacto
-            wedges, texts, autotexts = ax.pie(
-                valores, labels=labels, autopct="%1.0f%%", colors=cores, startangle=90,
-                textprops={"fontsize": 6, "color": "white"},  # Fonte ajustada
-                wedgeprops={'linewidth': 0.5, 'edgecolor': 'black'},  # Borda sutil
-                radius=0.85  # Reduz tamanho do gráfico para caber melhor
+            # Exibir gráfico de barras
+            st.bar_chart(
+                df_tarefas.set_index("Status"),
+                use_container_width=True
             )
-
-            # Ajustar a posição dos rótulos para evitar cortes
-            for text in texts:
-                text.set_fontsize(5)  # Labels externas menores
-                text.set_color("white")
-
-            for autotext in autotexts:
-                autotext.set_fontsize(6)  # Fonte melhor ajustada para porcentagens
-
-            ax.axis("equal")  # Mantém o formato do círculo
-            fig.patch.set_alpha(0)  # Fundo transparente
-            st.pyplot(fig)
-
         else:
             st.info("Nenhuma tarefa registrada.")
 
