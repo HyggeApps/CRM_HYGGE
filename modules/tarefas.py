@@ -244,11 +244,18 @@ def visualizar_tarefas_por_usuario(user, admin):
         query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
     
     # Buscar tarefas filtradas
-    tarefas = list(collection_tarefas.find(query, {"_id": 0}))
+    tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))  # Removendo os campos desnecessários
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
         return
+
+    # Criar um dicionário com Nome da Empresa baseado no CNPJ
+    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find({}, {"cnpj": 1, "razao_social": 1})}
+
+    # Adicionar o Nome da Empresa à lista de tarefas
+    for tarefa in tarefas:
+        tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
 
     # Separar tarefas por status
     tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento"]
@@ -262,12 +269,16 @@ def visualizar_tarefas_por_usuario(user, admin):
             df_em_andamento = pd.DataFrame(tarefas_em_andamento)
             df_em_andamento = df_em_andamento.rename(columns={
                 "titulo": "Título",
-                "empresa": "CNPJ",
                 "data_execucao": "Data de Execução",
-                "observacoes": "Observações",
-                "status": "Status"
+                "empresa": "CNPJ",
+                "Nome da Empresa": "Nome da Empresa",
+                "observacoes": "Observações"
             })
             df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"]).dt.strftime("%d/%m/%Y")
+
+            # Reordenar colunas
+            df_em_andamento = df_em_andamento[["Título", "Data de Execução", "Nome da Empresa", "CNPJ", "Observações"]]
+
             st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
         else:
             st.info("Nenhuma tarefa em andamento.")
@@ -278,12 +289,16 @@ def visualizar_tarefas_por_usuario(user, admin):
             df_atrasadas = pd.DataFrame(tarefas_atrasadas)
             df_atrasadas = df_atrasadas.rename(columns={
                 "titulo": "Título",
-                "empresa": "CNPJ",
                 "data_execucao": "Data de Execução",
-                "observacoes": "Observações",
-                "status": "Status"
+                "empresa": "CNPJ",
+                "Nome da Empresa": "Nome da Empresa",
+                "observacoes": "Observações"
             })
             df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"]).dt.strftime("%d/%m/%Y")
+
+            # Reordenar colunas
+            df_atrasadas = df_atrasadas[["Título", "Data de Execução", "Nome da Empresa", "CNPJ", "Observações"]]
+
             st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
         else:
             st.info("Nenhuma tarefa atrasada.")
