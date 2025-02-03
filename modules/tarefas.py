@@ -317,12 +317,29 @@ def visualizar_tarefas_por_usuario(user, admin):
                 "Quantidade": [total_finalizadas, total_andamento, total_atrasadas]
             })
 
-            # Exibir gráfico de barras com cores personalizadas
-            st.bar_chart(
+            # Mapeamento de cores personalizadas
+            cores_mapeadas = {
+                "Finalizadas": "#2ECC71",
+                "Em andamento": "#F1C40F",
+                "Atrasadas": "#E74C3C"
+            }
+
+            # Criar um gráfico de barras personalizado
+            st.vega_lite_chart(
                 chart_data,
-                x="Status",
-                y="Quantidade",
-                color=["#2ECC71", "#F1C40F", "#E74C3C"]  # Verde, Amarelo, Vermelho
+                {
+                    "mark": {"type": "bar", "tooltip": True},
+                    "encoding": {
+                        "x": {"field": "Status", "type": "nominal"},
+                        "y": {"field": "Quantidade", "type": "quantitative"},
+                        "color": {
+                            "field": "Status",
+                            "type": "nominal",
+                            "scale": {"domain": list(cores_mapeadas.keys()), "range": list(cores_mapeadas.values())}
+                        }
+                    }
+                },
+                use_container_width=True
             )
 
         else:
