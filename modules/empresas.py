@@ -324,6 +324,8 @@ def consultar_empresas(user, admin):
 
             # Só atualiza se a empresa realmente mudou
             if st.session_state.get("empresa_cnpj_selecionada") != nova_empresa["CNPJ"]:
+                edited_df["Visualizar"] = False
+                edited_df.at[selected_index, "Visualizar"] = True
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
                 st.rerun()
