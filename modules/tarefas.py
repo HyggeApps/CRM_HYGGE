@@ -256,49 +256,61 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Adicionar o Nome da Empresa à lista de tarefas
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
+        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"])
 
-    # Separar tarefas por status
-    tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento"]
-    tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado"]
+    # Datas de referência
+    hoje = datetime.today().date()
+    amanha = hoje + timedelta(days=1)
+    fim_semana = hoje + timedelta(days=7)
+    fim_mes = hoje + timedelta(days=30)
 
-    col1, col2 = st.columns(2)
+    # Separar tarefas por status e data
+    def filtrar_tarefas(data_inicio, data_fim):
+        return [t for t in tarefas if data_inicio <= t["Data de Execução"].date() <= data_fim]
 
-    with col1:
-        st.subheader("🟨 Em andamento")
-        if tarefas_em_andamento:
-            df_em_andamento = pd.DataFrame(tarefas_em_andamento)
-            df_em_andamento = df_em_andamento.rename(columns={
-                "titulo": "Título",
-                "data_execucao": "Data de Execução",
-                "empresa": "CNPJ",
-                "Nome da Empresa": "Nome da Empresa",
-                "observacoes": "Observações"
-            })
-            df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"]).dt.strftime("%d/%m/%Y")
+    tarefas_hoje = filtrar_tarefas(hoje, hoje)
+    tarefas_amanha = filtrar_tarefas(amanha, amanha)
+    tarefas_semana = filtrar_tarefas(hoje, fim_semana)
+    tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
-            # Reordenar colunas
-            df_em_andamento = df_em_andamento[["Título", "Data de Execução", "Nome da Empresa", "CNPJ", "Observações"]]
+    abas = st.tabs([
+        f"Hoje ({hoje.strftime('%d/%m')})",
+        f"Amanhã ({amanha.strftime('%d/%m')})",
+        f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
+        f"Neste mês (até {fim_mes.strftime('%d/%m')})"
+    ])
 
-            st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
-        else:
-            st.info("Nenhuma tarefa em andamento.")
+    for aba, tarefas_periodo, titulo in zip(abas, [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes], 
+                                             ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"]):
+        with aba:
+            col1, col2 = st.columns(2)
 
-    with col2:
-        st.subheader("🟥 Atrasado")
-        if tarefas_atrasadas:
-            df_atrasadas = pd.DataFrame(tarefas_atrasadas)
-            df_atrasadas = df_atrasadas.rename(columns={
-                "titulo": "Título",
-                "data_execucao": "Data de Execução",
-                "empresa": "CNPJ",
-                "Nome da Empresa": "Nome da Empresa",
-                "observacoes": "Observações"
-            })
-            df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"]).dt.strftime("%d/%m/%Y")
+            with col1:
+                st.subheader(f"🟥 Atrasado - {titulo}")
+                tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+                if tarefas_atrasadas:
+                    df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                    df_atrasadas = df_atrasadas.rename(columns={
+                        "titulo": "Título",
+                        "empresa": "CNPJ",
+                        "observacoes": "Observações"
+                    })
+                    df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
+                else:
+                    st.info(f"Nenhuma tarefa atrasada para {titulo}.")
 
-            # Reordenar colunas
-            df_atrasadas = df_atrasadas[["Título", "Data de Execução", "Nome da Empresa", "CNPJ", "Observações"]]
-
-            st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
-        else:
-            st.info("Nenhuma tarefa atrasada.")
+            with col2:
+                st.subheader(f"🟨 Em andamento - {titulo}")
+                tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
+                if tarefas_em_andamento:
+                    df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                    df_em_andamento = df_em_andamento.rename(columns={
+                        "titulo": "Título",
+                        "empresa": "CNPJ",
+                        "observacoes": "Observações"
+                    })
+                    df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+                else:
+                    st.info(f"Nenhuma tarefa em andamento para {titulo}.")
