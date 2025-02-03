@@ -319,7 +319,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 # Criar o gráfico de pizza ajustado
                 wedges, texts, autotexts = ax.pie(
                     valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
-                    textprops={"fontsize": 8, "color": "white"},  # Fonte ajustada
+                    textprops={"fontsize": 4, "color": "white"},  # Fonte ajustada
                 )
 
                 # Ajustar a posição dos rótulos para evitar cortes
