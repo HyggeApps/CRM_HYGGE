@@ -313,17 +313,19 @@ def visualizar_tarefas_por_usuario(user, admin):
         with col1:
             if sum(valores) > 0:
                 fig, ax = plt.subplots(figsize=(1, 1))
-                wedges, texts, autotexts = ax.pie(
-                    valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90
-                )
+                labels = ["Finalizadas", "Em andamento", "Atrasadas"]
+                cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-                # Alterar a cor do texto para branco
-                for text in texts + autotexts:
-                    text.set_color("white")
+                # Criar o gráfico de pizza com fonte branca e tamanho ajustado
+                wedges, texts, autotexts = ax.pie(
+                    valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
+                    textprops={"fontsize": 8, "color": "white"}  # Ajuste do tamanho e cor da fonte
+                )
 
                 ax.axis("equal")
                 fig.patch.set_alpha(0)  # Fundo transparente
                 st.pyplot(fig)
+
             else:
                 st.info("Nenhuma tarefa registrada.")
 
