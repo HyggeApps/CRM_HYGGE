@@ -321,16 +321,22 @@ def consultar_empresas(user, admin):
             selected_index = novas_selecoes[0]
             nova_empresa = edited_df.iloc[selected_index].to_dict()
 
-            if st.session_state.get("empresa_selecionada") != nova_empresa:
+            if (
+                "empresa_selecionada" not in st.session_state
+                or st.session_state["empresa_cnpj_selecionada"] != nova_empresa["CNPJ"]
+            ):
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
+                st.rerun()
 
         else:
-            st.session_state["empresa_selecionada"] = None
-            st.session_state["empresa_cnpj_selecionada"] = None  
+            if "empresa_selecionada" in st.session_state:
+                del st.session_state["empresa_selecionada"]
+            if "empresa_cnpj_selecionada" in st.session_state:
+                del st.session_state["empresa_cnpj_selecionada"]
 
         # Exibir detalhes da empresa selecionada
-        if st.session_state["empresa_selecionada"]:
+        if st.session_state.get("empresa_selecionada"):
             empresa = st.session_state["empresa_selecionada"]
             empresa_cnpj = empresa["CNPJ"]
 
@@ -381,6 +387,7 @@ def consultar_empresas(user, admin):
         else:
             st.write('----')
             st.info("Selecione uma empresa para ver os detalhes.")
+
 
 
 @st.fragment
