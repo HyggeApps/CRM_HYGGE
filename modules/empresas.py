@@ -303,11 +303,11 @@ def consultar_empresas(user, admin):
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
 
-        # ✅ Ajustar a empresa selecionada no session_state antes de renderizar a UI
-        empresa_cnpj_selecionada = st.session_state.get("empresa_cnpj_selecionada", None)
-
-        if empresa_cnpj_selecionada and empresa_cnpj_selecionada in df_empresas["CNPJ"].values:
-            df_empresas.loc[df_empresas["CNPJ"] == empresa_cnpj_selecionada, "Visualizar"] = True
+        # Verificar se há empresa previamente selecionada no session_state
+        if "empresa_cnpj_selecionada" in st.session_state and st.session_state["empresa_cnpj_selecionada"]:
+            cnpj_pre_selecionado = st.session_state["empresa_cnpj_selecionada"]
+            if cnpj_pre_selecionado in df_empresas["CNPJ"].values:
+                df_empresas.loc[df_empresas["CNPJ"] == cnpj_pre_selecionado, "Visualizar"] = True
 
         # Criar editor de dados interativo
         edited_df = st.data_editor(
@@ -323,18 +323,15 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
-        # 🔹 Identificar a empresa selecionada no primeiro clique
-        novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
-        
-        if novas_selecoes:
-            selected_index = novas_selecoes[0]
+        # Atualizar a empresa selecionada no session_state
+        if edited_df["Visualizar"].any():
+            selected_index = edited_df[edited_df["Visualizar"]].index[0]
             st.session_state["empresa_selecionada"] = edited_df.iloc[selected_index].to_dict()
-            st.session_state["empresa_cnpj_selecionada"] = st.session_state["empresa_selecionada"]["CNPJ"]
-            st.rerun()
+            st.session_state["empresa_cnpj_selecionada"] = st.session_state["empresa_selecionada"]["CNPJ"]  # ✅ Salvar o CNPJ
+
         else:
             st.session_state["empresa_selecionada"] = None
             st.session_state["empresa_cnpj_selecionada"] = None  # ✅ Resetar se nenhuma estiver selecionada
-
 
         # Exibir detalhes da empresa selecionada
         if st.session_state["empresa_selecionada"]:
@@ -543,7 +540,6 @@ def cadastrar_subempresa():
                             {"$push": {"subempresas": cnpj}}
                         )
                         st.success("Sub-empresa cadastrada e vinculada à matriz com sucesso!")
-                        
                         
                         
                         
