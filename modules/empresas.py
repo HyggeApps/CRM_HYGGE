@@ -398,7 +398,7 @@ def consultar_empresas(user, admin):
 
                     if df_atualizado is not None:
                         df_empresas = df_atualizado  # Atualiza a tabela de empresas com os dados mais recentes
-                        
+                        st.rerun()
                 with st.expander("📋 Dados da Empresa", expanded=True):
 
                     # Atualizar os dados da empresa com base no DataFrame atualizado
