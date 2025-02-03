@@ -2,7 +2,7 @@ import streamlit as st
 from utils.database import get_collection
 from datetime import datetime, timedelta
 import pandas as pd
-import altair as alt
+
 
 
 def calcular_data_execucao(opcao):
@@ -309,31 +309,29 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         col1, col2 = st.columns([8, 2])
 
+    with col1:
+        if sum(valores) > 0:
+           # Criar DataFrame com os dados das tarefas
+            chart_data = pd.DataFrame({
+                "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
+                "Quantidade": [total_finalizadas, total_andamento, total_atrasadas]
+            })
 
-        with col1:
-            if sum(valores) > 0:
-                # Criar DataFrame para o gráfico de barras
-                df_tarefas = pd.DataFrame({
-                    "Status": ["Finalizadas", "Em andamento", "Atrasadas"],
-                    "Quantidade": [total_finalizadas, total_andamento, total_atrasadas]
-                })
+            # Exibir gráfico de barras com cores personalizadas
+            st.bar_chart(
+                chart_data,
+                x="Status",
+                y="Quantidade",
+                color=["#2ECC71", "#F1C40F", "#E74C3C"]  # Verde, Amarelo, Vermelho
+            )
 
-                # Criar gráfico de barras no Altair com cores personalizadas
-                chart = alt.Chart(df_tarefas).mark_bar().encode(
-                    x=alt.X("Status", sort=["Finalizadas", "Em andamento", "Atrasadas"]),
-                    y="Quantidade",
-                    color=alt.Color("Status", scale=alt.Scale(domain=["Finalizadas", "Em andamento", "Atrasadas"],
-                                                            range=["#2ECC71", "#F1C40F", "#E74C3C"]))
-                ).properties(width=300, height=200)  # Ajuste de tamanho
+        else:
+            st.info("Nenhuma tarefa registrada.")
 
-                st.altair_chart(chart, use_container_width=True)
-            else:
-                st.info("Nenhuma tarefa registrada.")
-
-        with col2:
-            st.metric("🟩 Finalizadas", total_finalizadas)
-            st.metric("🟨 Em andamento", total_andamento)
-            st.metric("🟥 Atrasadas", total_atrasadas)
+    with col2:
+        st.metric("🟩 Finalizadas", total_finalizadas)
+        st.metric("🟨 Em andamento", total_andamento)
+        st.metric("🟥 Atrasadas", total_atrasadas)
 
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
