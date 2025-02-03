@@ -289,7 +289,7 @@ def consultar_empresas(user, admin):
                 }
             )
         else:
-            st.error("Erro: O campo 'CNPJ' não foi encontrado no banco de dados.")
+            st.error("Erro: O campo 'cnpj' não foi encontrado no banco de dados.")
 
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
@@ -317,22 +317,28 @@ def consultar_empresas(user, admin):
         # 🔹 Atualiza a empresa selecionada corretamente
         novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
 
-        # Se houve uma nova seleção, manter apenas a última selecionada
+        # Manter a seleção anterior se ainda for válida
+        empresa_anterior = st.session_state.get("empresa_cnpj_selecionada", None)
+        if empresa_anterior and empresa_anterior in df_empresas["CNPJ"].values:
+            df_empresas.loc[df_empresas["CNPJ"] == empresa_anterior, "Visualizar"] = True
+
+        # Se houve uma nova seleção
         if novas_selecoes:
-            selected_index = novas_selecoes[-1]  # Pega a última empresa selecionada
+            selected_index = novas_selecoes[0]
             nova_empresa = edited_df.iloc[selected_index].to_dict()
 
-            # Atualiza a sessão com a nova empresa e desmarca todas as outras
-            if empresa_cnpj_selecionada != nova_empresa["CNPJ"]:
+            # Se a seleção realmente mudou, atualiza o session_state
+            if empresa_anterior != nova_empresa["CNPJ"]:
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
-                st.rerun(scope="fragment")
+                st.rerun()
+        else:
+            # Se nada estiver selecionado, limpar o estado
+            if "empresa_selecionada" in st.session_state:
+                del st.session_state["empresa_selecionada"]
+            if "empresa_cnpj_selecionada" in st.session_state:
+                del st.session_state["empresa_cnpj_selecionada"]
 
-        # Se nenhuma empresa estiver marcada, limpar o session_state corretamente
-        elif empresa_cnpj_selecionada:
-            del st.session_state["empresa_selecionada"]
-            del st.session_state["empresa_cnpj_selecionada"]
-            st.rerun(scope="fragment")
 
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
@@ -345,9 +351,7 @@ def consultar_empresas(user, admin):
             with col1:
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
-                    st.write(1)
                     editar_empresa(user, admin)
-                    
                 with st.expander("📋 Dados da Empresa", expanded=True):
                     
                     dados_empresa = {
