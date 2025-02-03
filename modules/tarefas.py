@@ -297,7 +297,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
     for aba, tarefas_periodo, titulo, data_inicio, data_fim in zip(
-        abas[1:],
+        abas[0:],
         [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
         ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
         [hoje, amanha, hoje, hoje],
