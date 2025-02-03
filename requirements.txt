@@ -7,3 +7,4 @@ wfork-streamlit-profiler
 streamlit_echarts
 streamlit-option-menu
 matplotlib
+seaborn
