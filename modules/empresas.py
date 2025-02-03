@@ -395,37 +395,25 @@ def consultar_empresas(user, admin):
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
                     df_atualizado = editar_empresa(user, admin)
-
                     if df_atualizado is not None:
-                        df_empresas = df_atualizado  # Atualiza a tabela de empresas com os dados mais recentes
                         st.rerun()
+                        
                 with st.expander("📋 Dados da Empresa", expanded=True):
-
-                    # Atualizar os dados da empresa com base no DataFrame atualizado
-                    empresa_cnpj = st.session_state.get("empresa_cnpj_selecionada", None)
-                    empresa_atualizada = df_empresas[df_empresas["CNPJ"] == empresa_cnpj].to_dict(orient="records")
-
-                    if empresa_atualizada:
-                        empresa_atualizada = empresa_atualizada[0]  # Pega o primeiro registro encontrado
-
-                        dados_empresa = {
-                            "Nome": empresa_atualizada.get("Nome", ""),
-                            "Proprietário": empresa_atualizada.get("Proprietário", ""),
-                            "Última Atividade": empresa_atualizada.get("Última Atividade", ""),
-                            "Data de Criação": empresa_atualizada.get("Data de Criação", ""),
-                            "Cidade/UF": f"{empresa_atualizada.get('Cidade', '')}, {empresa_atualizada.get('UF', '')}",
-                            "Setor": empresa_atualizada.get("Setor", ""),
-                            "Tamanho": empresa_atualizada.get("Tamanho", ""),
-                            "Produto Interesse": empresa_atualizada.get("Produto Interesse", ""),
-                            "Grau Cliente": empresa_atualizada.get("Grau Cliente", ""),
-                            "CNPJ": empresa_atualizada.get("CNPJ", "")
-                        }
-
-                        df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
-                        st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
-                    else:
-                        st.warning("Não foi possível carregar os dados atualizados da empresa.")
-
+                    
+                    dados_empresa = {
+                        "Nome": empresa['Nome'],
+                        "Proprietário": empresa['Proprietário'],
+                        "Última Atividade": empresa['Última Atividade'],
+                        "Data de Criação": empresa['Data de Criação'],
+                        "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
+                        "Setor": empresa["Setor"],
+                        "Tamanho": empresa["Tamanho"],
+                        "Produto Interesse": empresa["Produto Interesse"],
+                        "Grau Cliente": empresa["Grau Cliente"],
+                        "CNPJ": empresa["CNPJ"]
+                    }
+                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
+                    st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
 
                 # Integrando a função de exibir contatos
                 if empresa_cnpj:
