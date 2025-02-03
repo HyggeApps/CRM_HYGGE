@@ -317,19 +317,27 @@ def consultar_empresas(user, admin):
         # 🔹 Atualiza a empresa selecionada corretamente
         novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
 
+        # Manter a seleção anterior se ainda for válida
+        empresa_anterior = st.session_state.get("empresa_cnpj_selecionada", None)
+        if empresa_anterior and empresa_anterior in df_empresas["CNPJ"].values:
+            df_empresas.loc[df_empresas["CNPJ"] == empresa_anterior, "Visualizar"] = True
+
+        # Se houve uma nova seleção
         if novas_selecoes:
-            # Sempre pega a última empresa selecionada
-            selected_index = novas_selecoes[-1]  
+            selected_index = novas_selecoes[0]
             nova_empresa = edited_df.iloc[selected_index].to_dict()
 
-            # Atualiza o session_state com a última empresa selecionada
-            st.session_state["empresa_selecionada"] = nova_empresa
-            st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
-            st.rerun()
+            # Se a seleção realmente mudou, atualiza o session_state
+            if empresa_anterior != nova_empresa["CNPJ"]:
+                st.session_state["empresa_selecionada"] = nova_empresa
+                st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
+                st.rerun()
         else:
             # Se nada estiver selecionado, limpar o estado
-            st.session_state["empresa_selecionada"] = None
-            st.session_state["empresa_cnpj_selecionada"] = None
+            if "empresa_selecionada" in st.session_state:
+                del st.session_state["empresa_selecionada"]
+            if "empresa_cnpj_selecionada" in st.session_state:
+                del st.session_state["empresa_cnpj_selecionada"]
 
 
         # Exibir detalhes da empresa selecionada
