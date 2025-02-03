@@ -172,7 +172,7 @@ with st.sidebar:
                 ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
                 icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
                 menu_icon="cast",
-                default_index=1,
+                default_index=0,
                 styles={
                     #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
                     "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
@@ -191,7 +191,7 @@ with st.sidebar:
                 ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
                 icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
                 menu_icon="cast",
-                default_index=1,
+                default_index=0,
                 styles={
                     #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
                     "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
