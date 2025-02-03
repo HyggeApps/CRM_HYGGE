@@ -317,22 +317,22 @@ def consultar_empresas(user, admin):
         # 🔹 Atualiza a empresa selecionada corretamente
         novas_selecoes = edited_df[edited_df["Visualizar"]].index.tolist()
 
-        # Verifica se há uma nova seleção
+        # Garante que há pelo menos uma seleção
         if novas_selecoes:
             selected_index = novas_selecoes[0]
             nova_empresa = edited_df.iloc[selected_index].to_dict()
-            
-            # Atualiza apenas se não for a mesma empresa já armazenada
+
+            # Só atualiza se a empresa realmente mudou
             if st.session_state.get("empresa_cnpj_selecionada") != nova_empresa["CNPJ"]:
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
                 st.rerun()
         else:
-            # Se nenhuma empresa estiver selecionada, garantir que o estado seja resetado corretamente
-            if "empresa_selecionada" in st.session_state and st.session_state["empresa_cnpj_selecionada"]:
+            # Se nenhuma estiver selecionada, mas havia uma antes, resetar corretamente
+            if "empresa_selecionada" in st.session_state:
                 del st.session_state["empresa_selecionada"]
+            if "empresa_cnpj_selecionada" in st.session_state:
                 del st.session_state["empresa_cnpj_selecionada"]
-
 
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
