@@ -331,7 +331,6 @@ def consultar_empresas(user, admin):
             if empresa_anterior != nova_empresa["CNPJ"]:
                 st.session_state["empresa_selecionada"] = nova_empresa
                 st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
-                st.rerun()
         else:
             # Se nada estiver selecionado, limpar o estado
             if "empresa_selecionada" in st.session_state:
