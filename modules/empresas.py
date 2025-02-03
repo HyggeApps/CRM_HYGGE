@@ -345,6 +345,7 @@ def consultar_empresas(user, admin):
             with col1:
                 st.write("### 🔍 Detalhes da empresa selecionada")
                 with st.popover('✏️ Editar empresa'):
+                    st.write(1)
                     editar_empresa(user, admin)
                     
                 with st.expander("📋 Dados da Empresa", expanded=True):
