@@ -92,7 +92,6 @@ def editar_empresa(user, admin):
             )
             
             st.success("Dados da empresa atualizados com sucesso!")
-            st.rerun()
             
             
 
