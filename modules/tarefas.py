@@ -312,7 +312,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         with col1:
             if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(2.5, 2.5))  # Ajustado para um tamanho compacto sem distorção
+                fig, ax = plt.subplots(figsize=(3, 3))  # Ajustado para um tamanho compacto sem distorção
                 labels = ["Finalizadas", "Em andamento", "Atrasadas"]
                 cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
@@ -339,10 +339,9 @@ def visualizar_tarefas_por_usuario(user, admin):
                 st.info("Nenhuma tarefa registrada.")
 
         with col2:
-            col1, col2, col3 = st.columns(3)
-            col1.metric("🟩 Finalizadas", total_finalizadas)
-            col2.metric("🟨 Em andamento", total_andamento)
-            col3.metric("🟥 Atrasadas", total_atrasadas)
+            st.metric("🟩 Finalizadas", total_finalizadas)
+            st.metric("🟨 Em andamento", total_andamento)
+            st.metric("🟥 Atrasadas", total_atrasadas)
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
     for aba, tarefas_periodo, titulo in zip(
