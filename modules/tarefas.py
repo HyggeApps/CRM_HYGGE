@@ -287,7 +287,6 @@ def visualizar_tarefas_por_usuario(user, admin):
 
             with col1:
                 st.subheader(f"🟥 Atrasado - {titulo}")
-                st.write(1)
                 tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
                 if tarefas_atrasadas:
                     df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
