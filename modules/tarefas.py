@@ -310,37 +310,40 @@ def visualizar_tarefas_por_usuario(user, admin):
 
         col1, col2 = st.columns([8, 2])
 
-        with col1:
-            if sum(valores) > 0:
-                fig, ax = plt.subplots(figsize=(1, 1))  # Ajustado para um tamanho compacto sem distorção
-                labels = ["Finalizadas", "Em andamento", "Atrasadas"]
-                cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
+    with col1:
+        if sum(valores) > 0:
+            fig, ax = plt.subplots(figsize=(2, 2))  # Tamanho compacto adequado à coluna
+            labels = ["Finalizadas", "Em andamento", "Atrasadas"]
+            cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
-                # Criar o gráfico de pizza ajustado
-                wedges, texts, autotexts = ax.pie(
-                    valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90,
-                    textprops={"fontsize": 4, "color": "white"},  # Fonte ajustada
-                )
+            # Criar gráfico de pizza compacto
+            wedges, texts, autotexts = ax.pie(
+                valores, labels=labels, autopct="%1.0f%%", colors=cores, startangle=90,
+                textprops={"fontsize": 6, "color": "white"},  # Fonte ajustada
+                wedgeprops={'linewidth': 0.5, 'edgecolor': 'black'},  # Borda sutil
+                radius=0.85  # Reduz tamanho do gráfico para caber melhor
+            )
 
-                # Ajustar a posição dos rótulos para evitar cortes
-                for text in texts:
-                    text.set_fontsize(4)  # Reduz tamanho das labels externas
-                    text.set_color("white")  
+            # Ajustar a posição dos rótulos para evitar cortes
+            for text in texts:
+                text.set_fontsize(5)  # Labels externas menores
+                text.set_color("white")
 
-                for autotext in autotexts:
-                    autotext.set_fontsize(4)  # Fonte maior para porcentagens
+            for autotext in autotexts:
+                autotext.set_fontsize(6)  # Fonte melhor ajustada para porcentagens
 
-                ax.axis("equal")  # Mantém o formato do círculo
-                fig.patch.set_alpha(0)  # Fundo transparente
-                st.pyplot(fig)
+            ax.axis("equal")  # Mantém o formato do círculo
+            fig.patch.set_alpha(0)  # Fundo transparente
+            st.pyplot(fig)
 
-            else:
-                st.info("Nenhuma tarefa registrada.")
+        else:
+            st.info("Nenhuma tarefa registrada.")
 
-        with col2:
-            st.metric("🟩 Finalizadas", total_finalizadas)
-            st.metric("🟨 Em andamento", total_andamento)
-            st.metric("🟥 Atrasadas", total_atrasadas)
+    with col2:
+        st.metric("🟩 Finalizadas", total_finalizadas)
+        st.metric("🟨 Em andamento", total_andamento)
+        st.metric("🟥 Atrasadas", total_atrasadas)
+
 
     # 📌 **Criar abas para Hoje, Amanhã, Semana, Mês**
     for aba, tarefas_periodo, titulo in zip(
