@@ -230,6 +230,20 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from utils.database import get_collection
 
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+from utils.database import get_collection
+
+MESES_PT = {
+    1: "Janeiro", 2: "Fevereiro", 3: "Março",
+    4: "Abril", 5: "Maio", 6: "Junho",
+    7: "Julho", 8: "Agosto", 9: "Setembro",
+    10: "Outubro", 11: "Novembro", 12: "Dezembro"
+}
+
 @st.fragment
 def visualizar_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
@@ -250,7 +264,7 @@ def visualizar_tarefas_por_usuario(user, admin):
         query["empresa"] = {"$in": [empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})]}
 
     # Buscar tarefas filtradas
-    tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))  # Removendo os campos desnecessários
+    tarefas = list(collection_tarefas.find(query, {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}))
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
@@ -259,91 +273,90 @@ def visualizar_tarefas_por_usuario(user, admin):
     # Criar um dicionário com Nome da Empresa baseado no CNPJ
     empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find({}, {"cnpj": 1, "razao_social": 1})}
 
-    # Adicionar o Nome da Empresa à lista de tarefas
+    # Adicionar o Nome da Empresa e converter data
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
         tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"])
 
-    # Datas de referência
+    # 📅 Criar filtros de período
     hoje = datetime.today().date()
     amanha = hoje + timedelta(days=1)
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
+    ano_atual = hoje.year
+    mes_atual = hoje.month
 
-    # Separar tarefas por status e data
-    def filtrar_tarefas(data_inicio, data_fim):
-        return [t for t in tarefas if data_inicio <= t["Data de Execução"].date() <= data_fim]
+    # Opções de Filtro
+    meses_opcoes = [f"{MESES_PT[m]} {ano_atual}" for m in range(1, 13)]
+    trimestres_opcoes = [f"Trimestre {i} ({MESES_PT[i*3-2]} - {MESES_PT[i*3]}) {ano_atual}" for i in range(1, 5)]
+    semestres_opcoes = [f"Semestre {i} ({MESES_PT[i*6-5]} - {MESES_PT[i*6]}) {ano_atual}" for i in range(1, 3)]
+    anos_opcoes = [str(y) for y in range(ano_atual - 4, ano_atual + 1)]
 
-    tarefas_hoje = filtrar_tarefas(hoje, hoje)
-    tarefas_amanha = filtrar_tarefas(amanha, amanha)
-    tarefas_semana = filtrar_tarefas(hoje, fim_semana)
-    tarefas_mes = filtrar_tarefas(hoje, fim_mes)
+    # Seleção de período
+    filtro_tipo = st.radio("📅 Filtrar por:", ["Mês", "Trimestre", "Semestre", "Ano"], horizontal=True)
+    if filtro_tipo == "Mês":
+        periodo_selecionado = st.selectbox("Escolha o mês", meses_opcoes, index=mes_atual - 1)
+        mes_inicio = int(periodo_selecionado.split()[1])
+        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month == mes_inicio and t["Data de Execução"].year == ano_atual]
+
+    elif filtro_tipo == "Trimestre":
+        periodo_selecionado = st.selectbox("Escolha o trimestre", trimestres_opcoes)
+        trimestre = int(periodo_selecionado.split()[1])
+        meses_trimestre = list(range((trimestre - 1) * 3 + 1, trimestre * 3 + 1))
+        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month in meses_trimestre and t["Data de Execução"].year == ano_atual]
+
+    elif filtro_tipo == "Semestre":
+        periodo_selecionado = st.selectbox("Escolha o semestre", semestres_opcoes)
+        semestre = int(periodo_selecionado.split()[1])
+        meses_semestre = list(range((semestre - 1) * 6 + 1, semestre * 6 + 1))
+        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].month in meses_semestre and t["Data de Execução"].year == ano_atual]
+
+    else:  # Ano
+        periodo_selecionado = st.selectbox("Escolha o ano", anos_opcoes, index=4)
+        ano_escolhido = int(periodo_selecionado)
+        tarefas_periodo = [t for t in tarefas if t["Data de Execução"].year == ano_escolhido]
 
     # Contagem de status para gráficos
-    total_finalizadas = sum(1 for t in tarefas if t["status"] == "🟩 Concluída")
-    total_andamento = sum(1 for t in tarefas if t["status"] == "🟨 Em andamento")
-    total_atrasadas = sum(1 for t in tarefas if t["status"] == "🟥 Atrasado")
+    total_finalizadas = sum(1 for t in tarefas_periodo if t["status"] == "🟩 Concluída")
+    total_andamento = sum(1 for t in tarefas_periodo if t["status"] == "🟨 Em andamento")
+    total_atrasadas = sum(1 for t in tarefas_periodo if t["status"] == "🟥 Atrasado")
 
-    abas = st.tabs([
-        "📊 Resumo",
-        f"Hoje ({hoje.strftime('%d/%m')})",
-        f"Amanhã ({amanha.strftime('%d/%m')})",
-        f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
-        f"Neste mês (até {fim_mes.strftime('%d/%m')})"
-    ])
+    st.subheader("📊 Resumo das Tarefas")
 
-    with abas[0]:  # Aba Resumo
-        st.subheader("📊 Resumo das Tarefas")
+    col1, col2 = st.columns([2, 3])  # Ajuste de tamanho das colunas
 
-        # Criar gráfico de status
-        fig, ax = plt.subplots(figsize=(4, 4))
+    with col1:
+        # Criar gráfico de pizza menor e com fundo transparente
+        fig, ax = plt.subplots(figsize=(3, 3))
         labels = ["Finalizadas", "Em andamento", "Atrasadas"]
         valores = [total_finalizadas, total_andamento, total_atrasadas]
         cores = ["#2ECC71", "#F1C40F", "#E74C3C"]
 
         ax.pie(valores, labels=labels, autopct="%1.1f%%", colors=cores, startangle=90)
         ax.axis("equal")  # Mantém formato circular
-
+        fig.patch.set_alpha(0)  # Fundo transparente
         st.pyplot(fig)
 
+    with col2:
         # Exibir contagem total
         col1, col2, col3 = st.columns(3)
         col1.metric("🟩 Finalizadas", total_finalizadas)
         col2.metric("🟨 Em andamento", total_andamento)
         col3.metric("🟥 Atrasadas", total_atrasadas)
 
-    for aba, tarefas_periodo, titulo in zip(abas[1:], [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes], 
-                                             ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"]):
-        with aba:
-            col1, col2 = st.columns(2)
+    if admin and usuario_selecionado == "Todos":
+        st.subheader("📊 Comparativo por Usuário")
 
-            with col1:
-                st.subheader(f"🟥 Atrasado - {titulo}")
-                tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
-                if tarefas_atrasadas:
-                    df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
-                    df_atrasadas = df_atrasadas.rename(columns={
-                        "titulo": "Título",
-                        "empresa": "CNPJ",
-                        "observacoes": "Observações"
-                    })
-                    df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].dt.strftime("%d/%m/%Y")
-                    st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
-                else:
-                    st.success(f"Nenhuma tarefa atrasada para {titulo}.")
+        # Contar tarefas por usuário
+        df_tarefas = pd.DataFrame(tarefas_periodo)
+        tarefas_por_usuario = df_tarefas.groupby(["empresa", "status"]).size().unstack(fill_value=0)
 
-            with col2:
-                st.subheader(f"🟨 Em andamento - {titulo}")
-                tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
-                if tarefas_em_andamento:
-                    df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
-                    df_em_andamento = df_em_andamento.rename(columns={
-                        "titulo": "Título",
-                        "empresa": "CNPJ",
-                        "observacoes": "Observações"
-                    })
-                    df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].dt.strftime("%d/%m/%Y")
-                    st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
-                else:
-                    st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+        # Criar gráfico de barras comparativo
+        fig, ax = plt.subplots(figsize=(6, 3))
+        tarefas_por_usuario.plot(kind="bar", stacked=True, color=["#2ECC71", "#F1C40F", "#E74C3C"], ax=ax)
+        ax.set_xlabel("Usuário")
+        ax.set_ylabel("Quantidade de Tarefas")
+        ax.set_title("Comparativo de Tarefas por Usuário")
+        st.pyplot(fig)
+
 
