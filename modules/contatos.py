@@ -48,6 +48,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                         })
                         
                         st.success("Contato adicionado com sucesso!")
+                        st.rerun()
                         
                         
                         
@@ -95,11 +96,13 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                 )
                                 
                                 st.success("Contato atualizado com sucesso!")
+                                st.rerun()
                                 
 
                     if st.button("🗑️ Remover Contato"):
                         collection_contatos.delete_one({"email": email_editar, "empresa": empresa_cnpj})  # Apenas na empresa vinculada
                         st.success(f"Contato {contato_selecionado} removido com sucesso!")
+                        st.rerun()
                         
                         
                         
