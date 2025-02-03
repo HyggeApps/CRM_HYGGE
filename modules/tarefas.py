@@ -340,7 +340,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 if tarefas_atrasadas:
                     df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
                     df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                    df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                     st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
                 else:
                     st.success(f"Nenhuma tarefa atrasada para {titulo}.")
@@ -351,7 +351,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 if tarefas_em_andamento:
                     df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
                     df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                    df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].dt.strftime("%d/%m/%Y")
+                    df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                     st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
