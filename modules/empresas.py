@@ -336,10 +336,10 @@ def consultar_empresas(user, admin):
             if "empresa_cnpj_selecionada" in st.session_state:
                 del st.session_state["empresa_cnpj_selecionada"]
 
-        # Exibir detalhes da empresa selecionada
-        if st.session_state["empresa_selecionada"]:
-            empresa = st.session_state["empresa_selecionada"]
-            empresa_cnpj = empresa["CNPJ"]
+            # Exibir detalhes da empresa selecionada
+            if st.session_state["empresa_selecionada"]:
+                empresa = st.session_state["empresa_selecionada"]
+                empresa_cnpj = empresa["CNPJ"]
 
             st.write('----')
 
