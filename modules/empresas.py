@@ -332,7 +332,6 @@ def consultar_empresas(user, admin):
             if "empresa_selecionada" in st.session_state or "empresa_cnpj_selecionada" in st.session_state:
                 st.session_state["empresa_selecionada"] = None
                 st.session_state["empresa_cnpj_selecionada"] = None
-                st.rerun()
 
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
