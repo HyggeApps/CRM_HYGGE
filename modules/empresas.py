@@ -347,21 +347,33 @@ def consultar_empresas(user, admin):
                     editar_empresa(user, admin)
 
                 with st.expander("📋 Dados da Empresa", expanded=True):
-                    
-                    dados_empresa = {
-                        "Nome": empresa['Nome'],
-                        "Proprietário": empresa['Proprietário'],
-                        "Última Atividade": empresa['Última Atividade'],
-                        "Data de Criação": empresa['Data de Criação'],
-                        "Cidade/UF": f"{empresa['Cidade']}, {empresa['UF']}",
-                        "Setor": empresa["Setor"],
-                        "Tamanho": empresa["Tamanho"],
-                        "Produto Interesse": empresa["Produto Interesse"],
-                        "Grau Cliente": empresa["Grau Cliente"],
-                        "CNPJ": empresa["CNPJ"]
-                    }
-                    df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
-                    st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+
+                    collection_empresas = get_collection("empresas")
+                    empresa_cnpj = st.session_state.get("empresa_cnpj_selecionada", None)
+
+                    if empresa_cnpj:
+                        empresa_atualizada = collection_empresas.find_one({"cnpj": empresa_cnpj}, {"_id": 0})
+
+                        if empresa_atualizada:
+                            dados_empresa = {
+                                "Nome": empresa_atualizada.get("razao_social", ""),
+                                "Proprietário": empresa_atualizada.get("usuario", ""),
+                                "Última Atividade": empresa_atualizada.get("ultima_atividade", ""),
+                                "Data de Criação": empresa_atualizada.get("data_criacao", ""),
+                                "Cidade/UF": f"{empresa_atualizada.get('cidade', '')}, {empresa_atualizada.get('estado', '')}",
+                                "Setor": empresa_atualizada.get("setor", ""),
+                                "Tamanho": empresa_atualizada.get("tamanho_empresa", ""),
+                                "Produto Interesse": empresa_atualizada.get("produto_interesse", ""),
+                                "Grau Cliente": empresa_atualizada.get("grau_cliente", ""),
+                                "CNPJ": empresa_atualizada.get("cnpj", "")
+                            }
+
+                            df_dados_empresa = pd.DataFrame(dados_empresa.items(), columns=["Campo", "Informação"])
+                            st.dataframe(df_dados_empresa, hide_index=True, use_container_width=True)
+                        else:
+                            st.warning("Empresa não encontrada no banco de dados.")
+                    else:
+                        st.warning("Nenhuma empresa selecionada.")
 
                 # Integrando a função de exibir contatos
                 if empresa_cnpj:
