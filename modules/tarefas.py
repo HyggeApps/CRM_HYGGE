@@ -94,6 +94,15 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                         "status": status
                     }
                     collection_tarefas.insert_one(nova_tarefa)
+                    
+                    # 🔄 Atualizar a última atividade da empresa
+                    data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
+                    collection_empresas = get_collection("empresas")
+                    collection_empresas.update_one(
+                        {"cnpj": empresa_cnpj},
+                        {"$set": {"ultima_atividade": data_hoje}}
+                    )
+
                     st.success("Tarefa criada com sucesso!")
                     st.rerun()
                     
@@ -198,7 +207,14 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "status": status_edit
                                         }}
                                     )
-
+                                    
+                                    # 🔄 Atualizar a última atividade da empresa
+                                    data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
+                                    collection_empresas = get_collection("empresas")
+                                    collection_empresas.update_one(
+                                        {"cnpj": empresa_cnpj},
+                                        {"$set": {"ultima_atividade": data_hoje}}
+                                    )
                                     st.success("Tarefa atualizada com sucesso! 🔄")
                                     st.rerun()
                                     

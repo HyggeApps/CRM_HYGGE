@@ -158,7 +158,9 @@ def cadastrar_empresas(user, admin):
         with col5:
             setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
         with col6:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], key="produto_interesse")
+            produto_interesse = st.multiselect("Produto de Interesse *", 
+                                               ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"],
+                                               key="produto_interesse")
 
         col7, col8 = st.columns(2)
         with col7:
@@ -185,7 +187,7 @@ def cadastrar_empresas(user, admin):
                         "estado": estado,
                         "setor": setor,
                         "tamanho_empresa": tamanho_empresa,
-                        "produto_interesse": produto_interesse,
+                        "produto_interesse": produto_interesse,  # ✅ Agora é uma lista
                         "grau_cliente": grau_cliente,
                         "usuario": user,
                         "data_criacao": now,
@@ -194,7 +196,7 @@ def cadastrar_empresas(user, admin):
                     collection_empresas.insert_one(document)
 
                     # Criar automaticamente uma tarefa associada à empresa
-                    prazo_execucao = datetime.today().date() + timedelta(days=1)  # Adiciona 1 semana
+                    prazo_execucao = datetime.today().date() + timedelta(days=1)
                     tarefa_document = {
                         "titulo": "Identificar personas",
                         "empresa": cnpj,
@@ -203,10 +205,10 @@ def cadastrar_empresas(user, admin):
                         "status": "🟨 Em andamento"
                     }
                     collection_tarefas.insert_one(tarefa_document)
-                    
-                    
+
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
                     st.rerun()
+
                     
 @st.fragment
 def consultar_empresas(user, admin):
