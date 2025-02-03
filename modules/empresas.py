@@ -48,40 +48,48 @@ def editar_empresa(user, admin):
     with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
         with col1:
-            razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
+            razao_social = st.text_input("Nome da Empresa *", value=empresa.get("razao_social", ""), disabled=not eh_proprietario)
         with col2:
-            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=True)  # Cidade não editável
+            cidade = st.text_input("Cidade *", value=empresa.get("cidade", ""), disabled=True)  # Cidade não editável
         
         col3, col4 = st.columns(2)
         with col3:
-            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)  # Estado não editável
+            estado = st.text_input("Estado (UF)", value=empresa.get("estado", ""), disabled=True)  # Estado não editável
         with col4:
-            novo_usuario = st.selectbox("Usuário (Vendedor)", options=lista_usuarios, 
-                                        index=lista_usuarios.index(empresa["Proprietário"]) if empresa["Proprietário"] in lista_usuarios else 0, 
-                                        disabled=not eh_proprietario)
+            novo_usuario = st.selectbox(
+                "Usuário (Vendedor)", options=lista_usuarios, 
+                index=lista_usuarios.index(empresa.get("usuario", "")) if empresa.get("usuario", "") in lista_usuarios else 0, 
+                disabled=not eh_proprietario
+            )
 
         col5, col6 = st.columns(2)
         with col5:
-            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
-                                 disabled=not eh_proprietario)
+            setor = st.selectbox(
+                "Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("setor", "Comercial")), 
+                disabled=not eh_proprietario
+            )
         with col6:
-            produto_interesse = st.selectbox("Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
-                                             index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("Produto de Interesse", "NBR Fast")), 
-                                             disabled=not eh_proprietario)
+            produto_interesse = st.selectbox(
+                "Produto de Interesse *", ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
+                index=["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"].index(empresa.get("produto_interesse", "NBR Fast")), 
+                disabled=not eh_proprietario
+            )
 
         col7, col8 = st.columns(2)
         with col7:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
-                                           index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
-                                           disabled=not eh_proprietario)
+            tamanho_empresa = st.selectbox(
+                "Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
+                index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("tamanho_empresa", "Tier 1")), 
+                disabled=not eh_proprietario
+            )
 
         submit = st.form_submit_button("💾 Salvar Alterações", disabled=not eh_proprietario)
 
         if submit and eh_proprietario:
             # Atualiza os dados no banco de dados
             collection_empresas.update_one(
-                {"razao_social": empresa["Nome"]},
+                {"cnpj": empresa["cnpj"]},  # Garantir que a busca é pelo CNPJ
                 {"$set": {
                     "razao_social": razao_social,
                     "usuario": novo_usuario,
@@ -91,8 +99,7 @@ def editar_empresa(user, admin):
                 }}
             )
             
-            st.success("Dados da empresa atualizados com sucesso!")
-            
+            st.success("Dados da empresa atualizados com sucesso! 🔄")
             
 
 @st.fragment            
