@@ -170,8 +170,8 @@ def exibir_todos_contatos_empresa():
             df_contatos.apply(lambda row: any(filtro_busca.lower() in str(value).lower() for value in row), axis=1)
         ]
 
-    # Campo de busca único
-    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter")
+    # Campo de busca único com key para evitar erro de ID duplicado
+    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter", key="busca_unica")
 
     # Aplicar filtro no DataFrame
     if filtro_busca:
@@ -184,5 +184,3 @@ def exibir_todos_contatos_empresa():
 
     # Exibir DataFrame com data_editor
     st.data_editor(df_contatos.drop(columns=["busca_concat"]), hide_index=True, use_container_width=True)
-
-
