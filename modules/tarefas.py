@@ -47,6 +47,7 @@ def atualizar_status_tarefas(empresa_cnpj):
 def gerenciamento_tarefas(user, admin, empresa_cnpj):
     collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
     collection_atividades = get_collection("atividades")
+    st.write(1)
 
     if not empresa_cnpj:
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
