@@ -9,7 +9,7 @@ def gerenciamento_templates():
 
     # Aba: Cadastrar Template
     with tab1:
-        st.header("Cadastrar Template")
+        st.subheader("Cadastrar Template")
         with st.form(key="form_cadastro_template"):
             nome = st.text_input("Nome do Template", key="input_nome_template")
             descricao = st.text_area("Descrição", key="input_descricao_template")
@@ -37,7 +37,7 @@ def gerenciamento_templates():
 
     # Aba: Remover Template
     with tab2:
-        st.header("Remover Template")
+        st.subheader("Remover Template")
         with st.form(key="form_remover_template"):
             remove_nome = st.text_input("Nome do Template a Remover", key="input_remover_nome_template")
             remove_submit = st.form_submit_button("Remover Template")
@@ -55,15 +55,14 @@ def gerenciamento_templates():
 
     # Aba: Exibir Templates
     with tab3:
-        st.header("Templates Cadastrados")
-        if st.button("Carregar Templates", key="botao_carregar_templates"):
-            templates = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
-            if templates:
-                st.write("Lista de Templates:")
-                for template in templates:
-                    st.write(
-                        f"Nome: {template['nome']}, Descrição: {template['descricao']}, "
-                        f"Template de Email: {template['temp_email']}"
-                    )
-            else:
-                st.write("Nenhum template cadastrado ainda.")
+        st.subheader("Templates Cadastrados")
+        templates = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+        if templates:
+            st.write("Lista de Templates:")
+            for template in templates:
+                st.write(
+                    f"Nome: {template['nome']}, Descrição: {template['descricao']}, "
+                    f"Template de Email: {template['temp_email']}"
+                )
+        else:
+            st.write("Nenhum template cadastrado ainda.")

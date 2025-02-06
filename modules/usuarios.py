@@ -121,15 +121,14 @@ def gerenciamento_usuarios():
     # Aba: Exibir Usuários
     with tab4:
         st.subheader("Usuários Cadastrados")
-        if st.button("Carregar Usuários", key="botao_carregar_usuarios"):
-            users = list(collection.find({}, {"_id": 0}))
-            if users:
-                import pandas as pd
-                df_users = pd.DataFrame(users)
-                if 'senha' in df_users.columns:
-                    df_users = df_users.drop(columns=['senha'])
-                st.dataframe(df_users, use_container_width=True)
-            else:
-                st.write("Nenhum usuário cadastrado ainda.")
+        users = list(collection.find({}, {"_id": 0}))
+        if users:
+            import pandas as pd
+            df_users = pd.DataFrame(users)
+            if 'senha' in df_users.columns:
+                df_users = df_users.drop(columns=['senha'])
+            st.dataframe(df_users, use_container_width=True)
+        else:
+            st.write("Nenhum usuário cadastrado ainda.")
 
 
