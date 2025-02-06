@@ -312,9 +312,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                # 📌 Botão para editar tarefas atrasadas
-                if st.button(f"✏️ Editar Tarefas Atrasadas - {titulo}", key=f"editar_atrasadas_{titulo}"):
-                    editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}")
+                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}")
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -333,14 +331,12 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
 
-                # 📌 Botão para editar tarefas em andamento
-                if st.button(f"✏️ Editar Tarefas Em Andamento - {titulo}", key=f"editar_em_andamento_{titulo}"):
-                    editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}")
+                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}")
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 
-def editar_tarefa_modal(tarefas, empresa_cnpj, key):
+def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo):
     """
     Exibe um pop-up/modal para edição de tarefas selecionadas.
     """
@@ -348,7 +344,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
-    with st.popover(f"✏️ Editar Tarefa"):
+    with st.popover(f"✏️ Editar Tarefas {tipo}"):
         tarefas_opcoes = {t["titulo"]: t for t in tarefas}
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
