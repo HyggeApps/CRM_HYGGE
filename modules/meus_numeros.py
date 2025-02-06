@@ -62,15 +62,24 @@ def contar_tarefas_por_usuario(user):
 
         media_vendedores[periodo] = round(total_tarefas_concluidas / total_vendedores, 2)  # Média por vendedor
 
-    # 🔹 Exibir os resultados no Streamlit
-    st.write("### 📊 Comparação de Tarefas Concluídas do Usuário vs. Média dos Vendedores")
-    
-    for periodo, qtd in resultados_usuario.items():
-        media_geral = media_vendedores[periodo]
+    # 🔹 Exibir os resultados no Streamlit com Selectbox para escolha do período
+    with st.popover("### 📊 Comparação das minhas tarefas concluídas vs. Média dos vendedores HYGGE"):
+        
+        # Criar uma seleção para que o usuário escolha o período desejado
+        periodo_selecionado = st.selectbox(
+            "📆 Selecione o período para análise:",
+            list(resultados_usuario.keys()),
+            index=1  # Define "Última Semana" como padrão
+        )
+
+        # Recuperar os valores do período selecionado
+        qtd = resultados_usuario[periodo_selecionado]
+        media_geral = media_vendedores[periodo_selecionado]
         diferenca = qtd - media_geral
         emoji = "🟢 Acima da média" if diferenca > 0 else "🟡 Na média" if diferenca == 0 else "🔴 Abaixo da média"
         
-        st.subheader(f"📆 {periodo}")
+        # Exibir os resultados com base no período escolhido
+        st.subheader(f"📆 {periodo_selecionado}")
         st.write(f"✅ **Suas tarefas concluídas:** {qtd}")
         st.write(f"📊 **Média geral dos vendedores:** {media_geral}")
         st.write(f"📌 **Desempenho:** {emoji}")
