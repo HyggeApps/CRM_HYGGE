@@ -391,6 +391,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
 
                 if submit_editar:
                     # 🔍 Buscar a tarefa corretamente no banco de dados
+                    st.write(tarefa_dados)
                     tarefa_existente = collection_tarefas.find_one(
                         {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                         {"_id": 0}
