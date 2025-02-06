@@ -390,13 +390,19 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                 submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                 if submit_editar:
-                    # 🔍 Buscar a tarefa corretamente no banco de dados
-                    st.write(tarefa_dados)
+
+                    # Garantir que a data_execucao esteja no mesmo formato do MongoDB
+                    data_execucao_str = tarefa_dados["data_execucao"] if "data_execucao" in tarefa_dados else tarefa_dados["Data de Execução"]
+
+                    if isinstance(data_execucao_str, datetime.date):  # Converter datetime.date para string
+                        data_execucao_str = data_execucao_str.strftime("%Y-%m-%d")
+
+                    # Buscar no banco com os campos no formato correto
                     tarefa_existente = collection_tarefas.find_one(
-                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
+                        {"empresa": str(empresa_cnpj), "titulo": str(tarefa_dados["titulo"]), "data_execucao": data_execucao_str},
                         {"_id": 0}
                     )
-
+            
                     st.write(tarefa_existente)
                     if not tarefa_existente:
                         st.error("Erro: Tarefa não encontrada no banco de dados.")
