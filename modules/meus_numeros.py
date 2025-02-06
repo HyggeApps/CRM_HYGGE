@@ -23,8 +23,8 @@ def compilar_meus_numeros(user):
     }
 
     # 🔹 Buscar os CNPJs das empresas associadas ao usuário
-    empresas_usuario = list(collection_empresas.find({"usuario": user}, {"cnpj": 1}))
-    cnpjs_usuario = [empresa["cnpj"] for empresa in empresas_usuario]
+    empresas_usuario = collection_empresas.find({"usuario": user}, {"cnpj": 1})
+    cnpjs_usuario = {empresa["cnpj"] for empresa in empresas_usuario}
 
     if not cnpjs_usuario:
         st.warning(f"❌ Nenhuma empresa encontrada para o usuário {user}.")
@@ -32,55 +32,51 @@ def compilar_meus_numeros(user):
 
     # 🔹 Buscar todos os usuários únicos cadastrados nas empresas
     vendedores_unicos = collection_empresas.distinct("usuario")
-    total_vendedores = len(vendedores_unicos)
+    total_vendedores = len(vendedores_unicos) if vendedores_unicos else 1
 
-    if total_vendedores == 0:
-        st.warning("❌ Nenhum vendedor encontrado para cálculo de média.")
-        return
+    # 🔹 Buscar todas as tarefas e atividades dentro do maior período necessário
+    data_inicio_global = min(periodos.values())
+    
+    tarefas = list(collection_tarefas.find(
+        {"data_execucao": {"$gte": data_inicio_global.strftime("%Y-%m-%d")}},
+        {"empresa": 1, "status": 1, "data_execucao": 1}
+    ))
+
+    atividades = list(collection_atividades.find(
+        {"data_execucao_atividade": {"$gte": data_inicio_global.strftime("%Y-%m-%d")}},
+        {"empresa": 1, "tipo_atividade": 1, "data_execucao_atividade": 1}
+    ))
 
     # 🔹 Criar dicionários para armazenar os resultados do usuário e da média geral
-    resultados_usuario = {periodo: {"Tarefas": 0, "Atividades": 0} for periodo in periodos}
-    media_vendedores = {periodo: {"Tarefas": 0, "Atividades": 0} for periodo in periodos}
-    tipos_atividade_usuario = {periodo: {} for periodo in periodos}
-    tipos_atividade_geral = {periodo: {} for periodo in periodos}
+    resultados_usuario = {p: {"Tarefas": 0, "Atividades": 0} for p in periodos}
+    media_vendedores = {p: {"Tarefas": 0, "Atividades": 0} for p in periodos}
+    tipos_atividade_usuario = {p: {} for p in periodos}
+    tipos_atividade_geral = {p: {} for p in periodos}
 
-    # 🔹 Contar tarefas e atividades do usuário e calcular médias gerais
+    # 🔹 Processar tarefas e atividades em memória
     for periodo, data_limite in periodos.items():
+        # Filtrar tarefas e atividades dentro do período
+        tarefas_periodo = [t for t in tarefas if t["data_execucao"] >= data_limite.strftime("%Y-%m-%d")]
+        atividades_periodo = [a for a in atividades if a["data_execucao_atividade"] >= data_limite.strftime("%Y-%m-%d")]
+
         # 🟢 Contar tarefas concluídas do usuário
-        tarefas_usuario = collection_tarefas.count_documents({
-            "empresa": {"$in": cnpjs_usuario},
-            "status": "🟩 Concluída",
-            "data_execucao": {"$gte": data_limite.strftime("%Y-%m-%d")}
-        })
-        resultados_usuario[periodo]["Tarefas"] = tarefas_usuario
+        resultados_usuario[periodo]["Tarefas"] = sum(1 for t in tarefas_periodo if t["empresa"] in cnpjs_usuario and t["status"] == "🟩 Concluída")
 
-        # 🟢 Contar atividades registradas do usuário
-        atividades_usuario = list(collection_atividades.find({
-            "empresa": {"$in": cnpjs_usuario},
-            "data_execucao_atividade": {"$gte": data_limite.strftime("%Y-%m-%d")}
-        }))
-        resultados_usuario[periodo]["Atividades"] = len(atividades_usuario)
-
-        # 🟡 Contar todas as tarefas concluídas no período e calcular a média
-        total_tarefas_concluidas = collection_tarefas.count_documents({
-            "status": "🟩 Concluída",
-            "data_execucao": {"$gte": data_limite.strftime("%Y-%m-%d")}
-        })
+        # 🟡 Calcular a média de tarefas por vendedor
+        total_tarefas_concluidas = sum(1 for t in tarefas_periodo if t["status"] == "🟩 Concluída")
         media_vendedores[periodo]["Tarefas"] = round(total_tarefas_concluidas / total_vendedores, 2)
 
-        # 🟡 Contar todas as atividades registradas no período e calcular a média
-        todas_atividades = list(collection_atividades.find({
-            "data_execucao_atividade": {"$gte": data_limite.strftime("%Y-%m-%d")}
-        }))
-        media_vendedores[periodo]["Atividades"] = round(len(todas_atividades) / total_vendedores, 2)
+        # 🟢 Contar atividades registradas do usuário
+        resultados_usuario[periodo]["Atividades"] = sum(1 for a in atividades_periodo if a["empresa"] in cnpjs_usuario)
 
-        # 📌 Identificar o tipo de atividade mais frequente do usuário e no geral
-        for atividade in atividades_usuario:
-            tipo = atividade["tipo_atividade"]
-            tipos_atividade_usuario[periodo][tipo] = tipos_atividade_usuario[periodo].get(tipo, 0) + 1
+        # 🟡 Calcular a média de atividades por vendedor
+        media_vendedores[periodo]["Atividades"] = round(len(atividades_periodo) / total_vendedores, 2)
 
-        for atividade in todas_atividades:
+        # 📌 Identificar o tipo de atividade mais frequente
+        for atividade in atividades_periodo:
             tipo = atividade["tipo_atividade"]
+            if atividade["empresa"] in cnpjs_usuario:
+                tipos_atividade_usuario[periodo][tipo] = tipos_atividade_usuario[periodo].get(tipo, 0) + 1
             tipos_atividade_geral[periodo][tipo] = tipos_atividade_geral[periodo].get(tipo, 0) + 1
 
     # 🔹 Exibir os resultados no Streamlit quando o botão for pressionado
@@ -92,7 +88,7 @@ def compilar_meus_numeros(user):
             periodo_selecionado = st.selectbox(
                 "📆 Selecione o período para análise:",
                 list(resultados_usuario.keys()),
-                index=1,  # Define "Última Semana" como padrão
+                index=1,
                 key=f"select_periodo_geral_{user}"
             )
             st.write("----")
@@ -100,13 +96,11 @@ def compilar_meus_numeros(user):
             # Recuperar os valores do período selecionado
             qtd_tarefas = resultados_usuario[periodo_selecionado]["Tarefas"]
             media_tarefas = media_vendedores[periodo_selecionado]["Tarefas"]
-            diferenca_tarefas = qtd_tarefas - media_tarefas
-            emoji_tarefas = "🟢 Acima da média" if diferenca_tarefas > 0 else "🟡 Na média" if diferenca_tarefas == 0 else "🔴 Abaixo da média"
+            emoji_tarefas = "🟢 Acima da média" if qtd_tarefas > media_tarefas else "🔴 Abaixo da média"
 
             qtd_atividades = resultados_usuario[periodo_selecionado]["Atividades"]
             media_atividades = media_vendedores[periodo_selecionado]["Atividades"]
-            diferenca_atividades = qtd_atividades - media_atividades
-            emoji_atividades = "🟢 Acima da média" if diferenca_atividades > 0 else "🟡 Na média" if diferenca_atividades == 0 else "🔴 Abaixo da média"
+            emoji_atividades = "🟢 Acima da média" if qtd_atividades > media_atividades else "🔴 Abaixo da média"
 
             # Exibir tarefas e atividades
             st.subheader(f"📆 {periodo_selecionado}")
@@ -128,25 +122,11 @@ def compilar_meus_numeros(user):
 
             # 🔹 Criar um gráfico de linhas com base no período selecionado
             data_inicio = periodos[periodo_selecionado]
-            tarefas_detalhadas = list(collection_tarefas.find({
-                "empresa": {"$in": cnpjs_usuario},
-                "status": "🟩 Concluída",
-                "data_execucao": {"$gte": data_inicio.strftime("%Y-%m-%d")}
-            }, {"_id": 0, "data_execucao": 1}))
-
-            # Criar um dicionário para armazenar as contagens diárias
-            contagem_diaria = {data_inicio + timedelta(days=i): 0 for i in range((hoje - data_inicio).days + 1)}
-
-            # Preencher os dados do gráfico
-            for tarefa in tarefas_detalhadas:
-                data_tarefa = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
-                if data_tarefa in contagem_diaria:
-                    contagem_diaria[data_tarefa] += 1
-
-            # Converter para DataFrame e exibir gráfico
-            df_tarefas = pd.DataFrame(list(contagem_diaria.items()), columns=["Data", "Tarefas Concluídas"])
-            df_tarefas = df_tarefas.sort_values(by="Data")
-            st.subheader(f"📈 Evolução das Tarefas Concluídas ({periodo_selecionado})")
-            st.line_chart(df_tarefas.set_index("Data"))
-
-
+            df_tarefas = pd.DataFrame(
+                [{"Data": datetime.strptime(t["data_execucao"], "%Y-%m-%d").date(), "Tarefas": 1} for t in tarefas if t["empresa"] in cnpjs_usuario and t["status"] == "🟩 Concluída" and t["data_execucao"] >= data_inicio.strftime("%Y-%m-%d")]
+            )
+            
+            if not df_tarefas.empty:
+                df_tarefas = df_tarefas.groupby("Data").sum().reset_index()
+                st.subheader(f"📈 Evolução das Tarefas Concluídas ({periodo_selecionado})")
+                st.line_chart(df_tarefas.set_index("Data"))
