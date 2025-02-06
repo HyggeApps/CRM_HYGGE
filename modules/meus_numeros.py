@@ -77,7 +77,7 @@ def contar_tarefas_por_usuario(user):
         media_geral = media_vendedores[periodo_selecionado]
         diferenca = qtd - media_geral
         emoji = "🟢 Acima da média" if diferenca > 0 else "🟡 Na média" if diferenca == 0 else "🔴 Abaixo da média"
-        
+        st.write("---")
         # Exibir os resultados com base no período escolhido
         st.subheader(f"📆 {periodo_selecionado}")
         st.write(f"✅ **Suas tarefas concluídas:** {qtd}")
