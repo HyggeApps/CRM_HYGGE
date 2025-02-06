@@ -234,7 +234,7 @@ MESES_PT = {
 
 @st.fragment
 def gerenciamento_tarefas_por_usuario(user, admin):
-    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
+    collection_tarefas = get_collection("tarefas")
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
@@ -340,7 +340,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
     """
     Exibe um pop-up/modal para edição de tarefas específicas da aba e estágio onde foi chamada.
     """
-    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
+    collection_tarefas = get_collection("tarefas")
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
@@ -363,7 +363,6 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                 with st.form(f"form_editar_tarefa_{key}"):
                     st.subheader(f"✏️ Editar Tarefa - {tarefa_selecionada}")
 
-                    # Criar duas colunas para organizar os campos
                     col1, col2 = st.columns(2)
 
                     with col1:
@@ -389,12 +388,20 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                         )
                         observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"], key=f"observacoes_edit_{key}")
 
-                    # Botão para salvar as alterações
                     submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                     if submit_editar:
                         # Garantir que a data seja salva corretamente no formato `YYYY-MM-DD`
                         data_execucao_edit_str = data_execucao_edit.strftime("%Y-%m-%d")
+
+                        # 🚨 **Verificar se o documento realmente existe antes de atualizar**
+                        tarefa_existente = collection_tarefas.find_one(
+                            {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]}
+                        )
+
+                        if not tarefa_existente:
+                            st.error("Erro: Tarefa não encontrada no banco de dados.")
+                            return
 
                         # Verificar se a última tarefa em andamento está sendo concluída
                         tarefas_ativas = list(collection_tarefas.find(
@@ -422,7 +429,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                                 # Inserir no banco de atividades
                                 collection_atividades.insert_one(nova_atividade)
 
-                            # Atualizar a tarefa no banco
+                            # 🚨 **Forçar atualização mesmo se os valores forem os mesmos**
                             update_result = collection_tarefas.update_one(
                                 {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                                 {"$set": {
@@ -433,6 +440,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                                 }}
                             )
 
+                            # 🚨 **Verificação final da atualização**
                             if update_result.modified_count > 0:
                                 # 🔄 Atualizar a última atividade da empresa
                                 data_hoje = datetime.now().strftime("%Y-%m-%d")  
@@ -445,4 +453,5 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                                 st.rerun()
                             else:
                                 st.warning("Nenhuma modificação realizada. Verifique se houve alguma alteração nos dados.")
+
 
