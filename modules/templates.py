@@ -13,7 +13,6 @@ def gerenciamento_templates():
         st.header("Cadastrar Template")
         with st.form(key="form_cadastro_template"):
             nome = st.text_input("Nome do Template", key="input_nome_template")
-            arquivos = st.file_uploader("Arquivos", accept_multiple_files=True, key="input_arquivos_template")
             descricao = st.text_area("Descrição", key="input_descricao_template")
             temp_email = st.text_area("Template de Email", key="input_temp_email_template")
 
@@ -26,16 +25,9 @@ def gerenciamento_templates():
                     if existing_template:
                         st.error("Template já cadastrado com este nome!")
                     else:
-                        # Processar arquivos
-                        arquivos_salvos = []
-                        if arquivos:
-                            for arquivo in arquivos:
-                                arquivos_salvos.append({"nome_arquivo": arquivo.name, "tipo": arquivo.type})
-                        
                         # Criar o documento
                         document = {
                             "nome": nome,
-                            "arquivos": arquivos_salvos,
                             "descricao": descricao,
                             "temp_email": temp_email,
                         }
@@ -72,7 +64,6 @@ def gerenciamento_templates():
                 for template in templates:
                     st.write(
                         f"Nome: {template['nome']}, Descrição: {template['descricao']}, "
-                        f"Arquivos: {[arq['nome_arquivo'] for arq in template.get('arquivos', [])]}, "
                         f"Template de Email: {template['temp_email']}"
                     )
             else:
