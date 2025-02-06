@@ -246,6 +246,9 @@ if st.session_state['authentication_status']:
         contatos.exibir_todos_contatos_empresa()
 
     elif selected == 'Templates':
+        st.header("📎 Templates")
+        st.info('Consulte, cadastre e edite os templates da HYGGE.')
+        st.write('----')
         if 'admin' in st.session_state["roles"]: templates.gerenciamento_templates()
         else: st.warning("Você não tem permissão para alterar templates.")
 
