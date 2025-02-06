@@ -2,8 +2,12 @@ import streamlit as st
 from datetime import datetime, timedelta
 from utils.database import get_collection
 
+import streamlit as st
+from datetime import datetime, timedelta
+from utils.database import get_collection
+
 def contar_tarefas_por_usuario(user):
-    """Conta quantas tarefas o usuário fez nos últimos períodos definidos, considerando as empresas vinculadas a ele."""
+    """Conta as tarefas concluídas do usuário e compara com a média de todos os vendedores."""
 
     # 🔹 Conectar às coleções do banco de dados
     collection_tarefas = get_collection("tarefas")
@@ -28,24 +32,50 @@ def contar_tarefas_por_usuario(user):
         st.warning(f"❌ Nenhuma empresa encontrada para o usuário {user}.")
         return
 
-    # 🔹 Criar dicionário para armazenar os resultados
-    resultados = {periodo: 0 for periodo in periodos}
+    # 🔹 Buscar todos os usuários únicos cadastrados nas empresas
+    vendedores_unicos = collection_empresas.distinct("usuario")
+    total_vendedores = len(vendedores_unicos)
 
-    # 🔹 Contar tarefas concluídas nos períodos
+    if total_vendedores == 0:
+        st.warning("❌ Nenhum vendedor encontrado para cálculo de média.")
+        return
+
+    # 🔹 Criar dicionário para armazenar os resultados do usuário e da média geral
+    resultados_usuario = {periodo: 0 for periodo in periodos}
+    media_vendedores = {periodo: 0 for periodo in periodos}
+
+    # 🔹 Contar tarefas concluídas do usuário e calcular média geral
     for periodo, data_limite in periodos.items():
-        tarefas = collection_tarefas.count_documents({
-            "empresa": {"$in": cnpjs_usuario},  # Filtra apenas tarefas das empresas do usuário
+        # 🟢 Contar tarefas concluídas do usuário
+        tarefas_usuario = collection_tarefas.count_documents({
+            "empresa": {"$in": cnpjs_usuario},
             "status": "🟩 Concluída",
             "data_execucao": {"$gte": data_limite.strftime("%Y-%m-%d")}
         })
-        resultados[periodo] = tarefas
+        resultados_usuario[periodo] = tarefas_usuario
 
-    # 🔹 Exibir os resultados
-    st.write("### 📊 Relatório de Tarefas Concluídas do Usuário")
-    for periodo, qtd in resultados.items():
+        # 🟡 Contar todas as tarefas concluídas no período e calcular a média
+        total_tarefas_concluidas = collection_tarefas.count_documents({
+            "status": "🟩 Concluída",
+            "data_execucao": {"$gte": data_limite.strftime("%Y-%m-%d")}
+        })
+
+        media_vendedores[periodo] = round(total_tarefas_concluidas / total_vendedores, 2)  # Média por vendedor
+
+    # 🔹 Exibir os resultados no Streamlit
+    st.write("### 📊 Comparação de Tarefas Concluídas do Usuário vs. Média dos Vendedores")
+    
+    for periodo, qtd in resultados_usuario.items():
+        media_geral = media_vendedores[periodo]
+        diferenca = qtd - media_geral
+        emoji = "🟢 Acima da média" if diferenca > 0 else "🟡 Na média" if diferenca == 0 else "🔴 Abaixo da média"
+        
         st.subheader(f"📆 {periodo}")
-        st.write(f"✅ **Tarefas concluídas:** {qtd}")
+        st.write(f"✅ **Suas tarefas concluídas:** {qtd}")
+        st.write(f"📊 **Média geral dos vendedores:** {media_geral}")
+        st.write(f"📌 **Desempenho:** {emoji}")
         st.write("---")
 
-    return resultados
+    return resultados_usuario, media_vendedores
+
 
