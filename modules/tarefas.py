@@ -356,7 +356,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
         )
 
         if tarefa_selecionada:
-            tarefa_dados = next((t for t in tarefas if t["Título"] == tarefa_selecionada), None)
+            tarefa_dados = next((t for t in tarefas if t["titulo"] == tarefa_selecionada), None)
             
             if not tarefa_dados:
                 st.error("Erro ao encontrar a tarefa selecionada.")
@@ -368,7 +368,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    titulo_edit = st.text_input("Título", value=tarefa_dados["Título"])
+                    titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
                     prazo_edit = st.selectbox(
                         "Novo Prazo de Execução",
                         ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
@@ -392,7 +392,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                 if submit_editar:
                     # 🔍 Buscar a tarefa corretamente no banco de dados
                     tarefa_existente = collection_tarefas.find_one(
-                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["Título"]},
+                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                         {"_id": 0}
                     )
 
@@ -402,7 +402,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
 
                     # 🚀 Atualizar os dados da tarefa no banco
                     collection_tarefas.update_one(
-                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["Título"]},
+                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                         {"$set": {
                             "titulo": titulo_edit,
                             "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
