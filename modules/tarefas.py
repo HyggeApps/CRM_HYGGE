@@ -234,7 +234,7 @@ MESES_PT = {
 
 @st.fragment
 def gerenciamento_tarefas_por_usuario(user, admin):
-    collection_tarefas = get_collection("tarefas")
+    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
@@ -340,7 +340,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
     """
     Exibe um pop-up/modal para edição de tarefas específicas da aba e estágio onde foi chamada.
     """
-    collection_tarefas = get_collection("tarefas")
+    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
