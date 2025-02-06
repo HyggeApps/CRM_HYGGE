@@ -153,8 +153,9 @@ def exibir_todos_contatos_empresa():
     # Renomear colunas e organizar ordem
     df_contatos = df_contatos.rename(
         columns={
-            "razao_social": "Nome",
+            "nome": "Nome",
             "sobrenome": "Sobrenome",
+            "razao_social": "Empresa",
             "cargo": "Cargo",
             "email": "E-mail",
             "fone": "Telefone"
