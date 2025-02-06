@@ -151,6 +151,7 @@ def exibir_todos_contatos_empresa():
         st.error("A coluna 'empresa' não existe em df_contatos!")
         return
 
+    # Mesclar os dados para obter nome da empresa
+    df_contatos = df_contatos.merge(df_empresas, on="empresa", how="left")
 
     st.write(df_contatos)
-    st.write(df_empresas)
