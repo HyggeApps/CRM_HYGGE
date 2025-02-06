@@ -223,7 +223,7 @@ if st.session_state['authentication_status']:
             if 'admin' in st.session_state["roles"]: tarefas.gerenciamento_tarefas_por_usuario(usuario_ativo,admin=True)
             else: tarefas.gerenciamento_tarefas_por_usuario(usuario_ativo,admin=False)
         with tela_stats:
-            meus_numeros.contar_atividades_tarefas(usuario_ativo)
+            meus_numeros.contar_tarefas_por_usuario(usuario_ativo)
     elif selected == "Empresas":
         st.header("🏢 Empresas")
         st.info('Consulte, cadastre e edite suas empresas.')
