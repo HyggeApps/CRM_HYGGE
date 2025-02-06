@@ -349,17 +349,18 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
         return
 
     with st.popover(f"✏️ Editar tarefas {tipo}"):
-        # Filtrar tarefas apenas do estágio e aba correspondente
+        # Selecionar a tarefa dentro da lista fornecida para edição
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
             options=[t["titulo"] for t in tarefas],  
-            key=f"select_editar_tarefa_{key}"  # Garante que o popover é único por aba/tipo
+            key=f"select_editar_tarefa_{key}"
         )
 
         if tarefa_selecionada:
             tarefa_dados = next((t for t in tarefas if t["titulo"] == tarefa_selecionada), None)
+            
             if tarefa_dados:
-                with st.form(f"form_editar_tarefa_{key}"):  # Formulário com key única
+                with st.form(f"form_editar_tarefa_{key}"):
                     st.subheader(f"✏️ Editar Tarefa - {tarefa_selecionada}")
 
                     # Criar duas colunas para organizar os campos
@@ -392,7 +393,10 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                     submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                     if submit_editar:
-                        # Verificar se o usuário está tentando concluir todas as tarefas
+                        # Garantir que a data seja salva corretamente no formato `YYYY-MM-DD`
+                        data_execucao_edit_str = data_execucao_edit.strftime("%Y-%m-%d")
+
+                        # Verificar se a última tarefa em andamento está sendo concluída
                         tarefas_ativas = list(collection_tarefas.find(
                             {"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}
                         ))
@@ -401,7 +405,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                             st.error("⚠️ Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'.")
                         else:
                             if status_edit == "🟩 Concluída":
-                                data_execucao_edit = datetime.today().date()
+                                data_execucao_edit_str = datetime.today().strftime("%Y-%m-%d")
 
                                 # Criar uma nova atividade informando que a tarefa foi concluída
                                 nova_atividade = {
@@ -419,22 +423,26 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                                 collection_atividades.insert_one(nova_atividade)
 
                             # Atualizar a tarefa no banco
-                            collection_tarefas.update_one(
-                                {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
+                            update_result = collection_tarefas.update_one(
+                                {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                                 {"$set": {
                                     "titulo": titulo_edit,
-                                    "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                                    "data_execucao": data_execucao_edit_str,
                                     "observacoes": observacoes_edit,
                                     "status": status_edit
                                 }}
                             )
-                            
-                            # 🔄 Atualizar a última atividade da empresa
-                            data_hoje = datetime.now().strftime("%Y-%m-%d")  
-                            collection_empresas.update_one(
-                                {"cnpj": empresa_cnpj},
-                                {"$set": {"ultima_atividade": data_hoje}}
-                            )
-                            st.success("Tarefa atualizada com sucesso! 🔄")
-                            st.rerun()
+
+                            if update_result.modified_count > 0:
+                                # 🔄 Atualizar a última atividade da empresa
+                                data_hoje = datetime.now().strftime("%Y-%m-%d")  
+                                collection_empresas.update_one(
+                                    {"cnpj": empresa_cnpj},
+                                    {"$set": {"ultima_atividade": data_hoje}}
+                                )
+
+                                st.success("Tarefa atualizada com sucesso! 🔄")
+                                st.rerun()
+                            else:
+                                st.warning("Nenhuma modificação realizada. Verifique se houve alguma alteração nos dados.")
 
