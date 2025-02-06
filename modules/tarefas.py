@@ -1,8 +1,7 @@
 import streamlit as st
 from utils.database import get_collection
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pandas as pd
-
 
 
 def calcular_data_execucao(opcao):
@@ -394,7 +393,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                     # Garantir que a data_execucao esteja no mesmo formato do MongoDB
                     data_execucao_str = tarefa_dados["data_execucao"] if "data_execucao" in tarefa_dados else tarefa_dados["Data de Execução"]
 
-                    if isinstance(data_execucao_str, datetime.date):  # Converter datetime.date para string
+                    if isinstance(data_execucao_str, date):  # Agora a verificação será válida
                         data_execucao_str = data_execucao_str.strftime("%Y-%m-%d")
 
                     # Buscar no banco com os campos no formato correto
@@ -402,7 +401,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                         {"empresa": str(empresa_cnpj), "titulo": str(tarefa_dados["titulo"]), "data_execucao": data_execucao_str},
                         {"_id": 0}
                     )
-            
+
                     st.write(tarefa_existente)
                     if not tarefa_existente:
                         st.error("Erro: Tarefa não encontrada no banco de dados.")
