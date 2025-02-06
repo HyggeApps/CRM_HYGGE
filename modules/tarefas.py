@@ -298,7 +298,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             # Garantir que todas as datas estejam no formato correto antes da filtragem
             for t in tarefas_periodo:
                 t["Data de Execução"] = pd.to_datetime(t["Data de Execução"], errors="coerce").date()
-
+                st.write(t)
             # Contagem correta das tarefas atrasadas
             num_tarefas_atrasadas = sum(1 for t in tarefas_periodo if t["Data de Execução"] < hoje)
 
@@ -314,7 +314,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
-                
+
             st.write('---')
             st.subheader(f"🟨 Em andamento - {titulo} ({len([t for t in tarefas_periodo if t['status'] == '🟨 Em andamento' and t['Data de Execução'] <= data_limite])})")
             
