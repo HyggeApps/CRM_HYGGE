@@ -241,8 +241,9 @@ if st.session_state['authentication_status']:
     elif selected == 'Contatos':
         st.header("📞 Contatos")
         st.info('Consulte contatos aqui.')
-        st.warning("⚠️ IMPORTANTE: O cadastro de contatos deve ser feito a partir da tela da 'Empresa'")
+        st.warning("⚠️ IMPORTANTE: O cadastro de contatos deve ser feito a partir da tela da 'Empresas'")
         st.write('----')
+        contatos.exibir_todos_contatos_empresa()
 
 
     elif selected == 'Usuários':
