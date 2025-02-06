@@ -32,7 +32,13 @@ def compilar_meus_numeros(user):
 
     # 🔹 Buscar todos os usuários únicos cadastrados nas empresas
     vendedores_unicos = collection_empresas.distinct("usuario")
-    total_vendedores = len(vendedores_unicos) if vendedores_unicos else 1
+    total_vendedores = max(len(vendedores_unicos), 1)  # Evita divisão por zero
+
+    # 🔹 Criar dicionários corretos para armazenar os resultados
+    resultados_usuario = {str(p): {"Tarefas": 0, "Atividades": 0} for p in periodos.keys()}
+    media_vendedores = {str(p): {"Tarefas": 0, "Atividades": 0} for p in periodos.keys()}
+    tipos_atividade_usuario = {str(p): {} for p in periodos.keys()}
+    tipos_atividade_geral = {str(p): {} for p in periodos.keys()}
 
     # 🔹 Buscar todas as tarefas e atividades dentro do maior período necessário
     data_inicio_global = min(periodos.values())
@@ -47,84 +53,71 @@ def compilar_meus_numeros(user):
         {"empresa": 1, "tipo_atividade": 1, "data_execucao_atividade": 1}
     ))
 
-    # 🔹 Criar dicionários para armazenar os resultados do usuário e da média geral
-    resultados_usuario = {p: {"Tarefas": 0, "Atividades": 0} for p in periodos}
-    media_vendedores = {p: {"Tarefas": 0, "Atividades": 0} for p in periodos}
-    tipos_atividade_usuario = {p: {} for p in periodos}
-    tipos_atividade_geral = {p: {} for p in periodos}
-
     # 🔹 Processar tarefas e atividades em memória
     for periodo, data_limite in periodos.items():
+        periodo_str = str(periodo)  # Certifique-se de que a chave seja string
+
         # Filtrar tarefas e atividades dentro do período
         tarefas_periodo = [t for t in tarefas if t["data_execucao"] >= data_limite.strftime("%Y-%m-%d")]
         atividades_periodo = [a for a in atividades if a["data_execucao_atividade"] >= data_limite.strftime("%Y-%m-%d")]
 
         # 🟢 Contar tarefas concluídas do usuário
-        resultados_usuario[periodo]["Tarefas"] = sum(1 for t in tarefas_periodo if t["empresa"] in cnpjs_usuario and t["status"] == "🟩 Concluída")
+        resultados_usuario[periodo_str]["Tarefas"] = sum(1 for t in tarefas_periodo if t["empresa"] in cnpjs_usuario and t["status"] == "🟩 Concluída")
 
         # 🟡 Calcular a média de tarefas por vendedor
         total_tarefas_concluidas = sum(1 for t in tarefas_periodo if t["status"] == "🟩 Concluída")
-        media_vendedores[periodo]["Tarefas"] = round(total_tarefas_concluidas / total_vendedores, 2)
+        media_vendedores[periodo_str]["Tarefas"] = round(total_tarefas_concluidas / total_vendedores, 2)
 
         # 🟢 Contar atividades registradas do usuário
-        resultados_usuario[periodo]["Atividades"] = sum(1 for a in atividades_periodo if a["empresa"] in cnpjs_usuario)
+        resultados_usuario[periodo_str]["Atividades"] = sum(1 for a in atividades_periodo if a["empresa"] in cnpjs_usuario)
 
         # 🟡 Calcular a média de atividades por vendedor
-        media_vendedores[periodo]["Atividades"] = round(len(atividades_periodo) / total_vendedores, 2)
+        media_vendedores[periodo_str]["Atividades"] = round(len(atividades_periodo) / total_vendedores, 2)
 
         # 📌 Identificar o tipo de atividade mais frequente
         for atividade in atividades_periodo:
             tipo = atividade["tipo_atividade"]
             if atividade["empresa"] in cnpjs_usuario:
-                tipos_atividade_usuario[periodo][tipo] = tipos_atividade_usuario[periodo].get(tipo, 0) + 1
-            tipos_atividade_geral[periodo][tipo] = tipos_atividade_geral[periodo].get(tipo, 0) + 1
+                tipos_atividade_usuario[periodo_str][tipo] = tipos_atividade_usuario[periodo_str].get(tipo, 0) + 1
+            tipos_atividade_geral[periodo_str][tipo] = tipos_atividade_geral[periodo_str].get(tipo, 0) + 1
 
-    with st.expander("📊 **Comparação do meu desempenho vs. Média dos vendedores**", expanded=True):
-        st.write("----")
+    # 🔹 Exibir os resultados no Streamlit quando o botão for pressionado
+    if st.button("🚀 Compilar meus números"):
+        with st.expander("📊 **Comparação do meu desempenho vs. Média dos vendedores**", expanded=True):
+            st.write("----")
 
-        # Criar um selectbox para escolha do período
-        periodo_selecionado = st.selectbox(
-            "📆 Selecione o período para análise:",
-            list(resultados_usuario.keys()),
-            index=1,
-            key=f"select_periodo_geral_{user}"
-        )
-        st.write("----")
+            # Criar um selectbox para escolha do período
+            periodo_selecionado = st.selectbox(
+                "📆 Selecione o período para análise:",
+                list(resultados_usuario.keys()),
+                index=1,
+                key=f"select_periodo_geral_{user}"
+            )
+            st.write("----")
 
-        # Recuperar os valores do período selecionado
-        qtd_tarefas = resultados_usuario[periodo_selecionado]["Tarefas"]
-        media_tarefas = media_vendedores[periodo_selecionado]["Tarefas"]
-        emoji_tarefas = "🟢 Acima da média" if qtd_tarefas > media_tarefas else "🔴 Abaixo da média"
+            # Recuperar os valores do período selecionado
+            qtd_tarefas = resultados_usuario[periodo_selecionado]["Tarefas"]
+            media_tarefas = media_vendedores[periodo_selecionado]["Tarefas"]
+            emoji_tarefas = "🟢 Acima da média" if qtd_tarefas > media_tarefas else "🔴 Abaixo da média"
 
-        qtd_atividades = resultados_usuario[periodo_selecionado]["Atividades"]
-        media_atividades = media_vendedores[periodo_selecionado]["Atividades"]
-        emoji_atividades = "🟢 Acima da média" if qtd_atividades > media_atividades else "🔴 Abaixo da média"
+            qtd_atividades = resultados_usuario[periodo_selecionado]["Atividades"]
+            media_atividades = media_vendedores[periodo_selecionado]["Atividades"]
+            emoji_atividades = "🟢 Acima da média" if qtd_atividades > media_atividades else "🔴 Abaixo da média"
 
-        # Exibir tarefas e atividades
-        st.subheader(f"📆 {periodo_selecionado}")
-        st.write(f"✅ **Suas tarefas concluídas:** {qtd_tarefas} ({emoji_tarefas})")
-        st.write(f"📊 **Média geral de tarefas:** {media_tarefas}")
-        st.write("---")
-        st.write(f"✅ **Suas atividades registradas:** {qtd_atividades} ({emoji_atividades})")
-        st.write(f"📊 **Média geral de atividades:** {media_atividades}")
-        st.write("---")
+            # Exibir tarefas e atividades
+            st.subheader(f"📆 {periodo_selecionado}")
+            st.write(f"✅ **Suas tarefas concluídas:** {qtd_tarefas} ({emoji_tarefas})")
+            st.write(f"📊 **Média geral de tarefas:** {media_tarefas}")
+            st.write("---")
+            st.write(f"✅ **Suas atividades registradas:** {qtd_atividades} ({emoji_atividades})")
+            st.write(f"📊 **Média geral de atividades:** {media_atividades}")
+            st.write("---")
 
-        # 📊 Tipo de atividade mais frequente
-        tipo_usuario = max(tipos_atividade_usuario[periodo_selecionado], key=tipos_atividade_usuario[periodo_selecionado].get, default="Nenhum")
-        tipo_geral = max(tipos_atividade_geral[periodo_selecionado], key=tipos_atividade_geral[periodo_selecionado].get, default="Nenhum")
+            # 📊 Tipo de atividade mais frequente
+            tipo_usuario = max(tipos_atividade_usuario[periodo_selecionado], key=tipos_atividade_usuario[periodo_selecionado].get, default="Nenhum")
+            tipo_geral = max(tipos_atividade_geral[periodo_selecionado], key=tipos_atividade_geral[periodo_selecionado].get, default="Nenhum")
 
-        st.subheader("📊 Tipo de atividade mais frequente")
-        st.write(f"🔹 **Mais registrada por você:** {tipo_usuario}")
-        st.write(f"🔹 **Mais registrada no geral:** {tipo_geral}")
-        st.write("---")
-
-        # 🔹 Criar um gráfico de linhas com base no período selecionado
-        data_inicio = periodos[periodo_selecionado]
-        df_tarefas = pd.DataFrame(
-            [{"Data": datetime.strptime(t["data_execucao"], "%Y-%m-%d").date(), "Tarefas": 1} for t in tarefas if t["empresa"] in cnpjs_usuario and t["status"] == "🟩 Concluída" and t["data_execucao"] >= data_inicio.strftime("%Y-%m-%d")]
-        )
-        
-        if not df_tarefas.empty:
-            df_tarefas = df_tarefas.groupby("Data").sum().reset_index()
-            st.subheader(f"📈 Evolução das Tarefas Concluídas ({periodo_selecionado})")
-            st.line_chart(df_tarefas.set_index("Data"))
+            st.subheader("📊 Tipo de atividade mais frequente")
+            st.write(f"🔹 **Mais registrada por você:** {tipo_usuario}")
+            st.write(f"🔹 **Mais registrada no geral:** {tipo_geral}")
+            st.write("---")
