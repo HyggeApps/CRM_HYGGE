@@ -254,7 +254,7 @@ if st.session_state['authentication_status']:
 
 
     elif selected == 'Produtos':
-        st.header("🧑‍💻 Produtos")
+        st.header("📚 Produtos")
         st.info('Consulte, cadastre e edite os produtos da HYGGE.')
         st.write('----')
         if 'admin' in st.session_state["roles"]: produtos.gerenciamento_produtos()
