@@ -393,6 +393,19 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                     if submit_editar:
                         # Garantir que a data seja salva corretamente no formato `YYYY-MM-DD`
                         data_execucao_edit_str = data_execucao_edit.strftime("%Y-%m-%d")
+                        
+                        empresa_cnpj = str(empresa_cnpj).strip()
+                        tarefa_selecionada = str(tarefa_selecionada).strip()
+
+                        # 🔍 Busca a tarefa com garantia de que os valores são exatos
+                        tarefa_existente = collection_tarefas.find_one(
+                            {"empresa": {"$regex": f"^{empresa_cnpj}$", "$options": "i"},  # Ignora maiúsculas/minúsculas
+                            "titulo": {"$regex": f"^{tarefa_selecionada}$", "$options": "i"}}  # Garante que o título seja exato
+                        )
+
+                        if not tarefa_existente:
+                            st.error("Erro: Tarefa não encontrada no banco de dados. Verifique o título e a empresa.")
+                            return
 
                         # 🚨 **Verificar se o documento realmente existe antes de atualizar**
                         tarefa_existente = collection_tarefas.find_one(
