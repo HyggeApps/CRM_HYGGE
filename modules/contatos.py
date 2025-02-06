@@ -129,3 +129,49 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
             st.warning("Nenhum contato cadastrado para esta empresa.")
 
         
+@st.fragment
+def exibir_todos_contatos_empresa():
+    # Carregar coleções
+    collection_contatos = get_collection("contatos")
+    collection_empresas = get_collection("empresas")
+
+    # Buscar dados
+    contatos = list(collection_contatos.find({}, {"_id": 0}))  # Exclui o _id para facilitar visualização
+    empresas = list(collection_empresas.find({}, {"_id": 0, "nome": 1, "cnpj": 1}))  # Pega apenas nome e CNPJ
+
+    # Converter para DataFrame
+    df_contatos = pd.DataFrame(contatos)
+    df_empresas = pd.DataFrame(empresas)
+
+    # Renomear CNPJ para corresponder
+    df_empresas.rename(columns={"cnpj": "empresa", "nome": "Empresa"}, inplace=True)
+
+    # Mesclar os dados para obter nome da empresa
+    df_contatos = df_contatos.merge(df_empresas, on="empresa", how="left")
+
+    # Renomear colunas e organizar ordem
+    df_contatos = df_contatos.rename(
+        columns={
+            "nome": "Nome",
+            "sobrenome": "Sobrenome",
+            "cargo": "Cargo",
+            "email": "E-mail",
+            "fone": "Telefone"
+        }
+    )
+
+    df_contatos = df_contatos[["Nome", "Sobrenome", "Cargo", "E-mail", "Telefone", "Empresa"]]
+
+    # Streamlit UI
+    st.title("📇 Lista de Contatos")
+
+    # Filtro por empresa
+    empresas_unicas = df_contatos["Empresa"].dropna().unique()
+    empresa_selecionada = st.selectbox("Selecione a empresa:", ["Todas"] + list(empresas_unicas))
+
+    # Filtrar os dados
+    if empresa_selecionada != "Todas":
+        df_contatos = df_contatos[df_contatos["Empresa"] == empresa_selecionada]
+
+    # Exibir DataFrame no Streamlit
+    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
