@@ -295,43 +295,44 @@ def visualizar_tarefas_por_usuario(user, admin):
         [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
-            col1, col2 = st.columns(2)
 
-            with col1:
-                st.subheader(f"🟥 Atrasado - {titulo}")
+            # 📌 Atrasado = Tudo que venceu ANTES de hoje (dia anterior)
+            tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]
 
-                # 📌 Atrasado = Tudo que venceu ANTES de hoje (dia anterior)
-                tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]
+            num_tarefas_atrasadas = len(tarefas_atrasadas)  # Conta quantas tarefas atrasadas existem
+            st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
 
-                if tarefas_atrasadas:
-                    df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
-                    df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                    df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
-                    st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
+            if tarefas_atrasadas:
+                df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
+                df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
+                st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                    # 📌 Botão para editar tarefas atrasadas
-                    if st.button(f"✏️ Editar Tarefas Atrasadas - {titulo}", key=f"editar_atrasadas_{titulo}"):
-                        editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario))
-                else:
-                    st.success(f"Nenhuma tarefa atrasada para {titulo}.")
+                # 📌 Botão para editar tarefas atrasadas
+                if st.button(f"✏️ Editar Tarefas Atrasadas - {titulo}", key=f"editar_atrasadas_{titulo}"):
+                    editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario))
+            else:
+                st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
-            with col2:
-                st.subheader(f"🟨 Em andamento - {titulo}")
 
-                # 📌 Em andamento = Tudo que está "🟨 Em andamento" E tem data ATÉ o limite do período
-                tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento" and t["Data de Execução"] <= data_limite]
+            # 📌 Em andamento = Tudo que está "🟨 Em andamento" E tem data ATÉ o limite do período
+            tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento" and t["Data de Execução"] <= data_limite]
 
-                if tarefas_em_andamento:
-                    df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
-                    df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                    df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
-                    st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+            num_tarefas_andamento = len(tarefas_em_andamento)  # Conta quantas tarefas atrasadas existem
+            
+            st.subheader(f"🟨 Em andamento - {titulo} ({num_tarefas_andamento})")
 
-                    # 📌 Botão para editar tarefas em andamento
-                    if st.button(f"✏️ Editar Tarefas Em Andamento - {titulo}", key=f"editar_em_andamento_{titulo}"):
-                        editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario))
-                else:
-                    st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+            if tarefas_em_andamento:
+                df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
+                df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
+                df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
+                st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
+
+                # 📌 Botão para editar tarefas em andamento
+                if st.button(f"✏️ Editar Tarefas Em Andamento - {titulo}", key=f"editar_em_andamento_{titulo}"):
+                    editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario))
+            else:
+                st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 
 
