@@ -338,133 +338,102 @@ def gerenciamento_tarefas_por_usuario(user, admin):
 
 def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user): 
     """
-    Exibe um pop-up/modal para edição de tarefas específicas da aba e estágio onde foi chamada.
+    Exibe um pop-up/modal para edição de tarefas do tipo especificado (Atrasadas ou Em Andamento).
     """
     collection_tarefas = get_collection("tarefas")
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
-    if not tarefas:
-        st.warning(f"Nenhuma tarefa disponível para edição em {tipo}.")
-        return
-
     with st.popover(f"✏️ Editar tarefas {tipo}"):
-        # Selecionar a tarefa dentro da lista fornecida para edição
+        if not tarefas:
+            st.warning(f"Não há tarefas {tipo.lower()} para editar.")
+            return
+
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
-            options=[t["titulo"] for t in tarefas],  
+            options=[t["Título"] for t in tarefas],  # Usa os dados do DataFrame
             key=f"select_editar_tarefa_{key}"
         )
 
         if tarefa_selecionada:
-            tarefa_dados = next((t for t in tarefas if t["titulo"] == tarefa_selecionada), None)
+            tarefa_dados = next((t for t in tarefas if t["Título"] == tarefa_selecionada), None)
             
-            if tarefa_dados:
-                with st.form(f"form_editar_tarefa_{key}"):
-                    st.subheader(f"✏️ Editar Tarefa - {tarefa_selecionada}")
+            if not tarefa_dados:
+                st.error("Erro ao encontrar a tarefa selecionada.")
+                return
 
-                    col1, col2 = st.columns(2)
+            with st.form(f"form_editar_tarefa_{key}"):
+                st.subheader(f"✏️ Editando: {tarefa_selecionada}")
 
-                    with col1:
-                        titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"], key=f"titulo_edit_{key}")
-                        prazo_edit = st.selectbox(
-                            "Novo Prazo de Execução",
-                            ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
-                            index=3,
-                            key=f"prazo_edit_{key}"
-                        )
-                        data_execucao_edit = st.date_input(
-                            "Data de Execução",
-                            value=pd.to_datetime(tarefa_dados["Data de Execução"]).date(),
-                            key=f"data_execucao_edit_{key}"
-                        ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
+                col1, col2 = st.columns(2)
 
-                    with col2:
-                        status_edit = st.selectbox(
-                            "Status",
-                            ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
-                            index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"]),
-                            key=f"status_edit_{key}"
-                        )
-                        observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"], key=f"observacoes_edit_{key}")
+                with col1:
+                    titulo_edit = st.text_input("Título", value=tarefa_dados["Título"])
+                    prazo_edit = st.selectbox(
+                        "Novo Prazo de Execução",
+                        ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
+                        index=3
+                    )
+                    data_execucao_edit = st.date_input(
+                        "Data de Execução",
+                        value=pd.to_datetime(tarefa_dados["Data de Execução"], errors="coerce").date()
+                    ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
 
-                    submit_editar = st.form_submit_button("💾 Salvar Alterações")
+                with col2:
+                    status_edit = st.selectbox(
+                        "Status",
+                        ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
+                        index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["Status"])
+                    )
+                    observacoes_edit = st.text_area("Observações", value=tarefa_dados["Observações"])
 
-                    if submit_editar:
-                        # Garantir que a data seja salva corretamente no formato `YYYY-MM-DD`
-                        data_execucao_edit_str = data_execucao_edit.strftime("%Y-%m-%d")
-                        
-                        empresa_cnpj = str(empresa_cnpj).strip()
-                        tarefa_selecionada = str(tarefa_selecionada).strip()
+                submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
-                        # 🔍 Busca a tarefa com garantia de que os valores são exatos
-                        tarefa_existente = collection_tarefas.find_one(
-                            {"empresa": {"$regex": f"^{empresa_cnpj}$", "$options": "i"},  # Ignora maiúsculas/minúsculas
-                            "titulo": {"$regex": f"^{tarefa_selecionada}$", "$options": "i"}}  # Garante que o título seja exato
-                        )
+                if submit_editar:
+                    # 🔍 Buscar a tarefa corretamente no banco de dados
+                    tarefa_existente = collection_tarefas.find_one(
+                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["Título"]},
+                        {"_id": 0}
+                    )
 
-                        if not tarefa_existente:
-                            st.error("Erro: Tarefa não encontrada no banco de dados. Verifique o título e a empresa.")
-                            return
+                    if not tarefa_existente:
+                        st.error("Erro: Tarefa não encontrada no banco de dados.")
+                        return
 
-                        # 🚨 **Verificar se o documento realmente existe antes de atualizar**
-                        tarefa_existente = collection_tarefas.find_one(
-                            {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]}
-                        )
+                    # 🚀 Atualizar os dados da tarefa no banco
+                    collection_tarefas.update_one(
+                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["Título"]},
+                        {"$set": {
+                            "titulo": titulo_edit,
+                            "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                            "observacoes": observacoes_edit,
+                            "status": status_edit
+                        }}
+                    )
 
-                        if not tarefa_existente:
-                            st.error("Erro: Tarefa não encontrada no banco de dados.")
-                            return
+                    # 🟩 Se concluída, criar uma atividade no histórico
+                    if status_edit == "🟩 Concluída":
+                        data_execucao_edit = datetime.today().date()
+                        nova_atividade = {
+                            "atividade_id": str(datetime.now().timestamp()),  
+                            "tipo_atividade": "Observação",
+                            "status": "Registrado",
+                            "titulo": f"Tarefa '{titulo_edit}' concluída",
+                            "empresa": empresa_cnpj,
+                            "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
+                            "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                        }
+                        collection_atividades.insert_one(nova_atividade)
 
-                        # Verificar se a última tarefa em andamento está sendo concluída
-                        tarefas_ativas = list(collection_tarefas.find(
-                            {"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}
-                        ))
+                    # 🔄 Atualizar a última atividade da empresa
+                    data_hoje = datetime.now().strftime("%Y-%m-%d")
+                    collection_empresas.update_one(
+                        {"cnpj": empresa_cnpj},
+                        {"$set": {"ultima_atividade": data_hoje}}
+                    )
 
-                        if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
-                            st.error("⚠️ Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'.")
-                        else:
-                            if status_edit == "🟩 Concluída":
-                                data_execucao_edit_str = datetime.today().strftime("%Y-%m-%d")
-
-                                # Criar uma nova atividade informando que a tarefa foi concluída
-                                nova_atividade = {
-                                    "atividade_id": str(datetime.now().timestamp()),  
-                                    "tipo_atividade": "Observação",
-                                    "status": "Registrado",
-                                    "titulo": f"Tarefa '{titulo_edit}' concluída",
-                                    "empresa": empresa_cnpj,
-                                    "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
-                                    "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
-                                    "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
-                                }
-
-                                # Inserir no banco de atividades
-                                collection_atividades.insert_one(nova_atividade)
-
-                            # 🚨 **Forçar atualização mesmo se os valores forem os mesmos**
-                            update_result = collection_tarefas.update_one(
-                                {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
-                                {"$set": {
-                                    "titulo": titulo_edit,
-                                    "data_execucao": data_execucao_edit_str,
-                                    "observacoes": observacoes_edit,
-                                    "status": status_edit
-                                }}
-                            )
-
-                            # 🚨 **Verificação final da atualização**
-                            if update_result.modified_count > 0:
-                                # 🔄 Atualizar a última atividade da empresa
-                                data_hoje = datetime.now().strftime("%Y-%m-%d")  
-                                collection_empresas.update_one(
-                                    {"cnpj": empresa_cnpj},
-                                    {"$set": {"ultima_atividade": data_hoje}}
-                                )
-
-                                st.success("Tarefa atualizada com sucesso! 🔄")
-                                st.rerun()
-                            else:
-                                st.warning("Nenhuma modificação realizada. Verifique se houve alguma alteração nos dados.")
+                    st.success("Tarefa atualizada com sucesso! 🔄")
+                    st.rerun()
 
 
