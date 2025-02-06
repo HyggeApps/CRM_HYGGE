@@ -237,6 +237,15 @@ if st.session_state['authentication_status']:
         if 'admin' in st.session_state["roles"]:  empresas.consultar_empresas(usuario_ativo, admin=True)
         else: empresas.consultar_empresas(usuario_ativo, admin=False)
 
+        
+    elif selected == 'Contatos':
+        st.header("📞 Contatos")
+        st.info('Consulte contatos aqui.')
+        st.warning("⚠️ IMPORTANTE: O cadastro de contatos deve ser feito a partir da tela da 'Empresa'")
+        st.write('----')
+
+
     elif selected == 'Usuários':
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
+
