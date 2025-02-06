@@ -344,7 +344,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo):
     collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
-    with st.popover(f"✏️ Editar Tarefas {tipo}"):
+    with st.popover(f"✏️ Editar tarefas {tipo}"):
         tarefas_opcoes = {t["titulo"]: t for t in tarefas}
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
