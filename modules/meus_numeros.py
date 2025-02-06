@@ -77,7 +77,6 @@ def contar_tarefas_por_usuario(user):
         media_geral = media_vendedores[periodo_selecionado]
         diferenca = qtd - media_geral
         emoji = "🟢 Acima da média" if diferenca > 0 else "🟡 Na média" if diferenca == 0 else "🔴 Abaixo da média"
-        st.write("---")
         # Exibir os resultados com base no período escolhido
         st.subheader(f"📆 {periodo_selecionado}")
         st.write(f"✅ **Suas tarefas concluídas:** {qtd}")
@@ -156,13 +155,14 @@ def contar_atividades_por_usuario(user):
             tipos_atividade_geral[periodo][tipo] = tipos_atividade_geral[periodo].get(tipo, 0) + 1
 
     # 🔹 Exibir os resultados no Streamlit com Selectbox para escolha do período
-    with st.expander("📊 Comparação das minhas atividades registradas vs. Média dos vendedores HYGGE", expanded=True):
-        st.write('---')
+    with st.expander("### 📊 Comparação das minhas atividades registradas vs. Média dos vendedores HYGGE", expanded=True):
+        
         # Criar uma seleção para que o usuário escolha o período desejado
         periodo_selecionado = st.selectbox(
             "📆 Selecione o período para análise:",
             list(resultados_usuario.keys()),
-            index=1  # Define "Última Semana" como padrão
+            index=1,  # Define "Última Semana" como padrão
+            key=f"select_periodo_atividade_{user}"  # Adicionando uma chave única
         )
 
         # Recuperar os valores do período selecionado
@@ -170,7 +170,6 @@ def contar_atividades_por_usuario(user):
         media_geral = media_vendedores[periodo_selecionado]
         diferenca = qtd - media_geral
         emoji = "🟢 Acima da média" if diferenca > 0 else "🟡 Na média" if diferenca == 0 else "🔴 Abaixo da média"
-        st.write("---")
 
         # Exibir os resultados com base no período escolhido
         st.subheader(f"📆 {periodo_selecionado}")
@@ -187,4 +186,3 @@ def contar_atividades_por_usuario(user):
         st.write(f"🔹 **Mais registrada por você:** {tipo_usuario}")
         st.write(f"🔹 **Mais registrada no geral:** {tipo_geral}")
 
-    return resultados_usuario, media_vendedores, tipos_atividade_usuario, tipos_atividade_geral
