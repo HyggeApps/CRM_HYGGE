@@ -301,7 +301,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
 
             # Contagem correta das tarefas atrasadas
             num_tarefas_atrasadas = sum(1 for t in tarefas_periodo if t["status"] == "🟥 Atrasado" and t["Data de Execução"] < hoje)
-
+            st.write(1111)
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
 
             # Filtrar tarefas atrasadas corretamente
