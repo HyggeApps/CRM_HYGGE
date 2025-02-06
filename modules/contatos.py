@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.database import get_collection
-import time
+import re
 
 @st.fragment
 def exibir_contatos_empresa(user, admin, empresa_cnpj):
@@ -170,7 +170,19 @@ def exibir_todos_contatos_empresa():
             df_contatos.apply(lambda row: any(filtro_busca.lower() in str(value).lower() for value in row), axis=1)
         ]
 
+    # Campo de busca único
+    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter")
+
+    # Aplicar filtro no DataFrame
+    if filtro_busca:
+        filtro_normalizado = re.sub(r"\s+", " ", filtro_busca.strip().lower())  # Remove espaços extras e normaliza
+        df_contatos["busca_concat"] = (
+            df_contatos["Nome"].fillna("") + " " + df_contatos["Sobrenome"].fillna("") + " " + df_contatos["Empresa"].fillna("")
+        ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))  # Remove espaços extras e normaliza
+
+        df_contatos = df_contatos[df_contatos["busca_concat"].str.contains(filtro_normalizado, na=False)]
+
     # Exibir DataFrame com data_editor
-    st.data_editor(df_contatos, hide_index=True, use_container_width=True)
+    st.data_editor(df_contatos.drop(columns=["busca_concat"]), hide_index=True, use_container_width=True)
 
 
