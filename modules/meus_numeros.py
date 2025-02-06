@@ -63,7 +63,7 @@ def contar_tarefas_por_usuario(user):
         media_vendedores[periodo] = round(total_tarefas_concluidas / total_vendedores, 2)  # Média por vendedor
 
     # 🔹 Exibir os resultados no Streamlit com Selectbox para escolha do período
-    with st.expander("**## 📊 Comparação das minhas tarefas concluídas vs. Média dos vendedores HYGGE**",expanded=True):
+    with st.expander("**📊 Comparação das minhas tarefas concluídas vs. Média dos vendedores HYGGE**",expanded=True):
         st.write('----')
         # Criar uma seleção para que o usuário escolha o período desejado
         periodo_selecionado = st.selectbox(
