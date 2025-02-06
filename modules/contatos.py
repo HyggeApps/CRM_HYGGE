@@ -161,20 +161,16 @@ def exibir_todos_contatos_empresa():
 
     df_contatos = df_contatos[["Nome", "Sobrenome", "Empresa", "Cargo", "E-mail", "Telefone"]]
 
-    # Filtros
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        filtro_empresa = st.text_input("🔍 Buscar por Empresa:", placeholder="Digite parte do nome e pressione Enter")
-    with col2:
-        filtro_contato = st.text_input("🔍 Buscar por Contato:", placeholder="Digite parte do nome e pressione Enter")
+   # Campo de busca único
+    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter")
 
-    # Aplicar filtros somente se o usuário pressionar Enter
-    if filtro_empresa:
-        df_contatos = df_contatos[df_contatos["Empresa"].str.contains(filtro_empresa, case=False, na=False)]
-
-    if filtro_contato:
-        df_contatos = df_contatos[df_contatos["Nome"].str.contains(filtro_contato, case=False, na=False)]
+    # Aplicar filtro no DataFrame
+    if filtro_busca:
+        df_contatos = df_contatos[
+            df_contatos.apply(lambda row: any(filtro_busca.lower() in str(value).lower() for value in row), axis=1)
+        ]
 
     # Exibir DataFrame com data_editor
     st.data_editor(df_contatos, hide_index=True, use_container_width=True)
+
 
