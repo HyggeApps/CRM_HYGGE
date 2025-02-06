@@ -162,7 +162,7 @@ def exibir_todos_contatos_empresa():
     df_contatos = df_contatos[["Nome", "Sobrenome", "Empresa", "Cargo", "E-mail", "Telefone"]]
 
     # Streamlit UI
-    st.title("📇 Lista de Contatos")
+    st.subheader("📇 Lista de Contatos")
 
     # Filtros
     col1, col2 = st.columns([1, 1])
