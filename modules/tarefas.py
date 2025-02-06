@@ -300,7 +300,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             df_atrasadas = pd.DataFrame([t for t in tarefas_periodo if t['Data de Execução'] < hoje])
             if not df_atrasadas.empty:
                 df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].astype(str)
+                #df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].astype(str)
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
             else:
@@ -312,7 +312,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             df_em_andamento = pd.DataFrame([t for t in tarefas_periodo if t['status'] == '🟨 Em andamento' and t['Data de Execução'] <= data_limite])
             if not df_em_andamento.empty:
                 df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].astype(str)
+                #df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].astype(str)
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
             else:
