@@ -253,6 +253,9 @@ if st.session_state['authentication_status']:
         else: st.warning("Você não tem permissão para alterar templates.")
 
     elif selected == 'Usuários':
+        st.header("🧑‍💻 Usuários")
+        st.info('Consulte, cadastre e edite os usuários da HYGGE.')
+        st.write('----')
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
 
