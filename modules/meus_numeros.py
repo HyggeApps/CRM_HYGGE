@@ -155,8 +155,8 @@ def contar_atividades_por_usuario(user):
             tipos_atividade_geral[periodo][tipo] = tipos_atividade_geral[periodo].get(tipo, 0) + 1
 
     # 🔹 Exibir os resultados no Streamlit com Selectbox para escolha do período
-    with st.expander("### 📊 Comparação das minhas atividades registradas vs. Média dos vendedores HYGGE", expanded=True):
-        
+    with st.expander("**📊 Comparação das minhas atividades registradas vs. Média dos vendedores HYGGE**", expanded=True):
+        st.write('----')
         # Criar uma seleção para que o usuário escolha o período desejado
         periodo_selecionado = st.selectbox(
             "📆 Selecione o período para análise:",
@@ -164,7 +164,7 @@ def contar_atividades_por_usuario(user):
             index=1,  # Define "Última Semana" como padrão
             key=f"select_periodo_atividade_{user}"  # Adicionando uma chave única
         )
-
+        st.write('----')
         # Recuperar os valores do período selecionado
         qtd = resultados_usuario[periodo_selecionado]
         media_geral = media_vendedores[periodo_selecionado]
@@ -185,4 +185,5 @@ def contar_atividades_por_usuario(user):
         st.subheader("📊 Tipo de atividade mais frequente")
         st.write(f"🔹 **Mais registrada por você:** {tipo_usuario}")
         st.write(f"🔹 **Mais registrada no geral:** {tipo_geral}")
+        st.write("---")
 
