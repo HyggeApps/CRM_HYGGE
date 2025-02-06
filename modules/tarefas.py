@@ -350,7 +350,7 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
 
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
-            options=[t["titulo"] for t in tarefas],  # ✅ Agora acessa a chave correta
+            options=[t["titulo"] for t in tarefas],  
             key=f"select_editar_tarefa_{key}"
         )
 
@@ -389,25 +389,18 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
                 submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                 if submit_editar:
-
-                    # Garantir que a data_execucao esteja no mesmo formato do MongoDB
-                    data_execucao_str = tarefa_dados["data_execucao"] if "data_execucao" in tarefa_dados else tarefa_dados["Data de Execução"]
-
-                    if isinstance(data_execucao_str, date):  # Agora a verificação será válida
-                        data_execucao_str = data_execucao_str.strftime("%Y-%m-%d")
-
-                    # Buscar no banco com os campos no formato correto
-                    tarefa_existente = collection_tarefas.find_one(
-                        {"empresa": str(tarefa_dados["empresa"]), "titulo": str(tarefa_dados["titulo"])},
+                    # Buscar todas as tarefas ativas (atrasadas ou em andamento) dessa empresa
+                    tarefas_ativas = list(collection_tarefas.find(
+                        {"empresa": tarefa_dados["empresa"], "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}},
                         {"_id": 0}
-                    )
+                    ))
 
-                    st.write(tarefa_existente)
-                    if not tarefa_existente:
-                        st.error("Erro: Tarefa não encontrada no banco de dados.")
+                    # Se for a única tarefa ativa e o usuário tentar concluir, exibe erro
+                    if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
+                        st.error("⚠️ Erro: Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'. Cadastre uma nova atividade/tarefa antes de concluir todas.")
                         return
 
-                                        # 🚀 Atualizar os dados da tarefa no banco
+                    # 🚀 Atualizar os dados da tarefa no banco
                     collection_tarefas.update_one(
                         {"empresa": tarefa_dados['empresa'], "titulo": tarefa_dados["titulo"]},
                         {"$set": {
@@ -442,7 +435,6 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
 
                     st.success("Tarefa atualizada com sucesso! 🔄")
                     st.rerun()
-
 
 
 
