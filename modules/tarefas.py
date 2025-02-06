@@ -397,6 +397,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                         {"_id": 0}
                     )
 
+                    st.write(tarefa_existente)
                     if not tarefa_existente:
                         st.error("Erro: Tarefa não encontrada no banco de dados.")
                         return
