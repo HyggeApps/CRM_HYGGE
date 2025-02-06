@@ -137,7 +137,7 @@ def exibir_todos_contatos_empresa():
 
     # Buscar dados
     contatos = list(collection_contatos.find({}, {"_id": 0}))  # Exclui o _id para facilitar visualização
-    empresas = list(collection_empresas.find({}, {"_id": 0, "nome": 1, "cnpj": 1}))  # Pega apenas nome e CNPJ
+    empresas = list(collection_empresas.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))  # Pega apenas nome e CNPJ
 
     # Converter para DataFrame
     df_contatos = pd.DataFrame(contatos)
@@ -146,7 +146,7 @@ def exibir_todos_contatos_empresa():
     st.write(df_empresas)
 
     # Renomear CNPJ para corresponder
-    df_empresas.rename(columns={"cnpj": "empresa", "nome": "Empresa"}, inplace=True)
+    df_empresas.rename(columns={"cnpj": "empresa", "razao_social": "Empresa"}, inplace=True)
 
     # Verificar se a coluna "empresa" existe antes do merge
     if "empresa" not in df_contatos.columns:
