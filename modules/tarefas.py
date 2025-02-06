@@ -295,13 +295,18 @@ def gerenciamento_tarefas_por_usuario(user, admin):
         [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
-            st.subheader(f"🟥 Atrasado - {titulo} ({len([t for t in tarefas_periodo if t['Data de Execução'] < hoje])})")
-            
-            df_atrasadas = pd.DataFrame([t for t in tarefas_periodo if t['Data de Execução'] < hoje])
+            # Ajuste no subheader para contar corretamente as tarefas atrasadas
+            num_tarefas_atrasadas = sum(1 for t in tarefas_periodo if pd.to_datetime(t["Data de Execução"], errors="coerce").date() < hoje)
+
+            st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
+
+            # Criar DataFrame com as tarefas realmente atrasadas
+            df_atrasadas = pd.DataFrame([t for t in tarefas_periodo if pd.to_datetime(t["Data de Execução"], errors="coerce").date() < hoje])
+
+            # Se houver tarefas atrasadas, exibir o dataframe
             if not df_atrasadas.empty:
-                df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                #df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].astype(str)
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
+                df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
