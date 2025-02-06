@@ -308,7 +308,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key="editar_tarefa_atrasada")
+                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}")
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
             
@@ -327,7 +327,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                 df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors='coerce').dt.strftime("%d/%m/%Y")
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key="editar_tarefa_andamento")
+                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}")
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
@@ -339,19 +339,19 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
     """
     collection_tarefas = get_collection("tarefas")
     collection_atividades = get_collection("atividades")
-    collection_empresas = get_collection("empresas")  # Adicionado para atualizar a última atividade
-    st.write(1)
-    with st.popover(f"✏️ Editar Tarefa"):
+    collection_empresas = get_collection("empresas")
+
+    with st.popover(f"✏️ Editar Tarefa ({key})"):
         tarefas_opcoes = {t["titulo"]: t for t in tarefas}
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
             options=list(tarefas_opcoes.keys()),
-            key=f"select_editar_tarefa_{key}"  # Adicionado o key dinâmico
+            key=f"select_editar_tarefa_{key}"  # 🔹 Chave única agora inclui `key`
         )
 
         if tarefa_selecionada:
             tarefa_dados = tarefas_opcoes[tarefa_selecionada]
-            with st.form(f"form_editar_tarefa_{key}"):  # Form único para cada key
+            with st.form(f"form_editar_tarefa_{key}"):  # 🔹 Chave única no formulário
                 st.subheader("✏️ Editar Tarefa")
 
                 col1, col2 = st.columns(2)
@@ -378,10 +378,9 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
                     )
                     observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"], key=f"observacoes_edit_{key}")
 
-                submit_editar = st.form_submit_button("💾 Salvar Alterações")
+                submit_editar = st.form_submit_button("💾 Salvar Alterações", key=f"submit_editar_{key}")
 
                 if submit_editar:
-                    # Se for concluir a última tarefa, impedir a ação
                     tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
                     if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
                         st.error("⚠️ Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'.")
