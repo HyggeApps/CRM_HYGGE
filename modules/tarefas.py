@@ -301,6 +301,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             if not df_atrasadas.empty:
                 df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
                 df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].astype(str)
+                df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
@@ -312,6 +313,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             if not df_em_andamento.empty:
                 df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
                 df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].astype(str)
+                df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
