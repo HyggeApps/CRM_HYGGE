@@ -351,7 +351,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
 
         tarefa_selecionada = st.selectbox(
             "Selecione uma tarefa para editar",
-            options=[t["Título"] for t in tarefas],  # Usa os dados do DataFrame
+            options=[t["titulo"] for t in tarefas],  # ✅ Agora acessa a chave correta
             key=f"select_editar_tarefa_{key}"
         )
 
