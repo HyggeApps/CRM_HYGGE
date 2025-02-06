@@ -398,7 +398,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
 
                     # Buscar no banco com os campos no formato correto
                     tarefa_existente = collection_tarefas.find_one(
-                        {"empresa": str(empresa_cnpj), "titulo": str(tarefa_dados["titulo"])},
+                        {"empresa": str(tarefa_dados["empresa"]), "titulo": str(tarefa_dados["titulo"])},
                         {"_id": 0}
                     )
 
