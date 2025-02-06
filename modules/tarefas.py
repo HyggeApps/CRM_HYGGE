@@ -295,22 +295,26 @@ def gerenciamento_tarefas_por_usuario(user, admin):
         [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
-            # Ajuste no subheader para contar corretamente as tarefas atrasadas
-            num_tarefas_atrasadas = sum(1 for t in tarefas_periodo if pd.to_datetime(t["Data de Execução"], errors="coerce").date() < hoje)
+            # Garantir que todas as datas estejam no formato correto antes da filtragem
+            for t in tarefas_periodo:
+                t["Data de Execução"] = pd.to_datetime(t["Data de Execução"], errors="coerce").date()
+
+            # Contagem correta das tarefas atrasadas
+            num_tarefas_atrasadas = sum(1 for t in tarefas_periodo if t["Data de Execução"] < hoje)
 
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
 
-            # Criar DataFrame com as tarefas realmente atrasadas
-            df_atrasadas = pd.DataFrame([t for t in tarefas_periodo if pd.to_datetime(t["Data de Execução"], errors="coerce").date() < hoje])
+            # Filtrar tarefas atrasadas corretamente
+            df_atrasadas = pd.DataFrame([t for t in tarefas_periodo if t["Data de Execução"] < hoje])
 
-            # Se houver tarefas atrasadas, exibir o dataframe
             if not df_atrasadas.empty:
-                df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
+                df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
                 df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
+                df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
-
+                
             st.write('---')
             st.subheader(f"🟨 Em andamento - {titulo} ({len([t for t in tarefas_periodo if t['status'] == '🟨 Em andamento' and t['Data de Execução'] <= data_limite])})")
             
