@@ -312,7 +312,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}")
+                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}",user=user)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -331,7 +331,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}")
+                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}",user=user)
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
