@@ -311,7 +311,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario), key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}",user=user)
+                editar_tarefa_modal(tarefas_atrasadas, key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}",user=user)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -330,12 +330,12 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario), key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}",user=user)
+                editar_tarefa_modal(tarefas_em_andamento, key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}",user=user)
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 
-def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user): 
+def editar_tarefa_modal(tarefas, key, tipo, user): 
     """
     Exibe um pop-up/modal para edição de tarefas do tipo especificado (Atrasadas ou Em Andamento).
     """
@@ -406,6 +406,42 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                     if not tarefa_existente:
                         st.error("Erro: Tarefa não encontrada no banco de dados.")
                         return
+
+                                        # 🚀 Atualizar os dados da tarefa no banco
+                    collection_tarefas.update_one(
+                        {"empresa": tarefa_dados['empresa'], "titulo": tarefa_dados["titulo"]},
+                        {"$set": {
+                            "titulo": titulo_edit,
+                            "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
+                            "observacoes": observacoes_edit,
+                            "status": status_edit
+                        }}
+                    )
+
+                    # 🟩 Se concluída, criar uma atividade no histórico
+                    if status_edit == "🟩 Concluída":
+                        data_execucao_edit = datetime.today().date()
+                        nova_atividade = {
+                            "atividade_id": str(datetime.now().timestamp()),  
+                            "tipo_atividade": "Observação",
+                            "status": "Registrado",
+                            "titulo": f"Tarefa '{titulo_edit}' concluída",
+                            "empresa": tarefa_dados['empresa'],
+                            "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
+                            "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                        }
+                        collection_atividades.insert_one(nova_atividade)
+
+                    # 🔄 Atualizar a última atividade da empresa
+                    data_hoje = datetime.now().strftime("%Y-%m-%d")
+                    collection_empresas.update_one(
+                        {"cnpj": tarefa_dados['empresa']},
+                        {"$set": {"ultima_atividade": data_hoje}}
+                    )
+
+                    st.success("Tarefa atualizada com sucesso! 🔄")
+                    st.rerun()
 
 
 
