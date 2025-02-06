@@ -10,7 +10,7 @@ from modules import (
     contatos,
     cadastro_produtos,
     cadastro_oportunidades,
-    cadastro_templates,
+    templates,
     cadastro_orcamentos,
     cadastro_leads
 )
@@ -245,6 +245,9 @@ if st.session_state['authentication_status']:
         st.write('----')
         contatos.exibir_todos_contatos_empresa()
 
+    elif selected == 'Templates':
+        if 'admin' in st.session_state["roles"]: templates.gerenciamento_templates()
+        else: st.warning("Você não tem permissão para alterar templates.")
 
     elif selected == 'Usuários':
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
