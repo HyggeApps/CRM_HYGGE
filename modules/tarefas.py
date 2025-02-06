@@ -247,6 +247,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # Construir query para buscar tarefas
     query = {}
+    cnpjs_usuario = set()  # Definir a variável antes do uso
     if usuario_selecionado != "Todos":
         cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})}
         query["empresa"] = {"$in": list(cnpjs_usuario)}
@@ -256,8 +257,6 @@ def visualizar_tarefas_por_usuario(user, admin):
     amanha = hoje + timedelta(days=1)
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
-    ano_atual = hoje.year
-    mes_atual = hoje.month
 
     # **Filtragem no banco** para acelerar carregamento
     tarefas = list(collection_tarefas.find(
@@ -293,7 +292,6 @@ def visualizar_tarefas_por_usuario(user, admin):
     tarefas_semana = filtrar_tarefas(hoje, fim_semana)
     tarefas_mes = filtrar_tarefas(hoje, fim_mes)
 
-    st.write(1)
     # 📌 Criar abas para Hoje, Amanhã, Semana, Mês
     for aba, tarefas_periodo, titulo, data_limite in zip(
         abas[0:],
@@ -318,7 +316,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
                     # 📌 Botão para editar tarefas atrasadas
                     if st.button(f"✏️ Editar Tarefas Atrasadas - {titulo}", key=f"editar_atrasadas_{titulo}"):
-                        editar_tarefa_modal(tarefas_atrasadas, cnpjs_usuario)
+                        editar_tarefa_modal(tarefas_atrasadas, list(cnpjs_usuario))
                 else:
                     st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -336,10 +334,9 @@ def visualizar_tarefas_por_usuario(user, admin):
 
                     # 📌 Botão para editar tarefas em andamento
                     if st.button(f"✏️ Editar Tarefas Em Andamento - {titulo}", key=f"editar_em_andamento_{titulo}"):
-                        editar_tarefa_modal(tarefas_em_andamento, cnpjs_usuario)
+                        editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario))
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
-
 
 
 def editar_tarefa_modal(tarefas, empresa_cnpj):
