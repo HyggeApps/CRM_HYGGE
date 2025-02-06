@@ -80,7 +80,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 with col2:
                     data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
                     hoje = datetime.today().date()
-                    status = st.selectbox("Status", ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"], index=1)
+                    status = st.selectbox("Status", ["🟨 Em andamento", "🟩 Concluída"], index=1)
                 observacoes = st.text_area("Observações da Tarefa")
 
                 submit_criar = st.form_submit_button("✅ Criar Tarefa")
@@ -165,8 +165,8 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                             with col2:
                                 status_edit = st.selectbox(
                                     "Status",
-                                    ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
-                                    index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                                    ["🟨 Em andamento", "🟩 Concluída"],
+                                    index=["🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                                 )
                                 observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
@@ -381,8 +381,8 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
                 with col2:
                     status_edit = st.selectbox(
                         "Status",
-                        ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
-                        index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                        ["🟨 Em andamento", "🟩 Concluída"],
+                        index=["🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                     )
                     observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
