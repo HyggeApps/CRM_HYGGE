@@ -166,7 +166,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                 status_edit = st.selectbox(
                                     "Status",
                                     ["🟨 Em andamento", "🟩 Concluída"],
-                                    index=["🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                                    index=["🟥 Atrasado","🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                                 )
                                 observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
@@ -382,7 +382,7 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
                     status_edit = st.selectbox(
                         "Status",
                         ["🟨 Em andamento", "🟩 Concluída"],
-                        index=["🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                        index=["🟥 Atrasado","🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                     )
                     observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
