@@ -6,8 +6,6 @@ import time
 @st.fragment
 def gerenciamento_usuarios():
     collection = get_collection("usuarios")
-    st.info("Cadastre, remova, altere ou liste os usuários a partir das opções abaixo.")
-
     # Abas para gerenciar usuários
     tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Usuário", "Remover Usuário", "Alterar Usuário", "Exibir Usuários"])
 
