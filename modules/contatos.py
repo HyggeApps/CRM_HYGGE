@@ -161,16 +161,7 @@ def exibir_todos_contatos_empresa():
 
     df_contatos = df_contatos[["Nome", "Sobrenome", "Empresa", "Cargo", "E-mail", "Telefone"]]
 
-   # Campo de busca único
-    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter")
-
-    # Aplicar filtro no DataFrame
-    if filtro_busca:
-        df_contatos = df_contatos[
-            df_contatos.apply(lambda row: any(filtro_busca.lower() in str(value).lower() for value in row), axis=1)
-        ]
-
-    # Campo de busca único com key para evitar erro de ID duplicado
+    # Campo de busca único
     filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter", key="busca_unica")
 
     # Aplicar filtro no DataFrame
@@ -178,9 +169,13 @@ def exibir_todos_contatos_empresa():
         filtro_normalizado = re.sub(r"\s+", " ", filtro_busca.strip().lower())  # Remove espaços extras e normaliza
         df_contatos["busca_concat"] = (
             df_contatos["Nome"].fillna("") + " " + df_contatos["Sobrenome"].fillna("") + " " + df_contatos["Empresa"].fillna("")
-        ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))  # Remove espaços extras e normaliza
+        ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))  # Normaliza
 
         df_contatos = df_contatos[df_contatos["busca_concat"].str.contains(filtro_normalizado, na=False)]
 
+    # Garantir que a coluna "busca_concat" existe antes de tentar removê-la
+    if "busca_concat" in df_contatos.columns:
+        df_contatos = df_contatos.drop(columns=["busca_concat"])
+
     # Exibir DataFrame com data_editor
-    st.data_editor(df_contatos.drop(columns=["busca_concat"]), hide_index=True, use_container_width=True)
+    st.data_editor(df_contatos, hide_index=True, use_container_width=True)
