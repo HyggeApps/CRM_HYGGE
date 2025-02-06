@@ -2,7 +2,6 @@ import streamlit as st
 from utils.database import get_collection
 
 def gerenciamento_templates():
-    st.title("Gerenciamento de Templates")
     collection = get_collection("templates")
 
     # Abas para gerenciar templates
