@@ -378,7 +378,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
                     )
                     observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"], key=f"observacoes_edit_{key}")
 
-                submit_editar = st.form_submit_button("💾 Salvar Alterações", key=f"submit_editar_{key}")
+                submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
                 if submit_editar:
                     tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
