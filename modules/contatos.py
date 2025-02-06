@@ -151,41 +151,6 @@ def exibir_todos_contatos_empresa():
         st.error("A coluna 'empresa' não existe em df_contatos!")
         return
 
-    # Mesclar os dados para obter nome da empresa
-    df_contatos = df_contatos.merge(df_empresas, on="empresa", how="left")
 
-    # Verificar se a coluna "Empresa" foi criada após o merge
-    if "Empresa" not in df_contatos.columns:
-        st.error("A coluna 'Empresa' não foi gerada após o merge!")
-        return
-
-    # Renomear colunas e organizar ordem
-    df_contatos = df_contatos.rename(
-        columns={
-            "nome": "Nome",
-            "sobrenome": "Sobrenome",
-            "cargo": "Cargo",
-            "email": "E-mail",
-            "fone": "Telefone"
-        }
-    )
-
-    # Garantir que todas as colunas existem antes de selecionar
-    colunas_necessarias = ["Nome", "Sobrenome", "Cargo", "E-mail", "Telefone", "Empresa"]
-    colunas_existentes = [col for col in colunas_necessarias if col in df_contatos.columns]
-
-    df_contatos = df_contatos[colunas_existentes]  # Evita erro se alguma coluna não existir
-
-    # Streamlit UI
-    st.title("📇 Lista de Contatos")
-
-    # Filtro por empresa
-    empresas_unicas = df_contatos["Empresa"].dropna().unique() if "Empresa" in df_contatos.columns else []
-    empresa_selecionada = st.selectbox("Selecione a empresa:", ["Todas"] + list(empresas_unicas))
-
-    # Filtrar os dados
-    if empresa_selecionada != "Todas" and "Empresa" in df_contatos.columns:
-        df_contatos = df_contatos[df_contatos["Empresa"] == empresa_selecionada]
-
-    # Exibir DataFrame no Streamlit
-    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+    st.write(df_contatos)
+    st.write(df_empresas)
