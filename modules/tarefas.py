@@ -10,6 +10,7 @@ def calcular_data_execucao(opcao):
     hoje = datetime.today().date()
     
     opcoes_prazo = {
+        "Hoje": hoje,
         "1 dia útil": hoje + timedelta(days=1),
         "2 dias úteis": hoje + timedelta(days=2),
         "3 dias úteis": hoje + timedelta(days=3),
@@ -75,7 +76,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
+                    prazo = st.selectbox("Prazo", ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
 
                 with col2:
                     data_execucao = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
@@ -359,7 +360,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
                     titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"], key=f"titulo_edit_{key}")
                     prazo_edit = st.selectbox(
                         "Novo Prazo de Execução",
-                        ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
+                        ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
                         index=3,
                         key=f"prazo_edit_{key}"
                     )
