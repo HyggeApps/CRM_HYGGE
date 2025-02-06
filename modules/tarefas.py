@@ -5,14 +5,23 @@ import pandas as pd
 
 
 def calcular_data_execucao(opcao):
-    """Calcula a data de execução da tarefa com base na opção selecionada"""
+    """Calcula a data de execução da tarefa com base na opção selecionada, considerando apenas dias úteis."""
     hoje = datetime.today().date()
     
+    def adicionar_dias_uteis(dias):
+        """Adiciona um número de dias úteis à data de hoje, ignorando finais de semana."""
+        data = hoje
+        while dias > 0:
+            data += timedelta(days=1)
+            if data.weekday() < 5:  # Apenas segunda a sexta-feira (0=Segunda, ..., 4=Sexta)
+                dias -= 1
+        return data
+
     opcoes_prazo = {
         "Hoje": hoje,
-        "1 dia útil": hoje + timedelta(days=1),
-        "2 dias úteis": hoje + timedelta(days=2),
-        "3 dias úteis": hoje + timedelta(days=3),
+        "1 dia útil": adicionar_dias_uteis(1),  # Agora considera apenas dias úteis
+        "2 dias úteis": adicionar_dias_uteis(2),
+        "3 dias úteis": adicionar_dias_uteis(3),
         "1 semana": hoje + timedelta(weeks=1),
         "2 semanas": hoje + timedelta(weeks=2),
         "1 mês": hoje + timedelta(days=30),

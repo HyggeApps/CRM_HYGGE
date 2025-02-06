@@ -1,22 +1,27 @@
 import random
+from datetime import datetime, timedelta
 from utils.database import get_collection
 
-# Conectar à coleção de empresas
-collection_empresas = get_collection("empresas")
+# Conectar à coleção de tarefas
+collection_tarefas = get_collection("tarefas")
 
-# Opções disponíveis
-produtos_opcoes = ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"]
+# Filtrar tarefas atrasadas
+tarefas_atrasadas = list(collection_tarefas.find({"status": "🟥 Atrasado"}, {"_id": 1, "data_execucao": 1}))
 
-# Buscar todas as empresas
-empresas = list(collection_empresas.find({}, {"_id": 1}))
+# Gerar uma nova data aleatória em 2024
+def gerar_data_aleatoria_2024():
+    data_inicio = datetime(2024, 1, 1)
+    data_fim = datetime(2024, 12, 31)
+    diferenca = (data_fim - data_inicio).days
+    return (data_inicio + timedelta(days=random.randint(0, diferenca))).strftime("%Y-%m-%d")
 
-# Atualizar cada empresa individualmente com 1 ou 2 produtos aleatórios
-for empresa in empresas:
-    novos_produtos = random.sample(produtos_opcoes, k=random.randint(1, 2))  # Seleciona 1 ou 2 opções aleatórias
+# Atualizar cada tarefa atrasada
+for tarefa in tarefas_atrasadas:
+    nova_data_execucao = gerar_data_aleatoria_2024()
     
-    collection_empresas.update_one(
-        {"_id": empresa["_id"]},
-        {"$set": {"produto_interesse": novos_produtos}}
+    collection_tarefas.update_one(
+        {"_id": tarefa["_id"]},
+        {"$set": {"data_execucao": nova_data_execucao}}
     )
 
-print("✅ Todas as empresas foram atualizadas com 1 ou 2 opções aleatórias de 'produto_interesse'.")
+print(f"✅ {len(tarefas_atrasadas)} tarefas atrasadas foram atualizadas para datas aleatórias de 2024.")
