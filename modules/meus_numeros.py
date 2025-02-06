@@ -37,22 +37,6 @@ def contar_atividades_tarefas(user):
         # Armazenar resultados
         resultados[periodo]["Atividades"] = atividades
         resultados[periodo]["Tarefas"] = tarefas
-
+    
+    st.write(resultados)
     return resultados
-
-# 🔹 Streamlit Interface
-st.title("📊 Meus Números de Atividades e Tarefas")
-
-user = st.session_state.get("user_email")  # Obtém o usuário logado
-
-if not user:
-    st.error("Erro: Usuário não identificado.")
-else:
-    resultados = contar_atividades_tarefas(user)
-
-    # 🔹 Exibir os dados
-    for periodo, valores in resultados.items():
-        st.subheader(f"📆 {periodo}")
-        st.write(f"✅ **Atividades concluídas:** {valores['Atividades']}")
-        st.write(f"📌 **Tarefas concluídas:** {valores['Tarefas']}")
-        st.write("---")
