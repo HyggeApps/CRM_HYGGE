@@ -318,7 +318,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             df_em_andamento = pd.DataFrame([t for t in tarefas_periodo if t['status'] == '🟨 Em andamento' and t['Data de Execução'] <= data_limite])
             if not df_em_andamento.empty:
                 df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                #df_em_andamento["Data de Execução"] = df_em_andamento["Data de Execução"].astype(str)
+                df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
             else:
