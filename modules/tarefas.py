@@ -155,7 +155,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                 titulo_edit = st.text_input("Título", value=tarefa_dados["titulo"])
                                 prazo_edit = st.selectbox(
                                     "Novo Prazo de Execução",
-                                    ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
+                                    ["Hoje", "1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"],
                                     index=3
                                 )
                                 data_execucao_edit = st.date_input(
