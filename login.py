@@ -2,15 +2,16 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 import streamlit as st
+from CRM_HYGGE.modules import produtos
 from modules import (
     usuarios,
     empresas,
     tarefas,
     meus_numeros,
     contatos,
-    cadastro_produtos,
     cadastro_oportunidades,
     templates,
+    produtos,
     cadastro_orcamentos,
     cadastro_leads
 )
@@ -251,6 +252,14 @@ if st.session_state['authentication_status']:
         st.write('----')
         if 'admin' in st.session_state["roles"]: templates.gerenciamento_templates()
         else: st.warning("Você não tem permissão para alterar templates.")
+
+
+    elif selected == 'Produtos':
+        st.header("🧑‍💻 Produtos")
+        st.info('Consulte, cadastre e edite os produtos da HYGGE.')
+        st.write('----')
+        if 'admin' in st.session_state["roles"]: produtos.gerenciamento_produtos()
+        else: st.warning("Você não tem permissão para alterar usuários.")
 
     elif selected == 'Usuários':
         st.header("🧑‍💻 Usuários")

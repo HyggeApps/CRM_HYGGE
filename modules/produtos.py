@@ -2,7 +2,7 @@ import streamlit as st
 from utils.database import get_collection
 
 def gerenciamento_produtos():
-    st.title("Gerenciamento de Produtos")
+
     collection = get_collection("produtos")
 
     # Abas para gerenciar produtos
@@ -10,7 +10,7 @@ def gerenciamento_produtos():
 
     # Aba: Cadastrar Produto
     with tab1:
-        st.header("Cadastrar Produto")
+        st.subheader("Cadastrar Produto")
         with st.form(key="form_cadastro_produto"):
             nome = st.text_input("Nome do Produto", key="input_nome")
             preco = st.number_input("Preço", min_value=0.0, step=0.01, key="input_preco")
@@ -44,7 +44,7 @@ def gerenciamento_produtos():
 
     # Aba: Remover Produto
     with tab2:
-        st.header("Remover Produto")
+        st.subheader("Remover Produto")
         with st.form(key="form_remover_produto"):
             remove_nome_or_id = st.text_input("Nome ou Produto_ID do Produto a Remover", key="input_remove_nome_or_id")
             remove_submit = st.form_submit_button("Remover Produto")
@@ -62,15 +62,14 @@ def gerenciamento_produtos():
 
     # Aba: Exibir Produtos
     with tab3:
-        st.header("Produtos Cadastrados")
-        if st.button("Carregar Produtos", key="botao_carregar_produtos"):
-            produtos = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
-            if produtos:
-                st.write("Lista de Produtos:")
-                for produto in produtos:
-                    st.write(
-                        f"Nome: {produto['nome']}, Preço: R${produto['preco']:.2f}, Categoria: {produto['categoria']}, "
-                        f"Descrição: {produto['descricao']}, Base de Desconto: {produto['base_desconto']}%, Status: {produto['status']}"
-                    )
-            else:
-                st.write("Nenhum produto cadastrado ainda.")
+        st.subheader("Produtos Cadastrados")
+        produtos = list(collection.find({}, {"_id": 0}))  # Excluir o campo "_id" ao exibir
+        if produtos:
+            st.write("Lista de Produtos:")
+            for produto in produtos:
+                st.write(
+                    f"Nome: {produto['nome']}, Preço: R${produto['preco']:.2f}, Categoria: {produto['categoria']}, "
+                    f"Descrição: {produto['descricao']}, Base de Desconto: {produto['base_desconto']}%, Status: {produto['status']}"
+                )
+        else:
+            st.write("Nenhum produto cadastrado ainda.")
