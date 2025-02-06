@@ -385,7 +385,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                         ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
                         index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                     )
-                    observacoes_edit = st.text_area("Observações", value=tarefa_dados["Observações"])
+                    observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
                 submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
