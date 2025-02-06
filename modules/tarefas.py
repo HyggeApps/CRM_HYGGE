@@ -238,19 +238,12 @@ def visualizar_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
 
-    # Para admin, permitir selecionar qualquer usuário. Para vendedor, apenas suas tarefas
-    if admin:
-        usuarios = list(collection_empresas.distinct("usuario"))
-        usuario_selecionado = st.selectbox("Filtrar por usuário", ["Todos"] + usuarios, index=0)
-    else:
-        usuario_selecionado = user  # Vendedor só vê suas próprias tarefas
-
-    # Construir query para buscar tarefas
-    query = {}
-    cnpjs_usuario = set()  # Definir a variável antes do uso
-    if usuario_selecionado != "Todos":
-        cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": usuario_selecionado}, {"cnpj": 1})}
-        query["empresa"] = {"$in": list(cnpjs_usuario)}
+    # 🔹 Filtra diretamente as tarefas do usuário logado
+    cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": user}, {"cnpj": 1})}
+    
+    if not cnpjs_usuario:
+        st.warning("Nenhuma empresa atribuída a você.")
+        return
 
     # 📅 Criar filtros de período
     hoje = datetime.today().date()
@@ -258,9 +251,9 @@ def visualizar_tarefas_por_usuario(user, admin):
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
 
-    # **Filtragem no banco** para acelerar carregamento
+    # 🔹 Filtragem no banco para otimizar carregamento
     tarefas = list(collection_tarefas.find(
-        query, 
+        {"empresa": {"$in": list(cnpjs_usuario)}},  # Filtra apenas as empresas do usuário
         {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
     ))
 
@@ -268,15 +261,17 @@ def visualizar_tarefas_por_usuario(user, admin):
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Criar um dicionário com Nome da Empresa baseado no CNPJ
-    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find({}, {"cnpj": 1, "razao_social": 1})}
+    # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
+    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find(
+        {"cnpj": {"$in": list(cnpjs_usuario)}}, {"cnpj": 1, "razao_social": 1}
+    )}
 
-    # Adicionar Nome da Empresa e converter datas
+    # 🔹 Adicionar Nome da Empresa e converter datas
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
         tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
 
-    # **Criar filtros rápidos por abas**
+    # 📌 Criar abas para filtros rápidos
     abas = st.tabs([
         f"Hoje ({hoje.strftime('%d/%m')})",
         f"Amanhã ({amanha.strftime('%d/%m')})",
@@ -294,7 +289,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # 📌 Criar abas para Hoje, Amanhã, Semana, Mês
     for aba, tarefas_periodo, titulo, data_limite in zip(
-        abas[0:],
+        abas,
         [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
         ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
         [hoje, amanha, fim_semana, fim_mes]
@@ -337,6 +332,7 @@ def visualizar_tarefas_por_usuario(user, admin):
                         editar_tarefa_modal(tarefas_em_andamento, list(cnpjs_usuario))
                 else:
                     st.success(f"Nenhuma tarefa em andamento para {titulo}.")
+
 
 
 def editar_tarefa_modal(tarefas, empresa_cnpj):
