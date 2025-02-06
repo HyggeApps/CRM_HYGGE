@@ -128,10 +128,8 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
         else:
             st.warning("Nenhum contato cadastrado para esta empresa.")
 
-        
 @st.fragment
 def exibir_todos_contatos_empresa():
-
     # Carregar coleções
     collection_contatos = get_collection("contatos")
     collection_empresas = get_collection("empresas")
@@ -155,7 +153,6 @@ def exibir_todos_contatos_empresa():
         columns={
             "nome": "Nome",
             "sobrenome": "Sobrenome",
-            "razao_social": "Empresa",
             "cargo": "Cargo",
             "email": "E-mail",
             "fone": "Telefone"
@@ -167,13 +164,20 @@ def exibir_todos_contatos_empresa():
     # Streamlit UI
     st.title("📇 Lista de Contatos")
 
-    # Filtro por empresa
-    empresas_unicas = df_contatos["Empresa"].dropna().unique()
-    empresa_selecionada = st.selectbox("Selecione a empresa:", ["Todas"] + list(empresas_unicas))
+    # Filtros
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        filtro_empresa = st.text_input("🔍 Buscar por Empresa:", placeholder="Digite parte do nome e pressione Enter")
+    with col2:
+        filtro_contato = st.text_input("🔍 Buscar por Contato:", placeholder="Digite parte do nome e pressione Enter")
 
-    # Filtrar os dados
-    if empresa_selecionada != "Todas":
-        df_contatos = df_contatos[df_contatos["Empresa"] == empresa_selecionada]
+    # Aplicar filtros somente se o usuário pressionar Enter
+    if filtro_empresa:
+        df_contatos = df_contatos[df_contatos["Empresa"].str.contains(filtro_empresa, case=False, na=False)]
+
+    if filtro_contato:
+        df_contatos = df_contatos[df_contatos["Nome"].str.contains(filtro_contato, case=False, na=False)]
 
     # Exibir DataFrame no Streamlit
     st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+
