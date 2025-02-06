@@ -400,40 +400,6 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                         st.error("Erro: Tarefa não encontrada no banco de dados.")
                         return
 
-                    # 🚀 Atualizar os dados da tarefa no banco
-                    collection_tarefas.update_one(
-                        {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
-                        {"$set": {
-                            "titulo": titulo_edit,
-                            "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
-                            "observacoes": observacoes_edit,
-                            "status": status_edit
-                        }}
-                    )
 
-                    # 🟩 Se concluída, criar uma atividade no histórico
-                    if status_edit == "🟩 Concluída":
-                        data_execucao_edit = datetime.today().date()
-                        nova_atividade = {
-                            "atividade_id": str(datetime.now().timestamp()),  
-                            "tipo_atividade": "Observação",
-                            "status": "Registrado",
-                            "titulo": f"Tarefa '{titulo_edit}' concluída",
-                            "empresa": empresa_cnpj,
-                            "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
-                            "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
-                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
-                        }
-                        collection_atividades.insert_one(nova_atividade)
-
-                    # 🔄 Atualizar a última atividade da empresa
-                    data_hoje = datetime.now().strftime("%Y-%m-%d")
-                    collection_empresas.update_one(
-                        {"cnpj": empresa_cnpj},
-                        {"$set": {"ultima_atividade": data_hoje}}
-                    )
-
-                    st.success("Tarefa atualizada com sucesso! 🔄")
-                    st.rerun()
 
 
