@@ -143,6 +143,8 @@ def exibir_todos_contatos_empresa():
     df_contatos = pd.DataFrame(contatos)
     df_empresas = pd.DataFrame(empresas)
 
+    st.write(df_empresas)
+
     # Renomear CNPJ para corresponder
     df_empresas.rename(columns={"cnpj": "empresa", "nome": "Empresa"}, inplace=True)
 
