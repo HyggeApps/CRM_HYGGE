@@ -175,6 +175,6 @@ def exibir_todos_contatos_empresa():
     if filtro_contato:
         df_contatos = df_contatos[df_contatos["Nome"].str.contains(filtro_contato, case=False, na=False)]
 
-    # Exibir DataFrame no Streamlit
-    st.dataframe(df_contatos, hide_index=True, use_container_width=True)
+    # Exibir DataFrame com data_editor
+    st.data_editor(df_contatos, hide_index=True, use_container_width=True)
 
