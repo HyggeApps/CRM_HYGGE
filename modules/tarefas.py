@@ -241,7 +241,7 @@ def visualizar_tarefas_por_usuario(user, admin):
 
     # 🔹 Filtra diretamente as tarefas do usuário logado
     cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": user}, {"cnpj": 1})}
-    
+
     if not cnpjs_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
         return
@@ -252,13 +252,20 @@ def visualizar_tarefas_por_usuario(user, admin):
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
 
+    # 🔹 Atualiza automaticamente o status das tarefas atrasadas ANTES de buscar os dados
+    collection_tarefas.update_many(
+        {"empresa": {"$in": list(cnpjs_usuario)}, "data_execucao": {"$lt": hoje.strftime("%Y-%m-%d")}, "status": {"$ne": "🟩 Concluída"}},
+        {"$set": {"status": "🟥 Atrasado"}}
+    )
+
+    # 🔹 Carrega as tarefas atualizadas do banco
     def carregar_tarefas():
         return list(collection_tarefas.find(
-            {"empresa": {"$in": list(cnpjs_usuario)}},  # Filtra apenas as empresas do usuário
+            {"empresa": {"$in": list(cnpjs_usuario)}},  
             {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
         ))
 
-    tarefas = carregar_tarefas()  # 🔹 Agora as tarefas são sempre recarregadas antes da exibição
+    tarefas = carregar_tarefas()
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
@@ -298,11 +305,9 @@ def visualizar_tarefas_por_usuario(user, admin):
         [hoje, amanha, fim_semana, fim_mes]
     ):
         with aba:
-
             # 📌 Atrasado = Tudo que venceu ANTES de hoje (dia anterior)
             tarefas_atrasadas = [t for t in tarefas if t["Data de Execução"] < hoje]
-
-            num_tarefas_atrasadas = len(tarefas_atrasadas)  # Conta quantas tarefas atrasadas existem
+            num_tarefas_atrasadas = len(tarefas_atrasadas)  
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
 
             if tarefas_atrasadas:
@@ -315,13 +320,11 @@ def visualizar_tarefas_por_usuario(user, admin):
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
             
-
             st.write('---')
+
             # 📌 Em andamento = Tudo que está "🟨 Em andamento" E tem data ATÉ o limite do período
             tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento" and t["Data de Execução"] <= data_limite]
-
-            num_tarefas_andamento = len(tarefas_em_andamento)  # Conta quantas tarefas atrasadas existem
-            
+            num_tarefas_andamento = len(tarefas_em_andamento)  
             st.subheader(f"🟨 Em andamento - {titulo} ({num_tarefas_andamento})")
 
             if tarefas_em_andamento:
