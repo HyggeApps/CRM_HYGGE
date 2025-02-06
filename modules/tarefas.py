@@ -383,7 +383,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key, tipo, user):
                     status_edit = st.selectbox(
                         "Status",
                         ["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"],
-                        index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["Status"])
+                        index=["🟥 Atrasado", "🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
                     )
                     observacoes_edit = st.text_area("Observações", value=tarefa_dados["Observações"])
 
