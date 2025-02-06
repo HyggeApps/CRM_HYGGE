@@ -252,11 +252,13 @@ def visualizar_tarefas_por_usuario(user, admin):
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
 
-    # 🔹 Filtragem no banco para otimizar carregamento
-    tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(cnpjs_usuario)}},  # Filtra apenas as empresas do usuário
-        {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
-    ))
+    def carregar_tarefas():
+        return list(collection_tarefas.find(
+            {"empresa": {"$in": list(cnpjs_usuario)}},  # Filtra apenas as empresas do usuário
+            {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
+        ))
+
+    tarefas = carregar_tarefas()  # 🔹 Agora as tarefas são sempre recarregadas antes da exibição
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
@@ -400,8 +402,7 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
                             }
                             collection_atividades.insert_one(nova_atividade)
 
-                        # Atualizar a tarefa no banco
-                        collection_tarefas.update_one(
+                        resultado = collection_tarefas.update_one(
                             {"empresa": empresa_cnpj, "titulo": tarefa_dados["titulo"]},
                             {"$set": {
                                 "titulo": titulo_edit,
@@ -411,16 +412,12 @@ def editar_tarefa_modal(tarefas, empresa_cnpj, key):
                             }}
                         )
 
-                        # 🔄 Atualizar a última atividade da empresa
-                        data_hoje = datetime.now().strftime("%Y-%m-%d")
-                        collection_empresas.update_one(
-                            {"cnpj": empresa_cnpj},
-                            {"$set": {"ultima_atividade": data_hoje}}
-                        )
-
-                        st.success("Tarefa atualizada com sucesso! 🔄")
-                        st.rerun()
-
+                        # 🔹 Verifica se houve alguma alteração no banco
+                        if resultado.modified_count > 0:
+                            st.success("Tarefa atualizada com sucesso! 🔄")
+                            st.rerun()  # Força a atualização da interface
+                        else:
+                            st.warning("Nenhuma alteração foi feita.")
 
 
 
