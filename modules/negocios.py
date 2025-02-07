@@ -62,7 +62,13 @@ def gerenciamento_oportunidades(user):
                         st.error("Preencha todos os campos obrigatórios.")
     
     st.write ('----')
-    st.subheader('🥶 Frias')
+    st.subheader('🧊 Frias')
+    with st.expander('Propostas frias'):
+        st.info('Frias')
     st.subheader('😐 Mornas')
-    st.subheader('🥵 Quentes')
+    with st.expander('Propostas mornas'):
+        st.info('Mornas')
+    st.subheader('🔥 Quentes')
+    with st.expander('Propostas quentes'):
+        st.info('Quentes')
     
