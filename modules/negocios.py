@@ -64,11 +64,23 @@ def gerenciamento_oportunidades(user):
     st.write ('----')
     st.subheader('🧊 Frias')
     with st.expander('Propostas frias'):
-        st.info('Frias')
+        st.info('...')
     st.subheader('🌥️ Mornas')
     with st.expander('Propostas mornas'):
-        st.info('Mornas')
+        st.info('...')
     st.subheader('🔥 Quentes')
     with st.expander('Propostas quentes'):
-        st.info('Quentes')
+        st.info('...')
+    st.subheader('📃 Aguardando projeto')
+    with st.expander('Propostas aguardando projeto'):
+        st.info('...')
+    st.subheader('✒️ Aguardando assinatura')
+    with st.expander('Proposta aguardando assinatura'):
+        st.info('...')
+    st.subheader('✅ Fechadas')
+    with st.expander('Propostas fechadas'):
+        st.info('...')
+    st.subheader('❌ Perdidas')
+    with st.expander('Propostas perdidas'):
+        st.info('...')
     
