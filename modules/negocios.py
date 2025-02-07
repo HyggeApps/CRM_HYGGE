@@ -62,7 +62,7 @@ def gerenciamento_oportunidades(user):
                         st.error("Preencha todos os campos obrigatórios.")
 
     st.write('----')
-
+    st.write(1)
     # Criar cinco colunas para os estágios das oportunidades
     col1, col2, col3, col4, col5 = st.columns(5)
 
