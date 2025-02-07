@@ -86,12 +86,25 @@ def gerenciamento_oportunidades(user):
             with st.expander(f"📋 Ver mais..."):
                 st.write('----')
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+                
                 if not df_filtrado.empty:
+                    total_valor = 0  # Inicializa o somatório
+                    
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_criacao']}")
                         st.write("----")
+
+                        # Converter valor para número e somar
+                        valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                        try:
+                            total_valor += float(valor_str)
+                        except ValueError:
+                            pass  # Evita erro caso algum valor não seja convertível
+                        
+                    # Exibir total da categoria
+                    st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info("Nenhuma oportunidade.")
 
