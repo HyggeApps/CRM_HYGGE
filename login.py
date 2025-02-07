@@ -59,7 +59,7 @@ st.sidebar.markdown(html_code1, unsafe_allow_html=True)
 custom_css = """
     <style>
     .main {
-        max-width: 80%;
+        max-width: 50%;
         margin: 0 auto;
     }
     section[data-testid="stSidebar"] {

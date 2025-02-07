@@ -94,7 +94,7 @@ def gerenciamento_oportunidades(user):
             df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
             if not df_fechadas.empty:
                 for _, row in df_fechadas.iterrows():
-                    st.markdown(f"**{row['cliente']} - {row['nome_oportunidade']}**")
+                    st.markdown(f"** {row['nome_oportunidade']}**")
                     st.write(f"R$ {row['valor_estimado']}")
                     st.write(f"{row['data_fechamento']}")
                     st.write("---")
