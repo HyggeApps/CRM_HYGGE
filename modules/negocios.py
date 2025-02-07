@@ -88,8 +88,8 @@ def gerenciamento_oportunidades(user):
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
                         st.markdown(f"**{row['nome_oportunidade']}**")
-                        st.write(f"**R$ {row['valor_estimado']}**")
-                        st.write(f"{row['data_criacao']}")
+                        st.write(f"**💲 {row['valor_estimado']}**")
+                        st.write(f"📆 {row['data_criacao']}")
                         st.write("---")
                 else:
                     st.info("Nenhuma oportunidade.")
@@ -107,8 +107,8 @@ def gerenciamento_oportunidades(user):
             if not df_fechadas.empty:
                 for _, row in df_fechadas.iterrows():
                     st.markdown(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**R$ {row['valor_estimado']}**")
-                    st.write(f"{row['data_criacao']}")
+                    st.write(f"**💲 {row['valor_estimado']}**")
+                    st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
             else:
                 st.info("Nenhuma oportunidade fechada.")
@@ -120,8 +120,8 @@ def gerenciamento_oportunidades(user):
             if not df_perdidas.empty:
                 for _, row in df_perdidas.iterrows():
                     st.markdown(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**R$ {row['valor_estimado']}**")
-                    st.write(f"{row['data_criacao']}")
+                    st.write(f"**💲 {row['valor_estimado']}**")
+                    st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
             else:
                 st.info("Nenhuma oportunidade perdida.")
