@@ -123,15 +123,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-hide = """
-            <style>
-            ul.streamlit-expander {
-                overflow: scroll;
-                width: 1500px;
-            </style>
-            """
-
-st.markdown(hide, unsafe_allow_html=True)
+css = """
+<style>
+    /* Define um tamanho máximo e rolagem para o conteúdo dos expanders */
+    div[data-testid="stExpander"] div[role="group"] {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+"""
+st.markdown(css, unsafe_allow_html=True)
 
 st.sidebar.markdown('------')
 
