@@ -22,21 +22,18 @@ def gerenciamento_oportunidades():
         clientes = list(collection_clientes.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1}))
-        leads = list(collection_leads.find({}, {"_id": 0, "conteudo": 1, "empresa": 1}))
 
         opcoes_clientes = [f"{c['razao_social']} (CNPJ: {c['cnpj']})" for c in clientes]
         opcoes_usuarios = [f"{u['nome']} {u['sobrenome']} ({u['email']})" for u in usuarios]
         opcoes_produtos = [f"{p['nome']} ({p['categoria']})" for p in produtos]
-        opcoes_leads = [f"Lead para {l['empresa']} - {l['conteudo']}" for l in leads]
 
-        if not clientes or not usuarios or not produtos or not leads:
-            st.warning("Certifique-se de ter clientes, usuários, produtos e leads cadastrados antes de adicionar oportunidades.")
+        if not clientes or not usuarios or not produtos:
+            st.warning("Certifique-se de ter clientes, usuários e produtos cadastrados antes de adicionar oportunidades.")
         else:
             with st.form(key="form_cadastro_oportunidade"):
                 cliente = st.selectbox("Cliente", options=opcoes_clientes, key="select_cliente_oportunidade")
                 usuario = st.selectbox("Usuário Responsável", options=opcoes_usuarios, key="select_usuario_oportunidade")
                 produto = st.selectbox("Produto", options=opcoes_produtos, key="select_produto_oportunidade")
-                lead = st.selectbox("Lead Associado", options=opcoes_leads, key="select_lead_oportunidade")
                 valor_estimado = st.number_input("Valor Estimado", min_value=0.0, step=100.0, key="input_valor_estimado_oportunidade")
                 estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 probabilidade = st.slider("Probabilidade de Fechamento (%)", min_value=0, max_value=100, step=5, key="slider_probabilidade_oportunidade")
