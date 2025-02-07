@@ -88,14 +88,23 @@ def gerenciamento_oportunidades(user):
     st.subheader('💵 **Total: R$ 567.901,01**')
     st.write ('----')
 
-    st.header('Negócios encerrados')
-    st.subheader('✅ Fechadas')
-    with st.expander('Propostas fechadas'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
-    st.subheader('❌ Perdidas')
-    with st.expander('Propostas perdidas'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
+    # Criar duas colunas para organização
+    col1, col2 = st.columns(2)
+
+    # Coluna da esquerda - Propostas Fechadas
+    with col1:
+        st.subheader('✅ Fechadas')
+        with st.expander('Propostas fechadas'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    # Linha divisória entre colunas
+    st.write('----')
+
+    # Coluna da direita - Propostas Perdidas
+    with col2:
+        st.subheader('❌ Perdidas')
+        with st.expander('Propostas perdidas'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
     
