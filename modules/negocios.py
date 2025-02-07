@@ -83,7 +83,7 @@ def gerenciamento_oportunidades(user):
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
             st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
-            with st.expander(f"📋 Propostas {estagio.lower()}"):
+            with st.expander(f"📋 Ver mais..."):
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
