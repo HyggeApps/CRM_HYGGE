@@ -78,16 +78,6 @@ def gerenciamento_oportunidades(user):
         "Perdido": "❌"
     }
 
-    css = '''
-    <style>
-        [data-testid="stExpander"] div:has(>.streamlit-expanderContent) {
-            overflow-y: auto;
-            max-height: 400px;
-        }
-    </style>
-    '''
-    st.markdown(css, unsafe_allow_html=True)
-
     # Criar colunas para exibição por estágio
     colunas_estagios = st.columns(5)
     estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]

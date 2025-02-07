@@ -69,6 +69,16 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
+css = '''
+    <style>
+        [data-testid="stExpander"] div:has(>.streamlit-expanderContent) {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+    </style>
+    '''
+st.markdown(css, unsafe_allow_html=True)
+
 st.markdown(
     """
     <style>
