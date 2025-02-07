@@ -86,14 +86,32 @@ def gerenciamento_oportunidades(user):
             with st.expander(f"📋 Ver mais..."):
                 st.write('----')
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
-                
+
                 if not df_filtrado.empty:
                     total_valor = 0  # Inicializa o somatório
-                    
+
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_fechamento']}")
+                        
+                        # Criar selectbox para alterar o estágio
+                        novo_estagio = st.selectbox(
+                            "Alterar estágio",
+                            options=estagios_disponiveis,
+                            index=estagios_disponiveis.index(row['estagio']),
+                            key=f"select_{row['nome_oportunidade']}"
+                        )
+
+                        # Se o estágio for alterado, atualizar no MongoDB
+                        if novo_estagio != row['estagio']:
+                            collection_oportunidades.update_one(
+                                {"nome_oportunidade": row['nome_oportunidade']},
+                                {"$set": {"estagio": novo_estagio}}
+                            )
+                            st.success(f"Estágio alterado para {novo_estagio}")
+                            st.rerun()  # Atualiza a página após a mudança
+
                         st.write("----")
 
                         # Converter valor para número e somar
@@ -102,7 +120,7 @@ def gerenciamento_oportunidades(user):
                             total_valor += float(valor_str)
                         except ValueError:
                             pass  # Evita erro caso algum valor não seja convertível
-                        
+
                     # Exibir total da categoria
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
