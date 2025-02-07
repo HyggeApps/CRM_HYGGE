@@ -56,15 +56,6 @@ html_code1 = f"""
 """
 st.sidebar.markdown(html_code1, unsafe_allow_html=True)
 
-hide = """
-    <style>
-    ul.streamlit-expander {
-        overflow: scroll;
-        width: 1500px;
-    </style>
-    """
-
-st.markdown(hide, unsafe_allow_html=True)
 
 css = '''
     <style>
@@ -131,6 +122,16 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+hide = """
+            <style>
+            ul.streamlit-expander {
+                overflow: scroll;
+                width: 1500px;
+            </style>
+            """
+
+st.markdown(hide, unsafe_allow_html=True)
 
 st.sidebar.markdown('------')
 
