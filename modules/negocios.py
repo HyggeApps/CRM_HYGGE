@@ -88,7 +88,7 @@ def gerenciamento_oportunidades(user):
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
-                        st.markdown(f"**{row['nome_oportunidade']}**")
+                        st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_criacao']}")
                         st.write("----")
@@ -108,7 +108,7 @@ def gerenciamento_oportunidades(user):
             df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
             if not df_perdidas.empty:
                 for _, row in df_perdidas.iterrows():
-                    st.markdown(f"**{row['nome_oportunidade']}**")
+                    st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
                     st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
@@ -122,7 +122,7 @@ def gerenciamento_oportunidades(user):
             df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "On-hold"]
             if not df_perdidas.empty:
                 for _, row in df_perdidas.iterrows():
-                    st.markdown(f"**{row['nome_oportunidade']}**")
+                    st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
                     st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
@@ -136,7 +136,7 @@ def gerenciamento_oportunidades(user):
             df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
             if not df_fechadas.empty:
                 for _, row in df_fechadas.iterrows():
-                    st.markdown(f"**{row['nome_oportunidade']}**")
+                    st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
                     st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
