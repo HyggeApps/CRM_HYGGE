@@ -9,7 +9,7 @@ def gerenciamento_oportunidades(user):
     collection_usuarios = get_collection("usuarios")
     collection_produtos = get_collection("produtos")
 
-    estagios = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura", "Perdido", "Fechado"]
+    estagios = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura","On-hold", "Perdido", "Fechado"]
 
     with st.popover('➕ Cadastrar oportunidade'):
         st.header("Cadastrar Oportunidade")
@@ -32,7 +32,7 @@ def gerenciamento_oportunidades(user):
                 nome_opp = st.text_input('Nome da oportunidade', key="nome_oportunidade")
                 produto = st.selectbox("Produto", options=opcoes_produtos, key="select_produto_oportunidade")
                 valor_estimado = st.text_input("Valor", value='R$ 9.900,00', disabled=True, key="input_valor_estimado_oportunidade")
-                estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
+                estagio = st.selectbox("Estágio", options=['Aguardando projeto'], key="select_estagio_oportunidade")
                 data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
 
@@ -78,7 +78,7 @@ def gerenciamento_oportunidades(user):
 
     # Criar colunas para exibição por estágio
     colunas_estagios = st.columns(5)
-    estagios_disponiveis = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura"]
+    estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
 
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
@@ -119,7 +119,7 @@ def gerenciamento_oportunidades(user):
         st.subheader('⏸️ On-Hold')
         with st.expander("📋 Propostas on-hold"):
             st.write('----')
-            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
+            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "On-hold"]
             if not df_perdidas.empty:
                 for _, row in df_perdidas.iterrows():
                     st.markdown(f"**{row['nome_oportunidade']}**")
@@ -129,7 +129,7 @@ def gerenciamento_oportunidades(user):
             else:
                 st.info("Nenhuma oportunidade perdida.")
 
-    with col1:
+    with col3:
         st.subheader('✅ Fechadas')
         with st.expander("📋 Propostas fechadas"):
             st.write('----')
