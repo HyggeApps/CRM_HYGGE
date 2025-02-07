@@ -62,26 +62,38 @@ def gerenciamento_oportunidades(user):
                         st.error("Preencha todos os campos obrigatórios.")
 
     # Buscar oportunidades no banco
-    oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1, "data_fechamento": 1, "estagio": 1}))
+    oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,"data_criacao": 1, "data_fechamento": 1, "estagio": 1}))
     df_oportunidades = pd.DataFrame(oportunidades)
+
+    # Mapeamento de ícones para cada estágio
+    icones_estagios = {
+        "Frio": "🧊",
+        "Morno": "🌥️",
+        "Quente": "🔥",
+        "Aguardando projeto": "📃",
+        "Aguardando a assinatura": "✒️",
+        "Fechado": "✅",
+        "Perdido": "❌"
+    }
 
     # Criar colunas para exibição por estágio
     colunas_estagios = st.columns(5)
     estagios_disponiveis = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura"]
-    
+
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
-            st.subheader(f"📌 {estagio}")
+            st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
             with st.expander(f"📋 Propostas {estagio.lower()}"):
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
                         st.markdown(f"**{row['nome_oportunidade']}**")
                         st.write(f"**R$ {row['valor_estimado']}**")
-                        st.write(f"Data: {row['data_criacao']}")
+                        st.write(f"{row['data_criacao']}")
                         st.write("---")
                 else:
                     st.info("Nenhuma oportunidade.")
+
 
     st.write('----')
     st.header('💸 Negócios encerrados')
@@ -96,7 +108,7 @@ def gerenciamento_oportunidades(user):
                 for _, row in df_fechadas.iterrows():
                     st.markdown(f"**{row['nome_oportunidade']}**")
                     st.write(f"**R$ {row['valor_estimado']}**")
-                    st.write(f"Data: {row['data_criacao']}")
+                    st.write(f"{row['data_criacao']}")
                     st.write("---")
             else:
                 st.info("Nenhuma oportunidade fechada.")
@@ -109,7 +121,7 @@ def gerenciamento_oportunidades(user):
                 for _, row in df_perdidas.iterrows():
                     st.markdown(f"**{row['nome_oportunidade']}**")
                     st.write(f"**R$ {row['valor_estimado']}**")
-                    st.write(f"Data: {row['data_criacao']}")
+                    st.write(f"{row['data_criacao']}")
                     st.write("---")
             else:
                 st.info("Nenhuma oportunidade perdida.")
