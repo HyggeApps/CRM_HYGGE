@@ -104,6 +104,7 @@ def gerenciamento_oportunidades(user):
     with col1:
         st.subheader('✅ Fechadas')
         with st.expander("📋 Propostas fechadas"):
+            st.write('----')
             df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
             if not df_fechadas.empty:
                 for _, row in df_fechadas.iterrows():
@@ -117,6 +118,7 @@ def gerenciamento_oportunidades(user):
     with col2:
         st.subheader('❌ Perdidas')
         with st.expander("📋 Propostas perdidas"):
+            st.write('----')
             df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
             if not df_perdidas.empty:
                 for _, row in df_perdidas.iterrows():
