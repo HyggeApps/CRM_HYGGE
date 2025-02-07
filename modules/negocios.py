@@ -126,7 +126,7 @@ def gerenciamento_oportunidades(user):
                 for _, row in df_perdidas.iterrows():
                     st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_fechamento']}")
+                    st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
 
                     # Conversão do valor para somar corretamente
@@ -153,7 +153,7 @@ def gerenciamento_oportunidades(user):
                 for _, row in df_onhold.iterrows():
                     st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_fechamento']}")
+                    st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
 
                     # Conversão do valor para somar corretamente
@@ -180,7 +180,7 @@ def gerenciamento_oportunidades(user):
                 for _, row in df_fechadas.iterrows():
                     st.subheader(f"**{row['nome_oportunidade']}**")
                     st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_fechamento']}")
+                    st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
 
                     # Conversão do valor para somar corretamente
@@ -194,4 +194,5 @@ def gerenciamento_oportunidades(user):
                 st.subheader(f"💵 **Total: R$ {total_valor_fechadas:,.2f}**")
             else:
                 st.info("Nenhuma oportunidade fechada.")
+
 
