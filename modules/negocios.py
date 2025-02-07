@@ -2,7 +2,6 @@ import streamlit as st
 from utils.database import get_collection
 
 def gerenciamento_oportunidades():
-    st.title("Gerenciamento de Oportunidades")
     collection_oportunidades = get_collection("oportunidades")
     collection_clientes = get_collection("empresas")  # Clientes são as empresas cadastradas
     collection_usuarios = get_collection("usuarios")  # Coleção de Usuários
