@@ -60,33 +60,49 @@ def gerenciamento_oportunidades(user):
                             st.error("Erro ao localizar as entidades selecionadas. Por favor, tente novamente.")
                     else:
                         st.error("Preencha todos os campos obrigatórios.")
-    
-    st.write ('----')
-    st.subheader('🧊 Frias')
-    with st.expander('Propostas frias'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
-    st.subheader('🌥️ Mornas')
-    with st.expander('Propostas mornas'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
-    st.subheader('🔥 Quentes')
-    with st.expander('Propostas quentes'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
-    st.subheader('📃 Aguardando projeto')
-    with st.expander('Propostas aguardando projeto'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
-    st.subheader('✒️ Aguardando assinatura')
-    with st.expander('Proposta aguardando assinatura'):
-        st.info('...')
-    st.subheader('💵 **Total: R$ 567.901,01**')
-    st.write ('----')
+
+    st.write('----')
+
+    # Criar cinco colunas para os estágios das oportunidades
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    # Coluna 1 - Frias
+    with col1:
+        st.subheader('🧊 Frias')
+        with st.expander('Propostas frias'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    # Coluna 2 - Mornas
+    with col2:
+        st.subheader('🌥️ Mornas')
+        with st.expander('Propostas mornas'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    # Coluna 3 - Quentes
+    with col3:
+        st.subheader('🔥 Quentes')
+        with st.expander('Propostas quentes'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    # Coluna 4 - Aguardando projeto
+    with col4:
+        st.subheader('📃 Aguardando projeto')
+        with st.expander('Propostas aguardando projeto'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    # Coluna 5 - Aguardando assinatura
+    with col5:
+        st.subheader('✒️ Aguardando assinatura')
+        with st.expander('Proposta aguardando assinatura'):
+            st.info('...')
+        st.subheader('💵 **Total: R$ 567.901,01**')
+
+    st.write('----')
+
 
     st.header('💸 Negócios encerrados')
     # Criar duas colunas para organização
