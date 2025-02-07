@@ -87,6 +87,8 @@ def gerenciamento_oportunidades(user):
         st.info('...')
     st.subheader('💵 **Total: R$ 567.901,01**')
     st.write ('----')
+
+    st.header('Negócios encerrados')
     st.subheader('✅ Fechadas')
     with st.expander('Propostas fechadas'):
         st.info('...')
