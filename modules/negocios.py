@@ -94,7 +94,7 @@ def gerenciamento_oportunidades(user):
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_criacao']}")
-                        st.write("----")
+                        #st.write("----")
 
                         # Converter valor para número e somar
                         valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
