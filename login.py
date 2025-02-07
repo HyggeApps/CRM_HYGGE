@@ -125,10 +125,10 @@ st.markdown(
 
 css = """
 <style>
-    /* Define um tamanho máximo e rolagem para o conteúdo dos expanders */
-    div[data-testid="stExpander"] div[role="group"] {
-        max-height: 400px;
-        overflow-y: auto;
+    /* Aplica rolagem ao conteúdo dentro dos expanders */
+    div[data-testid="stExpanderDetails"] {
+        max-height: 400px !important;  /* Altura máxima antes do scroll */
+        overflow-y: auto !important;  /* Força a rolagem vertical */
     }
 </style>
 """
