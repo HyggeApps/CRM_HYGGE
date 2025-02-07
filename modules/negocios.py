@@ -44,7 +44,7 @@ def gerenciamento_oportunidades(user):
                         if cliente_selecionado and produto_selecionado:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
                             document = {
-                                "cliente": cliente_selecionado["cnpj"],
+                                "cliente": cliente_selecionado["razao_social"],
                                 "nome_oportunidade": nome_opp,
                                 "usuario": user,
                                 "produto": produto_selecionado["nome"],
@@ -62,7 +62,7 @@ def gerenciamento_oportunidades(user):
                         st.error("Preencha todos os campos obrigatórios.")
 
     # Buscar oportunidades no banco
-    oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "nome_oportunidade": 1, "valor_estimado": 1, "data_fechamento": 1, "estagio": 1}))
+    oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1, "data_fechamento": 1, "estagio": 1}))
     df_oportunidades = pd.DataFrame(oportunidades)
 
     # Criar colunas para exibição por estágio
@@ -72,11 +72,16 @@ def gerenciamento_oportunidades(user):
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
             st.subheader(f"📌 {estagio}")
-            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
-            if not df_filtrado.empty:
-                st.data_editor(df_filtrado[["nome_oportunidade", "valor_estimado", "data_fechamento"]], hide_index=True, use_container_width=True)
-            else:
-                st.info("Nenhuma oportunidade.")
+            with st.expander(f"📋 Propostas {estagio.lower()}"):
+                df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+                if not df_filtrado.empty:
+                    for _, row in df_filtrado.iterrows():
+                        st.markdown(f"**{row['cliente']} - {row['nome_oportunidade']}**")
+                        st.write(f"R$ {row['valor_estimado']}")
+                        st.write(f"{row['data_fechamento']}")
+                        st.write("---")
+                else:
+                    st.info("Nenhuma oportunidade.")
 
     st.write('----')
     st.header('💸 Negócios encerrados')
@@ -85,16 +90,26 @@ def gerenciamento_oportunidades(user):
 
     with col1:
         st.subheader('✅ Fechadas')
-        df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
-        if not df_fechadas.empty:
-            st.data_editor(df_fechadas[["nome_oportunidade", "valor_estimado", "data_fechamento"]], hide_index=True, use_container_width=True)
-        else:
-            st.info("Nenhuma oportunidade fechada.")
+        with st.expander("📋 Propostas fechadas"):
+            df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
+            if not df_fechadas.empty:
+                for _, row in df_fechadas.iterrows():
+                    st.markdown(f"**{row['cliente']} - {row['nome_oportunidade']}**")
+                    st.write(f"R$ {row['valor_estimado']}")
+                    st.write(f"{row['data_fechamento']}")
+                    st.write("---")
+            else:
+                st.info("Nenhuma oportunidade fechada.")
 
     with col2:
         st.subheader('❌ Perdidas')
-        df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
-        if not df_perdidas.empty:
-            st.data_editor(df_perdidas[["nome_oportunidade", "valor_estimado", "data_fechamento"]], hide_index=True, use_container_width=True)
-        else:
-            st.info("Nenhuma oportunidade perdida.")
+        with st.expander("📋 Propostas perdidas"):
+            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
+            if not df_perdidas.empty:
+                for _, row in df_perdidas.iterrows():
+                    st.markdown(f"**{row['cliente']} - {row['nome_oportunidade']}**")
+                    st.write(f"R$ {row['valor_estimado']}")
+                    st.write(f"{row['data_fechamento']}")
+                    st.write("---")
+            else:
+                st.info("Nenhuma oportunidade perdida.")
