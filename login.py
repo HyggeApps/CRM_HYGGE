@@ -249,7 +249,7 @@ if st.session_state['authentication_status']:
         st.header("💰 Negócios")
         st.info('Consulte, cadastre e edite os seus negócios aqui.')
         st.write('----')
-        negocios.gerenciamento_oportunidades()
+        negocios.gerenciamento_oportunidades(usuario_ativo)
         
     elif selected == 'Templates':
         st.header("📎 Templates")
