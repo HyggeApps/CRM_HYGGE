@@ -29,6 +29,7 @@ def gerenciamento_oportunidades(user):
         else:
             with st.form(key="form_cadastro_oportunidade"):
                 cliente = st.selectbox("Cliente", options=opcoes_clientes, key="select_cliente_oportunidade")
+                nome_opp = st.text_input('Nome da oportunidade',key="nome_oportunidade")
                 produto = st.selectbox("Produto", options=opcoes_produtos, key="select_produto_oportunidade")
                 valor_estimado = st.text_input("Valor", value='R$ 9.900,00',disabled=True, key="input_valor_estimado_oportunidade")
                 estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
@@ -47,6 +48,7 @@ def gerenciamento_oportunidades(user):
                             # Criar o documento da oportunidade
                             document = {
                                 "cliente": cliente_selecionado["cnpj"],
+                                "nome_oportunidade": nome_opp,
                                 "usuario": user,
                                 "produto": produto_selecionado["nome"],
                                 "valor_estimado": valor_estimado,
