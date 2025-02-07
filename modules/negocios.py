@@ -58,6 +58,7 @@ def gerenciamento_oportunidades(user):
                             }
                             collection_oportunidades.insert_one(document)
                             st.success("Oportunidade cadastrada com sucesso!")
+                            st.rerun()
                         else:
                             st.error("Erro ao localizar as entidades selecionadas. Por favor, tente novamente.")
                     else:
