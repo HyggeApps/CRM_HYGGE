@@ -4,6 +4,17 @@ from datetime import datetime
 import pandas as pd
 
 def gerenciamento_oportunidades(user):
+    # Adiciona CSS para permitir scroll dentro dos expanders
+    css = '''
+    <style>
+        [data-testid="stExpander"] div:has(>.streamlit-expanderContent) {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+    </style>
+    '''
+    st.markdown(css, unsafe_allow_html=True)
+    
     collection_oportunidades = get_collection("oportunidades")
     collection_clientes = get_collection("empresas")
     collection_usuarios = get_collection("usuarios")
