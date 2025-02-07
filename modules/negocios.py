@@ -99,7 +99,35 @@ def gerenciamento_oportunidades(user):
     st.write('----')
     st.header('💸 Negócios encerrados')
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.subheader('❌ Perdidas')
+        with st.expander("📋 Propostas perdidas"):
+            st.write('----')
+            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
+            if not df_perdidas.empty:
+                for _, row in df_perdidas.iterrows():
+                    st.markdown(f"**{row['nome_oportunidade']}**")
+                    st.write(f"**💲 {row['valor_estimado']}**")
+                    st.write(f"📆 {row['data_criacao']}")
+                    st.write("---")
+            else:
+                st.info("Nenhuma oportunidade perdida.")
+
+    with col2:
+        st.subheader('⏸️ On-Hold')
+        with st.expander("📋 Propostas on-hold"):
+            st.write('----')
+            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
+            if not df_perdidas.empty:
+                for _, row in df_perdidas.iterrows():
+                    st.markdown(f"**{row['nome_oportunidade']}**")
+                    st.write(f"**💲 {row['valor_estimado']}**")
+                    st.write(f"📆 {row['data_criacao']}")
+                    st.write("---")
+            else:
+                st.info("Nenhuma oportunidade perdida.")
 
     with col1:
         st.subheader('✅ Fechadas')
@@ -114,17 +142,3 @@ def gerenciamento_oportunidades(user):
                     st.write("---")
             else:
                 st.info("Nenhuma oportunidade fechada.")
-
-    with col2:
-        st.subheader('❌ Perdidas')
-        with st.expander("📋 Propostas perdidas"):
-            st.write('----')
-            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
-            if not df_perdidas.empty:
-                for _, row in df_perdidas.iterrows():
-                    st.markdown(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_criacao']}")
-                    st.write("---")
-            else:
-                st.info("Nenhuma oportunidade perdida.")
