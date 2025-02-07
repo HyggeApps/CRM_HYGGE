@@ -112,87 +112,42 @@ def gerenciamento_oportunidades(user):
     st.write('----')
     st.header('💸 Negócios encerrados')
 
+    # Criar colunas para exibição de negócios encerrados
     col1, col2, col3 = st.columns(3)
+    estagios_encerrados = {
+        "Perdido": {"icone": "❌", "titulo": "Perdidas"},
+        "On-hold": {"icone": "⏸️", "titulo": "On-Hold"},
+        "Fechado": {"icone": "✅", "titulo": "Fechadas"}
+    }
+    colunas_encerradas = [col1, col2, col3]
 
-    with col1:
-        st.subheader('❌ Perdidas')
-        with st.expander("📋 Propostas perdidas"):
-            st.write('----')
-            df_perdidas = df_oportunidades[df_oportunidades["estagio"] == "Perdido"]
+    for col, (estagio, info) in zip(colunas_encerradas, estagios_encerrados.items()):
+        with col:
+            st.subheader(f"{info['icone']} {info['titulo']}")
+            with st.expander(f"📋 Propostas {info['titulo'].lower()}"):
+                st.write('----')
+                df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
 
-            if not df_perdidas.empty:
-                total_valor_perdidas = 0  # Inicializa o somatório
-                
-                for _, row in df_perdidas.iterrows():
-                    st.subheader(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_criacao']}")
-                    st.write("---")
+                if not df_filtrado.empty:
+                    total_valor = 0  # Inicializa o somatório
+                    
+                    for _, row in df_filtrado.iterrows():
+                        st.subheader(f"**{row['nome_oportunidade']}**")
+                        st.write(f"**💲 {row['valor_estimado']}**")
+                        st.write(f"📆 {row['data_criacao']}")
+                        st.write("---")
 
-                    # Conversão do valor para somar corretamente
-                    valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                    try:
-                        total_valor_perdidas += float(valor_str)
-                    except ValueError:
-                        pass  # Se não for possível converter, ignora
+                        # Converter valor para número e somar
+                        valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                        try:
+                            total_valor += float(valor_str)
+                        except ValueError:
+                            pass  # Evita erro caso algum valor não seja convertível
 
-                # Exibir total da categoria
-                st.subheader(f"💵 **Total: R$ {total_valor_perdidas:,.2f}**")
-            else:
-                st.info("Nenhuma oportunidade perdida.")
+                    # Exibir total da categoria
+                    st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
+                else:
+                    st.info(f"Nenhuma oportunidade {info['titulo'].lower()}.")
 
-    with col2:
-        st.subheader('⏸️ On-Hold')
-        with st.expander("📋 Propostas on-hold"):
-            st.write('----')
-            df_onhold = df_oportunidades[df_oportunidades["estagio"] == "On-hold"]
-
-            if not df_onhold.empty:
-                total_valor_onhold = 0  # Inicializa o somatório
-                
-                for _, row in df_onhold.iterrows():
-                    st.subheader(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_criacao']}")
-                    st.write("---")
-
-                    # Conversão do valor para somar corretamente
-                    valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                    try:
-                        total_valor_onhold += float(valor_str)
-                    except ValueError:
-                        pass  # Se não for possível converter, ignora
-
-                # Exibir total da categoria
-                st.subheader(f"💵 **Total: R$ {total_valor_onhold:,.2f}**")
-            else:
-                st.info("Nenhuma oportunidade on-hold.")
-
-    with col3:
-        st.subheader('✅ Fechadas')
-        with st.expander("📋 Propostas fechadas"):
-            st.write('----')
-            df_fechadas = df_oportunidades[df_oportunidades["estagio"] == "Fechado"]
-
-            if not df_fechadas.empty:
-                total_valor_fechadas = 0  # Inicializa o somatório
-                
-                for _, row in df_fechadas.iterrows():
-                    st.subheader(f"**{row['nome_oportunidade']}**")
-                    st.write(f"**💲 {row['valor_estimado']}**")
-                    st.write(f"📆 {row['data_criacao']}")
-                    st.write("---")
-
-                    # Conversão do valor para somar corretamente
-                    valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                    try:
-                        total_valor_fechadas += float(valor_str)
-                    except ValueError:
-                        pass  # Se não for possível converter, ignora
-
-                # Exibir total da categoria
-                st.subheader(f"💵 **Total: R$ {total_valor_fechadas:,.2f}**")
-            else:
-                st.info("Nenhuma oportunidade fechada.")
 
 
