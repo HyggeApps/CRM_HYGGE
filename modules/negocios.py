@@ -65,7 +65,7 @@ def gerenciamento_oportunidades(user):
     st.subheader('🧊 Frias')
     with st.expander('Propostas frias'):
         st.info('Frias')
-    st.subheader('🌡️ Mornas')
+    st.subheader('🌥️ Mornas')
     with st.expander('Propostas mornas'):
         st.info('Mornas')
     st.subheader('🔥 Quentes')
