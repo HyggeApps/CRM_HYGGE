@@ -32,7 +32,7 @@ def gerenciamento_oportunidades(user):
                 nome_opp = st.text_input('Nome da oportunidade', key="nome_oportunidade")
                 produto = st.selectbox("Produto", options=opcoes_produtos, key="select_produto_oportunidade")
                 valor_estimado = st.text_input("Valor", value='R$ 9.900,00', disabled=True, key="input_valor_estimado_oportunidade")
-                estagio = st.selectbox("Estágio", options=['Aguardando projeto'], key="select_estagio_oportunidade")
+                estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
 
