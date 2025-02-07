@@ -110,7 +110,7 @@ def gerenciamento_oportunidades(user):
 
 
     st.write('----')
-    st.header('💸 Negócios encerrados/on-hold')
+    st.header('💸 Negócios encerrados/On-Hold')
 
     # Criar colunas para exibição de negócios encerrados
     col1, col2, col3 = st.columns(3)
