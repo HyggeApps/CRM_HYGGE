@@ -4,7 +4,6 @@ from datetime import datetime
 import pandas as pd
 
 def gerenciamento_oportunidades(user):
-    # Adiciona CSS para permitir scroll dentro dos expanders
     
     collection_oportunidades = get_collection("oportunidades")
     collection_clientes = get_collection("empresas")
@@ -78,6 +77,16 @@ def gerenciamento_oportunidades(user):
         "Perdido": "❌"
     }
 
+    css = """
+        <style>
+            /* Define um tamanho máximo e rolagem para o conteúdo dos expanders */
+            div[data-testid="stExpander"] div[role="group"] {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        </style>
+        """
+    st.markdown(css, unsafe_allow_html=True)
     # Criar colunas para exibição por estágio
     colunas_estagios = st.columns(5)
     estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
