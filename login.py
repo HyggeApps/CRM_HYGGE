@@ -246,7 +246,7 @@ if st.session_state['authentication_status']:
         contatos.exibir_todos_contatos_empresa()
         
     elif selected == 'Negócios':
-        st.header("💲Negócios")
+        st.header("💰 Negócios")
         st.info('Consulte, cadastre e edite os seus negócios aqui.')
         st.write('----')
         negocios.gerenciamento_oportunidades()
