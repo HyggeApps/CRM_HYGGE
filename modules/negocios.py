@@ -15,7 +15,7 @@ def gerenciamento_oportunidades(user):
         st.header("Cadastrar Oportunidade")
 
         # Obter dados para listas suspensas
-        clientes = list(collection_clientes.find({"responsavel": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        clientes = list(collection_clientes.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1}))
 
