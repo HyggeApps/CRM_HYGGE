@@ -140,7 +140,7 @@ def gerenciamento_oportunidades(user):
                     st.write(f"📆 {row['data_criacao']}")
                     st.write("---")
             else:
-                st.info("Nenhuma oportunidade perdida.")
+                st.info("Nenhuma oportunidade on-hold.")
 
     with col3:
         st.subheader('✅ Fechadas')
