@@ -11,8 +11,8 @@ def gerenciamento_oportunidades(user):
     # Estágios pré-definidos
     estagios = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura", "Perdido", "Fechado"]
 
-    with st.popover('Cadastrar oportunidade'):
-        st.header("Cadastrar Oportunidade")
+    with st.popover('➕ Cadastrar oportunidade'):
+        st.header("➕ Cadastrar Oportunidade")
 
         # Obter dados para listas suspensas
         clientes = list(collection_clientes.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
