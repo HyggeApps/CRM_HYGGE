@@ -127,7 +127,7 @@ css = """
 <style>
     /* Aplica rolagem ao conteúdo dentro dos expanders */
     div[data-testid="stExpanderDetails"] {
-        max-height: 400px !important;  /* Altura máxima antes do scroll */
+        max-height: 500px !important;  /* Altura máxima antes do scroll */
         overflow-y: auto !important;  /* Força a rolagem vertical */
     }
 </style>
