@@ -88,7 +88,7 @@ def gerenciamento_oportunidades(user):
     st.subheader('💵 **Total: R$ 567.901,01**')
     st.write ('----')
 
-    st.header('Negócios encerrados')
+    st.header('💸 Negócios encerrados')
     # Criar duas colunas para organização
     col1, col2 = st.columns(2)
 
