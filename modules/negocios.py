@@ -17,7 +17,7 @@ def gerenciamento_oportunidades(user):
         # Obter dados para listas suspensas
         clientes = list(collection_clientes.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
-        produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1}))
+        produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
 
         opcoes_clientes = [f"{c['razao_social']} (CNPJ: {c['cnpj']})" for c in clientes]
         opcoes_produtos = [f"{p['nome']} ({p['categoria']})" for p in produtos]
@@ -30,7 +30,7 @@ def gerenciamento_oportunidades(user):
             with st.form(key="form_cadastro_oportunidade"):
                 cliente = st.selectbox("Cliente", options=opcoes_clientes, key="select_cliente_oportunidade")
                 produto = st.selectbox("Produto", options=opcoes_produtos, key="select_produto_oportunidade")
-                if produto == 'Diagnóstico NBR Fast (NBR)': valor_estimado = st.text_input("Valor", value='R$ 9.900,00',disabled=True, key="input_valor_estimado_oportunidade")
+                valor_estimado = st.text_input("Valor", value='R$ 9.900,00',disabled=True, key="input_valor_estimado_oportunidade")
                 estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
@@ -60,3 +60,9 @@ def gerenciamento_oportunidades(user):
                             st.error("Erro ao localizar as entidades selecionadas. Por favor, tente novamente.")
                     else:
                         st.error("Preencha todos os campos obrigatórios.")
+    
+    st.write ('----')
+    st.subheader('🥶 Frias')
+    st.subheader('😐 Mornas')
+    st.subheader('🥵 Quentes')
+    
