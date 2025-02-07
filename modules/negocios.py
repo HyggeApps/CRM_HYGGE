@@ -89,22 +89,12 @@ def gerenciamento_oportunidades(user):
 
                 if not df_filtrado.empty:
                     total_valor = 0  # Inicializa o somatório
-                    
-                    # Definir quantas oportunidades exibir
-                    max_exibir = st.slider(
-                        "Oportunidades para exibir", 
-                        min_value=1, 
-                        max_value=min(10, len(df_filtrado)),  # Máximo de 10 ou total disponível
-                        value=3,
-                        key=f"slider_{estagio}"
-                    )
 
-                    # Percorrer apenas as primeiras `max_exibir` oportunidades
-                    for _, row in df_filtrado.head(max_exibir).iterrows():
+                    for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_fechamento']}")
-
+                        
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
                             "Alterar estágio",
@@ -135,6 +125,7 @@ def gerenciamento_oportunidades(user):
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info("Nenhuma oportunidade.")
+
 
     st.write('----')
     st.header('💸 Negócios encerrados/On-Hold')
