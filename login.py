@@ -56,18 +56,15 @@ html_code1 = f"""
 """
 st.sidebar.markdown(html_code1, unsafe_allow_html=True)
 
-custom_css = """
+hide = """
     <style>
-    .main {
-        max-width: 30%;
-        margin: 0 auto;
-    }
-    section[data-testid="stSidebar"] {
-        width: 400px !important;
-    }
+    ul.streamlit-expander {
+        overflow: scroll;
+        width: 1500px;
     </style>
-"""
-st.markdown(custom_css, unsafe_allow_html=True)
+    """
+
+st.markdown(hide, unsafe_allow_html=True)
 
 css = '''
     <style>
