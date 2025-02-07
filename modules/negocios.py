@@ -60,9 +60,7 @@ def gerenciamento_oportunidades(user):
                             st.error("Erro ao localizar as entidades selecionadas. Por favor, tente novamente.")
                     else:
                         st.error("Preencha todos os campos obrigatórios.")
-
-    st.write('----')
-    st.write(555)
+    st.selectbox('Período',['Todo o período','Último ano', 'Últimos semestre','Ultimo trimestre', 'Ultimo mês'], index=1) 
     # Criar cinco colunas para os estágios das oportunidades
     col1, col2, col3, col4, col5 = st.columns(5)
 
