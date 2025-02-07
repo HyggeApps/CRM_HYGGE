@@ -172,6 +172,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                 ) if prazo_edit == "Personalizada" else calcular_data_execucao(prazo_edit)
 
                             with col2:
+                                st.write(tarefa_dados["status"])
                                 status_edit = st.selectbox(
                                     "Status",
                                     ["🟨 Em andamento", "🟩 Concluída"],
