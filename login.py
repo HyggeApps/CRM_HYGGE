@@ -202,15 +202,26 @@ if not st.session_state['logado']:
             # Update the session state to logged in
             st.session_state['logado'] = True
             st.session_state['email_principal'] = email_principal
-            st.session_state['senha_principal'] = senha_principal
             
+            # ─────────────────────────────────────────────────────────────
+            # Query your "usuarios" collection to map the email to a user
+            # ─────────────────────────────────────────────────────────────
+            user_data = collection_usuarios.find_one({"username": email_principal})
+            if user_data:
+                # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
+                st.session_state["name"] = user_data.get("name", "Sem Nome")
+                st.session_state["roles"] = user_data.get("roles", [])
+            else:
+                # If no document found, set defaults
+                st.session_state["name"] = "Usuário Desconhecido"
+                st.session_state["roles"] = []
+
         except Exception as e:
             st.sidebar.error("Falha no login, senha incorreta.")
 
+
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
-    nome_user = st.session_state['email_principal'].replace("@hygge.eco.br", "")
-    st.write(nome_user)
     email_principal = st.session_state['email_principal']
     st.sidebar.markdown('------')
     
@@ -251,5 +262,67 @@ if st.session_state.get('logado', False):
                 "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
             },
         )
+  
+    usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
+    # Título Principal
+    st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")
+    st.write('----')
+
+    if selected == "Tarefas":
+        st.header("📜 Tarefas")
+        st.info('Acompanhe aqui suas tarefas e seus números.')
+
+        tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
+        with tela_tarefas:
+            if 'admin' in st.session_state["roles"]: tarefas.gerenciamento_tarefas_por_usuario(usuario_ativo,admin=True)
+            else: tarefas.gerenciamento_tarefas_por_usuario(usuario_ativo,admin=False)
+        with tela_stats:
+            st.write(1)
+            #meus_numeros.compilar_meus_numeros(usuario_ativo)
+    elif selected == "Empresas":
+        st.header("🏢 Empresas")
+        st.info('Consulte, cadastre e edite suas empresas.')
+        st.write('----')
+
+        with st.popover("➕ Cadastrar empresa"):
+            if 'admin' in st.session_state["roles"]: empresas.cadastrar_empresas(usuario_ativo,admin=True)
+            else: empresas.cadastrar_empresas(usuario_ativo,admin=False)
+
+        if 'admin' in st.session_state["roles"]:  empresas.consultar_empresas(usuario_ativo, admin=True)
+        else: empresas.consultar_empresas(usuario_ativo, admin=False)
 
         
+    elif selected == 'Contatos':
+        st.header("📞 Contatos")
+        st.info('Consulte contatos aqui.')
+        st.warning("⚠️ IMPORTANTE: O cadastro de contatos deve ser feito a partir da tela da 'Empresas'")
+        st.write('----')
+        contatos.exibir_todos_contatos_empresa()
+        
+    elif selected == 'Negócios':
+        st.header("💰 Negócios")
+        st.info('Consulte, cadastre e edite os seus negócios aqui.')
+        st.write('----')
+        negocios.gerenciamento_oportunidades(usuario_ativo)
+        
+    elif selected == 'Templates':
+        st.header("📎 Templates")
+        st.info('Consulte, cadastre e edite os templates da HYGGE.')
+        st.write('----')
+        if 'admin' in st.session_state["roles"]: templates.gerenciamento_templates()
+        else: st.warning("Você não tem permissão para alterar templates.")
+
+
+    elif selected == 'Produtos':
+        st.header("📚 Produtos")
+        st.info('Consulte, cadastre e edite os produtos da HYGGE.')
+        st.write('----')
+        if 'admin' in st.session_state["roles"]: produtos.gerenciamento_produtos()
+        else: st.warning("Você não tem permissão para alterar usuários.")
+
+    elif selected == 'Usuários':
+        st.header("🧑‍💻 Usuários")
+        st.info('Consulte, cadastre e edite os usuários da HYGGE.')
+        st.write('----')
+        if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
+        else: st.warning("Você não tem permissão para alterar usuários.")
