@@ -155,9 +155,10 @@ def cadastrar_empresas(user, admin):
     # 📃 Formulário de Cadastro
     st.subheader("📃 Formulário de Cadastro")
     with st.form(key="form_cadastro_empresa"):
+        razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
         col1, col2 = st.columns(2)
         with col1:
-            razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
+            site = st.text_input("Site *", value=st.session_state["dados_cnpj"].get("site", ""), key="site")
         with col2:
             cnpj = st.text_input("CNPJ *", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
 
@@ -197,12 +198,13 @@ def cadastrar_empresas(user, admin):
                         "razao_social": razao_social,
                         "cnpj": cnpj,
                         "cidade": cidade,
-                        "estado": estado,
+                        "uf": estado,
                         "setor": setor,
+                        "site": site,
                         "tamanho_empresa": tamanho_empresa,
                         "produto_interesse": produto_interesse,  # ✅ Agora é uma lista
                         "grau_cliente": grau_cliente,
-                        "usuario": user,
+                        "proprietario": user,
                         "data_criacao": now,
                         "ultima_atividade": now,
                     }
