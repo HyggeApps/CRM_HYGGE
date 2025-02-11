@@ -108,7 +108,7 @@ def gerenciamento_oportunidades(user):
                     pass
             
             # Mostra o total acima do expander
-            st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
+            st.write(f"💵 **Total: R$ {total_valor:,.2f}**")
             
             # Expander para ver detalhes
             with st.expander("📋 Ver mais..."):
@@ -172,7 +172,7 @@ def gerenciamento_oportunidades(user):
                     pass
 
             # Mostra o total acima do expander
-            st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
+            st.write(f"💵 **Total: R$ {total_valor:,.2f}**")
 
             # Expander para ver detalhes das propostas encerradas
             with st.expander(f"📋 Propostas {info['titulo'].lower()}"):
