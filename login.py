@@ -201,13 +201,12 @@ if not st.session_state['logado']:
             
             # Update the session state to logged in
             st.session_state['logado'] = True
-            st.session_state['email_principal'] = email_principal
+            st.session_state['email'] = email_principal
             
             # ─────────────────────────────────────────────────────────────
             # Query your "usuarios" collection to map the email to a user
             # ─────────────────────────────────────────────────────────────
             user_data = collection_usuarios.find_one({"email": email_principal})
-            st.write(user_data)
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("nome", "Sem Nome")
@@ -223,7 +222,6 @@ if not st.session_state['logado']:
 
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
-    email_principal = st.session_state['email_principal']
     
     if any(user in email_principal for user in ['rodrigo', 'alexandre', 'paula', 'fabricio','admin']):
         st.sidebar.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
