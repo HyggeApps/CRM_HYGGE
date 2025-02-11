@@ -94,18 +94,20 @@ def gerenciamento_oportunidades(user):
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
             st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
+            
+            # Inicializa o total da categoria antes de exibir as oportunidades
+            total_valor = 0
+            
             with st.expander(f"📋 Ver mais..."):
                 st.write('----')
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
 
                 if not df_filtrado.empty:
-                    total_valor = 0  # Inicializa o somatório
-
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_fechamento']}")
-                        
+
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
                             "Alterar estágio",
@@ -132,15 +134,16 @@ def gerenciamento_oportunidades(user):
                         except ValueError:
                             pass  # Evita erro caso algum valor não seja convertível
 
-                    # Exibir total da categoria
+                    # Exibir total da categoria abaixo do estagio
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info("Nenhuma oportunidade.")
 
 
+
     st.write('----')
     st.header('💸 Negócios encerrados/On-Hold')
-
+    
     # Criar colunas para exibição de negócios encerrados
     col1, col2, col3 = st.columns(3)
     estagios_encerrados = {
@@ -154,13 +157,15 @@ def gerenciamento_oportunidades(user):
     for col, (estagio, info) in zip(colunas_encerradas, estagios_encerrados.items()):
         with col:
             st.subheader(f"{info['icone']} {info['titulo']}")
+
+            # Inicializa o total da categoria antes de exibir as oportunidades
+            total_valor = 0
+            
             with st.expander(f"📋 Propostas {info['titulo'].lower()}"):
                 st.write('----')
                 df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
 
                 if not df_filtrado.empty:
-                    total_valor = 0  # Inicializa o somatório
-                    
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
@@ -192,10 +197,11 @@ def gerenciamento_oportunidades(user):
                         except ValueError:
                             pass  # Evita erro caso algum valor não seja convertível
 
-                    # Exibir total da categoria
+                    # Exibir total da categoria abaixo do estagio
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info(f"Nenhuma oportunidade.")
+
 
 
 
