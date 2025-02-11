@@ -166,6 +166,25 @@ def gerenciamento_oportunidades(user):
                         st.write(f"📆 {row['data_criacao']}")
                         st.write("---")
 
+                        # Criar selectbox para alterar o estágio
+                        novo_estagio = st.selectbox(
+                            "Alterar estágio",
+                            options=estagios_disponiveis,
+                            index=estagios_disponiveis.index(row['estagio']),
+                            key=f"select_{row['nome_oportunidade']}"
+                        )
+
+                        # Se o estágio for alterado, atualizar no MongoDB
+                        if novo_estagio != row['estagio']:
+                            collection_oportunidades.update_one(
+                                {"nome_oportunidade": row['nome_oportunidade']},
+                                {"$set": {"estagio": novo_estagio}}
+                            )
+                            st.success(f"Estágio alterado para {novo_estagio}")
+                            st.rerun()  # Atualiza a página após a mudança
+
+                        st.write("----")
+
                         # Converter valor para número e somar
                         valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
                         try:
@@ -176,7 +195,6 @@ def gerenciamento_oportunidades(user):
                     # Exibir total da categoria
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
-                    st.info(f"Nenhuma oportunidade.")
-
+                    st.info("Nenhuma oportunidade.")
 
 
