@@ -148,11 +148,13 @@ config_data = funcs.load_config_and_check_or_insert_cookies(temp_config_path)
 # Verifique se a sessão já tem uma chave 'logado'
 if 'logado' not in st.session_state:
     st.session_state['logado'] = False
-if 'name' not in st.session_state:     ### NEW OR UPDATED ###
+if 'name' not in st.session_state:
     st.session_state['name'] = None
-if 'email' not in st.session_state:    ### NEW OR UPDATED ###
+if 'last_name' not in st.session_state:
+    st.session_state['last_name'] = None
+if 'email' not in st.session_state:
     st.session_state['email'] = None
-if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
+if 'roles' not in st.session_state:
     st.session_state['roles'] = None
 
 if not st.session_state['logado']:
