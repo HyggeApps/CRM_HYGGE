@@ -222,43 +222,46 @@ if not st.session_state['logado']:
 
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
-    if 'admin' in st.session_state["roles"]:
-        st.sidebar.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-        st.sidebar.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
-    
-        # 1. as sidebar menu
-        selected = option_menu(
-            f"CRM HYGGE (Admin)",
-            ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
-            icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
-            menu_icon="cast",
-            default_index=0,
-            styles={
-                #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
-                "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
-                "nav-link": {"font-size": "12px"},  # Style for links
-                "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
-            },
-        )
-    else:
-            
-        st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
-        st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+    with st.sidebar:
+        if 'admin' in st.session_state["roles"]: 
+            with st.sidebar:
+            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+            st.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
 
-        # 1. as sidebar menu
-        selected = option_menu(
-            f"CRM HYGGE (Admin)",
-            ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
-            icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
-            menu_icon="cast",
-            default_index=0,
-            styles={
-                #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
-                "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
-                "nav-link": {"font-size": "12px"},  # Style for links
-                "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
-            },
-        )
+            
+            # 1. as sidebar menu
+            selected = option_menu(
+                f"CRM HYGGE (Admin)",
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
+                menu_icon="cast",
+                default_index=0,
+                styles={
+                    #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
+                    "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
+                    "nav-link": {"font-size": "12px"},  # Style for links
+                    "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
+                },
+            )
+        else:
+                
+            st.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
+            st.info('Este é o ambiente de **vendedor** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
+
+            # 1. as sidebar menu
+            selected = option_menu(
+                f"CRM HYGGE (Admin)",
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Templates", "Produtos", "Usuários"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "file-earmark-text", "archive", "person-add"],
+                menu_icon="cast",
+                default_index=0,
+                styles={
+                    #"container": {"background-color": "#3C353F"},  # Background color for the entire menu
+                    "menu-title": {"font-size": "16px", "font-weight": "bold"},  # Title styling
+                    "nav-link": {"font-size": "12px"},  # Style for links
+                    "nav-link-selected": {"font-size": "12px"},  # Style for the selected link
+                },
+            )
 
     usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     # Título Principal
