@@ -121,7 +121,7 @@ def gerenciamento_oportunidades(user):
         "Todo o período"
     ]
 
-    periodo_escolhido = st.selectbox("Filtrar por período de criação:", opcoes_periodo)
+    periodo_escolhido = st.selectbox("Filtrar por período de criação:", opcoes_periodo, index=4)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
 
     # Mapeamento de ícones para cada estágio
