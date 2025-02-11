@@ -115,7 +115,7 @@ def gerenciamento_oportunidades(user):
 
                             # Inserir no banco de atividades
                             collection_atividades.insert_one(nova_atividade)
-                            st.success("Oportunidade cadastrada com sucesso!")
+                            st.success("Oportunidade e atividade cadastradas com sucesso!")
                             st.rerun()
                         else:
                             st.error("Erro ao localizar as entidades selecionadas. Tente novamente.")
