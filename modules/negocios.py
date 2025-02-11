@@ -368,12 +368,17 @@ def gerenciamento_oportunidades(user):
                                 )
                                 if result.modified_count:
                                     # Criar uma nova atividade informando que a tarefa foi concluída
+                                    cliente_doc = collection_clientes.find_one({"razao_social": row["cliente"]})
+                                    if cliente_doc is not None:
+                                        cnpj_cliente = cliente_doc["cnpj"]
+                                    else:
+                                        cnpj_cliente = "Não encontrado"
                                     nova_atividade = {
                                         "atividade_id": str(datetime.now().timestamp()),  
                                         "tipo_atividade": "Observação",
                                         "status": "Registrado",
                                         "titulo": f"Oportunidade '{nome_opp}' atualizada",
-                                        "empresa": cliente_selecionado["cnpj"],
+                                        "empresa": cnpj_cliente,
                                         "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
                                         "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                         "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
