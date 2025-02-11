@@ -111,7 +111,7 @@ def gerenciamento_oportunidades(user):
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
     df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
-    
+
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
@@ -196,6 +196,36 @@ def gerenciamento_oportunidades(user):
                             )
                             st.success(f"Estágio alterado para {novo_estagio}")
                             st.rerun()  # Atualiza a página após a mudança
+
+                            # ──────────────────────────────────────────────────────────────────────────
+                            # Exemplo de "editar oportunidade" via expander
+                            # ──────────────────────────────────────────────────────────────────────────
+                            with st.popover("✏️ Editar oportunidade"):
+                                # Aqui você pode permitir editar campos específicos,
+                                # como nome, valor estimado, datas, etc.
+                                novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"])
+                                novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]))
+                                nova_data_fechamento = st.date_input(
+                                    "Data de fechamento",
+                                    value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
+                                                                else dt.date.today()
+                                )
+                                
+                                if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
+                                    # Monta o dicionário de atualização
+                                    update_fields = {
+                                        "nome_oportunidade": novo_nome,
+                                        "valor_estimado": novo_valor,
+                                        # Converta date do widget para string, se for o caso
+                                        "data_fechamento": nova_data_fechamento.isoformat()
+                                    }
+                                    # Atualiza no MongoDB
+                                    collection_oportunidades.update_one(
+                                        {"nome_oportunidade": row['nome_oportunidade']},
+                                        {"$set": update_fields}
+                                    )
+                                    st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
+                                    st.rerun()
 
                         st.write("----")
                 else:
