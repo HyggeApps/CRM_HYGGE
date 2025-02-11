@@ -295,6 +295,38 @@ def gerenciamento_oportunidades(user):
                             st.success(f"Estágio alterado para {novo_estagio}")
                             st.rerun()  # Atualiza a página após a mudança
 
+                        # ──────────────────────────────────────────────────────────────────────────
+                        # Exemplo de "editar oportunidade" via expander
+                        # ──────────────────────────────────────────────────────────────────────────
+                        with st.popover("✏️ Editar oportunidade"):
+                            # Aqui você pode permitir editar campos específicos,
+                            # como nome, valor estimado, datas, etc.
+                            novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
+                            novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
+                            nova_data_fechamento = st.date_input(
+                                "Data de fechamento",
+                                value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
+                                                            else dt.date.today(),
+                                key=f"dataFechamento_{row['nome_oportunidade']}"
+                            )
+                            
+                            # Button to save changes
+                            if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
+                                update_fields = {
+                                    "nome_oportunidade": novo_nome,
+                                    "valor_estimado": novo_valor,
+                                    "data_fechamento": nova_data_fechamento.isoformat()
+                                }
+                                result = collection_oportunidades.update_one(
+                                    {"nome_oportunidade": row['nome_oportunidade']},
+                                    {"$set": update_fields}
+                                )
+                                if result.modified_count:
+                                    st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
+                                else:
+                                    st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
+                                st.rerun()
+
                         st.write("---")
 
                 else:
