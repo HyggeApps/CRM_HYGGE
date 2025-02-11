@@ -210,11 +210,11 @@ if not st.session_state['logado']:
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("nome", "Sem Nome")
-                st.session_state["roles"] = user_data.get("hierarquia", [])
+                st.session_state["roles"] = user_data.get("hierarquia", "viewer")
             else:
                 # If no document found, set defaults
                 st.session_state["name"] = "Usuário Desconhecido"
-                st.session_state["roles"] = []
+                st.session_state["roles"] = "viewer"
 
         except Exception as e:
             st.sidebar.error("Falha no login, senha incorreta.")
@@ -222,8 +222,7 @@ if not st.session_state['logado']:
 
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
-    
-    if any(user in email_principal for user in ['rodrigo', 'alexandre', 'paula', 'fabricio','admin']):
+    if 'admin' in st.session_state["roles"]:
         st.sidebar.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
         st.sidebar.info('Este é o ambiente de **admin** para consulta, preenchimento, controle e envio das informações referentes as oportunidades da HYGGE.')
     
