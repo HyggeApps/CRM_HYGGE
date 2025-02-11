@@ -160,6 +160,7 @@ if not st.session_state['logado']:
     CLIENT_ID = st.secrets["azure"]["client_id"]
     CLIENT_SECRET = st.secrets["azure"]["client_secret"]
     TENANT_ID = st.secrets["azure"]["tenant_id"]
+    st.write(CLIENT_ID, CLIENT_SECRET, TENANT_ID)
     AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
     SCOPE = ['https://graph.microsoft.com/.default']
     # Criar uma instância de aplicação
