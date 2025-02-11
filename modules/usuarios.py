@@ -13,19 +13,17 @@ def gerenciamento_usuarios():
     with tab1:
         st.subheader("Cadastrar Usuário")
         with st.form(key="form_cadastro_usuario"):  # Key única para o formulário
-            nome = st.text_input("Nome", key="input_nome_usuario")
-            sobrenome = st.text_input("Sobrenome", key="input_sobrenome_usuario")
-            email = st.text_input("Email", key="input_email_usuario")
+            nome = st.text_input("Nome *", key="input_nome_usuario")
+            sobrenome = st.text_input("Sobrenome *", key="input_sobrenome_usuario")
+            email = st.text_input("Email *", key="input_email_usuario")
             fone = st.text_input("Telefone", key="input_fone_usuario")
             setor = st.text_input("Setor", key="input_setor_usuario")
-            login = st.text_input("Login", key="input_login_usuario")
-            senha = st.text_input("Senha", type="password", key="input_senha_usuario")
             hierarquia = st.selectbox("Hierarquia", ["admin", "viewer", "editor"], key="input_hierarquia_usuario")
 
             submit = st.form_submit_button("Cadastrar")
 
             if submit:
-                if nome and sobrenome and email and login and senha:
+                if nome and sobrenome and email:
                     # Verificar duplicidade no banco de dados
                     existing_user = collection.find_one({"$or": [{"email": email}, {"login": login}]})
                     if existing_user:
@@ -39,7 +37,6 @@ def gerenciamento_usuarios():
                             "fone": fone,
                             "setor": setor,
                             "login": login,
-                            "senha": senha,
                             "hierarquia": hierarquia,
                         }
                         collection.insert_one(document)
