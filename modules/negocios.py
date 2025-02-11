@@ -201,7 +201,7 @@ def gerenciamento_oportunidades(user):
                 
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
-                        st.subheader(f"**{row['nome_oportunidade']}**")
+                        st.subheader(f"{row['nome_oportunidade']}")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
@@ -318,7 +318,7 @@ def gerenciamento_oportunidades(user):
                 
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
-                        st.subheader(f"**{row['nome_oportunidade']}**")
+                        st.subheader(f"{row['nome_oportunidade']}")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
