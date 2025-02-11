@@ -26,19 +26,19 @@ def filtrar_por_periodo(df, periodo):
         ]
 
     elif periodo == "Próximos 30 dias":
-        limite = hoje - dt.timedelta(days=30)
+        limite = hoje + dt.timedelta(days=30)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
     
     elif periodo == "Próximos 3 meses":
-        limite = hoje - dt.timedelta(days=90)
+        limite = hoje + dt.timedelta(days=90)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     elif periodo == "Próximos 6 meses":
-        limite = hoje - dt.timedelta(days=180)
+        limite = hoje + dt.timedelta(days=180)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     elif periodo == "Próximo ano":
-        limite = hoje - dt.timedelta(days=365)
+        limite = hoje + dt.timedelta(days=365)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     else:
