@@ -209,8 +209,8 @@ if not st.session_state['logado']:
             user_data = collection_usuarios.find_one({"email": email_principal})
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
-                st.session_state["name"] = user_data.get("name", "Sem Nome")
-                st.session_state["roles"] = user_data.get("roles", [])
+                st.session_state["name"] = user_data.get("nome", "Sem Nome")
+                st.session_state["roles"] = user_data.get("hierarquia", [])
             else:
                 # If no document found, set defaults
                 st.session_state["name"] = "Usuário Desconhecido"
