@@ -212,21 +212,22 @@ def gerenciamento_oportunidades(user):
                                 key=f"dataFechamento_{row['nome_oportunidade']}"
                             )
                             
+                            # Button to save changes
                             if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
-                                # Monta o dicionário de atualização
                                 update_fields = {
                                     "nome_oportunidade": novo_nome,
                                     "valor_estimado": novo_valor,
-                                    # Converta date do widget para string, se for o caso
                                     "data_fechamento": nova_data_fechamento.isoformat()
                                 }
-                                # Atualiza no MongoDB
-                                collection_oportunidades.update_one(
+                                result = collection_oportunidades.update_one(
                                     {"nome_oportunidade": row['nome_oportunidade']},
                                     {"$set": update_fields}
                                 )
-                                st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
-                                st.rerun()
+                                if result.modified_count:
+                                    st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
+                                else:
+                                    st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
+                                st.experimental_rerun()
 
                         st.write("----")
                 else:
