@@ -148,6 +148,12 @@ config_data = funcs.load_config_and_check_or_insert_cookies(temp_config_path)
 # Verifique se a sessão já tem uma chave 'logado'
 if 'logado' not in st.session_state:
     st.session_state['logado'] = False
+if 'name' not in st.session_state:     ### NEW OR UPDATED ###
+    st.session_state['name'] = None
+if 'email' not in st.session_state:    ### NEW OR UPDATED ###
+    st.session_state['email'] = None
+if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
+    st.session_state['roles'] = None
 
 if not st.session_state['logado']:
     
@@ -217,7 +223,7 @@ if not st.session_state['logado']:
                 st.session_state["name"] = "Usuário Desconhecido"
                 st.session_state["roles"] = "viewer"
                 st.session_state["email"] = email_principal
-                
+
         except Exception as e:
             st.sidebar.error("Falha no login, senha incorreta.")
 
