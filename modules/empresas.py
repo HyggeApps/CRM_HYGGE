@@ -162,6 +162,12 @@ def cadastrar_empresas(user, admin):
         with col2:
             cnpj = st.text_input("CNPJ *", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
 
+        col7, col8 = st.columns(2)
+        with col7:
+            cep = st.text_input("CEP", value=st.session_state["dados_cnpj"].get("cep", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
+        with col8:
+            endereco = st.text_input("Endereço", value=st.session_state["dados_cnpj"].get("endereco", st.session_state["dados_cep"].get("uf", "")), key="estado")
+
         col3, col4 = st.columns(2)
         with col3:
             cidade = st.text_input("Cidade *", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
