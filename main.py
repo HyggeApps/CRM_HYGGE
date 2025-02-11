@@ -161,6 +161,10 @@ if not st.session_state['logado']:
     client_secret = st.secrets["azure"]["client_secret"]
     tenant_id = st.secrets["azure"]["tenant_id"]
 
+    client_id = "2416c40e-33c3-4632-9f43-1884815ceeb8"
+    client_secret = "4Lz8Q~0aKVTfTfcWu0h1UWG1FmbiZtuzGKMlbzL"
+    tenant_id = "68c8d20f-fecd-4b5c-bf1b-8def71adada1"
+
     authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     scope = ["https://graph.microsoft.com/.default"]
 
