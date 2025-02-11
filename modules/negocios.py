@@ -121,7 +121,7 @@ def gerenciamento_oportunidades(user):
         "Todo o período"
     ]
 
-    periodo_escolhido = st.selectbox("Filtrar por período de criação", opcoes_periodo)
+    periodo_escolhido = st.selectbox("Filtrar por período de criação:", opcoes_periodo)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
 
     # Mapeamento de ícones para cada estágio
@@ -154,7 +154,7 @@ def gerenciamento_oportunidades(user):
             st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
             
             # Filtra as oportunidades daquele estágio
-            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+            df_filtrado = df_oportunidades_filtrado[df_oportunidades_filtrado["estagio"] == estagio]
             
             # Calcula o total da categoria
             total_valor = 0
@@ -218,7 +218,7 @@ def gerenciamento_oportunidades(user):
             st.subheader(f"{info['icone']} {info['titulo']}")
 
             # Filtra as oportunidades daquele estágio
-            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+            df_filtrado = df_oportunidades_filtrado[df_oportunidades_filtrado["estagio"] == estagio]
 
             # Calcula o total da categoria
             total_valor = 0
