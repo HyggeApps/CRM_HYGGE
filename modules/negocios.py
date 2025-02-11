@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.database import get_collection
 from datetime import datetime
+import datetime as dt
 import pandas as pd
 import calendar
 
@@ -81,7 +82,7 @@ def gerenciamento_oportunidades(user):
 
     periodo_escolhido = st.selectbox("Filtrar por período de criação", opcoes_periodo)
 
-    hoje = datetime.date.today()
+    hoje = dt.date.today()  # Works properly
 
     def filtrar_por_periodo(df, periodo):
         df_filtrado = df.copy()
