@@ -82,7 +82,7 @@ def gerenciamento_oportunidades(user):
 
     periodo_escolhido = st.selectbox("Filtrar por período de criação", opcoes_periodo)
 
-    hoje = dt.date.today()  # Works properly
+    hoje = dt.date.today()  # current date
 
     def filtrar_por_periodo(df, periodo):
         df_filtrado = df.copy()
@@ -90,29 +90,32 @@ def gerenciamento_oportunidades(user):
         if periodo == "Mês atual":
             ano_atual = hoje.year
             mes_atual = hoje.month
-            # Primeiro e último dia do mês atual
-            primeiro_dia = datetime.date(ano_atual, mes_atual, 1)
-            ultimo_dia = datetime.date(ano_atual, mes_atual, calendar.monthrange(ano_atual, mes_atual)[1])
-            
+            # Primeiro e último dia do mês atual:
+            primeiro_dia = dt.date(ano_atual, mes_atual, 1)
+            ultimo_dia = dt.date(
+                ano_atual, 
+                mes_atual, 
+                calendar.monthrange(ano_atual, mes_atual)[1]
+            )
             df_filtrado = df_filtrado[
                 (df_filtrado['data_criacao'].dt.date >= primeiro_dia) &
                 (df_filtrado['data_criacao'].dt.date <= ultimo_dia)
             ]
 
         elif periodo == "Últimos 30 dias":
-            limite = hoje - datetime.timedelta(days=30)
+            limite = hoje - dt.timedelta(days=30)
             df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
         
         elif periodo == "Últimos 3 meses":
-            limite = hoje - datetime.timedelta(days=90)
+            limite = hoje - dt.timedelta(days=90)
             df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
 
         elif periodo == "Últimos 6 meses":
-            limite = hoje - datetime.timedelta(days=180)
+            limite = hoje - dt.timedelta(days=180)
             df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
 
         elif periodo == "Último ano":
-            limite = hoje - datetime.timedelta(days=365)
+            limite = hoje - dt.timedelta(days=365)
             df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
 
         else:
@@ -120,6 +123,7 @@ def gerenciamento_oportunidades(user):
             pass
 
         return df_filtrado
+
 
     # Filtrar o dataframe conforme a seleção
     df_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
