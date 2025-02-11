@@ -227,7 +227,7 @@ def gerenciamento_oportunidades(user):
                                     st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
                                 else:
                                     st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
-                                st.experimental_rerun()
+                                st.rerun()
 
                         st.write("----")
                 else:
