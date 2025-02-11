@@ -202,17 +202,22 @@ def cadastrar_empresas(user, admin):
                     now = datetime.today().strftime("%Y-%m-%d")
                     document = {
                         "razao_social": razao_social,
-                        "cnpj": cnpj,
+                        "proprietario": user,
                         "cidade": cidade,
                         "uf": estado,
-                        "setor": setor,
+                        "ultima_atividade": now,
                         "site": site,
+                        "setor": setor,
+                        "grau_cliente": grau_cliente,
+                        "negocios": 0,
+                        "data_criacao": now,
+                        "proxima_atividade": "",
                         "tamanho_empresa": tamanho_empresa,
                         "produto_interesse": produto_interesse,  # ✅ Agora é uma lista
-                        "grau_cliente": grau_cliente,
-                        "proprietario": user,
-                        "data_criacao": now,
-                        "ultima_atividade": now,
+                        "pais": "Brasil",
+                        "endereco": endereco,
+                        "cnpj": cnpj,
+                        "cep": cep,
                     }
                     collection_empresas.insert_one(document)
 
