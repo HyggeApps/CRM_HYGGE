@@ -157,9 +157,9 @@ if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
 
 if not st.session_state['logado']:
     
-    CLIENT_ID = '2416c40e-33c3-4632-9f43-1884815ceeb8'
-    CLIENT_SECRET = '4Lz8Q~0aKVTfTfcWu0h1UWG1FmbiZt-uzGKMlbzL'
-    TENANT_ID = '68c8d20f-fecd-4b5c-bf1b-8def71adada1'
+    CLIENT_ID = st.secrets["azure"]["client_id"]
+    CLIENT_SECRECT = st.secrets["azure"]["client_secret"]
+    TENANT_ID = st.secrets["azure"]["tenant_id"]
     AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
     SCOPE = ['https://graph.microsoft.com/.default']
     # Criar uma instância de aplicação
