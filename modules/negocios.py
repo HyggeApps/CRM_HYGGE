@@ -21,25 +21,25 @@ def filtrar_por_periodo(df, periodo):
             calendar.monthrange(ano_atual, mes_atual)[1]
         )
         df_filtrado = df_filtrado[
-            (df_filtrado['data_criacao'].dt.date >= primeiro_dia) &
-            (df_filtrado['data_criacao'].dt.date <= ultimo_dia)
+            (df_filtrado['data_fechamento'].dt.date >= primeiro_dia) &
+            (df_filtrado['data_fechamento'].dt.date <= ultimo_dia)
         ]
 
     elif periodo == "Últimos 30 dias":
         limite = hoje - dt.timedelta(days=30)
-        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date >= limite]
     
     elif periodo == "Últimos 3 meses":
         limite = hoje - dt.timedelta(days=90)
-        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date >= limite]
 
     elif periodo == "Últimos 6 meses":
         limite = hoje - dt.timedelta(days=180)
-        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date >= limite]
 
     elif periodo == "Último ano":
         limite = hoje - dt.timedelta(days=365)
-        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date >= limite]
 
     else:
         # "Todo o período": não filtra nada
@@ -139,7 +139,7 @@ def gerenciamento_oportunidades(user):
         "Todo o período"
     ]
 
-    periodo_escolhido = st.selectbox("Filtrar por período de criação:", opcoes_periodo, index=4)
+    periodo_escolhido = st.selectbox("Filtrar por previsao de fechamento:", opcoes_periodo, index=4)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
 
     filtro_nome = st.text_input("Filtrar por nome da oportunidade (parcial ou completo):")
