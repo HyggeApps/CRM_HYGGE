@@ -323,73 +323,76 @@ def gerenciamento_oportunidades(user):
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
-                        # Criar selectbox para alterar o estágio
-                        novo_estagio = st.selectbox(
-                            "Alterar estágio",
-                            options=list(estagios_encerrados.keys()),
-                            index=list(estagios_encerrados.keys()).index(row['estagio']),
-                            key=f"select_{row['nome_oportunidade']}_encerrado"
-                        )
 
-                        # Se o estágio for alterado, atualizar no MongoDB
-                        if novo_estagio != row['estagio']:
-                            collection_oportunidades.update_one(
-                                {"nome_oportunidade": row['nome_oportunidade']},
-                                {"$set": {"estagio": novo_estagio}}
+                        if row['estagio'] == 'On-hold':
+                            # Criar selectbox para alterar o estágio
+                            novo_estagio = st.selectbox(
+                                "Alterar estágio",
+                                options=list(estagios_encerrados.keys()),
+                                index=list(estagios_encerrados.keys()).index(row['estagio']),
+                                key=f"select_{row['nome_oportunidade']}_encerrado"
                             )
-                            st.success(f"Estágio alterado para {novo_estagio}")
-                            st.rerun()  # Atualiza a página após a mudança
 
-                        # ──────────────────────────────────────────────────────────────────────────
-                        # Exemplo de "editar oportunidade" via expander
-                        # ──────────────────────────────────────────────────────────────────────────
-                        with st.popover("✏️ Editar oportunidade"):
-                            # Aqui você pode permitir editar campos específicos,
-                            # como nome, valor estimado, datas, etc.
-                            novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
-                            novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
-                            nova_data_fechamento = st.date_input(
-                                "Data de fechamento",
-                                value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
-                                                            else dt.date.today(),
-                                key=f"dataFechamento_{row['nome_oportunidade']}"
-                            )
-                            
-                            # Button to save changes
-                            if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
-                                update_fields = {
-                                    "nome_oportunidade": novo_nome,
-                                    "valor_estimado": novo_valor,
-                                    "data_fechamento": nova_data_fechamento.isoformat()
-                                }
-                                result = collection_oportunidades.update_one(
+                            # Se o estágio for alterado, atualizar no MongoDB
+                            if novo_estagio != row['estagio']:
+                                collection_oportunidades.update_one(
                                     {"nome_oportunidade": row['nome_oportunidade']},
-                                    {"$set": update_fields}
+                                    {"$set": {"estagio": novo_estagio}}
                                 )
-                                if result.modified_count:
-                                    # Criar uma nova atividade informando que a tarefa foi concluída
-                                    cliente_doc = collection_clientes.find_one({"razao_social": row["cliente"]})
-                                    if cliente_doc is not None:
-                                        cnpj_cliente = cliente_doc["cnpj"]
-                                    else:
-                                        cnpj_cliente = "Não encontrado"
-                                    nova_atividade = {
-                                        "atividade_id": str(datetime.now().timestamp()),  
-                                        "tipo_atividade": "Observação",
-                                        "status": "Registrado",
-                                        "titulo": f"Oportunidade '{nome_opp}' atualizada",
-                                        "empresa": cnpj_cliente,
-                                        "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
-                                        "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
-                                        "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
-                                    }
+                                st.success(f"Estágio alterado para {novo_estagio}")
+                                st.rerun()  # Atualiza a página após a mudança
 
-                                    # Inserir no banco de atividades
-                                    collection_atividades.insert_one(nova_atividade)
-                                    st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
-                                else:
-                                    st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
-                                st.rerun()
+                            # ──────────────────────────────────────────────────────────────────────────
+                            # Exemplo de "editar oportunidade" via expander
+                            # ──────────────────────────────────────────────────────────────────────────
+
+                            with st.popover("✏️ Editar oportunidade"):
+                                # Aqui você pode permitir editar campos específicos,
+                                # como nome, valor estimado, datas, etc.
+                                novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
+                                novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
+                                nova_data_fechamento = st.date_input(
+                                    "Data de fechamento",
+                                    value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
+                                                                else dt.date.today(),
+                                    key=f"dataFechamento_{row['nome_oportunidade']}"
+                                )
+                                
+                                # Button to save changes
+                                if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
+                                    update_fields = {
+                                        "nome_oportunidade": novo_nome,
+                                        "valor_estimado": novo_valor,
+                                        "data_fechamento": nova_data_fechamento.isoformat()
+                                    }
+                                    result = collection_oportunidades.update_one(
+                                        {"nome_oportunidade": row['nome_oportunidade']},
+                                        {"$set": update_fields}
+                                    )
+                                    if result.modified_count:
+                                        # Criar uma nova atividade informando que a tarefa foi concluída
+                                        cliente_doc = collection_clientes.find_one({"razao_social": row["cliente"]})
+                                        if cliente_doc is not None:
+                                            cnpj_cliente = cliente_doc["cnpj"]
+                                        else:
+                                            cnpj_cliente = "Não encontrado"
+                                        nova_atividade = {
+                                            "atividade_id": str(datetime.now().timestamp()),  
+                                            "tipo_atividade": "Observação",
+                                            "status": "Registrado",
+                                            "titulo": f"Oportunidade '{nome_opp}' atualizada",
+                                            "empresa": cnpj_cliente,
+                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
+                                            "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                                        }
+
+                                        # Inserir no banco de atividades
+                                        collection_atividades.insert_one(nova_atividade)
+                                        st.success(f"Oportunidade '{novo_nome}' atualizada com sucesso!")
+                                    else:
+                                        st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
+                                    st.rerun()
 
                         st.write("---")
 
