@@ -5,8 +5,8 @@ from urllib.parse import quote_plus
 @st.cache_resource
 def get_db_client():
     """Retorna o cliente MongoDB usando cache para otimizar conexões."""
-    username = "crm_hygge"
-    password = "BN1hNGf7cdlRGKL5"
+    username = st.secrets['database']['username']
+    password = st.secrets['database']['password']
     mongo_uri = f"mongodb+srv://{quote_plus(username)}:{quote_plus(password)}@crmhygge.wiafd.mongodb.net/?retryWrites=true&w=majority&appName=CRMHygge"
     return MongoClient(mongo_uri)
 
