@@ -217,13 +217,11 @@ if not st.session_state['logado']:
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("nome", "Sem Nome")
-                st.session_state["last_name"] = user_data.get("sobrenome", "Sem Sobrenome")
                 st.session_state["roles"] = user_data.get("hierarquia", "viewer")
                 st.session_state["email"] = user_data.get("email", "Sem Email")
             else:
                 # If no document found, set defaults
                 st.session_state["name"] = "Usuário Desconhecido"
-                st.session_state["name"] = " "
                 st.session_state["roles"] = "viewer"
                 st.session_state["email"] = email_principal
 
@@ -274,7 +272,6 @@ if st.session_state.get('logado', False):
             )
 
     usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
-    st.write(usuario_ativo)
     # Título Principal
     st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")
     st.write('----')
