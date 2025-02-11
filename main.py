@@ -157,6 +157,9 @@ if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
 
 if not st.session_state['logado']:
     
+    st.write(st.secrets["azure"]["client_id"])
+    st.write(st.secrets["azure"]["client_secret"])
+    st.write(st.secrets["azure"]["tenant_id"])
     CLIENT_ID = st.secrets["azure"]["client_id"]
     CLIENT_SECRET = st.secrets["azure"]["client_secret"]
     TENANT_ID = st.secrets["azure"]["tenant_id"]
