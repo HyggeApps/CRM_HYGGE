@@ -49,6 +49,7 @@ def filtrar_por_periodo(df, periodo):
 
 def gerenciamento_oportunidades(user):
     
+    collection_atividades = get_collection("atividades")
     collection_oportunidades = get_collection("oportunidades")
     collection_clientes = get_collection("empresas")
     collection_usuarios = get_collection("usuarios")
@@ -99,6 +100,21 @@ def gerenciamento_oportunidades(user):
                                 "data_fechamento": str(data_fechamento)
                             }
                             collection_oportunidades.insert_one(document)
+
+                            # Criar uma nova atividade informando que a tarefa foi concluída
+                            nova_atividade = {
+                                "atividade_id": str(datetime.now().timestamp()),  
+                                "tipo_atividade": "Observação",
+                                "status": "Registrado",
+                                "titulo": f"Oportunidade '{nome_opp}' criada",
+                                "empresa": cliente_selecionado["cnpj"],
+                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}'.",
+                                "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                                "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                            }
+
+                            # Inserir no banco de atividades
+                            collection_atividades.insert_one(nova_atividade)
                             st.success("Oportunidade cadastrada com sucesso!")
                             st.rerun()
                         else:
