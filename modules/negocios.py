@@ -110,7 +110,8 @@ def gerenciamento_oportunidades(user):
     oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,"data_criacao": 1, "data_fechamento": 1, "estagio": 1}))
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
-
+    df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
+    
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
