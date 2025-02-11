@@ -156,17 +156,26 @@ if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['roles'] = None
 
 if not st.session_state['logado']:
-    
-    CLIENT_ID = st.secrets["azure"]["client_id"]
-    CLIENT_SECRET = st.secrets["azure"]["client_secret"]
-    TENANT_ID = st.secrets["azure"]["tenant_id"]
-    AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
-    SCOPE = ['https://graph.microsoft.com/.default']
-    # Criar uma instância de aplicação
-    app = ConfidentialClientApplication(CLIENT_ID, authority=AUTHORITY_URL, client_credential=CLIENT_SECRET)
 
-    # Adquirir token
-    result = app.acquire_token_for_client(scopes=SCOPE)
+    client_id = st.secrets["azure"]["client_id"]
+    client_secret = st.secrets["azure"]["client_secret"]
+    tenant_id = st.secrets["azure"]["tenant_id"]
+
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
+    scope = ["https://graph.microsoft.com/.default"]
+
+    app = ConfidentialClientApplication(
+        client_id=client_id,
+        authority=authority_url,
+        client_credential=client_secret.strip()  # .strip() to remove whitespace
+    )
+
+    result = app.acquire_token_for_client(scopes=scope)
+    if "access_token" in result:
+        st.success("Token acquired successfully!")
+    else:
+        st.error(f"Error acquiring token: {result.get('error_description')}")
+
 
     if "access_token" in result:
         # Usar o token de acesso para chamar o Microsoft Graph API
