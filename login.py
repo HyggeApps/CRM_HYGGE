@@ -211,11 +211,13 @@ if not st.session_state['logado']:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("nome", "Sem Nome")
                 st.session_state["roles"] = user_data.get("hierarquia", "viewer")
+                st.session_state["email"] = user_data.get("email", "Sem Email")
             else:
                 # If no document found, set defaults
                 st.session_state["name"] = "Usuário Desconhecido"
                 st.session_state["roles"] = "viewer"
-
+                st.session_state["email"] = email_principal
+                
         except Exception as e:
             st.sidebar.error("Falha no login, senha incorreta.")
 
