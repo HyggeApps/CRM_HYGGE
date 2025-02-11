@@ -328,7 +328,7 @@ def gerenciamento_oportunidades(user):
                             # Criar selectbox para alterar o estágio
                             novo_estagio = st.selectbox(
                                 "Alterar estágio",
-                                options=['Aguardando projeto','Frio', 'Morno','Quente','Aguardando assinatura']+list(estagios_encerrados.keys()),
+                                options=list(estagios_encerrados.keys())+['Aguardando projeto','Frio', 'Morno','Quente','Aguardando assinatura'],
                                 index=list(estagios_encerrados.keys()).index(row['estagio']),
                                 key=f"select_{row['nome_oportunidade']}_encerrado"
                             )
