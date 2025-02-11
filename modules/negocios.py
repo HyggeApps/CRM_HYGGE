@@ -131,7 +131,10 @@ def gerenciamento_oportunidades(user):
             "data_criacao": 1, "data_fechamento": 1, "estagio": 1}
         )
     )
-    st.write(oportunidades)
+    if not oportunidades:
+        st.warning("Nenhuma oportunidade encontrada.")
+        return
+    
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
     df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
