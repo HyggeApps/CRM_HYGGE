@@ -124,7 +124,13 @@ def gerenciamento_oportunidades(user):
                         st.error("Preencha todos os campos obrigatórios.")
 
     # Buscar oportunidades no banco
-    oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,"data_criacao": 1, "data_fechamento": 1, "estagio": 1}))
+    oportunidades = list(
+        collection_oportunidades.find(
+            {"usuario": user},  # <─ ADICIONE ESTA CLÁUSULA PARA FILTRAR
+            {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,
+            "data_criacao": 1, "data_fechamento": 1, "estagio": 1}
+        )
+    )
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
     df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
