@@ -36,7 +36,6 @@ def gerenciamento_usuarios():
                             "email": email,
                             "fone": fone,
                             "setor": setor,
-                            "login": login,
                             "hierarquia": hierarquia,
                         }
                         collection.insert_one(document)
@@ -46,15 +45,15 @@ def gerenciamento_usuarios():
                         
                         
                 else:
-                    st.error("Preencha todos os campos obrigatórios (Nome, Sobrenome, Email, Login, Senha).")
+                    st.error("Preencha todos os campos obrigatórios (Nome, Sobrenome e Email).")
 
     # Aba: Remover Usuário
     with tab2:
         st.subheader("Remover Usuário")
 
         # Obter todos os usuários cadastrados
-        users = list(collection.find({}, {"_id": 0, "email": 1, "login": 1}))
-        opcoes_usuarios = [f"{user['email']} ({user['login']})" for user in users]
+        users = list(collection.find({}, {"_id": 0,"nome": 1, "email": 1}))
+        opcoes_usuarios = [f"{user['nome']} ({user['email']})" for user in users]
 
         if not opcoes_usuarios:
             st.warning("Nenhum usuário encontrado. Cadastre usuários antes de tentar removê-los.")
@@ -78,7 +77,7 @@ def gerenciamento_usuarios():
         st.subheader("Alterar Usuário")
 
         # Obter todos os usuários cadastrados
-        users = list(collection.find({}, {"_id": 0, "email": 1, "nome": 1, "sobrenome": 1, "fone": 1, "setor": 1, "login": 1, "hierarquia": 1}))
+        users = list(collection.find({}, {"_id": 0, "email": 1, "nome": 1, "sobrenome": 1, "fone": 1, "setor": 1, "hierarquia": 1}))
         opcoes_usuarios = [f"{user['email']}" for user in users]
 
         if not opcoes_usuarios:
@@ -92,7 +91,6 @@ def gerenciamento_usuarios():
                     sobrenome = st.text_input("Sobrenome", value=usuario['sobrenome'])
                     fone = st.text_input("Telefone", value=usuario['fone'])
                     setor = st.text_input("Setor", value=usuario['setor'])
-                    login = st.text_input("Login", value=usuario['login'])
                     hierarquia = st.selectbox("Hierarquia", ["admin", "viewer", "editor"], index=["admin", "viewer", "editor"].index(usuario['hierarquia']))
 
                     submit = st.form_submit_button("Alterar Usuário")
@@ -105,7 +103,6 @@ def gerenciamento_usuarios():
                                 "sobrenome": sobrenome,
                                 "fone": fone,
                                 "setor": setor,
-                                "login": login,
                                 "hierarquia": hierarquia
                             }}
                         )
