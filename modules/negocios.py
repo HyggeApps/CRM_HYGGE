@@ -183,7 +183,6 @@ def gerenciamento_oportunidades(user):
     # Criar colunas para exibição por estágio
 
     estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
-    st.write('----')
     colunas_estagios = st.columns(len(estagios_disponiveis))
     # Seção de oportunidades "ativas"
     for i, estagio in enumerate(estagios_disponiveis):
