@@ -68,13 +68,11 @@ def gerenciamento_oportunidades(user):
 
     # Mapeamento de ícones para cada estágio
     icones_estagios = {
-        "Frio": "🧊",
+        "Aguardando projeto": "⏳",
+        "Frio": "❄️",
         "Morno": "🌥️",
         "Quente": "🔥",
-        "Aguardando projeto": "📃",
-        "Aguardando a assinatura": "✒️",
-        "Fechado": "✅",
-        "Perdido": "❌"
+        "Aguardando a assinatura": "✍️"
     }
 
     css = """
@@ -88,20 +86,34 @@ def gerenciamento_oportunidades(user):
         """
     st.markdown(css, unsafe_allow_html=True)
     # Criar colunas para exibição por estágio
-    colunas_estagios = st.columns(5)
-    estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
 
+    estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
+    colunas_estagios = st.columns(len(estagios_disponiveis))
+
+    # Seção de oportunidades "ativas"
     for i, estagio in enumerate(estagios_disponiveis):
         with colunas_estagios[i]:
             st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
             
-            # Inicializa o total da categoria antes de exibir as oportunidades
-            total_valor = 0
+            # Filtra as oportunidades daquele estágio
+            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
             
-            with st.expander(f"📋 Ver mais..."):
+            # Calcula o total da categoria
+            total_valor = 0
+            for _, row_valor in df_filtrado.iterrows():
+                valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                try:
+                    total_valor += float(valor_str)
+                except ValueError:
+                    pass
+            
+            # Mostra o total acima do expander
+            st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
+            
+            # Expander para ver detalhes
+            with st.expander("📋 Ver mais..."):
                 st.write('----')
-                df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
-
+                
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
@@ -126,25 +138,14 @@ def gerenciamento_oportunidades(user):
                             st.rerun()  # Atualiza a página após a mudança
 
                         st.write("----")
-
-                        # Converter valor para número e somar
-                        valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                        try:
-                            total_valor += float(valor_str)
-                        except ValueError:
-                            pass  # Evita erro caso algum valor não seja convertível
-
-                    # Exibir total da categoria abaixo do estagio
-                    st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info("Nenhuma oportunidade.")
 
-
-
+    # Separador visual
     st.write('----')
     st.header('💸 Negócios encerrados/On-Hold')
-    
-    # Criar colunas para exibição de negócios encerrados
+
+    # Seção de oportunidades "encerradas"
     col1, col2, col3 = st.columns(3)
     estagios_encerrados = {
         "Perdido": {"icone": "❌", "titulo": "Perdidas"},
@@ -158,13 +159,25 @@ def gerenciamento_oportunidades(user):
         with col:
             st.subheader(f"{info['icone']} {info['titulo']}")
 
-            # Inicializa o total da categoria antes de exibir as oportunidades
+            # Filtra as oportunidades daquele estágio
+            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+
+            # Calcula o total da categoria
             total_valor = 0
-            
+            for _, row_valor in df_filtrado.iterrows():
+                valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                try:
+                    total_valor += float(valor_str)
+                except ValueError:
+                    pass
+
+            # Mostra o total acima do expander
+            st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
+
+            # Expander para ver detalhes das propostas encerradas
             with st.expander(f"📋 Propostas {info['titulo'].lower()}"):
                 st.write('----')
-                df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
-
+                
                 if not df_filtrado.empty:
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
@@ -174,7 +187,7 @@ def gerenciamento_oportunidades(user):
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
                             "Alterar estágio",
-                            options=list(estagios_encerrados.keys()),  # Atualiza com os estágios possíveis
+                            options=list(estagios_encerrados.keys()),
                             index=list(estagios_encerrados.keys()).index(row['estagio']),
                             key=f"select_{row['nome_oportunidade']}_encerrado"
                         )
@@ -190,15 +203,6 @@ def gerenciamento_oportunidades(user):
 
                         st.write("---")
 
-                        # Converter valor para número e somar
-                        valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                        try:
-                            total_valor += float(valor_str)
-                        except ValueError:
-                            pass  # Evita erro caso algum valor não seja convertível
-
-                    # Exibir total da categoria abaixo do estagio
-                    st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
                     st.info(f"Nenhuma oportunidade.")
 
