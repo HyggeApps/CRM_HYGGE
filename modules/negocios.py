@@ -243,7 +243,7 @@ def gerenciamento_oportunidades(user):
                         st.write(f"**💲 {row['valor_estimado']}**")
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 {data_formatada}")
-
+                        st.write(1)
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
                             "Alterar estágio",
