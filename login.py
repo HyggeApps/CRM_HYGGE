@@ -210,6 +210,7 @@ if not st.session_state['logado']:
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
     nome_user = st.session_state['email_principal'].replace("@hygge.eco.br", "")
+    st.write(nome_user)
     email_principal = st.session_state['email_principal']
     st.sidebar.markdown('------')
     
