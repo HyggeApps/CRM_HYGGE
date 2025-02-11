@@ -156,30 +156,17 @@ if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['roles'] = None
 
 if not st.session_state['logado']:
+    
+    CLIENT_ID = '2416c40e-33c3-4632-9f43-1884815ceeb8'
+    CLIENT_SECRET = '4Lz8Q~0aKVTfTfcWu0h1UWG1FmbiZt-uzGKMlbzL'
+    TENANT_ID = '68c8d20f-fecd-4b5c-bf1b-8def71adada1'
+    AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+    SCOPE = ['https://graph.microsoft.com/.default']
+    # Criar uma instância de aplicação
+    app = ConfidentialClientApplication(CLIENT_ID, authority=AUTHORITY_URL, client_credential=CLIENT_SECRET)
 
-    client_id = st.secrets["azure"]["client_id"]
-    client_secret = st.secrets["azure"]["client_secret"]
-    tenant_id = st.secrets["azure"]["tenant_id"]
-
-    client_id = "2416c40e-33c3-4632-9f43-1884815ceeb8"
-    client_secret = "4Lz8Q~0aKVTfTfcWu0h1UWG1FmbiZtuzGKMlbzL"
-    tenant_id = "68c8d20f-fecd-4b5c-bf1b-8def71adada1"
-
-    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
-    scope = ["https://graph.microsoft.com/.default"]
-
-    app = ConfidentialClientApplication(
-        client_id=client_id,
-        authority=authority_url,
-        client_credential=client_secret.strip()  # .strip() to remove whitespace
-    )
-
-    result = app.acquire_token_for_client(scopes=scope)
-    if "access_token" in result:
-        st.success("Token acquired successfully!")
-    else:
-        st.error(f"Error acquiring token: {result.get('error_description')}")
-
+    # Adquirir token
+    result = app.acquire_token_for_client(scopes=SCOPE)
 
     if "access_token" in result:
         # Usar o token de acesso para chamar o Microsoft Graph API
