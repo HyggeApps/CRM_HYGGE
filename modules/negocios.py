@@ -176,7 +176,8 @@ def gerenciamento_oportunidades(user):
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
-                        st.write(f"📆 {row['data_criacao']}")
+                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
+                        st.write(f"📆 {data_formatada}")
 
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
@@ -240,7 +241,8 @@ def gerenciamento_oportunidades(user):
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
-                        st.write(f"📆 {row['data_criacao']}")
+                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
+                        st.write(f"📆 {data_formatada}")
 
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
