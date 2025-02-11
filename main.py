@@ -158,7 +158,7 @@ if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
 if not st.session_state['logado']:
     
     CLIENT_ID = st.secrets["azure"]["client_id"]
-    CLIENT_SECRECT = st.secrets["azure"]["client_secret"]
+    CLIENT_SECRET = st.secrets["azure"]["client_secret"]
     TENANT_ID = st.secrets["azure"]["tenant_id"]
     AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
     SCOPE = ['https://graph.microsoft.com/.default']
