@@ -56,7 +56,8 @@ def gerenciamento_oportunidades(user):
     collection_produtos = get_collection("produtos")
 
     estagios = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura","On-hold", "Perdido", "Fechado"]
-
+    
+    st.header('💸 Negócios em andamento')
     with st.popover('➕ Cadastrar oportunidade'):
         st.header("Cadastrar Oportunidade")
         st.write('----')
