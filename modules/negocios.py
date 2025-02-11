@@ -150,6 +150,7 @@ def gerenciamento_oportunidades(user):
     }
     colunas_encerradas = [col1, col2, col3]
 
+    # Iterar sobre os estágios encerrados
     for col, (estagio, info) in zip(colunas_encerradas, estagios_encerrados.items()):
         with col:
             st.subheader(f"{info['icone']} {info['titulo']}")
@@ -164,14 +165,13 @@ def gerenciamento_oportunidades(user):
                         st.subheader(f"**{row['nome_oportunidade']}**")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f"📆 {row['data_criacao']}")
-                        st.write("---")
 
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
                             "Alterar estágio",
-                            options=estagios_encerrados,
-                            index=estagios_encerrados.index(row['estagio']),
-                            key=f"select_{row['nome_oportunidade']}"
+                            options=list(estagios_encerrados.keys()),  # Atualiza com os estágios possíveis
+                            index=list(estagios_encerrados.keys()).index(row['estagio']),
+                            key=f"select_{row['nome_oportunidade']}_encerrado"
                         )
 
                         # Se o estágio for alterado, atualizar no MongoDB
@@ -183,7 +183,7 @@ def gerenciamento_oportunidades(user):
                             st.success(f"Estágio alterado para {novo_estagio}")
                             st.rerun()  # Atualiza a página após a mudança
 
-                        st.write("----")
+                        st.write("---")
 
                         # Converter valor para número e somar
                         valor_str = str(row['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
@@ -195,6 +195,8 @@ def gerenciamento_oportunidades(user):
                     # Exibir total da categoria
                     st.subheader(f"💵 **Total: R$ {total_valor:,.2f}**")
                 else:
-                    st.info("Nenhuma oportunidade.")
+                    st.info(f"Nenhuma oportunidade.")
+
+
 
 
