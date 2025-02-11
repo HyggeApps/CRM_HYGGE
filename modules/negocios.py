@@ -125,6 +125,15 @@ def gerenciamento_oportunidades(user):
     periodo_escolhido = st.selectbox("Filtrar por período de criação:", opcoes_periodo, index=4)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
 
+    filtro_nome = st.text_input("Filtrar por nome da oportunidade (parcial ou completo)")
+
+    # Se o usuário digitar algo, filtramos
+    if filtro_nome.strip():
+        df_oportunidades_filtrado = df_oportunidades_filtrado[
+            df_oportunidades_filtrado["nome_oportunidade"]
+                .str.contains(filtro_nome, case=False, na=False)
+        ]
+
     # Mapeamento de ícones para cada estágio
     icones_estagios = {
         "Aguardando projeto": "⏳",
