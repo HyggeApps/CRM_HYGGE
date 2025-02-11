@@ -1,9 +1,51 @@
 import streamlit as st
 from utils.database import get_collection
 from datetime import datetime
-import datetime as dt
 import pandas as pd
+import datetime as dt
 import calendar
+
+hoje = dt.date.today()  # current date
+
+def filtrar_por_periodo(df, periodo):
+    df_filtrado = df.copy()
+
+    if periodo == "Mês atual":
+        ano_atual = hoje.year
+        mes_atual = hoje.month
+        # Primeiro e último dia do mês atual:
+        primeiro_dia = dt.date(ano_atual, mes_atual, 1)
+        ultimo_dia = dt.date(
+            ano_atual, 
+            mes_atual, 
+            calendar.monthrange(ano_atual, mes_atual)[1]
+        )
+        df_filtrado = df_filtrado[
+            (df_filtrado['data_criacao'].dt.date >= primeiro_dia) &
+            (df_filtrado['data_criacao'].dt.date <= ultimo_dia)
+        ]
+
+    elif periodo == "Últimos 30 dias":
+        limite = hoje - dt.timedelta(days=30)
+        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+    
+    elif periodo == "Últimos 3 meses":
+        limite = hoje - dt.timedelta(days=90)
+        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+
+    elif periodo == "Últimos 6 meses":
+        limite = hoje - dt.timedelta(days=180)
+        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+
+    elif periodo == "Último ano":
+        limite = hoje - dt.timedelta(days=365)
+        df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+
+    else:
+        # "Todo o período": não filtra nada
+        pass
+
+    return df_filtrado
 
 def gerenciamento_oportunidades(user):
     
@@ -68,8 +110,6 @@ def gerenciamento_oportunidades(user):
     oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,"data_criacao": 1, "data_fechamento": 1, "estagio": 1}))
     df_oportunidades = pd.DataFrame(oportunidades)
 
-    df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
-
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
@@ -81,54 +121,82 @@ def gerenciamento_oportunidades(user):
     ]
 
     periodo_escolhido = st.selectbox("Filtrar por período de criação", opcoes_periodo)
+    df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
+    
+    # Mapeamento de ícones para cada estágio
+    icones_estagios = {
+        "Aguardando projeto": "⏳",
+        "Frio": "❄️",
+        "Morno": "🌥️",
+        "Quente": "🔥",
+        "Aguardando a assinatura": "✍️"
+    }
 
-    hoje = dt.date.today()  # current date
+    css = """
+        <style>
+            /* Define um tamanho máximo e rolagem para o conteúdo dos expanders */
+            div[data-testid="stExpander"] div[role="group"] {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+        </style>
+        """
+    st.markdown(css, unsafe_allow_html=True)
+    # Criar colunas para exibição por estágio
 
-    def filtrar_por_periodo(df, periodo):
-        df_filtrado = df.copy()
+    estagios_disponiveis = ["Aguardando projeto", "Frio", "Morno", "Quente", "Aguardando a assinatura"]
+    colunas_estagios = st.columns(len(estagios_disponiveis))
 
-        if periodo == "Mês atual":
-            ano_atual = hoje.year
-            mes_atual = hoje.month
-            # Primeiro e último dia do mês atual:
-            primeiro_dia = dt.date(ano_atual, mes_atual, 1)
-            ultimo_dia = dt.date(
-                ano_atual, 
-                mes_atual, 
-                calendar.monthrange(ano_atual, mes_atual)[1]
-            )
-            df_filtrado = df_filtrado[
-                (df_filtrado['data_criacao'].dt.date >= primeiro_dia) &
-                (df_filtrado['data_criacao'].dt.date <= ultimo_dia)
-            ]
+    # Seção de oportunidades "ativas"
+    for i, estagio in enumerate(estagios_disponiveis):
+        with colunas_estagios[i]:
+            st.subheader(f"{icones_estagios[estagio]} {estagio}")  # Ícone dinâmico
+            
+            # Filtra as oportunidades daquele estágio
+            df_filtrado = df_oportunidades[df_oportunidades["estagio"] == estagio]
+            
+            # Calcula o total da categoria
+            total_valor = 0
+            for _, row_valor in df_filtrado.iterrows():
+                valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                try:
+                    total_valor += float(valor_str)
+                except ValueError:
+                    pass
+            
+            # Mostra o total acima do expander
+            st.write(f"💵 **Total: R$ {total_valor:,.2f}**")
+            
+            # Expander para ver detalhes
+            with st.expander("📋 Ver mais..."):
+                st.write('----')
+                
+                if not df_filtrado.empty:
+                    for _, row in df_filtrado.iterrows():
+                        st.subheader(f"**{row['nome_oportunidade']}**")
+                        st.write(f"**💲 {row['valor_estimado']}**")
+                        st.write(f"📆 {row['data_fechamento']}")
 
-        elif periodo == "Últimos 30 dias":
-            limite = hoje - dt.timedelta(days=30)
-            df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
-        
-        elif periodo == "Últimos 3 meses":
-            limite = hoje - dt.timedelta(days=90)
-            df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+                        # Criar selectbox para alterar o estágio
+                        novo_estagio = st.selectbox(
+                            "Alterar estágio",
+                            options=estagios_disponiveis,
+                            index=estagios_disponiveis.index(row['estagio']),
+                            key=f"select_{row['nome_oportunidade']}"
+                        )
 
-        elif periodo == "Últimos 6 meses":
-            limite = hoje - dt.timedelta(days=180)
-            df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
+                        # Se o estágio for alterado, atualizar no MongoDB
+                        if novo_estagio != row['estagio']:
+                            collection_oportunidades.update_one(
+                                {"nome_oportunidade": row['nome_oportunidade']},
+                                {"$set": {"estagio": novo_estagio}}
+                            )
+                            st.success(f"Estágio alterado para {novo_estagio}")
+                            st.rerun()  # Atualiza a página após a mudança
 
-        elif periodo == "Último ano":
-            limite = hoje - dt.timedelta(days=365)
-            df_filtrado = df_filtrado[df_filtrado['data_criacao'].dt.date >= limite]
-
-        else:
-            # "Todo o período": não filtra nada
-            pass
-
-        return df_filtrado
-
-
-    # Filtrar o dataframe conforme a seleção
-    df_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
-
-    st.write(f"**Período Selecionado:** {periodo_escolhido}")
+                        st.write("----")
+                else:
+                    st.info("Nenhuma oportunidade.")
 
     # Separador visual
     st.write('----')
