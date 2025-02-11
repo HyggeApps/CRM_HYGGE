@@ -25,19 +25,19 @@ def filtrar_por_periodo(df, periodo):
             (df_filtrado['data_fechamento'].dt.date <= ultimo_dia)
         ]
 
-    elif periodo == "Últimos 30 dias":
+    elif periodo == "Próximos 30 dias":
         limite = hoje - dt.timedelta(days=30)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
     
-    elif periodo == "Últimos 3 meses":
+    elif periodo == "Próximos 3 meses":
         limite = hoje - dt.timedelta(days=90)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
-    elif periodo == "Últimos 6 meses":
+    elif periodo == "Próximos 6 meses":
         limite = hoje - dt.timedelta(days=180)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
-    elif periodo == "Último ano":
+    elif periodo == "Próximo ano":
         limite = hoje - dt.timedelta(days=365)
         df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
@@ -132,10 +132,10 @@ def gerenciamento_oportunidades(user):
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
-        "Últimos 30 dias",
-        "Últimos 3 meses",
-        "Últimos 6 meses",
-        "Último ano",
+        "Próximos 30 dias",
+        "Próximos 3 meses",
+        "Próximos 6 meses",
+        "Próximo ano",
         "Todo o período"
     ]
 
