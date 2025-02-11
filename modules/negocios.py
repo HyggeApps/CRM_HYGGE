@@ -109,6 +109,7 @@ def gerenciamento_oportunidades(user):
     # Buscar oportunidades no banco
     oportunidades = list(collection_oportunidades.find({}, {"_id": 0, "cliente": 1, "nome_oportunidade": 1, "valor_estimado": 1,"data_criacao": 1, "data_fechamento": 1, "estagio": 1}))
     df_oportunidades = pd.DataFrame(oportunidades)
+    df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
 
     # Opções de períodos
     opcoes_periodo = [
@@ -122,7 +123,7 @@ def gerenciamento_oportunidades(user):
 
     periodo_escolhido = st.selectbox("Filtrar por período de criação", opcoes_periodo)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
-    
+
     # Mapeamento de ícones para cada estágio
     icones_estagios = {
         "Aguardando projeto": "⏳",
