@@ -206,7 +206,7 @@ if not st.session_state['logado']:
             # ─────────────────────────────────────────────────────────────
             # Query your "usuarios" collection to map the email to a user
             # ─────────────────────────────────────────────────────────────
-            user_data = collection_usuarios.find_one({"username": email_principal})
+            user_data = collection_usuarios.find_one("login": email_principal})
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("name", "Sem Nome")
@@ -223,7 +223,6 @@ if not st.session_state['logado']:
 # This part is executed if the user is logged in - LOGIN DO USUÁRIO
 if st.session_state.get('logado', False):
     email_principal = st.session_state['email_principal']
-    st.sidebar.markdown('------')
     
     if any(user in email_principal for user in ['rodrigo', 'alexandre', 'paula', 'fabricio','admin']):
         st.sidebar.info(f'Bem-vindo(a), **{st.session_state["name"]}**!')
