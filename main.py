@@ -148,13 +148,11 @@ config_data = funcs.load_config_and_check_or_insert_cookies(temp_config_path)
 # Verifique se a sessão já tem uma chave 'logado'
 if 'logado' not in st.session_state:
     st.session_state['logado'] = False
-if 'name' not in st.session_state:
+if 'name' not in st.session_state:     ### NEW OR UPDATED ###
     st.session_state['name'] = None
-if 'last_name' not in st.session_state:
-    st.session_state['last_name'] = None
-if 'email' not in st.session_state:
+if 'email' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['email'] = None
-if 'roles' not in st.session_state:
+if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['roles'] = None
 
 if not st.session_state['logado']:
@@ -225,7 +223,7 @@ if not st.session_state['logado']:
             else:
                 # If no document found, set defaults
                 st.session_state["name"] = "Usuário Desconhecido"
-                st.session_state["last_name"] = " "
+                st.session_state["name"] = " "
                 st.session_state["roles"] = "viewer"
                 st.session_state["email"] = email_principal
 
@@ -275,7 +273,7 @@ if st.session_state.get('logado', False):
                 },
             )
 
-    usuario_ativo = f'{st.session_state["name"]} {st.session_state["last_name"] }({st.session_state["email"]})'
+    usuario_ativo = f'{st.session_state["name"]} ({st.session_state["email"]})'
     st.write(usuario_ativo)
     # Título Principal
     st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")

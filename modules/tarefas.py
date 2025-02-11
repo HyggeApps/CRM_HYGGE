@@ -250,6 +250,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 🔹 Filtra diretamente as tarefas do usuário logado
     cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": user}, {"cnpj": 1})}
     
+    
     if not cnpjs_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
         return
