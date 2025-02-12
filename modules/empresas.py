@@ -255,7 +255,7 @@ def consultar_empresas(user, admin):
         # Selectbox com todas as razões sociais (mais a opção "Todos")
         filtro_razao_social = st.selectbox(
             "Nome",
-            options=["Todos"] + todas_razoes,
+            options=[""] + todas_razoes,
             index=0, placeholder="Selecione a razão social"
         )
 
@@ -269,14 +269,14 @@ def consultar_empresas(user, admin):
         filtro_tamanho = st.multiselect(
             "Tamanho",
             options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
-            default=[]
+            default=[],placeholder="Selecione o tamanho"
         )
 
     with col5:
         filtro_vendedor = st.selectbox(
             "Proprietário",
             options=[""] + vendedores,
-            index=0
+            index=0,placeholder="Selecione o vendedor"
         )
 
     with col6:
@@ -298,7 +298,7 @@ def consultar_empresas(user, admin):
     if filtro_tamanho:
         query["tamanho_empresa"] = {"$in": filtro_tamanho}
 
-    if filtro_vendedor and filtro_vendedor != "Todos":
+    if filtro_vendedor and filtro_vendedor != "":
         query["usuario"] = filtro_vendedor
 
     if filtro_data_atividade:
