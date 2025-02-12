@@ -244,9 +244,7 @@ def consultar_empresas(user, admin):
     todas_razoes = list(collection_empresas.distinct("razao_social"))
     # Remove valores vazios ou None, se houver
     todas_razoes = [r for r in todas_razoes if r]
-    # Ordena para melhor visualização (opcional)
-    todas_razoes.sort()
-
+    
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
 
