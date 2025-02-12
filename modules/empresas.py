@@ -337,6 +337,7 @@ def consultar_empresas(user, admin):
                 ),
             },
             disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente", "CNPJ"],
+            column_order=["Visualizar", "Nome", "Proprietário", "Última Atividade", "Grau Cliente", "Cidade", "UF", "Setor", "Produto Interesse", "Tamanho", "Data de Criação", "CNPJ"],
             hide_index=True,
             use_container_width=True
         )
