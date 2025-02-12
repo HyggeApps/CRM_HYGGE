@@ -199,7 +199,7 @@ def cadastrar_empresas(user, admin):
                     st.error("Empresa já cadastrada com esta razão social!")
                 else:
                     # Registrar empresa
-                    now = datetime.today().strftime("%Y-%m-%d")
+                    now = datetime.today().strftime("%d-%m-%Y")
                     document = {
                         "razao_social": razao_social,
                         "proprietario": user,
@@ -226,7 +226,7 @@ def cadastrar_empresas(user, admin):
                     tarefa_document = {
                         "titulo": "Identificar personas",
                         "empresa": cnpj,
-                        "data_execucao": prazo_execucao.strftime("%Y-%m-%d"),
+                        "data_execucao": prazo_execucao.strftime("%d-%m-%Y"),
                         "observacoes": "Nova empresa cadastrada",
                         "status": "🟨 Em andamento"
                     }
@@ -290,7 +290,7 @@ def consultar_empresas(user, admin):
         query["usuario"] = filtro_vendedor
 
     if filtro_data_atividade:
-        query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
+        query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%d-%m-%Y")}
 
     # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
