@@ -256,7 +256,7 @@ def consultar_empresas(user, admin):
         filtro_razao_social = st.selectbox(
             "Nome",
             options=["Todos"] + todas_razoes,
-            index=0
+            index=0, placeholder="Selecione a razão social"
         )
 
     with col2:
