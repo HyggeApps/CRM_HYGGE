@@ -194,9 +194,9 @@ def cadastrar_empresas(user, admin):
             if not razao_social or not cnpj or not cidade or not setor or not produto_interesse or not tamanho_empresa:
                 st.error("Preencha todos os campos obrigatórios!")
             else:
-                existing_company = collection_empresas.find_one({"cnpj": cnpj})
+                existing_company = collection_empresas.find_one({"razao_social": razao_social})
                 if existing_company:
-                    st.error("Empresa já cadastrada com este CNPJ!")
+                    st.error("Empresa já cadastrada com esta razão social!")
                 else:
                     # Registrar empresa
                     now = datetime.today().strftime("%Y-%m-%d")
@@ -244,34 +244,101 @@ def consultar_empresas(user, admin):
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
 
+    # -----------------------------------
+    # 1. Carregar lista de possíveis razões sociais e vendedores
+    # -----------------------------------
+    # Use distinct para obter todas as razões sociais (elimina duplicadas)
+    todas_razoes = list(collection_empresas.distinct("razao_social"))
+    # Remover vazios ou None, se necessário
+    todas_razoes = [r for r in todas_razoes if r]
+
+    # -----------------------------------
     # Filtros
+    # -----------------------------------
     col1, col2, col3, col4, col5, col6 = st.columns(6)
+
     with col1:
-        filtro_razao_social = st.text_input("Nome", placeholder="Parte do nome da empresa")
+        # 2. Campo de texto (usuário digita aqui)
+        texto_digitado = st.text_input("Nome", placeholder="Parte do nome da empresa")
+
+        # 3. Filtrar a lista de razões sociais com base no que foi digitado
+        #    (case-insensitive)
+        if texto_digitado:
+            opcoes_filtradas = [
+                razao
+                for razao in todas_razoes
+                if texto_digitado.lower() in razao.lower()
+            ]
+        else:
+            # Se estiver vazio, não exibimos nada ou exibimos toda a lista
+            # Mas cuidado com o tamanho da lista se for muito grande
+            opcoes_filtradas = []
+
+        # 4. Exibir um selectbox com as sugestões filtradas
+        if opcoes_filtradas:
+            razao_escolhida = st.selectbox(
+                "Sugestões encontradas",
+                options=["(Nenhuma selecionada)"] + opcoes_filtradas,
+                key="select_razao_social"
+            )
+        else:
+            # Se não houve texto digitado ou não há sugestões, podemos tratar aqui
+            # Se quiser deixar o selectbox mesmo assim, apenas colocar uma lista vazia
+            razao_escolhida = st.selectbox(
+                "Sugestões encontradas",
+                options=["(Nenhuma sugestão)"],
+                key="select_razao_social"
+            )
+
     with col2:
         filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
+
     with col3:
         filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
+
     with col4:
-        filtro_tamanho = st.multiselect("Tamanho", options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"], default=[])
+        filtro_tamanho = st.multiselect(
+            "Tamanho",
+            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
+            default=[]
+        )
+
     with col5:
         filtro_vendedor = st.selectbox("Proprietário", options=["Todos"] + vendedores, index=0)
+
     with col6:
         filtro_data_atividade = st.date_input("Data da última atividade", value=None)
 
+    # -----------------------------------
     # Construir query de filtro
+    # -----------------------------------
     query = {}
-    if filtro_razao_social:
-        query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
+
+    # Se o usuário digitou algo e também selecionou alguma sugestão específica
+    # você pode priorizar a escolha do selectbox (razao_escolhida).
+    # Exemplo 1: Se preferir filtrar SOMENTE pela sugestão selecionada
+    if razao_escolhida and razao_escolhida not in ["(Nenhuma selecionada)", "(Nenhuma sugestão)"]:
+        query["razao_social"] = {"$regex": razao_escolhida, "$options": "i"}
+    else:
+        # Exemplo 2: Caso deseje filtrar mesmo sem a pessoa selecionar no selectbox
+        # e apenas usar o texto digitado
+        if texto_digitado:
+            query["razao_social"] = {"$regex": texto_digitado, "$options": "i"}
+
     if filtro_cidade:
         query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
+
     if filtro_estado:
         query["estado"] = filtro_estado.upper()
+
     if filtro_tamanho:
         query["tamanho_empresa"] = {"$in": filtro_tamanho}
+
     if filtro_vendedor and filtro_vendedor != "Todos":
         query["usuario"] = filtro_vendedor
+
     if filtro_data_atividade:
+        # Formata a data para string no padrão YYYY-MM-DD
         query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
 
     # Buscar empresas no banco de dados com os filtros aplicados
