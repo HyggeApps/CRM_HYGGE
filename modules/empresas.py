@@ -299,7 +299,7 @@ def consultar_empresas(user, admin):
         df_empresas = pd.DataFrame(empresas_filtradas)
 
         # ✅ Garantir que "CNPJ" existe antes de renomear colunas
-        if "cnpj" in df_empresas.columns:
+        if "razao_social" in df_empresas.columns:
             df_empresas = df_empresas.rename(
                 columns={
                     "razao_social": "Nome",
@@ -316,16 +316,16 @@ def consultar_empresas(user, admin):
                 }
             )
         else:
-            st.error("Erro: O campo 'CNPJ' não foi encontrado no banco de dados.")
+            st.error("Erro: O campo 'Nome' não foi encontrado no banco de dados.")
 
         # Adicionar a coluna "Visualizar" na primeira posição
         df_empresas.insert(0, "Visualizar", False)
 
         # ✅ Corrigir seleção no session_state
-        empresa_cnpj_selecionada = st.session_state.get("empresa_cnpj_selecionada", None)
+        empresa_nome_selecionada = st.session_state.get("empresa_nome_selecionada", None)
 
-        if empresa_cnpj_selecionada and empresa_cnpj_selecionada in df_empresas["CNPJ"].values:
-            df_empresas.loc[df_empresas["CNPJ"] == empresa_cnpj_selecionada, "Visualizar"] = True
+        if empresa_nome_selecionada and empresa_nome_selecionada in df_empresas["Nome"].values:
+            df_empresas.loc[df_empresas["Nome"] == empresa_nome_selecionada, "Visualizar"] = True
 
         # Criar editor de dados interativo
         edited_df = st.data_editor(
@@ -350,21 +350,21 @@ def consultar_empresas(user, admin):
             nova_empresa = edited_df.iloc[selected_index].to_dict()
 
             # Se a seleção mudou, atualizar session_state
-            if empresa_cnpj_selecionada != nova_empresa["CNPJ"]:
+            if empresa_nome_selecionada != nova_empresa["Nome"]:
                 st.session_state["empresa_selecionada"] = nova_empresa
-                st.session_state["empresa_cnpj_selecionada"] = nova_empresa["CNPJ"]
+                st.session_state["empresa_nome_selecionada"] = nova_empresa["Nome"]
                 st.rerun()  # 🔄 Garante a atualização imediata no UI
 
         # Se nenhuma empresa estiver marcada, limpar session_state corretamente
-        elif empresa_cnpj_selecionada:
+        elif empresa_nome_selecionada:
             del st.session_state["empresa_selecionada"]
-            del st.session_state["empresa_cnpj_selecionada"]
+            del st.session_state["empresa_nome_selecionada"]
             st.rerun()
 
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
             empresa = st.session_state["empresa_selecionada"]
-            empresa_cnpj = empresa["CNPJ"]
+            empresa_nome = empresa["nome"]
 
             st.write('----')
 
@@ -377,10 +377,10 @@ def consultar_empresas(user, admin):
                 with st.expander("📋 Dados da Empresa", expanded=True):
 
                     collection_empresas = get_collection("empresas")
-                    empresa_cnpj = st.session_state.get("empresa_cnpj_selecionada", None)
+                    empresa_nome = st.session_state.get("empresa_nome_selecionada", None)
 
-                    if empresa_cnpj:
-                        empresa_atualizada = collection_empresas.find_one({"cnpj": empresa_cnpj}, {"_id": 0})
+                    if empresa_nome:
+                        empresa_atualizada = collection_empresas.find_one({"razao_social": empresa_nome}, {"_id": 0})
 
                         if empresa_atualizada:
                             dados_empresa = {
@@ -404,22 +404,22 @@ def consultar_empresas(user, admin):
                         st.warning("Nenhuma empresa selecionada.")
 
                 # Integrando a função de exibir contatos
-                if empresa_cnpj:
+                if empresa_nome:
                     st.write('----')
                     st.subheader("☎️ Informações sobre contatos")
-                    exibir_contatos_empresa(user, admin, empresa_cnpj)
+                    exibir_contatos_empresa(user, admin, empresa_nome)
                 else:
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
             with col2:
                 st.write("### 📜 Tarefas para a empresa")
-                if empresa_cnpj:
-                    gerenciamento_tarefas(user, admin, empresa_cnpj)
+                if empresa_nome:
+                    gerenciamento_tarefas(user, admin, empresa_nome)
                 st.write('----')
                 st.write("### 📌 Histórico de atividades")
                 
-                if empresa_cnpj:
-                    exibir_atividades_empresa(user, admin, empresa_cnpj)
+                if empresa_nome:
+                    exibir_atividades_empresa(user, admin, empresa_nome)
                 else:
                     st.error("Erro ao carregar o CNPJ da empresa.")
 
