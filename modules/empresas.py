@@ -365,7 +365,7 @@ def consultar_empresas(user, admin):
         # Exibir detalhes da empresa selecionada
         if st.session_state.get("empresa_selecionada"):
             empresa = st.session_state["empresa_selecionada"]
-            empresa_nome = empresa["nome"]
+            empresa_nome = empresa["Nome"]
 
             st.write('----')
 
