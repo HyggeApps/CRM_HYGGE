@@ -249,7 +249,7 @@ def consultar_empresas(user, admin):
     vendedores = [v for v in vendedores if v]
 
     # Filtros
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1, col4, col5, col6 = st.columns(4)
     
     with col1:
         # Selectbox com todas as razões sociais (mais a opção "Todos")
@@ -258,12 +258,6 @@ def consultar_empresas(user, admin):
             options=[""] + todas_razoes,
             index=0, placeholder="Selecione a razão social"
         )
-
-    with col2:
-        filtro_cidade = st.text_input("Cidade", placeholder="Digite a cidade")
-
-    with col3:
-        filtro_estado = st.text_input("Estado (UF)", max_chars=2, placeholder="Ex: SP")
 
     with col4:
         filtro_tamanho = st.multiselect(
@@ -288,12 +282,6 @@ def consultar_empresas(user, admin):
     # Se não for "Todos", filtra pela razão selecionada
     if filtro_razao_social and filtro_razao_social != "":
         query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
-
-    if filtro_cidade:
-        query["cidade"] = {"$regex": filtro_cidade, "$options": "i"}
-
-    if filtro_estado:
-        query["estado"] = filtro_estado.upper()
 
     if filtro_tamanho:
         query["tamanho_empresa"] = {"$in": filtro_tamanho}
