@@ -244,7 +244,7 @@ def consultar_empresas(user, admin):
     todas_razoes = list(collection_empresas.distinct("razao_social"))
     # Remove valores vazios ou None, se houver
     todas_razoes = [r for r in todas_razoes if r]
-    
+
     vendedores = list(collection_empresas.distinct("usuario"))
     vendedores = [v for v in vendedores if v]
 
@@ -275,7 +275,7 @@ def consultar_empresas(user, admin):
     with col5:
         filtro_vendedor = st.selectbox(
             "Proprietário",
-            options=["Todos"] + vendedores,
+            options=[""] + vendedores,
             index=0
         )
 
@@ -286,7 +286,7 @@ def consultar_empresas(user, admin):
     query = {}
 
     # Se não for "Todos", filtra pela razão selecionada
-    if filtro_razao_social and filtro_razao_social != "Todos":
+    if filtro_razao_social and filtro_razao_social != "":
         query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
 
     if filtro_cidade:
