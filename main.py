@@ -216,6 +216,7 @@ if not st.session_state['logado']:
             # Query your "usuarios" collection to map the email to a user
             # ─────────────────────────────────────────────────────────────
             user_data = collection_usuarios.find_one({"email": email_principal})
+            st.write(user_data)
             if user_data:
                 # e.g., user_data might contain { "username": "...", "name": "Rodrigo", "roles": ["admin"] }
                 st.session_state["name"] = user_data.get("nome", "Sem Nome")
