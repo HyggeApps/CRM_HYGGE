@@ -62,14 +62,13 @@ def gerenciamento_oportunidades(user):
         st.header("Cadastrar Oportunidade")
         st.write('----')
         
-        # Busca clientes, usuários e produtos do banco de dados
         clientes = list(collection_clientes.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
-        
+
         opcoes_clientes = [f"{c['razao_social']} (CNPJ: {c['cnpj']})" for c in clientes]
         opcoes_produtos = [f"{p['nome']} ({p['categoria']})" for p in produtos]
-        
+
         if not clientes:
             st.warning("Cadastre um cliente antes de criar oportunidades.")
         elif not usuarios or not produtos:
@@ -80,44 +79,49 @@ def gerenciamento_oportunidades(user):
                 nome_opp = st.text_input('Nome da oportunidade', key="nome_oportunidade")
                 # Alterado para multiselect para permitir seleção de mais de um produto
                 produtos_selecionados_text = st.multiselect("Produtos", options=opcoes_produtos, key="select_produto_oportunidade")
-                valor_estimado = st.text_input("Valor", value='R$ 9.900,00', disabled=True, key="input_valor_estimado_oportunidade")
+                # O valor estimado será calculado a partir do somatório dos preços dos produtos selecionados
                 estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
-        
+            
                 if submit:
                     if cliente and produtos_selecionados_text:
                         # Buscar o cliente selecionado
                         cliente_selecionado = next((c for c in clientes if f"{c['razao_social']} (CNPJ: {c['cnpj']})" == cliente), None)
                         # Buscar os produtos selecionados (mapeia os textos selecionados para os objetos de produtos)
                         produtos_selecionados_obj = [p for p in produtos if f"{p['nome']} ({p['categoria']})" in produtos_selecionados_text]
-        
+            
                         if cliente_selecionado and produtos_selecionados_obj:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
+                            # "produtos" será uma lista com os nomes dos produtos selecionados
+                            produtos_lista = [p["nome"] for p in produtos_selecionados_obj]
+                            # "valor_estimado" será o somatório do preço de cada produto selecionado
+                            valor_estimado_calculado = sum(float(p["preco"]) for p in produtos_selecionados_obj)
+                            
                             document = {
                                 "cliente": cliente_selecionado["razao_social"],
                                 "nome_oportunidade": nome_opp,
                                 "usuario": user,
-                                # O campo "produtos" será uma lista com o preço de cada produto selecionado
-                                "produtos": [p["preco"] for p in produtos_selecionados_obj],
-                                "valor_estimado": valor_estimado,
+                                "produtos": produtos_lista,
+                                "valor_estimado": valor_estimado_calculado,
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
                                 "data_fechamento": str(data_fechamento)
                             }
                             collection_oportunidades.insert_one(document)
-        
-                            # Criar uma nova atividade informando que a oportunidade foi criada
+            
+                            # Criar uma nova atividade informando que a oportunidade foi cadastrada
                             nova_atividade = {
                                 "atividade_id": str(datetime.now().timestamp()),  
                                 "tipo_atividade": "Observação",
                                 "status": "Registrado",
                                 "titulo": f"Oportunidade '{nome_opp}' criada",
                                 "empresa": cliente_selecionado["cnpj"],
-                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}'.",
+                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com os produtos: {produtos_lista}.",
                                 "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                 "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                             }
+            
                             collection_atividades.insert_one(nova_atividade)
                             st.success("Oportunidade e atividade cadastradas com sucesso!")
                             st.rerun()
@@ -125,6 +129,7 @@ def gerenciamento_oportunidades(user):
                             st.error("Erro ao localizar as entidades selecionadas. Tente novamente.")
                     else:
                         st.error("Preencha todos os campos obrigatórios.")
+
 
     # Buscar oportunidades no banco
     oportunidades = list(
