@@ -25,7 +25,7 @@ def gerenciamento_usuarios():
             if submit:
                 if nome and sobrenome and email:
                     # Verificar duplicidade no banco de dados
-                    existing_user = collection.find_one({"$or": [{"email": email}, {"nome": nome}]})
+                    existing_user = collection.find_one({"$or": [{"email": email}]})
                     if existing_user:
                         st.error("Usuário já cadastrado com este email!")
                     else:
