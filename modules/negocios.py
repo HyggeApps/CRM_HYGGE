@@ -79,7 +79,7 @@ def gerenciamento_oportunidades(user):
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
 
         opcoes_clientes = [f"{c['razao_social']} (CNPJ: {c['cnpj']})" for c in clientes]
-        opcoes_produtos = [f"{p['nome']} ({p['categoria']})" for p in produtos]
+        opcoes_produtos = [f"{p['nome']}" for p in produtos]
 
         if not clientes:
             st.warning("Cadastre um cliente antes de criar oportunidades.")
