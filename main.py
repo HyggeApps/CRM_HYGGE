@@ -276,6 +276,7 @@ if st.session_state.get('logado', False):
             )
 
     usuario_ativo = f'{st.session_state["name"]} {st.session_state["lastname"]}'
+    st.write(usuario_ativo)
     # Título Principal
     st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")
     st.write('----')
