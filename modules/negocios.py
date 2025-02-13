@@ -232,6 +232,7 @@ def gerenciamento_oportunidades(user):
                     for _, row in df_filtrado.iterrows():
                         st.subheader(f"{row['nome_oportunidade']}")
                         st.write(f"**💲 {row['valor_estimado']}**")
+                        st.write(f'**{row['produtos']}**')
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
