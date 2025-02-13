@@ -47,6 +47,14 @@ def filtrar_por_periodo(df, periodo):
 
     return df_filtrado
 
+def format_currency(value):
+    """
+    Formata um valor numérico no padrão brasileiro de moeda:
+    Exemplo: 10900.0 -> "R$ 10.900,00"
+    """
+    return "R$ " + "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+
+
 def gerenciamento_oportunidades(user):
     
     collection_atividades = get_collection("atividades")
@@ -62,6 +70,10 @@ def gerenciamento_oportunidades(user):
         st.header("Cadastrar Oportunidade")
         st.write('----')
         
+        # Supondo que as coleções e variáveis já estejam definidas:
+        # collection_clientes, collection_usuarios, collection_produtos,
+        # collection_oportunidades, collection_atividades, user, estagios
+
         clientes = list(collection_clientes.find({"usuario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
@@ -77,9 +89,8 @@ def gerenciamento_oportunidades(user):
             with st.form(key="form_cadastro_oportunidade"):
                 cliente = st.selectbox("Cliente", options=opcoes_clientes, key="select_cliente_oportunidade")
                 nome_opp = st.text_input('Nome da oportunidade', key="nome_oportunidade")
-                # Alterado para multiselect para permitir seleção de mais de um produto
+                # Multiselect para permitir a seleção de mais de um produto
                 produtos_selecionados_text = st.multiselect("Produtos", options=opcoes_produtos, key="select_produto_oportunidade")
-                # O valor estimado será calculado a partir do somatório dos preços dos produtos selecionados
                 estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
@@ -95,15 +106,16 @@ def gerenciamento_oportunidades(user):
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
                             # "produtos" será uma lista com os nomes dos produtos selecionados
                             produtos_lista = [p["nome"] for p in produtos_selecionados_obj]
-                            # "valor_estimado" será o somatório do preço de cada produto selecionado
-                            valor_estimado_calculado = sum(float(p["preco"]) for p in produtos_selecionados_obj)
+                            # "valor_estimado" será o somatório do preço base de cada produto selecionado
+                            total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
+                            valor_estimado_formatado = format_currency(total)
                             
                             document = {
                                 "cliente": cliente_selecionado["razao_social"],
                                 "nome_oportunidade": nome_opp,
                                 "usuario": user,
                                 "produtos": produtos_lista,
-                                "valor_estimado": valor_estimado_calculado,
+                                "valor_estimado": valor_estimado_formatado,
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
                                 "data_fechamento": str(data_fechamento)
@@ -117,7 +129,7 @@ def gerenciamento_oportunidades(user):
                                 "status": "Registrado",
                                 "titulo": f"Oportunidade '{nome_opp}' criada",
                                 "empresa": cliente_selecionado["cnpj"],
-                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com os produtos: {produtos_lista}.",
+                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com os produtos: {produtos_lista}. Valor total: {valor_estimado_formatado}.",
                                 "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                 "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                             }
