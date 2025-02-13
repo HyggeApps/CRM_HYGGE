@@ -100,7 +100,7 @@ def gerenciamento_oportunidades(user):
                         # Buscar o cliente selecionado
                         cliente_selecionado = next((c for c in clientes if f"{c['razao_social']} (CNPJ: {c['cnpj']})" == cliente), None)
                         # Buscar os produtos selecionados (mapeia os textos selecionados para os objetos de produtos)
-                        produtos_selecionados_obj = [p for p in produtos if f"{p['nome']} ({p['categoria']})" in produtos_selecionados_text]
+                        produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in produtos_selecionados_text]
             
                         if cliente_selecionado and produtos_selecionados_obj:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
@@ -118,7 +118,13 @@ def gerenciamento_oportunidades(user):
                                 "valor_estimado": valor_estimado_formatado,
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
-                                "data_fechamento": str(data_fechamento)
+                                "data_fechamento": str(data_fechamento),
+                                "motivo_perda": '',
+                                "motivo_ganho": '',
+                                "dias_para_fechar": '',
+                                'negocio_fechado': False,
+                                'negocio_perdido': False
+
                             }
                             collection_oportunidades.insert_one(document)
             
