@@ -171,7 +171,7 @@ def gerenciamento_oportunidades(user):
 
     periodo_escolhido = st.selectbox("Filtrar por previsão de fechamento:", opcoes_periodo, index=4)
     df_oportunidades_filtrado = filtrar_por_periodo(df_oportunidades, periodo_escolhido)
-
+    st.write(df_oportunidades_filtrado.columns())
     filtro_nome = st.text_input("Filtrar por nome da oportunidade (parcial ou completo):")
 
     # Se o usuário digitar algo, filtramos
