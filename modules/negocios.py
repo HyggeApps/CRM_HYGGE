@@ -409,9 +409,9 @@ def gerenciamento_oportunidades(user):
                                             "atividade_id": str(datetime.now().timestamp()),  
                                             "tipo_atividade": "Observação",
                                             "status": "Registrado",
-                                            "titulo": f"Oportunidade '{nome_opp}' atualizada",
+                                            "titulo": f"Oportunidade '{novo_nome}' atualizada",
                                             "empresa": row["cliente"],
-                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
+                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{novo_nome}', novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                                         }
