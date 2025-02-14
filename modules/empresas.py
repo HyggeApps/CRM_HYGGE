@@ -76,7 +76,7 @@ def editar_empresa(user, admin):
             produto_interesse = st.multiselect(
                 "Produto de Interesse *", 
                 ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"], 
-                default=empresa.get("Produto de Interesse", []) if isinstance(empresa.get("Produto de Interesse"), list) else [empresa.get("Produto de Interesse", "NBR Fast")],
+                default=empresa.get("Produto Interesse", []) if isinstance(empresa.get("Produto Interesse"), list) else [empresa.get("Produto Interesse", "NBR Fast")],
                 disabled=not eh_proprietario
             )
 
@@ -85,7 +85,7 @@ def editar_empresa(user, admin):
             tamanho_empresa = st.multiselect(
                 "Tamanho da Empresa *", 
                 ["Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
-                default=empresa.get("Tamanho da Empresa", []) if isinstance(empresa.get("Tamanho da Empresa"), list) else [empresa.get("Tamanho da Empresa", "Tier 1")],
+                default=empresa.get("Tamanho", []) if isinstance(empresa.get("Tamanho"), list) else [empresa.get("Tamanho", "Tier 1")],
                 disabled=not eh_proprietario
             )
 
