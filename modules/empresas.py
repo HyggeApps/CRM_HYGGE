@@ -84,6 +84,7 @@ def editar_empresa(user, admin):
             tamanho_empresa = st.multiselect(
                 "Tamanho da Empresa *", 
                 ["Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
+                default=empresa.get("Tamanho da Empresa", []) if isinstance(empresa.get("Tamanho da Empresa"), list) else [empresa.get("Tamanho da Empresa", "Tier 1")],
                 disabled=not eh_proprietario
             )
 
