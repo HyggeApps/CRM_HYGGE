@@ -41,22 +41,22 @@ def calcular_data_execucao(opcao):
     return opcoes_prazo.get(opcao, hoje)
 
 @st.fragment
-def exibir_atividades_empresa(user, admin, empresa_cnpj):
+def exibir_atividades_empresa(user, admin, empresa_nome):
     collection_atividades = get_collection("atividades")
     collection_contatos = get_collection("contatos")
 
-    if not empresa_cnpj:
+    if not empresa_nome:
         st.error("Erro: Nenhuma empresa selecionada para exibir atividades.")
         return
 
     # Buscar contatos vinculados à empresa
-    contatos_vinculados = list(collection_contatos.find({"empresa": empresa_cnpj}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
+    contatos_vinculados = list(collection_contatos.find({"empresa": empresa_nome}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
 
     # Criar lista de contatos formatada
     lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
 
     # Buscar atividades vinculadas **somente** à empresa selecionada
-    atividades = list(collection_atividades.find({"empresa": empresa_cnpj}, {"_id": 0}))
+    atividades = list(collection_atividades.find({"empresa": empresa_nome}, {"_id": 0}))
 
     # Dicionário de meses com valores numéricos para ordenação
     MESES_NUMERICOS = {
@@ -109,7 +109,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "tipo_atividade": tipo,
                             "status": status,
                             "titulo": titulo,
-                            "empresa": empresa_cnpj,
+                            "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
@@ -121,7 +121,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
                         collection_empresas = get_collection("empresas")
                         collection_empresas.update_one(
-                            {"cnpj": empresa_cnpj},
+                            {"razao_social": empresa_nome},
                             {"$set": {"ultima_atividade": data_hoje}}
                         )
 
@@ -139,7 +139,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                             "tipo_atividade": tipo,
                             "status": status,
                             "titulo": titulo,
-                            "empresa": empresa_cnpj,
+                            "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
@@ -150,7 +150,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         nova_tarefa = {
                             "tarefa_id": str(datetime.now().timestamp()),  # Gerar um ID único baseado no tempo
                             "titulo": titulo_tarefa,
-                            "empresa": empresa_cnpj,
+                            "empresa": empresa_nome,
                             "atividade_vinculada": atividade_id,  # Relacionar com a atividade criada
                             "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
                             "status": status_tarefa,
@@ -163,7 +163,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                         data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
                         collection_empresas = get_collection("empresas")
                         collection_empresas.update_one(
-                            {"cnpj": empresa_cnpj},
+                            {"razao_social": empresa_nome},
                             {"$set": {"ultima_atividade": data_hoje}}
                         )
 

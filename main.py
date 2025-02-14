@@ -338,3 +338,4 @@ if st.session_state.get('logado', False):
         st.write('----')
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
+

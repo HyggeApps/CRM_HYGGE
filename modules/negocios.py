@@ -134,7 +134,7 @@ def gerenciamento_oportunidades(user):
                                 "tipo_atividade": "Observação",
                                 "status": "Registrado",
                                 "titulo": f"Oportunidade '{nome_opp}' criada",
-                                "empresa": cliente_selecionado["cnpj"],
+                                "empresa": cliente_selecionado["razao_social"],
                                 "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com os produtos: {produtos_lista}. Valor total: {valor_estimado_formatado}.",
                                 "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                 "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
@@ -296,7 +296,7 @@ def gerenciamento_oportunidades(user):
                                         "tipo_atividade": "Observação",
                                         "status": "Registrado",
                                         "titulo": f"Oportunidade '{nome_opp}' atualizada",
-                                        "empresa": cnpj_cliente,
+                                        "empresa": row['cliente'],
                                         "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
                                         "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                         "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
@@ -415,7 +415,7 @@ def gerenciamento_oportunidades(user):
                                             "tipo_atividade": "Observação",
                                             "status": "Registrado",
                                             "titulo": f"Oportunidade '{nome_opp}' atualizada",
-                                            "empresa": nome_cliente,
+                                            "empresa": row["cliente"],
                                             "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
