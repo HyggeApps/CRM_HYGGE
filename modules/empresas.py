@@ -68,7 +68,7 @@ def editar_empresa(user, admin):
             setor = st.selectbox(
                 "Setor *", 
                 ["", "Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
-                index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
+                index=["","Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
                 disabled=not eh_proprietario
             )
         with col6:
