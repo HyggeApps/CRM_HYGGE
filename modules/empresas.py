@@ -67,14 +67,14 @@ def editar_empresa(user, admin):
         with col5:
             setor = st.selectbox(
                 "Setor *", 
-                ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
+                ["", "Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
                 disabled=not eh_proprietario
             )
         with col6:
             produto_interesse = st.multiselect(
                 "Produto de Interesse *", 
-                ["NBR Fast", "Consultoria NBR", "Consultoria Hygge", "Consultoria Certificação"], 
+                ["", "NBR Fast", "Consultoria NBR", "Consultoria Hygge", "Consultoria Certificação"], 
                 default=empresa.get("Produto Interesse", []) if isinstance(empresa.get("Produto Interesse"), list) else [empresa.get("Produto Interesse", "NBR Fast")],
                 disabled=not eh_proprietario
             )
@@ -83,7 +83,7 @@ def editar_empresa(user, admin):
         with col7:
             tamanho_empresa = st.multiselect(
                 "Tamanho da Empresa *", 
-                ["Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
+                ["", "Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
                 default=empresa.get("Tamanho", []) if isinstance(empresa.get("Tamanho"), list) else [empresa.get("Tamanho", "Tier 1")],
                 disabled=not eh_proprietario
             )
