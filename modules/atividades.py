@@ -81,7 +81,7 @@ def exibir_atividades_empresa(user, admin, empresa_cnpj):
                     descricao = st.text_area("Descrição *")
 
                 with col2:
-                    status = st.selectbox("Status *", ["", "NA", "Ocupado", "Conectado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    status = st.selectbox("Status *", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
                     contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
 
