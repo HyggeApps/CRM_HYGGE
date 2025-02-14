@@ -81,7 +81,7 @@ def editar_empresa(user, admin):
 
         col7, col8 = st.columns(2)
         with col7:
-            tamanho_empresa = st.selectbox(
+            tamanho_empresa = st.multiselect(
                 "Tamanho da Empresa *", 
                 ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
                 index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
