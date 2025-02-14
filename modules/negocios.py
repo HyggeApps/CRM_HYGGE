@@ -405,11 +405,6 @@ def gerenciamento_oportunidades(user):
                                     )
                                     if result.modified_count:
                                         # Criar uma nova atividade informando que a tarefa foi concluída
-                                        cliente_doc = collection_clientes.find_one({"razao_social": row["cliente"]})
-                                        if cliente_doc is not None:
-                                            nome_cliente = cliente_doc["razao_social"]
-                                        else:
-                                            nome_cliente = "Não encontrado"
                                         nova_atividade = {
                                             "atividade_id": str(datetime.now().timestamp()),  
                                             "tipo_atividade": "Observação",
