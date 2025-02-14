@@ -83,8 +83,7 @@ def editar_empresa(user, admin):
         with col7:
             tamanho_empresa = st.multiselect(
                 "Tamanho da Empresa *", 
-                ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], 
-                index=["Tier 1", "Tier 2", "Tier 3", "Tier 4"].index(empresa.get("Tamanho da Empresa", "Tier 1")), 
+                ["Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
                 disabled=not eh_proprietario
             )
 
