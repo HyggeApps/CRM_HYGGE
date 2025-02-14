@@ -65,7 +65,7 @@ def editar_empresa(user, admin):
 
         col5, col6 = st.columns(2)
         with col5:
-            setor = st.selectbox(
+            setor = st.multiselect(
                 "Setor *", 
                 ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
                 index=["Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
@@ -176,7 +176,7 @@ def cadastrar_empresas(user, admin):
 
         col5, col6 = st.columns(2)
         with col5:
-            setor = st.selectbox("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
+            setor = st.multiselect("Setor *", ["Comercial", "Residencial", "Residencial MCMV", "Industrial"], key="setor")
         with col6:
             produto_interesse = st.multiselect("Produto de Interesse *", 
                                                ["NBR Fast", "Consultoria NBR", "Consultoria HYGGE", "Consultoria Certificação"],
@@ -184,9 +184,9 @@ def cadastrar_empresas(user, admin):
 
         col7, col8 = st.columns(2)
         with col7:
-            tamanho_empresa = st.selectbox("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
+            tamanho_empresa = st.multiselect("Tamanho da Empresa *", ["Tier 1", "Tier 2", "Tier 3", "Tier 4"], key="tamanho_empresa")
         with col8:
-            grau_cliente = st.selectbox("Grau do Cliente", ["Lead", "Lead Qualificado", "Oportunidade", "Cliente"], key="grau_cliente", disabled=True)
+            grau_cliente = st.multiselect("Grau do Cliente", ["Lead", "Lead Qualificado", "Oportunidade", "Cliente"], key="grau_cliente", disabled=True)
 
         submit = st.form_submit_button("✅ Cadastrar")
 
