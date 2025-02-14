@@ -346,7 +346,7 @@ def consultar_empresas(user, admin):
             df_empresas.loc[df_empresas["Nome"] == empresa_nome_selecionada, "Visualizar"] = True
 
         # Criar editor de dados interativo
-        df_empresas = df_empresas.sort_values(by='Última Atividade', ascending=False)
+        #df_empresas = df_empresas.sort_values(by='Última Atividade', ascending=False)
         edited_df = st.data_editor(
             df_empresas,
             column_config={
