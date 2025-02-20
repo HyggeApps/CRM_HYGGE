@@ -70,12 +70,12 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         col1, col2, col3, col4, col5, col6 = st.columns(6)
         with col1:
-            with st.popover('🟫➕ Observações'):
+            with st.popover('🟫➕ Obs.'):
                 with st.form("form_adicionar_observacoes"):
                     st.write(1)
         
         with col2:
-            with st.popover('🟩➕ Whatsapp'):
+            with st.popover('🟩➕ Wpp'):
                 with st.form("form_adicionar_whatsapp"):
                     st.write(1)
         
