@@ -36,7 +36,6 @@ def atualizar_status_tarefas(empresa_cnpj):
     collection_tarefas = get_collection("tarefas")
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
     tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
-    st.write(tarefas)
     hoje = datetime.today().date()
     atualizacoes_realizadas = False
 
