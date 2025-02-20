@@ -110,7 +110,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     ["", "Observação", "Bounced", "Sem Resposta", "Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
                     key=f"status_{key}"
                 )
-                submit = st.form_submit_button("Adicionar Linkedin", key=f"submit_{key}")
+                submit = st.form_submit_button("Adicionar Linkedin")
             return {"submit": submit, "status": status}
 
         # Exemplo de uso dos formulários em colunas
