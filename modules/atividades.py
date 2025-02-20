@@ -102,10 +102,10 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     
                     status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
                     
-                    col1, col2 = st.columns(2)
-                    with col1: negocio = st.selectbox("Negócio associado", options=['1','2'])
+                    col1_form, col2_form = st.columns(2)
+                    with col1_form: negocio = st.selectbox("Negócio associado", options=['1','2'])
 
-                    with col2: data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
+                    with col2_form: data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
                     
                     descricao = st.text_area("Descrição *")
                     # **Configuração da Tarefa Vinculada**
