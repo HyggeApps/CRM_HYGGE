@@ -96,7 +96,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         
         with col6:
             with st.popover('🟪➕ Reunião'):
-                with st.form("form_adicionar_reuniao")
+                with st.form("form_adicionar_reuniao"):
                     st.write(1)
                     st.info('Registrar uma **reunião** nas atividades da empresa.')
                     contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
