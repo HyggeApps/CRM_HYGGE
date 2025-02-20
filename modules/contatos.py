@@ -183,7 +183,7 @@ def exibir_todos_contatos_empresa():
 
     # Organizar a ordem das colunas desejadas.
     # Se o merge não encontrou correspondência, "usuario" e "ultima_atividade" ficarão NaN.
-    col_order = ["Nome", "Sobrenome", "empresa", "usuario", "ultima_atividade", "Cargo", "E-mail", "Telefone"]
+    col_order = ["Nome", "Sobrenome", "Empresa", "Usuário", "Última atividade", "Cargo", "E-mail", "Telefone"]
     col_order = [col for col in col_order if col in df_merged.columns]
     df_final = df_merged[col_order]
 
