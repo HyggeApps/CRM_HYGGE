@@ -68,32 +68,88 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
 
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
+        def criar_form_observacao(key):
+            with st.form(key):
+                st.header("🟫➕ Observação")
+                observacao = st.text_area("Digite a observação", key=f"observacao_{key}")
+                submit = st.form_submit_button("Adicionar Observação", key=f"submit_{key}")
+            return {"submit": submit, "observacao": observacao}
+
+        # Função para formulário de Whatsapp
+        def criar_form_whatsapp(key):
+            with st.form(key):
+                st.header("🟩➕ Whatsapp")
+                mensagem = st.text_area("Mensagem de Whatsapp", key=f"mensagem_{key}")
+                submit = st.form_submit_button("Adicionar Whatsapp", key=f"submit_{key}")
+            return {"submit": submit, "mensagem": mensagem}
+
+        # Função para formulário de Ligação
+        def criar_form_ligacao(key):
+            with st.form(key):
+                st.header("🟨➕ Ligação")
+                duracao = st.text_input("Duração da Ligação (min)", key=f"duracao_{key}")
+                observacao = st.text_area("Observações da Ligação", key=f"observacao_{key}")
+                submit = st.form_submit_button("Adicionar Ligação", key=f"submit_{key}")
+            return {"submit": submit, "duracao": duracao, "observacao": observacao}
+
+        # Função para formulário de Email
+        def criar_form_email(key):
+            with st.form(key):
+                st.header("🟥➕ Email")
+                assunto = st.text_input("Assunto do Email", key=f"assunto_{key}")
+                conteudo = st.text_area("Conteúdo do Email", key=f"conteudo_{key}")
+                submit = st.form_submit_button("Adicionar Email", key=f"submit_{key}")
+            return {"submit": submit, "assunto": assunto, "conteudo": conteudo}
+
+        # Função para formulário de Linkedin
+        def criar_form_linkedin(key):
+            with st.form(key):
+                st.header("🟦➕ Linkedin")
+                status = st.selectbox(
+                    "Status",
+                    ["", "Observação", "Bounced", "Sem Resposta", "Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
+                    key=f"status_{key}"
+                )
+                submit = st.form_submit_button("Adicionar Linkedin", key=f"submit_{key}")
+            return {"submit": submit, "status": status}
+
+        # Exemplo de uso dos formulários em colunas
         col1, col2, col3, col4, col5, col6 = st.columns(6)
+
         with col1:
-            with st.popover('🟫➕ Observação'):
-                with st.form("form_adicionar_observacoes"):
-                    st.write(1)
-        
+            with st.popover("🟫➕ Observação"):
+                form_obs = criar_form_observacao("form_adicionar_observacoes")
+                if form_obs["submit"]:
+                    # Aqui você pode processar os dados do formulário de observação.
+                    st.success("Observação adicionada!")
+
         with col2:
-            with st.popover('🟩➕ Whatsapp'):
-                with st.form("form_adicionar_whatsapp"):
-                    st.write(1)
-        
+            with st.popover("🟩➕ Whatsapp"):
+                form_whatsapp = criar_form_whatsapp("form_adicionar_whatsapp")
+                if form_whatsapp["submit"]:
+                    # Processamento do formulário de Whatsapp.
+                    st.success("Whatsapp adicionado!")
+
         with col3:
-            with st.popover('🟨➕ Ligação'):
-                with st.form("form_adicionar_ligacao"):
-                    st.write(1)
-        
+            with st.popover("🟨➕ Ligação"):
+                form_ligacao = criar_form_ligacao("form_adicionar_ligacao")
+                if form_ligacao["submit"]:
+                    # Processamento do formulário de Ligação.
+                    st.success("Ligação adicionada!")
+
         with col4:
-            with st.popover('🟥➕ Email'):
-                with st.form("form_adicionar_email"):
-                    st.write(1)
-        
+            with st.popover("🟥➕ Email"):
+                form_email = criar_form_email("form_adicionar_email")
+                if form_email["submit"]:
+                    # Processamento do formulário de Email.
+                    st.success("Email adicionado!")
+
         with col5:
-            with st.popover('🟦➕ Linkedin'):
-                with st.form("form_adicionar_linkedin"):
-                    st.write(1)
-                    status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+            with st.popover("🟦➕ Linkedin"):
+                form_linkedin = criar_form_linkedin("form_adicionar_linkedin")
+                if form_linkedin["submit"]:
+                    # Processamento do formulário de Linkedin.
+                    st.success("Registro no Linkedin adicionado!")
         
         with col6:
             with st.popover('🟪➕ Reunião'):
@@ -104,7 +160,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     
                     status = st.selectbox("Status", ["Realizada", "Contato não apareceu", "Remarcada"])
                     
-                    negocio = st.selectbox("Negócio associado", options=['1','2'])
+                    negocio = st.selectbox("Negócio associado à reunião", options=['1','2'])
 
                     data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
                     
