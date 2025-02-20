@@ -74,23 +74,17 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                 st.subheader("➕ Nova Atividade")
 
                 tipo = st.selectbox("Tipo de Atividade *", ["","Observação","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
-                    
-                # Criar duas colunas para organizar os campos
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    negocio = st.selectbox("Negócio associado", options=['1','2'])
-
-                with col2:
-                    if tipo == 'Observação': status = st.selectbox("Status", [""], disabled=True)
-                    elif tipo == 'Whatsapp': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-                    elif tipo == 'Email': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-                    elif tipo == 'Linkedin': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-                    elif tipo == 'Reunião': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
-
-                    contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
-                    data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
+                contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                 
+                negocio = st.selectbox("Negócio associado", options=['1','2'])
+                
+                if tipo == 'Observação': status = st.selectbox("Status", [""], disabled=True)
+                elif tipo == 'Whatsapp': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                elif tipo == 'Email': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                elif tipo == 'Linkedin': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                elif tipo == 'Reunião': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                
+                data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
                 
                 descricao = st.text_area("Descrição *")
                 # **Configuração da Tarefa Vinculada**
