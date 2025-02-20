@@ -145,20 +145,32 @@ def exibir_todos_contatos_empresa():
     df_contatos = pd.DataFrame(contatos)
     df_empresas = pd.DataFrame(empresas)
 
-    # Renomear 'razao_social' para 'Empresa' para padronizar o merge e exibição
+    # Se o DataFrame de contatos não tiver a coluna "empresa", cria-a com "Sem Empresa"
+    if "empresa" not in df_contatos.columns:
+        df_contatos["empresa"] = "Sem Empresa"
+    else:
+        df_contatos["empresa"] = df_contatos["empresa"].fillna("Sem Empresa")
+
+    # Renomeia "razao_social" para "Empresa" em empresas para padronizar o merge
     df_empresas.rename(columns={"razao_social": "Empresa"}, inplace=True)
 
-    # Realizar o merge com base no nome da empresa
-    # Aqui, assume-se que o campo 'empresa' de df_contatos contém o nome da empresa
-    df_contatos = df_contatos.merge(
-        df_empresas[["Empresa", "usuario", "ultima_atividade"]],
-        left_on="empresa",
-        right_on="Empresa",
+    # Preparar as colunas para merge de forma case-insensitive:
+    df_contatos["empresa_lower"] = df_contatos["empresa"].str.lower()
+    df_empresas["Empresa_lower"] = df_empresas["Empresa"].str.lower()
+
+    # Merge dos DataFrames com base no nome da empresa (razão social)
+    df_merged = df_contatos.merge(
+        df_empresas[["Empresa_lower", "usuario", "ultima_atividade"]],
+        left_on="empresa_lower",
+        right_on="Empresa_lower",
         how="left"
     )
 
+    # Remover colunas auxiliares de merge
+    df_merged.drop(columns=["empresa_lower", "Empresa_lower"], inplace=True)
+
     # Renomear colunas dos contatos para exibição
-    df_contatos = df_contatos.rename(columns={
+    df_merged = df_merged.rename(columns={
         "nome": "Nome",
         "sobrenome": "Sobrenome",
         "cargo": "Cargo",
@@ -166,11 +178,11 @@ def exibir_todos_contatos_empresa():
         "fone": "Telefone"
     })
 
-    # Organizar a ordem das colunas desejadas:
-    # Caso o contato não tenha empresa cadastrada, o campo 'empresa' já conterá o valor, por exemplo, "Sem Empresa"
-    df_contatos = df_contatos[[
-        "Nome", "Sobrenome", "empresa", "usuario", "ultima_atividade", "Cargo", "E-mail", "Telefone"
-    ]]
+    # Organizar a ordem das colunas desejadas.
+    # Se o merge não encontrou correspondência, "usuario" e "ultima_atividade" ficarão NaN.
+    col_order = ["Nome", "Sobrenome", "empresa", "usuario", "ultima_atividade", "Cargo", "E-mail", "Telefone"]
+    col_order = [col for col in col_order if col in df_merged.columns]
+    df_final = df_merged[col_order]
 
     # Campo de busca único
     filtro_busca = st.text_input(
@@ -179,18 +191,19 @@ def exibir_todos_contatos_empresa():
         key="busca_unica"
     )
 
-    # Aplicar filtro no DataFrame, caso haja um texto na busca
+    # Aplicar filtro no DataFrame, se houver busca
     if filtro_busca:
         filtro_normalizado = re.sub(r"\s+", " ", filtro_busca.strip().lower())
-        df_contatos["busca_concat"] = (
-            df_contatos["Nome"].fillna("") + " " +
-            df_contatos["Sobrenome"].fillna("") + " " +
-            df_contatos["empresa"].fillna("")
+        df_final["busca_concat"] = (
+            df_final["Nome"].fillna("") + " " +
+            df_final["Sobrenome"].fillna("") + " " +
+            df_final["empresa"].fillna("")
         ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))
-        df_contatos = df_contatos[df_contatos["busca_concat"].str.contains(filtro_normalizado, na=False)]
+        df_final = df_final[df_final["busca_concat"].str.contains(filtro_normalizado, na=False)]
     
-    if "busca_concat" in df_contatos.columns:
-        df_contatos = df_contatos.drop(columns=["busca_concat"])
+    if "busca_concat" in df_final.columns:
+        df_final.drop(columns=["busca_concat"], inplace=True)
 
     # Exibir DataFrame com data_editor
-    st.data_editor(df_contatos, hide_index=True, use_container_width=True)
+    st.data_editor(df_final, hide_index=True, use_container_width=True)
+
