@@ -135,55 +135,60 @@ def exibir_todos_contatos_empresa():
     collection_empresas = get_collection("empresas")
 
     # Buscar dados
-    contatos = list(collection_contatos.find({}, {"_id": 0}))  # Exclui o _id para facilitar visualização
-    # Pega apenas os campos necessários da empresa, incluindo usuário e última atividade
+    contatos = list(collection_contatos.find({}, {"_id": 0}))
     empresas = list(collection_empresas.find(
         {},
-        {"_id": 0, "razao_social": 1, "cnpj": 1, "usuario": 1, "ultima_atividade": 1}
+        {"_id": 0, "razao_social": 1, "usuario": 1, "ultima_atividade": 1}
     ))
 
     # Converter para DataFrame
     df_contatos = pd.DataFrame(contatos)
     df_empresas = pd.DataFrame(empresas)
 
-    # Renomear colunas em df_empresas:
-    # Vamos supor que em df_contatos o campo "empresa" seja o CNPJ da empresa.
-    # Renomeamos "cnpj" para "empresa" para fazer a mesclagem e "razao_social" para "Empresa" para exibição.
-    df_empresas.rename(columns={"cnpj": "empresa", "razao_social": "Empresa"}, inplace=True)
+    # Renomear 'razao_social' para 'Empresa' para padronizar o merge e exibição
+    df_empresas.rename(columns={"razao_social": "Empresa"}, inplace=True)
 
-    # Mesclar os dados para obter nome, usuário e última atividade da empresa.
-    df_contatos = df_contatos.merge(df_empresas, on="empresa", how="left")
-
-    # Renomear colunas e organizar a ordem desejada.
-    df_contatos = df_contatos.rename(
-        columns={
-            "nome": "Nome",
-            "sobrenome": "Sobrenome",
-            "cargo": "Cargo",
-            "email": "E-mail",
-            "fone": "Telefone",
-        }
+    # Realizar o merge com base no nome da empresa
+    # Aqui, assume-se que o campo 'empresa' de df_contatos contém o nome da empresa
+    df_contatos = df_contatos.merge(
+        df_empresas[["Empresa", "usuario", "ultima_atividade"]],
+        left_on="empresa",
+        right_on="Empresa",
+        how="left"
     )
 
-    # Organizar as colunas que serão exibidas na tabela final.
-    # Aqui, "Empresa" corresponde à razão social, e incluímos "usuario" e "ultima_atividade".
+    # Renomear colunas dos contatos para exibição
+    df_contatos = df_contatos.rename(columns={
+        "nome": "Nome",
+        "sobrenome": "Sobrenome",
+        "cargo": "Cargo",
+        "email": "E-mail",
+        "fone": "Telefone"
+    })
+
+    # Organizar a ordem das colunas desejadas:
+    # Caso o contato não tenha empresa cadastrada, o campo 'empresa' já conterá o valor, por exemplo, "Sem Empresa"
     df_contatos = df_contatos[[
-        "Nome", "Sobrenome", "Empresa", "usuario", "ultima_atividade", "Cargo", "E-mail", "Telefone"
+        "Nome", "Sobrenome", "empresa", "usuario", "ultima_atividade", "Cargo", "E-mail", "Telefone"
     ]]
 
     # Campo de busca único
-    filtro_busca = st.text_input("🔍 Buscar Contato ou Empresa:", placeholder="Digite e pressione Enter", key="busca_unica")
+    filtro_busca = st.text_input(
+        "🔍 Buscar Contato ou Empresa:",
+        placeholder="Digite e pressione Enter",
+        key="busca_unica"
+    )
 
-    # Aplicar filtro no DataFrame
+    # Aplicar filtro no DataFrame, caso haja um texto na busca
     if filtro_busca:
-        filtro_normalizado = re.sub(r"\s+", " ", filtro_busca.strip().lower())  # Remove espaços extras e normaliza
+        filtro_normalizado = re.sub(r"\s+", " ", filtro_busca.strip().lower())
         df_contatos["busca_concat"] = (
-            df_contatos["Nome"].fillna("") + " " + df_contatos["Sobrenome"].fillna("") + " " + df_contatos["Empresa"].fillna("")
-        ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))  # Normaliza
-
+            df_contatos["Nome"].fillna("") + " " +
+            df_contatos["Sobrenome"].fillna("") + " " +
+            df_contatos["empresa"].fillna("")
+        ).str.lower().apply(lambda x: re.sub(r"\s+", " ", x))
         df_contatos = df_contatos[df_contatos["busca_concat"].str.contains(filtro_normalizado, na=False)]
-
-    # Remover a coluna auxiliar de busca, se existir
+    
     if "busca_concat" in df_contatos.columns:
         df_contatos = df_contatos.drop(columns=["busca_concat"])
 
