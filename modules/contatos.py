@@ -175,7 +175,10 @@ def exibir_todos_contatos_empresa():
         "sobrenome": "Sobrenome",
         "cargo": "Cargo",
         "email": "E-mail",
-        "fone": "Telefone"
+        "fone": "Telefone",
+        "ultima_atividade": 'Última atividade',
+        "usuario": 'Usuário',
+        "empresa": 'Empresa'
     })
 
     # Organizar a ordem das colunas desejadas.
