@@ -64,7 +64,7 @@ css = '''
         /* Seleciona o container do conteúdo do st.popover */
         [data-testid="stPopover"] > div:nth-child(2) {
             overflow-y: auto;
-            max-height: 400px;
+            max-height: 800px;
         }
     </style>
     '''
