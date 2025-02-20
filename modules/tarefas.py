@@ -230,8 +230,6 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
     else:
         st.warning("Nenhuma tarefa cadastrada para esta empresa.")
 
-
-
 MESES_PT = {
     1: "Janeiro", 2: "Fevereiro", 3: "Março",
     4: "Abril", 5: "Maio", 6: "Junho",
@@ -246,10 +244,10 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     collection_empresas = get_collection("empresas")
 
     # 🔹 Filtra diretamente as tarefas do usuário logado
-    cnpjs_usuario = {empresa["cnpj"] for empresa in collection_empresas.find({"usuario": user}, {"cnpj": 1})}
+    empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find({"usuario": user}, {"razao_social": 1})}
     
     
-    if not cnpjs_usuario:
+    if not empresas_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
         return
 
@@ -261,7 +259,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
 
     # 🔹 Filtragem no banco para otimizar carregamento
     tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(cnpjs_usuario)}},
+        {"empresa": {"$in": list(empresas_usuario)}},
         {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
     ))
 
@@ -270,8 +268,8 @@ def gerenciamento_tarefas_por_usuario(user, admin):
         return
 
     # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
-    empresas_dict = {empresa["cnpj"]: empresa["razao_social"] for empresa in collection_empresas.find(
-        {"cnpj": {"$in": list(cnpjs_usuario)}}, {"cnpj": 1, "razao_social": 1}
+    empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
+        {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
     )}
 
     # 🔹 Adicionar Nome da Empresa e converter datas
