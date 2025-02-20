@@ -69,6 +69,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         with st.popover('➕ Registrar Atividade'):
+            st.write(1)
             with st.form("form_adicionar_atividade"):
                 st.subheader("➕ Nova Atividade")
 
