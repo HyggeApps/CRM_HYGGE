@@ -276,9 +276,6 @@ if st.session_state.get('logado', False):
             )
 
     usuario_ativo = f'{st.session_state["name"]} {st.session_state["lastname"]}'
-    # Título Principal
-    st.title("🗒️ *Customer Relationship Management* (CRM) - HYGGE")
-    st.write('----')
 
     if selected == "Tarefas":
         st.header("📜 Tarefas")
