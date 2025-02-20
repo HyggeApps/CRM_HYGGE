@@ -79,22 +79,22 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                 with st.form("form_adicionar_whatsapp"):
                     st.write(1)
         
-        with col1:
+        with col3:
             with st.popover('🟨 Ligação'):
                 with st.form("form_adicionar_ligacao"):
                     st.write(1)
         
-        with col1:
+        with col4:
             with st.popover('🟥 Email'):
                 with st.form("form_adicionar_email"):
                     st.write(1)
         
-        with col1:
+        with col5:
             with st.popover('🟦 Linkedin'):
                 with st.form("form_adicionar_linkedin"):
                     st.write(1)
         
-        with col1:
+        with col6:
             with st.popover('🟪 Reunião'):
                 with st.form("form_adicionar_reuniao"):
                     st.write(1)
