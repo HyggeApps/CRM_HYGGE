@@ -279,7 +279,7 @@ if st.session_state.get('logado', False):
 
     if selected == "Tarefas":
         st.header("📜 Tarefas")
-        st.info('Acompanhe aqui suas tarefas e seus números.')
+        #st.info('Acompanhe aqui suas tarefas e seus números.')
 
         tela_tarefas, tela_stats = st.tabs(['Minhas tarefas', 'Meus números'])
         with tela_tarefas:
@@ -290,7 +290,7 @@ if st.session_state.get('logado', False):
             #meus_numeros.compilar_meus_numeros(usuario_ativo)
     elif selected == "Empresas":
         st.header("🏢 Empresas")
-        st.info('Consulte, cadastre e edite suas empresas.')
+        #st.info('Consulte, cadastre e edite suas empresas.')
         st.write('----')
 
         with st.popover("➕ Cadastrar empresa"):
@@ -303,20 +303,20 @@ if st.session_state.get('logado', False):
         
     elif selected == 'Contatos':
         st.header("📞 Contatos")
-        st.info('Consulte contatos aqui.')
+        #st.info('Consulte contatos aqui.')
         st.warning("⚠️ IMPORTANTE: O cadastro de contatos deve ser feito a partir da tela da 'Empresas'")
         st.write('----')
         contatos.exibir_todos_contatos_empresa()
         
     elif selected == 'Negócios':
         st.header("💰 Negócios")
-        st.info('Consulte, cadastre e edite os seus negócios aqui.')
+        #st.info('Consulte, cadastre e edite os seus negócios aqui.')
         st.write('----')
         negocios.gerenciamento_oportunidades(usuario_ativo)
         
     elif selected == 'Templates':
         st.header("📎 Templates")
-        st.info('Consulte, cadastre e edite os templates da HYGGE.')
+        #st.info('Consulte, cadastre e edite os templates da HYGGE.')
         st.write('----')
         if 'admin' in st.session_state["roles"]: templates.gerenciamento_templates()
         else: st.warning("Você não tem permissão para alterar templates.")
@@ -324,14 +324,14 @@ if st.session_state.get('logado', False):
 
     elif selected == 'Produtos':
         st.header("📚 Produtos")
-        st.info('Consulte, cadastre e edite os produtos da HYGGE.')
+        #st.info('Consulte, cadastre e edite os produtos da HYGGE.')
         st.write('----')
         if 'admin' in st.session_state["roles"]: produtos.gerenciamento_produtos()
         else: st.warning("Você não tem permissão para alterar usuários.")
 
     elif selected == 'Usuários':
         st.header("🧑‍💻 Usuários")
-        st.info('Consulte, cadastre e edite os usuários da HYGGE.')
+        #st.info('Consulte, cadastre e edite os usuários da HYGGE.')
         st.write('----')
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
