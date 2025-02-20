@@ -68,15 +68,44 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
 
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        
+        with col1:
+            with st.popover('🟫 Observações'):
+                with st.form("form_adicionar_observacoes"):
+                    st.write(1)
+        
+        with col2:
+            with st.popover('🟩 Whatsapp'):
+                with st.form("form_adicionar_whatsapp"):
+                    st.write(1)
+        
+        with col1:
+            with st.popover('🟨 Ligação'):
+                with st.form("form_adicionar_ligacao"):
+                    st.write(1)
+        
+        with col1:
+            with st.popover('🟥 Email'):
+                with st.form("form_adicionar_email"):
+                    st.write(1)
+        
+        with col1:
+            with st.popover('🟦 Linkedin'):
+                with st.form("form_adicionar_linkedin"):
+                    st.write(1)
+        
+        with col1:
+            with st.popover('🟪 Reunião'):
+                with st.form("form_adicionar_reuniao"):
+                    st.write(1)
+
         with st.popover('➕ Registrar Atividade'):
-            st.write(1)
             with st.form("form_adicionar_atividade"):
                 st.subheader("➕ Nova Atividade")
 
                 tipo = st.selectbox("Tipo de Atividade *", ["","Observação","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
                 contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
-                
-                negocio = st.selectbox("Negócio associado", options=['1','2'])
                 
                 if tipo == 'Observação': status = st.selectbox("Status", [""], disabled=True)
                 elif tipo == 'Whatsapp': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
@@ -84,7 +113,10 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                 elif tipo == 'Linkedin': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
                 elif tipo == 'Reunião': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
                 
-                data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
+                col1, col2 = st.columns(2)
+                with col1: negocio = st.selectbox("Negócio associado", options=['1','2'])
+
+                with col2: data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
                 
                 descricao = st.text_area("Descrição *")
                 # **Configuração da Tarefa Vinculada**
