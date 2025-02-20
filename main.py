@@ -59,26 +59,16 @@ html_code1 = f"""
 """
 st.sidebar.markdown(html_code1, unsafe_allow_html=True)
 
-
-st.html(
-    """
+css = '''
     <style>
-        /* Personaliza o botão que abre o popover */
-        div[data-testid="stPopover"] > div > button {
-            min-height: 40px;    /* Altere para a altura desejada */
-            height: 40px;        /* Altere para a altura desejada */
-            font-size: 16px;     /* Aumenta o tamanho da fonte */
-            padding: 8px 16px;   /* Ajusta o espaçamento interno */
-        }
-        /* Personaliza o container do popover */
-        div[data-testid="stPopover"] > div:nth-child(2) {
-            min-width: 300px;    /* Define a largura mínima do container */
-            padding: 16px;       /* Ajusta o espaçamento interno do container */
+        /* Seleciona o container do conteúdo do st.popover */
+        [data-testid="stPopover"] > div:nth-child(2) {
+            overflow-y: auto;
+            max-height: 400px;
         }
     </style>
-    """
-)
-
+    '''
+st.markdown(css, unsafe_allow_html=True)
 
 css = '''
     <style>
