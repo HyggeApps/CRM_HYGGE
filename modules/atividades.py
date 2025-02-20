@@ -68,7 +68,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
 
     # **Permitir que a atividade seja cadastrada sempre**
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
-        col1, col2, col3, col4, col5, col6, col_empty = st.columns([0.1,0.1,0.1,0.1,0.1,0.1,0.4])
+        col1, col2, col3, col4, col5, col6, col_empty = st.columns([0.15,0.15,0.15,0.15,0.15,0.15,0.1])
         with col1:
             with st.popover('🟫➕ Obs.'):
                 with st.form("form_adicionar_observacoes"):
