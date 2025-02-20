@@ -72,19 +72,26 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
             with st.form("form_adicionar_atividade"):
                 st.subheader("➕ Nova Atividade")
 
+                tipo = st.selectbox("Tipo de Atividade *", ["","Observação","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
+                    
                 # Criar duas colunas para organizar os campos
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    tipo = st.selectbox("Tipo de Atividade *", ["","Observação","Whatsapp", "Ligação", "Email", "Linkedin", "Reunião"])
-                    titulo = st.text_input("Título *")
-                    descricao = st.text_area("Descrição *")
+                    negocio = st.selectbox("Negócio associado", options=['1','2'])
 
                 with col2:
-                    status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    if tipo == 'Observação': status = st.selectbox("Status", [""], disabled=True)
+                    elif tipo == 'Whatsapp': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    elif tipo == 'Email': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    elif tipo == 'Linkedin': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    elif tipo == 'Reunião': status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+
                     contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
-
+                
+                
+                descricao = st.text_area("Descrição *")
                 # **Configuração da Tarefa Vinculada**
                 st.markdown("---")  # Separador visual
                 st.subheader("📌 Prazo para o acompanhamento")
@@ -108,7 +115,6 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                             "atividade_id": atividade_id,
                             "tipo_atividade": tipo,
                             "status": status,
-                            "titulo": titulo,
                             "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
@@ -130,7 +136,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                         
                         
                         
-                    elif titulo and tipo and descricao and contatos_vinculados:
+                    elif tipo and descricao and contatos_vinculados:
                         atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
 
                         # Criar a atividade
@@ -138,7 +144,6 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                             "atividade_id": atividade_id,
                             "tipo_atividade": tipo,
                             "status": status,
-                            "titulo": titulo,
                             "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
@@ -188,7 +193,6 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
 
                 atividades_ordenadas[chave_mes_ano].append({
                     "data": data_execucao.strftime("%d/%m/%Y"),
-                    "titulo": atividade["titulo"],
                     "tipo": atividade["tipo_atividade"],
                     "contato": ", ".join(atividade.get("contato", "")) if isinstance(atividade.get("contato", []), list) else atividade.get("contato", ""),
                     "descricao": atividade["descricao"],
@@ -205,9 +209,9 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                 with st.container():
                     for atividade in atividades_lista:
                         if atividade["tipo"] != 'Observação':
-                            st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]} para **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
+                            st.write(f'**📆 {atividade["data"]}** - **{atividade["tipo"]}**: **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
                         else:
-                            st.write(f'**📆 {atividade["data"]}** - **{atividade["titulo"]}**: {atividade["tipo"]}. 📝 {atividade["descricao"]}')
+                            st.write(f'**📆 {atividade["data"]}** - **{atividade["tipo"]}**: **{atividade["contato"]}**. 📝 {atividade["descricao"]}')
 
                     st.write('---')
 
