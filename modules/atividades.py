@@ -93,6 +93,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
             with st.popover('🟦➕ Linkedin'):
                 with st.form("form_adicionar_linkedin"):
                     st.write(1)
+                    status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
         
         with col6:
             with st.popover('🟪➕ Reunião'):
@@ -101,7 +102,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     st.info('Registrar uma **reunião** nas atividades da empresa.')
                     contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                     
-                    status = st.selectbox("Status", ["","Observação", "Bounced", "Sem Resposta","Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"])
+                    status = st.selectbox("Status", ["Realizada", "Contato não apareceu", "Remarcada"])
                     
                     negocio = st.selectbox("Negócio associado", options=['1','2'])
 
