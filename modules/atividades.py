@@ -70,7 +70,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         def criar_form_observacao(key):
             with st.form(key):
-                st.header("🟫➕ Observação")
+                st.subheader("🟫➕ Observação")
                 observacao = st.text_area("Digite a observação", key=f"observacao_{key}")
                 submit = st.form_submit_button("Adicionar Observação")
             return {"submit": submit, "observacao": observacao}
@@ -78,7 +78,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         # Função para formulário de Whatsapp
         def criar_form_whatsapp(key):
             with st.form(key):
-                st.header("🟩➕ Whatsapp")
+                st.subheader("🟩➕ Whatsapp")
                 mensagem = st.text_area("Mensagem de Whatsapp", key=f"mensagem_{key}")
                 submit = st.form_submit_button("Adicionar Whatsapp")
             return {"submit": submit, "mensagem": mensagem}
@@ -86,7 +86,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         # Função para formulário de Ligação
         def criar_form_ligacao(key):
             with st.form(key):
-                st.header("🟨➕ Ligação")
+                st.subheader("🟨➕ Ligação")
                 duracao = st.text_input("Duração da Ligação (min)", key=f"duracao_{key}")
                 observacao = st.text_area("Observações da Ligação", key=f"observacao_{key}")
                 submit = st.form_submit_button("Adicionar Ligação")
@@ -95,7 +95,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         # Função para formulário de Email
         def criar_form_email(key):
             with st.form(key):
-                st.header("🟥➕ Email")
+                st.subheader("🟥➕ Email")
                 assunto = st.text_input("Assunto do Email", key=f"assunto_{key}")
                 conteudo = st.text_area("Conteúdo do Email", key=f"conteudo_{key}")
                 submit = st.form_submit_button("Adicionar Email")
@@ -104,7 +104,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         # Função para formulário de Linkedin
         def criar_form_linkedin(key):
             with st.form(key):
-                st.header("🟦➕ Linkedin")
+                st.subheader("🟦➕ Linkedin")
                 status = st.selectbox(
                     "Status",
                     ["", "Observação", "Bounced", "Sem Resposta", "Email enviado", "Ocupado", "Gatekeeper", "Ligação Positiva", "Ligação Negativa"],
