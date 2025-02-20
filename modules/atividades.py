@@ -75,7 +75,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     st.write(1)
         
         with col2:
-            with st.popover('🟩➕ Wpp'):
+            with st.popover('🟩➕ Whatsapp'):
                 with st.form("form_adicionar_whatsapp"):
                     st.write(1)
         
