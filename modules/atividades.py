@@ -53,7 +53,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     contatos_vinculados = list(collection_contatos.find({"empresa": empresa_nome}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
 
     # Criar lista de contatos formatada
-    lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']} ({c['email']})" for c in contatos_vinculados]
+    lista_contatos = [""] + [f"{c['nome']} {c['sobrenome']}" for c in contatos_vinculados]
 
     # Buscar atividades vinculadas **somente** à empresa selecionada
     atividades = list(collection_atividades.find({"empresa": empresa_nome}, {"_id": 0}))
