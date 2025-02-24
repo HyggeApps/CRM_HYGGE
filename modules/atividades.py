@@ -183,9 +183,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         with col1:
             with st.popover("🟫➕ Obs."):
                 form_obs = criar_form_observacao("form_adicionar_observacoes")
-                if form_obs["submit"]:
-                    # Aqui você pode processar os dados do formulário de observação.
-                    st.success("Observação adicionada!")
+                st.success("Observação adicionada!")
 
         with col2:
             with st.popover("🟩➕ Whatsapp"):
