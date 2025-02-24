@@ -70,10 +70,74 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         def criar_form_observacao(key):
             with st.form(key):
-                st.subheader("🟫➕ Observação")
-                observacao = st.text_area("Digite a observação", key=f"observacao_{key}")
-                submit = st.form_submit_button("Adicionar Observação")
-            return {"submit": submit, "observacao": observacao}
+                st.subheader("🟫➕ Obs.")
+                st.info('Registrar uma **reunião** nas atividades da empresa.')
+                contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
+                
+                status = st.selectbox("Status", ["Realizada", "Contato não apareceu", "Remarcada"])
+                
+                negocio = st.selectbox("Negócio associado à reunião", options=['1','2'])
+
+                data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
+                
+                descricao = st.text_area("Descrição *")
+                # **Configuração da Tarefa Vinculada**
+                st.markdown("---")  # Separador visual
+                st.subheader("📌 Prazo para o acompanhamento")
+                
+                titulo_tarefa = "Acompanhar Reunião" #st.text_input("Título da Tarefa", value="Acompanhar " + tipo, disabled=True)
+                prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
+                data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
+                    
+
+                observacoes_tarefa = "" #st.text_area("Observações da Tarefa", value="", disabled=True)
+                status_tarefa = "🟨 Em andamento"  # Status fixo para a tarefa
+
+                submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
+
+                if submit_atividade:
+                        
+                    if descricao and contatos_vinculados:
+                        atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
+
+                        # Criar a atividade
+                        nova_atividade = {
+                            "atividade_id": atividade_id,
+                            "tipo_atividade": "Reunião",
+                            "status": status,
+                            "empresa": empresa_nome,
+                            "contato": contato,
+                            "descricao": descricao,
+                            "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
+                            "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
+                        }
+                        collection_atividades.insert_one(nova_atividade)
+                        # Criar a tarefa vinculada
+                        nova_tarefa = {
+                            "tarefa_id": str(datetime.now().timestamp()),  # Gerar um ID único baseado no tempo
+                            "titulo": titulo_tarefa,
+                            "empresa": empresa_nome,
+                            "atividade_vinculada": atividade_id,  # Relacionar com a atividade criada
+                            "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
+                            "status": status_tarefa,
+                            "observacoes": observacoes_tarefa
+                        }
+                        collection_tarefas = get_collection("tarefas")
+                        collection_tarefas.insert_one(nova_tarefa)
+
+                        # 🔄 Atualizar a última atividade da empresa
+                        data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
+                        collection_empresas = get_collection("empresas")
+                        collection_empresas.update_one(
+                            {"razao_social": empresa_nome},
+                            {"$set": {"ultima_atividade": data_hoje}}
+                        )
+
+                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                        st.rerun()       
+                        
+                    else:
+                        st.error("Preencha os campos obrigatórios: Tipo, Título, Contato, Descrição e Datas.")
 
         # Função para formulário de Whatsapp
         def criar_form_whatsapp(key):
