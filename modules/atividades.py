@@ -97,7 +97,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
 
                 if submit_atividade:
                         
-                    if descricao and contatos_vinculados:
+                    if descricao:
                         atividade_id = str(datetime.now().timestamp())  # Gerar um ID único baseado no tempo
 
                         # Criar a atividade
@@ -137,7 +137,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                         st.rerun()       
                         
                     else:
-                        st.error("Preencha os campos obrigatórios: Tipo, Título, Contato, Descrição e Datas.")
+                        st.error("Preencha os campos obrigatórios: Descrição.")
 
         # Função para formulário de Whatsapp
         def criar_form_whatsapp(key):
