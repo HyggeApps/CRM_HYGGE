@@ -70,7 +70,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
     if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
         def criar_form_observacao(key):
             with st.form(key):
-                st.subheader("🟫➕ Obs.")
+                st.subheader("🟫➕ Observação")
                 st.info('Registrar uma **reunião** nas atividades da empresa.')
                 contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
                 
@@ -181,7 +181,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         col1, col2, col3, col4, col5, col6 = st.columns(6)
 
         with col1:
-            with st.popover("🟫➕ Observação"):
+            with st.popover("🟫➕ Obs."):
                 form_obs = criar_form_observacao("form_adicionar_observacoes")
                 if form_obs["submit"]:
                     # Aqui você pode processar os dados do formulário de observação.
