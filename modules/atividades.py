@@ -71,8 +71,8 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
         def criar_form_observacao(key):
             with st.form(key):
                 st.subheader("🟫➕ Observação")
-                st.info('Registrar uma **reunião** nas atividades da empresa.')
-                contato = st.multiselect("Contato Vinculado *", lista_contatos)  # Mostra apenas os contatos da empresa
+                st.info('Registrar uma **observação** nas atividades da empresa.')
+                contato = st.multiselect("Contato Vinculado", lista_contatos)  # Mostra apenas os contatos da empresa
             
                 data_execucao = st.date_input("Data de Execução", value=datetime.today().date())
                 
@@ -94,7 +94,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                         # Criar a atividade
                         nova_atividade = {
                             "atividade_id": atividade_id,
-                            "tipo_atividade": "Reunião",
+                            "tipo_atividade": "Observação",
                             "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
