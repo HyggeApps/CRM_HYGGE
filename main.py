@@ -273,11 +273,6 @@ if st.session_state.get('logado', False):
             )
 
     usuario_ativo = f'{st.session_state["name"]} {st.session_state["lastname"]}'
-    
-    collection_empresas = get_collection("empresas")
-
-    resultado = collection_empresas.update_many({}, {"$set": {"usuario": "proprietario"}})
-    st.write(f"Documentos atualizados: {resultado.modified_count}")
 
     if selected == "Tarefas":
         st.header("📜 Tarefas")
