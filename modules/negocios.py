@@ -68,7 +68,7 @@ def gerenciamento_oportunidades(user):
     
     st.header('💸 Negócios em andamento')
     with st.popover('➕ Cadastrar oportunidade'):
-        st.header("Cadastrar Oportunidade")
+        st.subheader("Cadastrar Oportunidade")
         st.write('----')
         
         # Supondo que as coleções e variáveis já estejam definidas:
@@ -79,7 +79,7 @@ def gerenciamento_oportunidades(user):
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
 
-        opcoes_clientes = [f"{c['razao_social']} (CNPJ: {c['cnpj']})" for c in clientes]
+        opcoes_clientes = [f"{c['razao_social']}" for c in clientes]
         opcoes_produtos = [f"{p['nome']}" for p in produtos]
 
         if not clientes:

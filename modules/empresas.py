@@ -234,7 +234,6 @@ def cadastrar_empresas(user, admin):
 
                     st.success("Empresa cadastrada com sucesso e tarefa inicial criada!")
                     st.rerun()
-
                     
 @st.fragment
 def consultar_empresas(user, admin):
