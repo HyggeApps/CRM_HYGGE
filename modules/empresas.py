@@ -225,7 +225,7 @@ def cadastrar_empresas(user, admin):
                     prazo_execucao = datetime.today().date() + timedelta(days=1)
                     tarefa_document = {
                         "titulo": "Identificar personas",
-                        "empresa": cnpj,
+                        "empresa": razao_social,
                         "data_execucao": prazo_execucao.strftime("%Y-%m-%d"),
                         "observacoes": "Nova empresa cadastrada",
                         "status": "🟨 Em andamento"
