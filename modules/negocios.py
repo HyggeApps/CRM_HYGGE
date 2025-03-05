@@ -225,7 +225,8 @@ def gerenciamento_oportunidades(user):
             # Calcula o total da categoria
             total_valor = 0
             for _, row_valor in df_filtrado.iterrows():
-                valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                if row_valor['valor_orcamento'] != '': valor_str = str(row_valor['valor_orcamento']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                else: valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
                 try:
                     total_valor += float(valor_str)
                 except ValueError:
