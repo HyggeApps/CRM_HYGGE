@@ -67,7 +67,7 @@ def gerenciamento_oportunidades(user):
     estagios = ["Frio", "Morno", "Quente", "Aguardando projeto", "Aguardando a assinatura","On-hold", "Perdido", "Fechado"]
     
     st.header('💸 Negócios em andamento')
-    with st.popover('➕ Cadastrar oportunidade'):
+    with st.popover('➕ Cadastrar negócio'):
         st.header("Cadastrar Oportunidade")
         st.write('----')
         
@@ -91,24 +91,23 @@ def gerenciamento_oportunidades(user):
                 cliente = st.selectbox("Cliente", options=opcoes_clientes, key="select_cliente_oportunidade")
                 nome_opp = st.text_input('Nome da oportunidade', key="nome_oportunidade")
                 # Multiselect para permitir a seleção de mais de um produto
-                produtos_selecionados_text = st.multiselect("Produtos", options=opcoes_produtos, key="select_produto_oportunidade")
+                #produtos_selecionados_text = st.multiselect("Produtos", options=opcoes_produtos, key="select_produto_oportunidade")
                 total = st.number_input('Valor estimado', key="valor_estimado_oportunidade")
-                estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
-                data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
+                #estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
+                estagio = 'Aguardando projeto'
+                #data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
             
                 if submit:
-                    if cliente and produtos_selecionados_text:
+                    if cliente:
                         # Buscar o cliente selecionado
                         cliente_selecionado = next((c for c in clientes if f"{c['razao_social']}" == cliente), None)
                         # Buscar os produtos selecionados (mapeia os textos selecionados para os objetos de produtos)
-                        produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in produtos_selecionados_text]
+                        #produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in produtos_selecionados_text]
             
-                        if cliente_selecionado and produtos_selecionados_obj:
+                        if cliente_selecionado:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
                             # "produtos" será uma lista com os nomes dos produtos selecionados
-                            produtos_lista = [p["nome"] for p in produtos_selecionados_obj]
-                            # "valor_estimado" será o somatório do preço base de cada produto selecionado
                             
                             valor_estimado_formatado = format_currency(total)
                             
@@ -116,12 +115,12 @@ def gerenciamento_oportunidades(user):
                                 "cliente": cliente_selecionado["razao_social"],
                                 "nome_oportunidade": nome_opp,
                                 "proprietario": user,
-                                "produtos": produtos_lista,
+                                "produtos": '',
                                 "valor_estimado": valor_estimado_formatado,
                                 "valor_orcamento": '',
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
-                                "data_fechamento": str(data_fechamento),
+                                "data_fechamento": '',
                                 "motivo_perda": '',
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
