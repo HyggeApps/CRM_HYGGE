@@ -210,8 +210,10 @@ def elaborar_orcamento(user):
 
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
                                         produtos_selecionado6, produtos_selecionado7, produtos_selecionado8, produtos_selecionado9, produtos_selecionado10] if p]
+            
+            st.write(produtos_selecionados)
             negocio_selecionado['produtos'] = produtos_selecionados
-
+            
             if len(produtos_selecionados) > 0:
                 #st.write(negocio_selecionado)
                 produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
