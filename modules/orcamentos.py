@@ -131,7 +131,7 @@ def elaborar_orcamento(user):
                 #st.write(produtos_selecionados_obj, preco_produtos)
                 valor_estimado_formatado = format_currency(total)
                 st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.')                           
-                desconto = st.slider("Desconto (%)",0, 20)
+                desconto = st.slider("Desconto (%)",0.0, 100.0)
                 valor_negocio = total*(1-desconto/100)
                 valor_negocio_formatado = format_currency(valor_negocio)
                 col1, col2 = st.columns(2)
