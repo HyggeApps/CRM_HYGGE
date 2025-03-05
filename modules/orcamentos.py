@@ -79,6 +79,8 @@ def elaborar_orcamento(user):
         return
 
     opcoes_empresas = [f"{empresa['razao_social']}" for empresa in empresas]
+    
+    st.subheader("Seleção da empresa e negócio")
     selected_empresa = st.selectbox("**Selecione a Empresa:**", opcoes_empresas, key="orcamento_empresa")
     # Extrair o nome da empresa (razao_social) a partir da string
     empresa_nome = selected_empresa
