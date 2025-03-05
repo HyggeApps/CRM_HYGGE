@@ -131,8 +131,26 @@ def elaborar_orcamento(user):
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
                 #st.write(produtos_selecionados_obj, preco_produtos)
                 valor_estimado_formatado = format_currency(total)
-                st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.')                           
-                desconto = st.slider("Desconto (%)",0.0, 100.0)
+                col1, col2 = st.columns(2)
+                with col1:  desconto = st.number_input("Desconto (%)",0.0, 100.0)
+                with col2:  st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
+                                          
+                with st.expander('Solicitação de desconto', expanded=False):
+                    
+                    if negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟩 Desconto aprovado.')
+
+                    elif not negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟥 Desconto não aprovado.')
+                    
+                    elif negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟨 Em análise pelo gestor.')
+                    else:
+                        st.markdown('🟦 Sem solicitação de desconto.')
+                        if st.button('Solicitar desconto'):
+                            
+                            st.success('Solicitação de desconto enviada com sucesso.')
+        
                 valor_negocio = total*(1-desconto/100)
                 valor_negocio_formatado = format_currency(valor_negocio)
                 col1, col2 = st.columns(2)
