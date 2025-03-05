@@ -55,6 +55,10 @@ def gerenciamento_aprovacoes():
                     {"_id": ObjectId(oportunidade_id_str)},
                     {"$set": {"aprovacao_gestor": True}}
                 )
+                col_oportunidades.update_one(
+                    {"_id": ObjectId(oportunidade_id_str)},
+                    {"$set": {"solicitacao_desconto": False}}
+                )
                 # Insere o registro de aprovação na coleção 'aprovacoes'
                 aprovacao = {
                     "oportunidade_id": oportunidade_id_str,

@@ -264,7 +264,7 @@ def elaborar_orcamento(user):
                 
                 st.subheader("📄 Geração de um orçamento convencional")
                 if st.button("Gerar o orçamento"):
-                    if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
+                    if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
                         pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
                         versao_proposta = gro.upload_onedrive2(pdf_out_path)
@@ -308,7 +308,7 @@ def elaborar_orcamento(user):
                         st.markdown('🟥 Desconto não aprovado.')
                 
                 if st.button("Gerar o orçamento com o desconto adicional aprovado"):
-                    if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
+                    if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
                         pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
                         versao_proposta = gro.upload_onedrive2(pdf_out_path)
