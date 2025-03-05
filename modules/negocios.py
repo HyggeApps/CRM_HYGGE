@@ -120,13 +120,13 @@ def gerenciamento_oportunidades(user):
                                 "valor_orcamento": '',
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
-                                "data_prevista_fechamento": data_fechamento,
-                                'data_fechamento': data_fechamento,
+                                "data_fechamento": data_fechamento,
                                 "motivo_perda": '',
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
                                 'negocio_fechado': False,
                                 'negocio_perdido': False,
+                                'desconto_permitido': 20,
                                 'aprovacao_gestor': False,
 
                             }
