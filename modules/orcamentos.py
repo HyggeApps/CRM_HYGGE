@@ -98,6 +98,8 @@ def elaborar_orcamento(user):
 
         # Buscar os dados    do negócio selecionado
         negocio_selecionado = next((opp for opp in oportunidades if opp["nome_oportunidade"] == selected_negocio), None)
+
+        st.write('----')
         if negocio_selecionado:
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
             nomes_produtos = [p["nome"] for p in produtos]
