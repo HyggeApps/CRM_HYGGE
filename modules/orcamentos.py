@@ -128,7 +128,7 @@ def elaborar_orcamento(user):
                         '15 dias úteis após o recebimento da documentação completa.',
                         '10 dias úteis após o recebimento da documentação completa.']
 
-            prazo = st.selectbox('Prazo de execução: ', prazos)
+            prazo = st.selectbox("**Prazo de execução: **", prazos)
 
             # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
             contatos = list(
