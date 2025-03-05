@@ -129,12 +129,14 @@ def elaborar_orcamento(user):
                 total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
                 #st.write(produtos_selecionados_obj, preco_produtos)
-                valor_estimado_formatado = format_currency(total)                           
-                valor_negocio_formatado = st.text_input("Valor do negócio:", valor_estimado_formatado)
+                valor_estimado_formatado = format_currency(total)
+                st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.')                           
+                valor_negocio_formatado = st.text_input("Desconto:", valor_estimado_formatado)
                 valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
                 desconto = total - valor_negocio
                 desconto_formatado = format_currency(desconto)
-                st.warning(f"**Desconto aplicado:** {desconto_formatado} ({round((desconto/total)*100,2)}%)")
+                st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
+                st.warning(f"**Preço com o desconto aplicado:** {de} ({round((desconto/total)*100,2)}%)")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
                 condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
