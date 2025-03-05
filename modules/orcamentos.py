@@ -5,6 +5,49 @@ import pandas as pd
 import datetime as dt
 import calendar
 
+
+def calcular_parcelas_e_saldo(amount, parcela_fixa):
+    # Calcula o número máximo de parcelas possíveis
+    
+    # Cria uma lista para armazenar as combinações
+    combinacoes = []
+    texto_prop = ". à partir do aceite da proposta ou assinatura do contrato,"
+    texto_prop1 = ". após a entrega do laudo diagnóstico,"
+
+    # Adiciona a opção à vista
+    
+    combinacoes.append(f"Total à vista de R$ {amount:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+    combinacoes.append(f"Total à vista de R$ {amount:,.2f}{texto_prop1}".replace(",", "X").replace(".", ",").replace("X", "."))
+    if amount >= 12000 and amount < 18000: 
+        combinacoes.append(f"2x de R$ {amount/2:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+    elif amount >= 18000 and amount < 24000: 
+        combinacoes.append(f"2x de R$ {amount/2:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+        combinacoes.append(f"3x de R$ {amount/3:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+    elif amount >= 24000 and amount <= 30000:
+        combinacoes.append(f"2x de R$ {amount/2:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+        combinacoes.append(f"3x de R$ {amount/3:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+        combinacoes.append(f"4x de R$ {amount/4:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+    # Calcular a entrada e verificar a condição
+    if amount > 30000:
+        entrada = amount * 0.2
+        saldo_restante = amount - entrada
+        
+        # Encontrar o menor múltiplo da parcela fixa que seja maior que o saldo restante
+        num_parcelas = 10
+        if saldo_restante % parcela_fixa != 0:
+            num_parcelas += 1
+        
+        for i in range(1, int(num_parcelas)):
+            saldo_a_pagar = saldo_restante / i
+            if saldo_a_pagar >= parcela_fixa:
+                combinacoes.append(
+                    f"Entrada de {entrada:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + 
+                    f" e {i}x de R$ {saldo_a_pagar:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                )
+                                    
+    return combinacoes
+
 def format_currency(value):
     """
     Formata um valor numérico no padrão brasileiro de moeda:
@@ -63,22 +106,37 @@ def elaborar_orcamento(user):
             st.text_input("**Cliente:**", empresa_nome,disabled=True)
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
             st.text_input("**Negócio:**", negocio_selecionado["nome_oportunidade"],disabled=True)
-            st.text_input("**Valor do negócio:**", valor_estimado_formatado)
-            
+            amount = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
 
-    # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
-    contatos = list(
-        collection_contatos.find(
-            {"empresa": empresa_nome},
-            {"_id": 0, "nome": 1, "email": 1}
-        )
-    )
-    if contatos:
-        opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
-        selected_contatos = st.multiselect("Selecione os **contatos** da empresa que receberão o orçamento", opcoes_contatos, key="orcamento_contatos")
-    else:
-        st.error("Nenhum contato encontrado para essa empresa.")
-        selected_contatos = []
+            condicoes = calcular_parcelas_e_saldo(float(amount), 6000)
+            
+            condicao_pagamento = st.selectbox('Condições de pagamento: ',condicoes)
+
+            if float(amount) > 35000:
+                  prazos = ['60 dias úteis após o recebimento da documentação completa.',
+                        '30 dias úteis após o recebimento da documentação completa.',
+                        '20 dias úteis após o recebimento da documentação completa.']
+            
+            else: prazos = ['60 dias úteis após o recebimento da documentação completa.',
+                        '30 dias úteis após o recebimento da documentação completa.',
+                        '20 dias úteis após o recebimento da documentação completa.',
+                        '15 dias úteis após o recebimento da documentação completa.',
+                        '10 dias úteis após o recebimento da documentação completa.']
+
+
+            # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
+            contatos = list(
+                collection_contatos.find(
+                    {"empresa": empresa_nome},
+                    {"_id": 0, "nome": 1, "email": 1}
+                )
+            )
+            if contatos:
+                opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
+                selected_contatos = st.multiselect("Selecione os **contatos** da empresa que receberão o orçamento", opcoes_contatos, key="orcamento_contatos")
+            else:
+                st.error("Nenhum contato encontrado para essa empresa.")
+                selected_contatos = []
 
     # Exemplo: ação para gerar o orçamento
     if st.button("Gerar Orçamento"):
