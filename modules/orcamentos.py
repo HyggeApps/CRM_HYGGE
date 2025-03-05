@@ -307,6 +307,7 @@ def elaborar_orcamento(user):
                         if st.button(f'Solicitar desconto de {desconto}%'):
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_aprovado": float(desconto)}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"aprovacao_gestor": False}})
                             st.success('Solicitação de desconto enviada com sucesso.')
 
                     elif not negocio_selecionado['aprovacao_gestor']: 
