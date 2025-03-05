@@ -220,8 +220,8 @@ def elaborar_orcamento(user):
                 #st.write(produtos_selecionados_obj, preco_produtos)
                 valor_estimado_formatado = format_currency(total)
                 desconto = st.number_input("Desconto (%)",0.0, 100.0)
-        
-                valor_negocio = total*(1-desconto/100)
+                desconto_total = total*(desconto/100)
+                valor_negocio = total - desconto_total
                 valor_negocio_formatado = format_currency(valor_negocio)
                 col1, col2 = st.columns(2)
                 with col1:  st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
@@ -266,7 +266,7 @@ def elaborar_orcamento(user):
                 if st.button("Gerar o orçamento"):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
-                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, total-(total*(desconto/100)), condicao_pagamento, prazo, nome_contato_principal)
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                         versao_proposta = gro.upload_onedrive2(pdf_out_path)
                         #st.write(versao_proposta)
                         path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
@@ -316,7 +316,7 @@ def elaborar_orcamento(user):
                 if st.button("Gerar o orçamento com o desconto adicional aprovado"):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
-                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, total-(total*(desconto/100)), condicao_pagamento, prazo, nome_contato_principal)
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                         versao_proposta = gro.upload_onedrive2(pdf_out_path)
                         #st.write(versao_proposta)
                         path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
