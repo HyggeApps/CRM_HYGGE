@@ -133,6 +133,7 @@ def elaborar_orcamento(user):
                 valor_estimado_formatado = format_currency(total)
                 desconto = st.number_input("Desconto (%)",0.0, 20.0)                          
                 with st.expander('Solicitação de desconto', expanded=False):
+                    st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
                     
                     if negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
                         st.markdown('🟩 Desconto aprovado.')
