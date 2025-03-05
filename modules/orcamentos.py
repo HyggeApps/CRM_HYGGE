@@ -100,17 +100,22 @@ def elaborar_orcamento(user):
         negocio_selecionado = next((opp for opp in oportunidades if opp["nome_oportunidade"] == selected_negocio), None)
         if negocio_selecionado:
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
+            nomes_produtos = [p["nome"] for p in produtos]
+            st.subheader("Informações do Negócio para orçamento")
+            
+            col1, col2, col3, col4, col5 = st.columns(5)
+            
+            with col1: produtos_selecionado1 = st.multiselect("Produto 1", options=nomes_produtos, key="select_produto_oportunidade1")
+            with col2: produtos_selecionado2 = st.multiselect("Produto 2", options=nomes_produtos, key="select_produto_oportunidade2")
+            with col3: produtos_selecionado3 = st.multiselect("Produto 3", options=nomes_produtos, key="select_produto_oportunidade3")
+            with col4: produtos_selecionado4 = st.multiselect("Produto 4", options=nomes_produtos, key="select_produto_oportunidade4")
+            with col5: produtos_selecionado5 = st.multiselect("Produto 5", options=nomes_produtos, key="select_produto_oportunidade5")
 
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
             preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
             #st.write(produtos_selecionados_obj, preco_produtos)
-            valor_estimado_formatado = format_currency(total)
-            st.subheader("Informações do Negócio para orçamento")
-            selected_produtos = st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'],placeholder='Altere os produtos se necessário')
-            update_fields = {"produtos": selected_produtos}
-            collection_oportunidades.update_one({"nome_oportunidade": selected_negocio}, {"$set": update_fields})
-                                                
+            valor_estimado_formatado = format_currency(total)                           
             valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
             valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
             desconto = total - valor_negocio
