@@ -714,8 +714,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
         data.append([p['nome'], '     ', '     ', '     '])
         
     if desconto > 0:
+        data.append(['Total', '     ', '     ', f'- R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')])
         data.append(['Desconto', '     ', '     ', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
-    data.append(['Total', '     ', '     ', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
+        data.append(['Total com desconto', '     ', '     ', f'- R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
+
+    else:    
+        data.append(['Total', '     ', '     ', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
 
     # Page width and margin
     page_width, page_height = letter
