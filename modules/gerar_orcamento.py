@@ -1,0 +1,972 @@
+import streamlit as st
+import time
+import requests
+import base64
+import json
+import locale
+from datetime import timedelta
+from docx import Document
+from docx.shared import Pt
+from io import BytesIO
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+import tempfile
+import os
+import unicodedata
+import random
+import string
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_JUSTIFY, TA_CENTER
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+import webbrowser
+import msal
+from msal import ConfidentialClientApplication
+from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, PageTemplate, Frame, NextPageTemplate, Table, TableStyle
+from reportlab.lib.utils import ImageReader
+import io
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from datetime import datetime
+import PyPDF2
+from PyPDF2 import PdfReader, PdfWriter
+import urllib.parse
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+from pathlib import Path
+from reportlab.lib.colors import Color
+from PIL import Image
+from openpyxl import Workbook
+from zipfile import ZipFile
+from eppy import modeleditor
+from eppy.modeleditor import IDF
+from eppy.bunch_subclass import BadEPFieldError
+from tempfile import NamedTemporaryFile
+import re
+import pandas as pd
+import hubspot # type: ignore
+from hubspot import HubSpot # type: ignore
+from hubspot.crm.deals import ApiException # type: ignore
+from hubspot.crm.owners import ApiException as OwnersApiException # type: ignore
+from hubspot.crm.line_items import ApiException as LineItemsApiException # type: ignore
+from hubspot.crm.contacts import ApiException as ContactsApiException # type: ignore
+from hubspot.crm.companies import ApiException as CompaniesApiException # type: ignore
+from hubspot.crm.associations import BatchInputPublicObjectId, PublicObjectId # type: ignore
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+import time
+import templates as tmplt
+
+path_proposta_envio = ''
+versao_proposta = ''
+
+def blank_line(elements, x):
+    for i in range(x):
+        elements.append(Spacer(1, 12)) 
+
+def list_files_in_folder(access_token, folder_name, retry_attempts=3, initial_delay=10, delay=5):
+    url = "https://api.hubapi.com/filemanager/api/v2/files"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+
+    # Atraso inicial para garantir que o arquivo tenha tempo de ser processado
+    time.sleep(initial_delay)
+    
+    for attempt in range(retry_attempts):
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            files = response.json().get('objects', [])
+            matching_files = [file for file in files if folder_name in file['name']]
+            if not matching_files:
+                st.warning(f"No files found in folder '{folder_name}'.")
+                return None
+            
+            file = matching_files[-1]
+            return file['name'], file['url']
+        
+        else:
+            st.warning(f"Failed to retrieve files: {response.status_code}, {response.text}. Retrying in {delay} seconds...")
+            time.sleep(delay)
+            delay *= 2  # Exponential backoff
+    
+    st.error("Max retry attempts reached. Could not retrieve files.")
+    return None
+
+def upload_file_to_hubspot(access_token, file_path, file_name, folder_name, retry_attempts=3, delay=5):
+    
+    url = "https://api.hubapi.com/files/v3/files"
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    try:
+        with open(file_path, "rb") as file:
+            file_content = file.read()
+            if len(file_content) == 0:
+                st.error("O arquivo está vazio.")
+                return None
+            
+            files = {
+                "file": (file_name, file_content, "application/pdf")
+            }
+
+            data = {
+                "folderPath": f'PROPOSTAS/{folder_name}', 
+                "options": json.dumps({"access": "PUBLIC_NOT_INDEXABLE"})
+            }
+
+            for attempt in range(retry_attempts):
+                response = requests.post(url, headers=headers, files=files, data=data)
+                
+                # Imprimir detalhes completos da resposta
+                st.write("Status Code:", response.status_code)
+                st.write("Headers:", response.headers)
+                st.write("Content:", response.content)
+                
+                if response.status_code == 403:
+                    st.error("Acesso negado. Verifique suas permissões e tente novamente.")
+                    time.sleep(delay)
+                    delay *= 2  # Exponential backoff
+                elif response.status_code == 400:
+                    st.error("Solicitação inválida. Verifique os parâmetros e o formato dos dados.")
+                    break
+                elif response.status_code == 201:
+                    st.success('Arquivo adicionado com sucesso na pasta de arquivos do Hubspot!')
+                    return response.json()
+                else:
+                    break
+
+        st.error('Não foi possível fazer o upload do arquivo após várias tentativas.')
+    except FileNotFoundError:
+        st.error("Arquivo não encontrado. Verifique o caminho do arquivo e tente novamente.")
+    except Exception as e:
+        st.error(f"Ocorreu um erro: {e}")
+
+    return None
+
+def get_versao(file_base_name):
+    # Substitua com suas próprias credenciais do Azure
+    CLIENT_ID = st.secrets['azure']['client_id']
+    CLIENT_SECRET = st.secrets['azure']['client_secret']
+    TENANT_ID = st.secrets['azure']['tenant_id']
+    AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+    SCOPE = ['https://graph.microsoft.com/.default']
+
+    # Configuração do Cliente MSAL
+    app = ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY_URL,
+        client_credential=CLIENT_SECRET,
+    )
+
+    # Adquirindo o Token
+    result = app.acquire_token_for_client(SCOPE)
+
+    # Verifique se o token foi adquirido com sucesso
+    if 'access_token' in result:
+        access_token = result['access_token']
+        # Cabeçalho com o token para autenticação
+        headers = {'Authorization': 'Bearer ' + access_token}
+
+        # ID do usuário para acessar seu OneDrive
+        user_id = 'cfbe7de5-e62c-4acb-8719-c6190103d174'
+        folder_response = requests.get(
+            f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/root/children',
+            headers=headers
+        )
+        
+        if folder_response.status_code == 200:
+            folders = folder_response.json().get('value', [])
+            folder_id = next((item['id'] for item in folders if item['name'] == '11. Orçamentos'), None)
+
+            if folder_id:
+                # Verificar se o arquivo já existe e determinar a versão
+                version = 1
+                while True:
+                    version_suffix = f"_v{version:02d}"
+                    versioned_file_name = f"{file_base_name}{version_suffix}.pdf"
+                    check_url = f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/root:/11.%20Orçamentos/{versioned_file_name}'
+                    check_response = requests.get(check_url, headers=headers)
+                    if check_response.status_code == 404:  # Arquivo não encontrado
+                        break
+                    version += 1
+                
+                # Criar arquivo temporário com a última versão
+                latest_version = version - 1
+                latest_version_suffix = f"_v{latest_version:02d}"
+                latest_versioned_file_name = f"{file_base_name}{latest_version_suffix}.pdf"
+                
+                # Baixar o conteúdo do arquivo mais recente
+                download_url = f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/root:/11.%20Orçamentos/{latest_versioned_file_name}:/content'
+                download_response = requests.get(download_url, headers=headers)
+                if download_response.status_code == 200:
+                    file_content = BytesIO(download_response.content)
+                    return GenerateTemp_PDF(latest_versioned_file_name, file_content)
+    
+    return None
+
+def GenerateTemp_PDF(filename, file):
+    temp_dir = tempfile.gettempdir()
+    temp_file_path = os.path.join(temp_dir, filename)
+    with open(temp_file_path, 'wb') as temp_file:
+        # Copiar o conteúdo para o arquivo temporário
+        temp_file.write(file.getvalue())
+    return temp_file_path
+
+def upload_onedrive2(pdf_path):
+    # Substitua com suas próprias credenciais do Azure
+    CLIENT_ID = st.secrets['azure']['client_id']
+    CLIENT_SECRET = st.secrets['azure']['client_secret']
+    TENANT_ID = st.secrets['azure']['tenant_id']
+    AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+    SCOPE = ['https://graph.microsoft.com/.default']
+
+    # Configuração do Cliente MSAL
+    app = ConfidentialClientApplication(
+        CLIENT_ID,
+        authority=AUTHORITY_URL,
+        client_credential=CLIENT_SECRET,
+    )
+
+    # Adquirindo o Token
+    result = app.acquire_token_for_client(SCOPE)
+
+    # Verifique se o token foi adquirido com sucesso
+    if 'access_token' in result:
+        access_token = result['access_token']
+        # Cabeçalho com o token para autenticação
+        headers = {'Authorization': 'Bearer ' + access_token}
+
+        # ID do usuário para acessar seu OneDrive
+        user_id = 'cfbe7de5-e62c-4acb-8719-c6190103d174'
+        folder_response = requests.get(
+            f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/root/children',
+            headers=headers
+        )
+        
+        if folder_response.status_code == 200:
+            folders = folder_response.json().get('value', [])
+            folder_id = next((item['id'] for item in folders if item['name'] == '11. Orçamentos'), None)
+
+            if folder_id:
+                file_name = os.path.basename(pdf_path)
+                file_base_name, file_extension = os.path.splitext(file_name)
+                
+                # Verificar se o arquivo já existe e determinar a versão
+                version = 1
+                while True:
+                    version_suffix = f"_v{version:02d}"
+                    versioned_file_name = f"{file_base_name}{version_suffix}{file_extension}"
+                    check_url = f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{folder_id}:/{versioned_file_name}'
+                    check_response = requests.get(check_url, headers=headers)
+                    if check_response.status_code == 404:  # Arquivo não encontrado
+                        break
+                    version += 1
+
+                # Upload do arquivo com a versão determinada
+                upload_url = f'https://graph.microsoft.com/v1.0/users/{user_id}/drive/items/{folder_id}:/{versioned_file_name}:/content'
+                with open(pdf_path, "rb") as file:
+                    media_content = file.read()
+                
+                upload_response = requests.put(upload_url, headers=headers, data=media_content)
+
+                if upload_response.status_code in [200, 201]:
+                    st.success(f"Etapa 2 de 2 - Arquivo adicionado com sucesso como '{versioned_file_name}' na pasta de orçamentos.")
+                else:
+                    st.error(f"Erro ao carregar o arquivo: {upload_response.status_code} {upload_response.text}")
+            else:
+                st.error("Pasta '11. Orçamentos' não encontrada.")
+        else:
+            st.error("Erro ao listar pastas na raiz do OneDrive.")
+            st.json(folder_response.json())
+    else:
+        st.error("Erro ao adquirir o token: " + result.get("error_description", ""))
+    
+    pdf_path.replace('.pdf',f'_v{version:02d}.pdf')
+    return version
+
+def remove_special_characters(text):
+    def clean_text(t):
+        # Normalize text to decomposed Unicode form to separate characters and diacritics
+        normalized_text = unicodedata.normalize('NFD', t)
+        # Use regular expression to filter out non-alphanumeric characters and diacritics
+        removed_special_chars = re.sub(r'[^a-zA-Z0-9\s]', '', normalized_text)
+        # Remove extra whitespaces
+        cleaned_text = ' '.join(removed_special_chars.split())
+        return cleaned_text
+
+    if isinstance(text, str):
+        return clean_text(text)
+    elif isinstance(text, list):
+        return [clean_text(t) for t in text if isinstance(t, str)]
+    else:
+        raise TypeError("The input must be a string or a list of strings.")
+
+def remove_hifen_from_lists(obj):
+    if isinstance(obj, list):
+        return [x for x in obj if x != "-"]
+    elif isinstance(obj, dict):
+        for key, value in obj.items():
+            obj[key] = remove_none_from_lists(value)
+    return obj
+
+def remove_none_from_lists(obj):
+    if isinstance(obj, list):
+        return [x for x in obj if x != "Nenhum"]
+    elif isinstance(obj, dict):
+        for key, value in obj.items():
+            obj[key] = remove_none_from_lists(value)
+    return obj
+                      
+def sorting_key(s):
+    # Extrai os componentes da string usando expressões regulares
+    match = re.search(r'(P\d+)_UH(\d+)_([A-Z]+[A-Z0-9]*)', s)
+    if match:
+        pav, uh, ambiente = match.groups()
+        return (pav, int(uh), ambiente)
+    else:
+        # Retorna uma tupla com valores padrão que colocam esta string no final
+        return ("", float('inf'), s)
+
+def classificar_pavimentos(df):
+    # Ordenando os pavimentos e removendo duplicatas
+    pavimentos_unicos = sorted(df['Pavimento'].unique())
+
+    # Classificando os pavimentos
+    if len(pavimentos_unicos) == 1:
+        df['Classificacao Pavimento'] = 'Terreo'
+    elif len(pavimentos_unicos) == 2:
+        df['Classificacao Pavimento'] = df['Pavimento'].replace({pavimentos_unicos[0]: 'Terreo', pavimentos_unicos[1]: 'Cobertura'})
+    else:
+        # Para 3 ou mais pavimentos, o menor é térreo, o maior é cobertura, e os demais são tipo
+        df['Classificacao Pavimento'] = df['Pavimento'].replace({pavimentos_unicos[0]: 'Terreo', pavimentos_unicos[-1]: 'Cobertura'})
+        for pavimento in pavimentos_unicos[1:-1]:
+            df['Classificacao Pavimento'] = df['Classificacao Pavimento'].replace({pavimento: 'Tipo'})
+
+    return df
+
+def GenerateTemp_URL(sfx, url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+    }
+
+    try:
+        # Fazer o download do conteúdo da URL com cabeçalhos personalizados
+        response = requests.get(url, headers=headers, stream=True)
+        response.raise_for_status()  # Verifica se a solicitação foi bem-sucedida
+
+        # Criar um arquivo temporário e copiar o conteúdo para ele
+        with NamedTemporaryFile(delete=False, suffix=sfx) as fname:
+            for chunk in response.iter_content(chunk_size=8192):
+                fname.write(chunk)
+            name_path = fname.name
+
+        # Verificar se o arquivo é um PDF válido
+        with open(name_path, 'rb') as file:
+            header = file.read(4)
+            if header != b'%PDF':
+                raise ValueError("Downloaded file is not a valid PDF")
+
+        print(f"Temporary file created at: {name_path}")
+        return name_path
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+    except ValueError as e:
+        print(f"Error: {e}")
+
+def GenerateTemp(sfx, file):
+    with NamedTemporaryFile(delete=False, suffix=sfx) as fname:
+        # Copiar o conteúdo para o arquivo temporário
+        fname.write(file.getvalue())
+        name_path = fname.name
+        return name_path
+
+def read_img(url_da_imagem):
+    try:
+        if url_da_imagem.startswith('http'):
+            response = requests.get(url_da_imagem)
+            image = Image.open(BytesIO(response.content))
+            st.image(image)
+        else:
+            image = Image.open(url_da_imagem)
+            st.image(image)
+    except Exception as e:
+        st.error(f"Erro ao carregar a imagem: {e}")
+
+def carregar_imagem(url_da_imagem):    
+    try:
+        if url_da_imagem.startswith('http'):
+            response = requests.get(url_da_imagem)
+            image = Image.open(BytesIO(response.content))
+        else:
+            image = Image.open(url_da_imagem)
+        return image
+    except Exception as e:
+        st.error(f"Erro ao carregar a imagem: {e}")
+        return None
+
+email_principal = None
+custom_color = Color(118/255.0, 136/255.0, 40/255.0)
+
+if __name__ == '__main__':
+    
+    def get_max_value_from_folder_names(CLIENT_ID, CLIENT_SECRET, TENANT_ID, drive_id, folder_item_id):
+        AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+        SCOPE = ['https://graph.microsoft.com/.default']
+        app = ConfidentialClientApplication(CLIENT_ID, authority=AUTHORITY_URL, client_credential=CLIENT_SECRET)
+        result = app.acquire_token_for_client(SCOPE)
+
+        max_value = -1
+
+        if 'access_token' in result:
+            access_token = result['access_token']
+            headers = {'Authorization': f'Bearer {access_token}'}
+
+            list_folders_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{folder_item_id}/children'
+            folders_response = requests.get(list_folders_url, headers=headers).json()
+
+            for folder in folders_response.get('value', []):
+                if 'folder' in folder:
+                    folder_name = folder['name']
+                    # Assuming the folder name format is "XXX - blablabla"
+                    try:
+                        value = int(folder_name.split(' - ')[0])
+                        max_value = max(max_value, value)
+                    except ValueError:
+                        # The folder name doesn't start with a numeric value
+                        continue
+
+            if max_value > -1:
+                print(f"The maximum value found is: {max_value}")
+                return max_value
+            else:
+                print("No numeric prefixes found in folder names.")
+        else:
+            print("Error acquiring token:", result.get("error_description", ""))
+
+    def copy_folder_contents(drive_id, source_folder_id, destination_folder_id, access_token):
+        headers = {'Authorization': f'Bearer {access_token}'}
+        list_items_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{source_folder_id}/children'
+        items_response = requests.get(list_items_url, headers=headers)
+        
+        if items_response.status_code == 200:
+            items = items_response.json().get('value', [])
+            
+            for item in items:
+                copy_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item["id"]}/copy'
+                copy_body = {
+                    "parentReference": {
+                        "id": destination_folder_id
+                    }
+                }
+                copy_response = requests.post(copy_url, headers=headers, json=copy_body)
+                
+                if copy_response.status_code == 202:
+                    print(f"Copying {item['name']} started. Waiting for completion...")
+                    # Wait a bit to give time for the copy operation
+                    time.sleep(5)  # Wait for 5 seconds (adjust as needed based on file size)
+                else:
+                    print(f"Failed to initiate copy for {item['name']}: {copy_response.status_code} {copy_response.text}")
+        else:
+            print(f"Error listing items in source folder: {items_response.status_code} {items_response.text}")
+            
+    def upload_to_3projetos(file_path, file_name, new_folder_name):
+        # Azure credentials and MSAL Client Configuration
+        CLIENT_ID = st.secrets['azure']['client_id']
+        CLIENT_SECRET = st.secrets['azure']['client_secret']
+        TENANT_ID = st.secrets['azure']['tenant_id']
+        AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+        SCOPE = ['https://graph.microsoft.com/.default']
+        
+        item_id = '013JXZXANSVFYITQ6LDBEZYV2QO2FRFRMH'  # Replace with actual shared drive ID
+        drive_id = "b!yrE7SxqrykWOoQYwwGXFrzTd7LHaY8FOgzJR4akW6vvvT1mGsai9QqqR_4XDxhMj"  # Replace with actual shared folder item ID
+        
+        app = ConfidentialClientApplication(CLIENT_ID, authority=AUTHORITY_URL, client_credential=CLIENT_SECRET)
+        result = app.acquire_token_for_client(SCOPE)
+
+        if 'access_token' in result:
+            access_token = result['access_token']
+            headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+            new_folder_name = str(get_max_value_from_folder_names(CLIENT_ID, CLIENT_SECRET, TENANT_ID, drive_id, item_id)+1)+' - '+new_folder_name
+            # Step 1: Create new folder
+            create_folder_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/children'
+            folder_data = {
+                "name": new_folder_name,
+                "folder": {},
+                "@microsoft.graph.conflictBehavior": "rename"
+            }
+            folder_response = requests.post(create_folder_url, headers=headers, json=folder_data)
+            if folder_response.status_code in [200, 201]:
+                new_folder_id = folder_response.json()['id']
+                print(f"New folder '{new_folder_name}' created successfully.")
+                
+                # Step 2: Upload file to the new folder
+                upload_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{new_folder_id}:/{file_name}:/content'
+                with open(file_path, "rb") as file:
+                    file_content = file.read()
+                upload_response = requests.put(upload_url, headers=headers, data=file_content)
+                if upload_response.status_code in [200, 201]:
+                    print("File successfully uploaded to the new folder.")
+                    # Step 3: Copy folder contents
+                    source_folder_id = "01FCG3WNBQBOAVYJGQMFD3YNRVQAWUC433"  # ID of the "000 - EMPRESA - PROJETO" folder
+                    copy_folder_contents(drive_id, source_folder_id, new_folder_id, access_token)
+                else:
+                    print(f"Error uploading file: {upload_response.status_code} {upload_response.text}")
+            else:
+                print(f"Error creating folder: {folder_response.status_code} {folder_response.text}")
+        else:
+            print("Error acquiring token:", result.get("error_description", ""))
+
+    def upload_to_3projetos_v02(file_name, new_folder_name, file_path):
+        # Azure credentials and MSAL Client Configuration
+        CLIENT_ID = st.secrets['azure']['client_id']
+        CLIENT_SECRET = st.secrets['azure']['client_secret']
+        TENANT_ID = st.secrets['azure']['tenant_id']
+        AUTHORITY_URL = f'https://login.microsoftonline.com/{TENANT_ID}'
+        SCOPE = ['https://graph.microsoft.com/.default']
+        
+        item_id = '013JXZXANIYRELCT76MZHYGO2OF6YB7XAR'  # Replace with actual shared drive ID
+        drive_id = "b!yrE7SxqrykWOoQYwwGXFrzTd7LHaY8FOgzJR4akW6vvvT1mGsai9QqqR_4XDxhMj"
+        
+        app = ConfidentialClientApplication(CLIENT_ID, authority=AUTHORITY_URL, client_credential=CLIENT_SECRET)
+        result = app.acquire_token_for_client(SCOPE)
+
+        if 'access_token' in result:
+            access_token = result['access_token']
+            headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+            new_folder_name = str(get_max_value_from_folder_names(CLIENT_ID, CLIENT_SECRET, TENANT_ID, drive_id, item_id)+1)+' - '+new_folder_name
+            # Step 1: Create new folder
+            create_folder_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/children'
+            folder_data = {
+                "name": new_folder_name,
+                "folder": {},
+                "@microsoft.graph.conflictBehavior": "rename"
+            }
+            folder_response = requests.post(create_folder_url, headers=headers, json=folder_data)
+            if folder_response.status_code in [200, 201]:
+                new_folder_id = folder_response.json()['id']
+                print(f"New folder '{new_folder_name}' created successfully.")
+                
+                # Step 2: Upload file to the new folder
+                upload_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{new_folder_id}:/{file_name}:/content'
+                with open(file_path, "rb") as file:
+                    file_content = file.read()
+                upload_response = requests.put(upload_url, headers=headers, data=file_content)
+                if upload_response.status_code in [200, 201]:
+                    print("File successfully uploaded to the new folder.")
+                    # Step 3: Copy folder contents
+                    source_folder_id = "013JXZXAOOEHVKTIHXVVHIERCVM4MJJHKZ"  # ID of the "000 - EMPRESA - PROJETO" folder
+                    copy_folder_contents(drive_id, source_folder_id, new_folder_id, access_token)
+                else:
+                    print(f"Error uploading file: {upload_response.status_code} {upload_response.text}")
+            else:
+                print(f"Error creating folder: {folder_response.status_code} {folder_response.text}")
+        else:
+            print("Error acquiring token:", result.get("error_description", ""))
+
+
+    def generate_proposal_pdf2(dealname, dealid, company_name, cnpj, firstname, lastname, condicao_pagamento_escolhida, items, prices, qtds, items_id, discounts, amount, prazo):
+                    
+        # Path to the font file
+        font_path = Path(__file__).parent / "PDFs2/Hero-Regular.ttf"
+
+        # Ensure the font file exists
+        if not font_path.is_file():
+            raise FileNotFoundError(f"Font file not found: {font_path}")
+
+        # Create a temporary file for the font
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.ttf') as tmp_font:
+            # Read the font file and write its content to the temporary file
+            with open(font_path, 'rb') as font_file:
+                tmp_font.write(font_file.read())
+
+        # Register the font with a name (e.g., 'HeroLightRegular')
+        pdfmetrics.registerFont(TTFont('HeroLightRegular', tmp_font.name))
+
+                # Path to the font file
+        font_path_2 = Path(__file__).parent / "PDFs2/Hero-Bold.ttf"
+
+        # Ensure the font file exists
+        if not font_path_2.is_file():
+            raise FileNotFoundError(f"Font file not found: {font_path_2}")
+
+        # Create a temporary file for the font
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.ttf') as tmp_font:
+            # Read the font file and write its content to the temporary file
+            with open(font_path_2, 'rb') as font_file:
+                tmp_font.write(font_file.read())
+
+        # Register the font with a name (e.g., 'HeroLightRegular')
+        pdfmetrics.registerFont(TTFont('HeroBold', tmp_font.name))
+
+
+        font_path_3 = Path(__file__).parent / "PDFs2/Hero-Light.ttf"
+
+        # Ensure the font file exists
+        if not font_path_3.is_file():
+            raise FileNotFoundError(f"Font file not found: {font_path_2}")
+
+        # Create a temporary file for the font
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.ttf') as tmp_font:
+            # Read the font file and write its content to the temporary file
+            with open(font_path_2, 'rb') as font_file:
+                tmp_font.write(font_file.read())
+
+        # Register the font with a name (e.g., 'sessionLightRegular')
+        pdfmetrics.registerFont(TTFont('sessionLight', tmp_font.name))
+        
+        def add_background(canvas, doc):
+            # Define your background drawing code here
+            canvas.saveState()
+            canvas.drawImage(image_reader, 0, 0, width=A4[0], height=A4[1])
+            canvas.restoreState()
+
+         # Create a temporary directory for the PDF
+        temp_dir = tempfile.mkdtemp()
+        pdf_filename = f'{dealname}_{dealid}.pdf'
+        capa = f'Capa.pdf'
+        contracapa = f'Contracapa.pdf'           
+        pdf_path = os.path.join(temp_dir, pdf_filename)
+        capa_path = os.path.join(temp_dir, capa)
+        contracapa_path = os.path.join(temp_dir, contracapa)
+        
+        # ESTILOS DE PARAGRAFGO
+        # Define your styles and elements
+        styles = getSampleStyleSheet()
+        hero_light_style = ParagraphStyle(
+            'HeroLight',
+            parent=styles['Normal'],
+            fontName='HeroLightRegular',
+            fontSize=12,
+            leading=16
+        )
+        session_light_style = ParagraphStyle(
+            'sessionLight',
+            parent=styles['Normal'],
+            fontName='HeroLightRegular',
+            fontSize=12,
+            leading=16
+        )
+        hero_bold_style = ParagraphStyle(
+            'HeroBold',
+            parent=styles['Normal'],
+            fontName='HeroBold',
+            fontSize=12,
+            leading=16
+        )
+        left_hero_light_style = ParagraphStyle(
+            'HeroLight',
+            parent=styles['Normal'],
+            alignment=TA_LEFT,
+            fontName='HeroLightRegular',
+            fontSize=12,
+            leading=16,
+            leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+        )
+        left_hero_bold_style = ParagraphStyle(
+            'HeroBold',
+            parent=styles['Normal'],
+            alignment=TA_LEFT,
+            fontName='HeroBold',
+            fontSize=12,
+            leading=16,
+            leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+        )
+        title_hero_light_style = ParagraphStyle(
+            'TitleHeroLight',
+            parent=styles['Normal'],
+            fontName='HeroLightRegular',
+            alignment=TA_LEFT,
+            fontSize=30,
+            leading=35,
+            leftIndent= -0.5 * cm
+        )
+
+        right_aligned_style = ParagraphStyle(
+            'RightAlignedHeroLight',
+            parent=hero_light_style,
+            alignment=TA_RIGHT,
+            fontSize=10
+        )
+        left_aligned_style = ParagraphStyle(
+            'LeftAlignedHeroLight',
+            parent=hero_light_style,
+            alignment=TA_LEFT,
+            fontSize=10
+
+        )
+        contra_aligned_style = ParagraphStyle(
+            'ContraAlignedHeroLight',
+            parent=styles['Normal'],
+            fontName='HeroLightRegular',
+            alignment=TA_LEFT,
+            fontSize=15,
+            textColor=colors.whitesmoke,
+            leftIndent=-0.2 * cm  # Define o recuo de 2 cm à esquerda
+
+
+        )
+        justify_style = ParagraphStyle(
+            'JustifyStyle',
+            parent=hero_light_style,
+            alignment=TA_JUSTIFY
+        )
+
+        center_style = ParagraphStyle(
+            'JustifyStyle',
+            parent=hero_light_style,
+            alignment=TA_CENTER,
+            fontSize=14
+        )
+        
+        # CAPA DA PROPOSTA
+        image_reader = Path(__file__).parent / "PDFs2/Capa.png"
+
+        # Criação do documento no padrão A4
+        doc = BaseDocTemplate(capa_path, pagesize=A4)
+
+        # Create a frame and a page template with the background
+        frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
+        template = PageTemplate(id='background', frames=frame, onPage=add_background)
+        doc.addPageTemplates([template])
+
+        # Conteúdo do documento - lista de todos os elementos que compoe a proposta
+        elements = []
+
+        blank_line(elements,19)
+        elements.append(Paragraph(f'{dealname}', title_hero_light_style))
+        elements.append(PageBreak())
+
+        # PAGINA DA PROPOSTA
+        # Gerar PDF
+        doc.build(elements)
+
+        # Initialize the BaseDocTemplate
+        doc = BaseDocTemplate(pdf_path, pagesize=A4)
+
+        image_reader = Path(__file__).parent / "PDFs2/Template.png"
+
+        # Create a frame and a page template with the background
+        frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
+        template = PageTemplate(id='background', frames=frame, onPage=add_background)
+        doc.addPageTemplates([template])
+
+
+        indent_style = ParagraphStyle('Indented', parent=hero_light_style, leftIndent=20)
+
+        # Data de hoje
+        data_hoje = datetime.now()
+
+        # Mapeamento dos meses em inglês para português
+        meses = {
+            "January": "janeiro",
+            "February": "fevereiro",
+            "March": "março",
+            "April": "abril",
+            "May": "maio",
+            "June": "junho",
+            "July": "julho",
+            "August": "agosto",
+            "September": "setembro",
+            "October": "outubro",
+            "November": "novembro",
+            "December": "dezembro"
+        }
+
+        # Formatando a data
+        data_formatada = data_hoje.strftime("%d de %B de %Y")
+        mes_portugues = meses[data_hoje.strftime("%B")]
+        data_formatada_ptbr = data_formatada.replace(data_hoje.strftime("%B"), mes_portugues)
+
+        # CABEÇALHO, NUMERO PROPOSTA, VALIDADE DA PROPOSTA
+        blank_line(elements,2)
+        elements.append(Paragraph(f'Curitiba, {data_formatada_ptbr}', hero_bold_style))
+        elements.append(Paragraph(f'Número da proposta: {dealid}', hero_bold_style))
+        elements.append(Paragraph(f'Validade da proposta: 30 dias', hero_bold_style))
+
+        blank_line(elements,1)
+        elements.append(Paragraph('À', hero_light_style))
+        elements.append(Paragraph(f'{company_name}', hero_light_style))
+        elements.append(Paragraph(f'A/C: {firstname} {lastname}', hero_light_style))
+
+        # TEXTO DA PROPOSTA - TEXTO GENERICO DA PROPOSTA, cabecalho investimento, serviços
+        blank_line(elements,1)
+        elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {dealname}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
+        
+        blank_line(elements,3)
+        elements.append(Paragraph(f'INVESTIMENTO', center_style))
+        blank_line(elements,1)
+        data = [
+            ['Serviço', 'QTDE.', 'Valor Unit.', 'Valor Total']
+        ]
+
+        discounts_sum = 0
+        for i, q, p, d in zip(items, qtds, prices,discounts):
+            if len(i) > 30: i = i[:30] + '\n' + i[30:]
+            if q != 'No quantity':
+                data.append([i, q, f'R$ {float(p):,.2f}'.replace(',', '.'), f'R$ {float(q) * float(p):,.2f}'.replace(',', '.')])
+            else:
+                data.append([i, q, f'R$ {float(p):,.2f}'.replace(',', '.'), f'R$ {float(p):,.2f}'.replace(',', '.')])
+            
+            if d != None:
+                if d != 'No discount' and float(d) > 0: discounts_sum+=float(d)
+            
+        if discounts_sum > 0:
+            data.append(['Desconto', '', '', f'- R$ {float(discounts_sum):,.2f}'.replace(',', '.')])
+        data.append(['Total', '', '', f'R$ {float(amount):,.2f}'.replace(',', '.')])
+
+        # Page width and margin
+        page_width, page_height = letter
+        margin = 80  # Reduzindo a margem para 80 pontos de cada lado
+
+        # Calculate column widths (proportional width)
+        available_width = page_width - (2 * margin)
+        col_widths = [
+            available_width * 0.50,  # 40% of the available width
+            available_width * 0.10,  # 20% of the available width
+            available_width * 0.20,  # 20% of the available width
+            available_width * 0.20   # 20% of the available width
+        ]
+
+        # Define a tabela de produtos da proposta
+        table = Table(data, colWidths=col_widths)
+
+        if discounts_sum == 0:
+            dsct = 0
+            style1 = TableStyle([
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
+                ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
+                ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
+                ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
+                ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
+                ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
+            ])
+
+            table.setStyle(style1)
+
+        else:
+            dsct = 1
+            style2 = TableStyle([
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
+                ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
+                ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
+                ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
+                ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
+                ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
+                ('LINEABOVE', (0, -2), (-1, -2), 1, colors.gray),  # Linha acima da última linha
+                ('TEXTCOLOR', (0, -2), (-1, -2), colors.gray)  # Penúltima linha com fonte cinza
+            ])
+
+            table.setStyle(style2)
+
+        # Add the table to the elements list
+        elements.append(table)
+        
+        if len(items) == 1: blank_line(elements,18-dsct)
+        if len(items) == 2: blank_line(elements,16-dsct)
+        if len(items) == 3: blank_line(elements,15-dsct)
+        if len(items) == 4: blank_line(elements,13-dsct)
+        if len(items) == 5: blank_line(elements,11-dsct)
+        if len(items) == 6: blank_line(elements,10-dsct)
+        if len(items) == 7: blank_line(elements,8-dsct)
+
+        # texto das condições de pagamento
+        elements.append(Paragraph(f'Forma de pagamento:', left_hero_light_style))
+        elements.append(Paragraph(f'{condicao_pagamento_escolhida}', left_hero_bold_style))
+        blank_line(elements,1)
+        elements.append(Paragraph(f'Prazo de execução:', left_hero_light_style))
+        elements.append(Paragraph(f'{prazo}', left_hero_bold_style))                
+
+        # Gerar PDF da contracapa
+        doc.build(elements)
+
+        image_reader = Path(__file__).parent / "PDFs2/Contracapa.png"
+
+        # Initialize the BaseDocTemplate
+        doc = BaseDocTemplate(contracapa_path, pagesize=A4)
+
+        # Create a frame and a page template with the background
+        frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
+        template = PageTemplate(id='background', frames=frame, onPage=add_background)
+        doc.addPageTemplates([template])
+
+        # Conteúdo do documento
+        elements = []
+
+        blank_line(elements,1)
+
+        # Gerar PDF dos aditivos e adicionais e textos extra
+        doc.build(elements)
+        aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
+        termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
+        disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf" 
+        clientes_hygge_filename = Path(__file__).parent / "PDFs2/Nossos clientes.pdf"
+        pq_escolher_filename = Path(__file__).parent / "PDFs2/pq a Hygge.pdf"
+        
+
+        flag_EVTA = False
+        for item in items: 
+            if 'EVTA' in item or 'Auditoria' in item: flag_EVTA = True
+
+        # PDFs2 to merge PROPOSTAS EVTA
+        if flag_EVTA:
+            pdfs=[capa_path] # CAPA
+            path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item} - intro.pdf"
+            pdfs.append(path_item) # INTRODUÇÃO
+            pdfs.append(pdf_path) # PROPOSTA
+            path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {item} - escopo.pdf"
+            pdfs.append(path_escopo) # ESCOPO
+            #local de input dos pdfs para a proposta
+            pdfs.append(termos_filename)
+            pdfs.append(disposicoes_gerais_filename)
+            pdfs.append(clientes_hygge_filename)
+            pdfs.append(contracapa_path) # pdf_path is the path to your main PDF
+            
+        else:
+            pdfs = [capa_path, pdf_path]
+
+            for item in items:
+                if item != 'Reunião':
+                    path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
+                    pdfs.append(path_item) 
+            #local de input dos pdfs para a proposta
+            pdfs.append(termos_filename)
+            pdfs.append(disposicoes_gerais_filename)
+            pdfs.append(aditivo_filename)
+            #pdfs.append(pq_escolher_filename)
+            pdfs.append(clientes_hygge_filename)
+            pdfs.append(contracapa_path) # pdf_path is the path to your main PDF
+
+        writer = PdfWriter()
+
+        for pdf in pdfs:
+            reader = PdfReader(open(pdf, 'rb'))
+            for i in range(len(reader.pages)):
+                writer.add_page(reader.pages[i])
+
+        with open(pdf_path, 'wb') as f_out:
+            writer.write(f_out)
+            st.success('Etapa 1 de 2 - Proposta gerada com sucesso!')
+            
+        return pdf_path

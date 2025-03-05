@@ -4,8 +4,9 @@ from datetime import datetime
 import pandas as pd
 import datetime as dt
 import calendar
-
-
+import gerar_orcamento as gro
+import time
+import os
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Calcula o número máximo de parcelas possíveis
     
@@ -106,7 +107,9 @@ def elaborar_orcamento(user):
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
             valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
             valor_negocio = valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", ".")
-
+            desconto = total - valor_negocio
+            desconto_formatado = format_currency(desconto)
+            st.text(f"Desconto aplicado: {desconto_formatado}")
             condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
             condicao_pagamento = st.selectbox('**Condições de pagamento:**',condicoes)
@@ -122,6 +125,7 @@ def elaborar_orcamento(user):
                         '15 dias úteis após o recebimento da documentação completa.',
                         '10 dias úteis após o recebimento da documentação completa.']
 
+            prazo = st.selectbox('Prazo de execução: ', prazos)
 
             # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
             contatos = list(
@@ -138,10 +142,15 @@ def elaborar_orcamento(user):
                 selected_contatos = []
 
     # Exemplo: ação para gerar o orçamento
-    if st.button("Gerar Orçamento"):
-        # Aqui você pode implementar a lógica para salvar o orçamento ou processá-lo conforme necessário
-        st.success("Orçamento gerado com sucesso!")
-
+        if st.button("Gerar o orçamento"):
+            inicio = time.time()
+            #pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, selected_negocio, negocio_selecionado['produtos'])
+            #versao_proposta = gro.upload_onedrive2(pdf_out_path)
+            #path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+            fim = time.time()
+            st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+            #novo_nome_arquivo = os.path.basename(path_proposta_envio)
+            st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
 
 
 
