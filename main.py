@@ -15,7 +15,8 @@ from modules import (
     templates,
     produtos,
     negocios,
-    orcamentos
+    orcamentos,
+    aprovacoes
 )
 from utils import functions as funcs
 from streamlit_authenticator.utilities import (CredentialsError,
@@ -330,7 +331,7 @@ if st.session_state.get('logado', False):
         #st.info('Consulte, cadastre e edite os produtos da HYGGE.')
         st.write('----')
         if 'admin' in st.session_state["roles"]: produtos.gerenciamento_produtos()
-        else: st.warning("Você não tem permissão para alterar usuários.")
+        else: st.warning("Você não tem permissão para alterar produtos.")
 
     elif selected == 'Usuários':
         st.header("🧑‍💻 Usuários")
@@ -343,4 +344,6 @@ if st.session_state.get('logado', False):
         st.header("✅ Solicitação de aprovação")
         #st.info('Consulte, cadastre e edite os usuários da HYGGE.')
         st.write('----')
+        if 'admin' in st.session_state["roles"]: aprovacoes.gerenciamento_aprovacoes()
+        else: st.warning("Você não tem permissão para aprovar solicitações.")
 
