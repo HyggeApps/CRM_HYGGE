@@ -4,9 +4,10 @@ from datetime import datetime
 import pandas as pd
 import datetime as dt
 import calendar
-import gerar_orcamento as gro
+import modules.gerar_orcamento as gro
 import time
 import os
+
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Calcula o número máximo de parcelas possíveis
     
@@ -150,7 +151,7 @@ def elaborar_orcamento(user):
             fim = time.time()
             st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
             #novo_nome_arquivo = os.path.basename(path_proposta_envio)
-            st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+            #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
 
 
 
