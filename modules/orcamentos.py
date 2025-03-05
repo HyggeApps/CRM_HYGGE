@@ -149,6 +149,7 @@ def elaborar_orcamento(user):
             inicio = time.time()
             pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
             versao_proposta = gro.upload_onedrive2(pdf_out_path)
+            st.write(versao_proposta)
             path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
             fim = time.time()
             st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
