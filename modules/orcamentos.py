@@ -107,7 +107,10 @@ def elaborar_orcamento(user):
             #st.write(produtos_selecionados_obj, preco_produtos)
             valor_estimado_formatado = format_currency(total)
             st.subheader("Informações do Negócio para orçamento")
-            st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
+            selected_produtos = st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'],placeholder='Altere os produtos se necessário')
+            update_fields = {"produtos": selected_produtos}
+            collection_oportunidades.update_one({"nome_oportunidade": selected_negocio}, {"$set": update_fields})
+                                                
             valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
             valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
             desconto = total - valor_negocio
