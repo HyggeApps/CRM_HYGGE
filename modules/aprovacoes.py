@@ -32,11 +32,11 @@ def gerenciamento_aprovacoes():
     
     # Renomear as colunas para inserir a legenda diretamente
     df_display.rename(columns={
-        'cliente': '**Empresa**',
-        'nome_oportunidade': '**Negócio**',
-        'proprietario': '**Vendedor**',
-        'desconto_aprovado': '**Desconto Solicitado**',
-        'aprovacao_gestor': '**Aprovação do Gestor**'
+        'cliente': 'Empresa',
+        'nome_oportunidade': 'Negócio',
+        'proprietario': 'Vendedor',
+        'desconto_aprovado': 'Desconto Solicitado',
+        'aprovacao_gestor': 'Aprovação do Gestor'
     }, inplace=True)
     
     st.write("### Solicitações de Desconto em Aberto")
@@ -48,7 +48,7 @@ def gerenciamento_aprovacoes():
         # Iterar pelas linhas do DataFrame editado
         for idx in range(len(edited_df)):
             # Se o campo de aprovação foi marcado (True) na edição, atualiza a oportunidade e registra a aprovação
-            if edited_df.iloc[idx]['**Aprovação do Gestor**'] == True:
+            if edited_df.iloc[idx]['Aprovação do Gestor'] == True:
                 oportunidade_id_str = id_mapping[idx]
                 # Atualiza a oportunidade para aprovar o desconto
                 col_oportunidades.update_one(
