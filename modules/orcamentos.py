@@ -215,8 +215,6 @@ def elaborar_orcamento(user):
             if len(produtos_selecionados) > 0:
                 #st.write(negocio_selecionado)
                 produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
-                st.write(produtos_selecionados_obj)
-                st.write(1)
                 total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
                 #st.write(produtos_selecionados_obj, preco_produtos)
@@ -227,7 +225,8 @@ def elaborar_orcamento(user):
                 valor_negocio_formatado = format_currency(valor_negocio)
                 col1, col2 = st.columns(2)
                 with col1:  st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
-                with col2:  st.warning(f"**Preço total com descontos:** {valor_negocio_formatado}")  
+                with col2:  st.warning(f"**Preço total com descontos:** {valor_negocio_formatado}")
+                st.write(1)
                 #**Preço com o desconto aplicado:** {valor_negocio_formatado}")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
