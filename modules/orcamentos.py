@@ -199,7 +199,7 @@ def elaborar_orcamento(user):
                         st.markdown('🟨 Em análise pelo gestor.')
                     else:
                         st.markdown('🟦 Sem solicitação de desconto.')
-                        if st.button('Solicitar desconto de {desconto}%'):
+                        if st.button(f'Solicitar desconto de {desconto}%'):
 
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
                             st.success('Solicitação de desconto enviada com sucesso.')
