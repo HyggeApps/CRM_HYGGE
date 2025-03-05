@@ -132,7 +132,7 @@ def elaborar_orcamento(user):
             )
             if contatos:
                 opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
-                selected_contatos = st.multiselect("Selecione os **contatos** da empresa que receberão o orçamento", opcoes_contatos, key="orcamento_contatos")
+                selected_contatos = st.multiselect("**Selecione os contatos da empresa que receberão o orçamento**", opcoes_contatos, key="orcamento_contatos")
             else:
                 st.error("Nenhum contato encontrado para essa empresa.")
                 selected_contatos = []
