@@ -65,58 +65,6 @@ def list_files_in_folder(access_token, folder_name, retry_attempts=3, initial_de
     st.error("Max retry attempts reached. Could not retrieve files.")
     return None
 
-def upload_file_to_hubspot(access_token, file_path, file_name, folder_name, retry_attempts=3, delay=5):
-    
-    url = "https://api.hubapi.com/files/v3/files"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-
-    try:
-        with open(file_path, "rb") as file:
-            file_content = file.read()
-            if len(file_content) == 0:
-                st.error("O arquivo está vazio.")
-                return None
-            
-            files = {
-                "file": (file_name, file_content, "application/pdf")
-            }
-
-            data = {
-                "folderPath": f'PROPOSTAS/{folder_name}', 
-                "options": json.dumps({"access": "PUBLIC_NOT_INDEXABLE"})
-            }
-
-            for attempt in range(retry_attempts):
-                response = requests.post(url, headers=headers, files=files, data=data)
-                
-                # Imprimir detalhes completos da resposta
-                st.write("Status Code:", response.status_code)
-                st.write("Headers:", response.headers)
-                st.write("Content:", response.content)
-                
-                if response.status_code == 403:
-                    st.error("Acesso negado. Verifique suas permissões e tente novamente.")
-                    time.sleep(delay)
-                    delay *= 2  # Exponential backoff
-                elif response.status_code == 400:
-                    st.error("Solicitação inválida. Verifique os parâmetros e o formato dos dados.")
-                    break
-                elif response.status_code == 201:
-                    st.success('Arquivo adicionado com sucesso na pasta de arquivos do Hubspot!')
-                    return response.json()
-                else:
-                    break
-
-        st.error('Não foi possível fazer o upload do arquivo após várias tentativas.')
-    except FileNotFoundError:
-        st.error("Arquivo não encontrado. Verifique o caminho do arquivo e tente novamente.")
-    except Exception as e:
-        st.error(f"Ocorreu um erro: {e}")
-
-    return None
-
 def get_versao(file_base_name):
     # Substitua com suas próprias credenciais do Azure
     CLIENT_ID = st.secrets['azure']['client_id']
@@ -300,23 +248,6 @@ def sorting_key(s):
     else:
         # Retorna uma tupla com valores padrão que colocam esta string no final
         return ("", float('inf'), s)
-
-def classificar_pavimentos(df):
-    # Ordenando os pavimentos e removendo duplicatas
-    pavimentos_unicos = sorted(df['Pavimento'].unique())
-
-    # Classificando os pavimentos
-    if len(pavimentos_unicos) == 1:
-        df['Classificacao Pavimento'] = 'Terreo'
-    elif len(pavimentos_unicos) == 2:
-        df['Classificacao Pavimento'] = df['Pavimento'].replace({pavimentos_unicos[0]: 'Terreo', pavimentos_unicos[1]: 'Cobertura'})
-    else:
-        # Para 3 ou mais pavimentos, o menor é térreo, o maior é cobertura, e os demais são tipo
-        df['Classificacao Pavimento'] = df['Pavimento'].replace({pavimentos_unicos[0]: 'Terreo', pavimentos_unicos[-1]: 'Cobertura'})
-        for pavimento in pavimentos_unicos[1:-1]:
-            df['Classificacao Pavimento'] = df['Classificacao Pavimento'].replace({pavimento: 'Tipo'})
-
-    return df
 
 def GenerateTemp_URL(sfx, url):
     headers = {
@@ -544,7 +475,7 @@ if __name__ == '__main__':
             print("Error acquiring token:", result.get("error_description", ""))
 
 
-    def generate_proposal_pdf2(dealname, dealid, company_name, cnpj, firstname, lastname, condicao_pagamento_escolhida, items, prices, qtds, items_id, discounts, amount, prazo):
+    def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo):
                     
         # Path to the font file
         font_path = Path(__file__).parent / "PDFs2/Hero-Regular.ttf"
@@ -602,7 +533,7 @@ if __name__ == '__main__':
 
          # Create a temporary directory for the PDF
         temp_dir = tempfile.mkdtemp()
-        pdf_filename = f'{dealname}_{dealid}.pdf'
+        pdf_filename = f'{negocio}_{id}.pdf'
         capa = f'Capa.pdf'
         contracapa = f'Contracapa.pdf'           
         pdf_path = os.path.join(temp_dir, pdf_filename)
@@ -713,7 +644,7 @@ if __name__ == '__main__':
         elements = []
 
         blank_line(elements,19)
-        elements.append(Paragraph(f'{dealname}', title_hero_light_style))
+        elements.append(Paragraph(f'{negocio}', title_hero_light_style))
         elements.append(PageBreak())
 
         # PAGINA DA PROPOSTA
@@ -760,39 +691,30 @@ if __name__ == '__main__':
         # CABEÇALHO, NUMERO PROPOSTA, VALIDADE DA PROPOSTA
         blank_line(elements,2)
         elements.append(Paragraph(f'Curitiba, {data_formatada_ptbr}', hero_bold_style))
-        elements.append(Paragraph(f'Número da proposta: {dealid}', hero_bold_style))
+        elements.append(Paragraph(f'Número da proposta: {id}', hero_bold_style))
         elements.append(Paragraph(f'Validade da proposta: 30 dias', hero_bold_style))
 
         blank_line(elements,1)
         elements.append(Paragraph('À', hero_light_style))
-        elements.append(Paragraph(f'{company_name}', hero_light_style))
-        elements.append(Paragraph(f'A/C: {firstname} {lastname}', hero_light_style))
+        elements.append(Paragraph(f'{empresa}', hero_light_style))
+        #elements.append(Paragraph(f'A/C: {nome_contato_principal}', hero_light_style))
 
         # TEXTO DA PROPOSTA - TEXTO GENERICO DA PROPOSTA, cabecalho investimento, serviços
         blank_line(elements,1)
-        elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {dealname}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
+        elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {negocio}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
         
         blank_line(elements,3)
         elements.append(Paragraph(f'INVESTIMENTO', center_style))
         blank_line(elements,1)
         data = [
-            ['Serviço', 'QTDE.', 'Valor Unit.', 'Valor Total']
+            ['Serviço(s)', 'Valor']
         ]
-
-        discounts_sum = 0
-        for i, q, p, d in zip(items, qtds, prices,discounts):
-            if len(i) > 30: i = i[:30] + '\n' + i[30:]
-            if q != 'No quantity':
-                data.append([i, q, f'R$ {float(p):,.2f}'.replace(',', '.'), f'R$ {float(q) * float(p):,.2f}'.replace(',', '.')])
-            else:
-                data.append([i, q, f'R$ {float(p):,.2f}'.replace(',', '.'), f'R$ {float(p):,.2f}'.replace(',', '.')])
+        for p, v in zip (produtos, preco_produtos):
+            data.append([p, v])
             
-            if d != None:
-                if d != 'No discount' and float(d) > 0: discounts_sum+=float(d)
-            
-        if discounts_sum > 0:
-            data.append(['Desconto', '', '', f'- R$ {float(discounts_sum):,.2f}'.replace(',', '.')])
-        data.append(['Total', '', '', f'R$ {float(amount):,.2f}'.replace(',', '.')])
+        if desconto > 0:
+            data.append(['Desconto', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
+        data.append(['Total', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
 
         # Page width and margin
         page_width, page_height = letter
@@ -810,7 +732,7 @@ if __name__ == '__main__':
         # Define a tabela de produtos da proposta
         table = Table(data, colWidths=col_widths)
 
-        if discounts_sum == 0:
+        if desconto == 0.0:
             dsct = 0
             style1 = TableStyle([
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -849,17 +771,17 @@ if __name__ == '__main__':
         # Add the table to the elements list
         elements.append(table)
         
-        if len(items) == 1: blank_line(elements,18-dsct)
-        if len(items) == 2: blank_line(elements,16-dsct)
-        if len(items) == 3: blank_line(elements,15-dsct)
-        if len(items) == 4: blank_line(elements,13-dsct)
-        if len(items) == 5: blank_line(elements,11-dsct)
-        if len(items) == 6: blank_line(elements,10-dsct)
-        if len(items) == 7: blank_line(elements,8-dsct)
+        if len(produtos) == 1: blank_line(elements,18-dsct)
+        if len(produtos) == 2: blank_line(elements,16-dsct)
+        if len(produtos) == 3: blank_line(elements,15-dsct)
+        if len(produtos) == 4: blank_line(elements,13-dsct)
+        if len(produtos) == 5: blank_line(elements,11-dsct)
+        if len(produtos) == 6: blank_line(elements,10-dsct)
+        if len(produtos) == 7: blank_line(elements,8-dsct)
 
         # texto das condições de pagamento
         elements.append(Paragraph(f'Forma de pagamento:', left_hero_light_style))
-        elements.append(Paragraph(f'{condicao_pagamento_escolhida}', left_hero_bold_style))
+        elements.append(Paragraph(f'{condicao_pagamento}', left_hero_bold_style))
         blank_line(elements,1)
         elements.append(Paragraph(f'Prazo de execução:', left_hero_light_style))
         elements.append(Paragraph(f'{prazo}', left_hero_bold_style))                
@@ -892,7 +814,7 @@ if __name__ == '__main__':
         
 
         flag_EVTA = False
-        for item in items: 
+        for item in produtos: 
             if 'EVTA' in item or 'Auditoria' in item: flag_EVTA = True
 
         # PDFs2 to merge PROPOSTAS EVTA
@@ -912,7 +834,7 @@ if __name__ == '__main__':
         else:
             pdfs = [capa_path, pdf_path]
 
-            for item in items:
+            for item in produtos:
                 if item != 'Reunião':
                     path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
                     pdfs.append(path_item) 

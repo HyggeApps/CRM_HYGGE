@@ -87,7 +87,7 @@ def elaborar_orcamento(user):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 0, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1}
+            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1}
         )
     )
     if not oportunidades:
@@ -103,6 +103,8 @@ def elaborar_orcamento(user):
 
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
+            preco_produtos = {p["nome"]: p["preco"] for p in produtos_selecionados_obj}
+            st.write(produtos_selecionados_obj, preco_produtos)
             valor_estimado_formatado = format_currency(total)
             st.subheader("Informações do Negócio para orçamento")
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
@@ -145,12 +147,12 @@ def elaborar_orcamento(user):
     # Exemplo: ação para gerar o orçamento
         if st.button("Gerar o orçamento"):
             inicio = time.time()
-            #pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, selected_negocio, negocio_selecionado['produtos'])
-            #versao_proposta = gro.upload_onedrive2(pdf_out_path)
-            #path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], negocio_selecionado, produtos, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
+            versao_proposta = gro.upload_onedrive2(pdf_out_path)
+            path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
             fim = time.time()
             st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-            #novo_nome_arquivo = os.path.basename(path_proposta_envio)
+            novo_nome_arquivo = os.path.basename(path_proposta_envio)
             #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
 
 
