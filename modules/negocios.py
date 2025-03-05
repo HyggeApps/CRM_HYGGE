@@ -245,7 +245,7 @@ def gerenciamento_oportunidades(user):
                         data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
                         
-                        st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True, key='produtos')
+                        st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True, key='produtos_'+row['nome_oportunidade'])
 
                         # Criar selectbox para alterar o estágio
                         novo_estagio = st.selectbox(
