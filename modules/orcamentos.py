@@ -140,16 +140,18 @@ def elaborar_orcamento(user):
             if contatos:
                 opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
                 selected_contatos = st.multiselect("**Selecione os contatos da empresa que receberão o orçamento:**", opcoes_contatos, key="orcamento_contatos")
+                nome_contato_principal = st.selectbox("**Selecione o contato principal:**", opcoes_contatos, key="orcamento_contato_principal")
             else:
                 st.error("Nenhum contato encontrado para essa empresa.")
                 selected_contatos = []
+                
 
     # Exemplo: ação para gerar o orçamento
         if st.button("Gerar o orçamento"):
             inicio = time.time()
             pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
             versao_proposta = gro.upload_onedrive2(pdf_out_path)
-            st.write(versao_proposta)
+            #st.write(versao_proposta)
             path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
             fim = time.time()
             st.info(f"Tempo da operação: {round(fim-inicio,2)}s")

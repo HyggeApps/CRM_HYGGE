@@ -697,7 +697,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
     blank_line(elements,1)
     elements.append(Paragraph('À', hero_light_style))
     elements.append(Paragraph(f'{empresa}', hero_light_style))
-    #elements.append(Paragraph(f'A/C: {nome_contato_principal}', hero_light_style))
+    elements.append(Paragraph(f'A/C: {nome_contato_principal}', hero_light_style))
 
     # TEXTO DA PROPOSTA - TEXTO GENERICO DA PROPOSTA, cabecalho investimento, serviços
     blank_line(elements,1)
@@ -711,7 +711,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
     ]
     for p, v in zip (produtos, preco_produtos):
         #print(p,v)
-        data.append([p, f'R$ {float(v):,.2f}'.replace(',', '.')])
+        data.append([p['nome'], f'R$ {float(v):,.2f}'.replace(',', '.')])
         
     if desconto > 0:
         data.append(['Desconto', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
