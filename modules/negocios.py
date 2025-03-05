@@ -125,7 +125,8 @@ def gerenciamento_oportunidades(user):
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
                                 'negocio_fechado': False,
-                                'negocio_perdido': False
+                                'negocio_perdido': False,
+                                'aprovacao_gestor': False,
 
                             }
                             collection_oportunidades.insert_one(document)

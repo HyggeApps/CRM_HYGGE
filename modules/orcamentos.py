@@ -87,7 +87,7 @@ def elaborar_orcamento(user):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1}
+            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1}
         )
     )
     if not oportunidades:
@@ -125,6 +125,7 @@ def elaborar_orcamento(user):
             negocio_selecionado['produtos'] = produtos_selecionados
 
             if len(produtos_selecionados) > 0:
+                st.write(negocio_selecionado)
                 produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
                 total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
