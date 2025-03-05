@@ -205,7 +205,7 @@ def elaborar_orcamento(user):
                     elif not negocio_selecionado['aprovacao_gestor']: 
                         st.markdown('🟥 Desconto não aprovado.')
                 
-                if st.button("Gerar o orçamento com o desconto aprovado"):
+                if st.button("Gerar o orçamento com o desconto adicional aprovado"):
                     if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
                         inicio = time.time()
                         pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
