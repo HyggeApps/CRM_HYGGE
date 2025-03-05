@@ -710,8 +710,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
         ['Serviço(s)', 'Valor']
     ]
     for p, v in zip (produtos, preco_produtos):
-        print(p,v)
-        data.append([p['nome'], f'R$ {float(v['preco']):,.2f}'.replace(',', '.')])
+        #print(p,v)
+        data.append([p, f'R$ {float(v):,.2f}'.replace(',', '.')])
         
     if desconto > 0:
         data.append(['Desconto', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
