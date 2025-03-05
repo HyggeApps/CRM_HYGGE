@@ -707,15 +707,15 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
     elements.append(Paragraph(f'INVESTIMENTO', center_style))
     blank_line(elements,1)
     data = [
-        ['Serviço(s)', 'Valor']
+        ['Serviço(s) contemplados', '     ', '     ', '     ']
     ]
     for p, v in zip (produtos, preco_produtos):
         #print(p,v)
-        data.append([p['nome'], f'R$ {float(v):,.2f}'.replace(',', '.')])
+        data.append([p['nome'], '     ', '     ', '     '])
         
     if desconto > 0:
-        data.append(['Desconto', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
-    data.append(['Total', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
+        data.append(['Desconto', '     ', '     ', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
+    data.append(['Total', '     ', '     ', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
 
     # Page width and margin
     page_width, page_height = letter
