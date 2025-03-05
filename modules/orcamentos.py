@@ -268,6 +268,8 @@ def elaborar_orcamento(user):
                         fim = time.time()
                         st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
                         novo_nome_arquivo = os.path.basename(path_proposta_envio)
+
+
                         #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
                     else:
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
@@ -276,7 +278,7 @@ def elaborar_orcamento(user):
                     st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
                     
                     if negocio_selecionado['aprovacao_gestor']: 
-                        st.markdown('🟩 Desconto aprovado.')
+                        st.markdown(f'🟩 Desconto aprovado até {negocio_selecionado['desconto_aprovado']}.')
 
                     elif negocio_selecionado['solicitacao_desconto']: 
                         st.markdown(f"🟨 Em análise pelo gestor a solicitação de um desconto de {negocio_selecionado['desconto_aprovado']}%.")
