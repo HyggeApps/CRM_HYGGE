@@ -17,30 +17,52 @@ def gerenciamento_aprovacoes():
 
     st.header("Oportunidades com Solicitação de Desconto")
     
-    # Para cada oportunidade, exibir informações e botão de aprovação
+    # Exibir cada oportunidade em uma linha
     for oportunidade in oportunidades:
-        st.subheader(f"Oportunidade: {oportunidade.get('nome_oportunidade', 'N/A')}")
-        st.write("**Empresa:**", oportunidade.get("cliente", "N/A"))
-        st.write("**Vendedor:**", oportunidade.get("proprietario", "N/A"))
-        st.write("**Desconto Solicitado:**", oportunidade.get("desconto_aprovado", "N/A"))
+        # Cria 5 colunas para exibir as informações e o botão de aprovação
+        col1, col2, col3, col4, col5 = st.columns(5)
         
-        # Botão para aprovar o desconto
-        if st.button("Aprovar Desconto", key=str(oportunidade["_id"])):
-            # Atualiza o campo aprovacao_gestor para True na coleção de oportunidades
-            col_oportunidades.update_one(
-                {"_id": oportunidade["_id"]},
-                {"$set": {"aprovacao_gestor": True}}
+        with col1:
+            st.text_input(
+                label="Empresa", 
+                value=oportunidade.get("cliente", "N/A"), 
+                disabled=True
             )
-            
-            # Cria um registro de aprovação na coleção 'aprovacoes'
-            aprovacao = {
-                "oportunidade_id": oportunidade["_id"],
-                "empresa": oportunidade.get("cliente", "N/A"),
-                "nome_oportunidade": oportunidade.get("nome_oportunidade", "N/A"),
-                "vendedor": oportunidade.get("proprietario", "N/A"),
-                "desconto_solicitado": oportunidade.get("desconto_aprovado", "N/A"),
-                "aprovado_por": "gestor",  # Aqui você pode personalizar para pegar o usuário logado, por exemplo
-                "data_aprovacao": dt.datetime.now()
-            }
-            col_aprovacoes.insert_one(aprovacao)
-            st.success("Desconto aprovado com sucesso!")
+        with col2:
+            st.text_input(
+                label="Negócio", 
+                value=oportunidade.get("nome_oportunidade", "N/A"), 
+                disabled=True
+            )
+        with col3:
+            st.text_input(
+                label="Vendedor", 
+                value=oportunidade.get("proprietario", "N/A"), 
+                disabled=True
+            )
+        with col4:
+            st.text_input(
+                label="Desconto Solicitado", 
+                value=str(oportunidade.get("desconto_aprovado", "N/A")), 
+                disabled=True
+            )
+        with col5:
+            if st.button("Aprovar Desconto", key=str(oportunidade["_id"])):
+                # Atualiza o campo aprovacao_gestor na oportunidade
+                col_oportunidades.update_one(
+                    {"_id": oportunidade["_id"]},
+                    {"$set": {"aprovacao_gestor": True}}
+                )
+                
+                # Cria um registro na coleção 'aprovacoes'
+                aprovacao = {
+                    "oportunidade_id": oportunidade["_id"],
+                    "empresa": oportunidade.get("cliente", "N/A"),
+                    "nome_oportunidade": oportunidade.get("nome_oportunidade", "N/A"),
+                    "vendedor": oportunidade.get("proprietario", "N/A"),
+                    "desconto_solicitado": oportunidade.get("desconto_aprovado", "N/A"),
+                    "aprovado_por": "gestor",  # Substitua pela identificação do usuário logado, se necessário
+                    "data_aprovacao": dt.datetime.now()
+                }
+                col_aprovacoes.insert_one(aprovacao)
+                st.success("Desconto aprovado com sucesso!")
