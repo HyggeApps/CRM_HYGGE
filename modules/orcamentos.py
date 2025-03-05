@@ -295,7 +295,8 @@ def elaborar_orcamento(user):
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_aprovado": float(desconto)}})    
-                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"aprovacao_gestor": False}})
                             st.success('Solicitação de desconto enviada com sucesso.')
 
                     elif negocio_selecionado['solicitacao_desconto']: 
