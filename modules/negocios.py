@@ -100,7 +100,7 @@ def gerenciamento_oportunidades(user):
                 if submit:
                     if cliente and produtos_selecionados_text:
                         # Buscar o cliente selecionado
-                        cliente_selecionado = next((c for c in clientes if f"{c['razao_social']} (CNPJ: {c['cnpj']})" == cliente), None)
+                        cliente_selecionado = next((c for c in clientes if f"{c['razao_social']}" == cliente), None)
                         # Buscar os produtos selecionados (mapeia os textos selecionados para os objetos de produtos)
                         produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in produtos_selecionados_text]
             
