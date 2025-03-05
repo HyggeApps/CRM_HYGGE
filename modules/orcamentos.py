@@ -285,7 +285,7 @@ def elaborar_orcamento(user):
                     st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
                     
                     if negocio_selecionado['aprovacao_gestor']: 
-                        st.markdown(f'🟩 Desconto aprovado pelo gesto de até {negocio_selecionado['desconto_aprovado']}%.')
+                        st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
 
                     elif negocio_selecionado['solicitacao_desconto']: 
                         st.markdown(f"🟨 Em análise pelo gestor a solicitação de um desconto de {negocio_selecionado['desconto_aprovado']}%.")
