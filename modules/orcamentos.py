@@ -107,11 +107,18 @@ def elaborar_orcamento(user):
             
             st.text('Selecione o(s) produto(s) para o orçamento:')
             col1, col2, col3, col4, col5 = st.columns(5)
-            with col1: produtos_selecionado1 = st.multiselect("Produto 1:", options=nomes_produtos, key="select_produto_oportunidade1")
-            with col2: produtos_selecionado2 = st.multiselect("Produto 2:", options=nomes_produtos, key="select_produto_oportunidade2")
-            with col3: produtos_selecionado3 = st.multiselect("Produto 3:", options=nomes_produtos, key="select_produto_oportunidade3")
-            with col4: produtos_selecionado4 = st.multiselect("Produto 4:", options=nomes_produtos, key="select_produto_oportunidade4")
-            with col5: produtos_selecionado5 = st.multiselect("Produto 5:", options=nomes_produtos, key="select_produto_oportunidade5")
+            with col1: produtos_selecionado1 = st.multiselect("Produto 1:", options=nomes_produtos, key="select_produto_oportunidade1", placeholder='Selecione aqui...')
+            with col2: produtos_selecionado2 = st.multiselect("Produto 2:", options=nomes_produtos, key="select_produto_oportunidade2", placeholder='Selecione aqui...')
+            with col3: produtos_selecionado3 = st.multiselect("Produto 3:", options=nomes_produtos, key="select_produto_oportunidade3", placeholder='Selecione aqui...')
+            with col4: produtos_selecionado4 = st.multiselect("Produto 4:", options=nomes_produtos, key="select_produto_oportunidade4", placeholder='Selecione aqui...')
+            with col5: produtos_selecionado5 = st.multiselect("Produto 5:", options=nomes_produtos, key="select_produto_oportunidade5", placeholder='Selecione aqui...')
+
+            col6, col7, col8, col9, col10 = st.columns(5)
+            with col6: produtos_selecionado6 = st.multiselect("Produto 6:", options=nomes_produtos, key="select_produto_oportunidade6", placeholder='Selecione aqui...')
+            with col7: produtos_selecionado7 = st.multiselect("Produto 7:", options=nomes_produtos, key="select_produto_oportunidade7", placeholder='Selecione aqui...')
+            with col8: produtos_selecionado8 = st.multiselect("Produto 8:", options=nomes_produtos, key="select_produto_oportunidade8", placeholder='Selecione aqui...')
+            with col9: produtos_selecionado9 = st.multiselect("Produto 9:", options=nomes_produtos, key="select_produto_oportunidade9", placeholder='Selecione aqui...')
+            with col10: produtos_selecionado10 = st.multiselect("Produto 10:", options=nomes_produtos, key="select_produto_oportunidade10", placeholder='Selecione aqui...')
 
             #st.write(1)
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
