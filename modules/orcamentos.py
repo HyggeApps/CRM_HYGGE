@@ -150,7 +150,7 @@ def elaborar_orcamento(user):
     # Exemplo: ação para gerar o orçamento
         if st.button("Gerar o orçamento"):
             inicio = time.time()
-            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
+            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
             versao_proposta = gro.upload_onedrive2(pdf_out_path)
             #st.write(versao_proposta)
             path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')

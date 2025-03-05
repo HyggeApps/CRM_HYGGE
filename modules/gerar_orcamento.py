@@ -475,7 +475,7 @@ def upload_to_3projetos_v02(file_name, new_folder_name, file_path):
         print("Error acquiring token:", result.get("error_description", ""))
 
 
-def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo):
+def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal):
                 
     # Path to the font file
     font_path = Path(__file__).parent / "PDFs2/Hero-Regular.ttf"
