@@ -193,7 +193,7 @@ def elaborar_orcamento(user):
                         st.markdown('🟩 Desconto aprovado.')
 
                     elif negocio_selecionado['solicitacao_desconto']: 
-                        st.markdown('🟨 Em análise pelo gestor.')
+                        st.markdown(f"🟨 Em análise pelo gestor a solicitação de um desconto de {negocio_selecionado['desconto_aprovado']}%.")
                     
                     elif not negocio_selecionado['solicitacao_desconto']:
                         st.markdown('🟦 Sem solicitação de desconto.')
