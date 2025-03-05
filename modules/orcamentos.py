@@ -103,7 +103,7 @@ def elaborar_orcamento(user):
 
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
-            preco_produtos = {p["nome"]: p["preco"] for p in produtos_selecionados_obj}
+            preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
             #st.write(produtos_selecionados_obj, preco_produtos)
             valor_estimado_formatado = format_currency(total)
             st.subheader("Informações do Negócio para orçamento")
@@ -147,7 +147,7 @@ def elaborar_orcamento(user):
     # Exemplo: ação para gerar o orçamento
         if st.button("Gerar o orçamento"):
             inicio = time.time()
-            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], negocio_selecionado, produtos, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
+            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], negocio_selecionado, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo)
             versao_proposta = gro.upload_onedrive2(pdf_out_path)
             path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
             fim = time.time()
