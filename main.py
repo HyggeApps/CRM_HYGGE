@@ -241,8 +241,8 @@ if st.session_state.get('logado', False):
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
-                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários"],
-                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add"],
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square"],
                 menu_icon="cast",
                 default_index=0,
                 styles={
@@ -260,8 +260,8 @@ if st.session_state.get('logado', False):
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
-                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários"],
-                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add"],
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square"],
                 menu_icon="cast",
                 default_index=0,
                 styles={
@@ -338,4 +338,9 @@ if st.session_state.get('logado', False):
         st.write('----')
         if 'admin' in st.session_state["roles"]: usuarios.gerenciamento_usuarios()
         else: st.warning("Você não tem permissão para alterar usuários.")
+    
+    elif selected == 'Solicitações':
+        st.header("✅ Solicitação de aprovação")
+        #st.info('Consulte, cadastre e edite os usuários da HYGGE.')
+        st.write('----')
 
