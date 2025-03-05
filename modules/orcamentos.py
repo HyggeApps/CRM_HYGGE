@@ -105,13 +105,13 @@ def elaborar_orcamento(user):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("Informações do Negócio para orçamento")
             
-            st.markdown('**Selecione o(s) produto(s) para o orçamento:**')
+            st.text('Selecione o(s) produto(s) para o orçamento:')
             col1, col2, col3, col4, col5 = st.columns(5)
-            with col1: produtos_selecionado1 = st.multiselect("Produto 1", options=nomes_produtos, key="select_produto_oportunidade1")
-            with col2: produtos_selecionado2 = st.multiselect("Produto 2", options=nomes_produtos, key="select_produto_oportunidade2")
-            with col3: produtos_selecionado3 = st.multiselect("Produto 3", options=nomes_produtos, key="select_produto_oportunidade3")
-            with col4: produtos_selecionado4 = st.multiselect("Produto 4", options=nomes_produtos, key="select_produto_oportunidade4")
-            with col5: produtos_selecionado5 = st.multiselect("Produto 5", options=nomes_produtos, key="select_produto_oportunidade5")
+            with col1: produtos_selecionado1 = st.multiselect("Produto 1:", options=nomes_produtos, key="select_produto_oportunidade1")
+            with col2: produtos_selecionado2 = st.multiselect("Produto 2:", options=nomes_produtos, key="select_produto_oportunidade2")
+            with col3: produtos_selecionado3 = st.multiselect("Produto 3:", options=nomes_produtos, key="select_produto_oportunidade3")
+            with col4: produtos_selecionado4 = st.multiselect("Produto 4:", options=nomes_produtos, key="select_produto_oportunidade4")
+            with col5: produtos_selecionado5 = st.multiselect("Produto 5:", options=nomes_produtos, key="select_produto_oportunidade5")
 
             #st.write(1)
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
@@ -119,14 +119,14 @@ def elaborar_orcamento(user):
             preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
             #st.write(produtos_selecionados_obj, preco_produtos)
             valor_estimado_formatado = format_currency(total)                           
-            valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
+            valor_negocio_formatado = st.text_input("Valor do negócio:", valor_estimado_formatado)
             valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
             desconto = total - valor_negocio
             desconto_formatado = format_currency(desconto)
             st.warning(f"**Desconto aplicado:** {desconto_formatado} ({round((desconto/total)*100,2)}%)")
             condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
-            condicao_pagamento = st.selectbox('**Condições de pagamento:**',condicoes)
+            condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
 
             if float(valor_negocio) > 35000:
                   prazos = ['60 dias úteis após o recebimento da documentação completa.',
@@ -139,7 +139,7 @@ def elaborar_orcamento(user):
                         '15 dias úteis após o recebimento da documentação completa.',
                         '10 dias úteis após o recebimento da documentação completa.']
 
-            prazo = st.selectbox("**Prazo de execução:**", prazos)
+            prazo = st.selectbox("Prazo de execução:", prazos)
 
             # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
             contatos = list(
