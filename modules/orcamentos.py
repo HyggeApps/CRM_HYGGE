@@ -103,15 +103,15 @@ def elaborar_orcamento(user):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("Informações do Negócio para orçamento")
             
+            st.text('**Selecione o(s) produto(s) para o orçamento:**')
             col1, col2, col3, col4, col5 = st.columns(5)
-            
             with col1: produtos_selecionado1 = st.multiselect("Produto 1", options=nomes_produtos, key="select_produto_oportunidade1")
             with col2: produtos_selecionado2 = st.multiselect("Produto 2", options=nomes_produtos, key="select_produto_oportunidade2")
             with col3: produtos_selecionado3 = st.multiselect("Produto 3", options=nomes_produtos, key="select_produto_oportunidade3")
             with col4: produtos_selecionado4 = st.multiselect("Produto 4", options=nomes_produtos, key="select_produto_oportunidade4")
             with col5: produtos_selecionado5 = st.multiselect("Produto 5", options=nomes_produtos, key="select_produto_oportunidade5")
 
-            st.write(1)
+            #st.write(1)
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
             preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
