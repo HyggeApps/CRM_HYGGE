@@ -204,7 +204,20 @@ def elaborar_orcamento(user):
 
                     elif not negocio_selecionado['aprovacao_gestor']: 
                         st.markdown('🟥 Desconto não aprovado.')
-
+                
+                if st.button("Gerar o orçamento com o desconto aprovado"):
+                    if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
+                        inicio = time.time()
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
+                        versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                        #st.write(versao_proposta)
+                        path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                        fim = time.time()
+                        st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                        novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                        #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+                    else:
+                        st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
 
 
 
