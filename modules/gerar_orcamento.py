@@ -836,8 +836,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
         pdfs = [capa_path, pdf_path]
 
         for item in produtos:
-            if item != 'Reunião':
-                path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
+            if item['nome'] != 'Reunião':
+                path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']}.pdf"
                 pdfs.append(path_item) 
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
