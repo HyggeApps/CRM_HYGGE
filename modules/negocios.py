@@ -124,6 +124,7 @@ def gerenciamento_oportunidades(user):
                                 "motivo_perda": '',
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
+                                "desconto_aprovado": 20.0,
                                 'negocio_fechado': False,
                                 'negocio_perdido': False,
                                 'aprovacao_gestor': False,
