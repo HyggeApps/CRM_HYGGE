@@ -232,7 +232,6 @@ def elaborar_orcamento(user):
                 col1, col2 = st.columns(2)
                 with col1:  st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
                 with col2:  st.warning(f"**Preço total com descontos:** {valor_negocio_formatado}")
-                st.write(produtos_selecionados_obj)
                 #**Preço com o desconto aplicado:** {valor_negocio_formatado}")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
