@@ -103,7 +103,7 @@ def elaborar_orcamento(user):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("Informações do Negócio para orçamento")
             
-            st.write('**Selecione o(s) produto(s) para o orçamento:**')
+            st.text('**Selecione o(s) produto(s) para o orçamento:**')
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1: produtos_selecionado1 = st.multiselect("Produto 1", options=nomes_produtos, key="select_produto_oportunidade1")
             with col2: produtos_selecionado2 = st.multiselect("Produto 2", options=nomes_produtos, key="select_produto_oportunidade2")
