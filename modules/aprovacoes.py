@@ -67,3 +67,4 @@ def gerenciamento_aprovacoes():
                 }
                 col_aprovacoes.insert_one(aprovacao)
         st.success("Aprovações salvas com sucesso!")
+        st.rerun()
