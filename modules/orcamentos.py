@@ -131,23 +131,7 @@ def elaborar_orcamento(user):
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
                 #st.write(produtos_selecionados_obj, preco_produtos)
                 valor_estimado_formatado = format_currency(total)
-                desconto = st.number_input("Desconto (%)",0.0, 20.0)                          
-                with st.expander('Solicitação de desconto', expanded=False):
-                    st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
-                    
-                    if negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
-                        st.markdown('🟩 Desconto aprovado.')
-
-                    elif not negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
-                        st.markdown('🟥 Desconto não aprovado.')
-                    
-                    elif negocio_selecionado['solicitacao_desconto']: 
-                        st.markdown('🟨 Em análise pelo gestor.')
-                    else:
-                        st.markdown('🟦 Sem solicitação de desconto.')
-                        if st.button('Solicitar desconto'):
-                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
-                            st.success('Solicitação de desconto enviada com sucesso.')
+                desconto = st.number_input("Desconto (%)",0.0, 100.0)
         
                 valor_negocio = total*(1-desconto/100)
                 valor_negocio_formatado = format_currency(valor_negocio)
@@ -188,18 +172,37 @@ def elaborar_orcamento(user):
                     st.error("Nenhum contato encontrado para essa empresa.")
                     selected_contatos = []
                     
-
                 if st.button("Gerar o orçamento"):
-                    inicio = time.time()
-                    pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
-                    versao_proposta = gro.upload_onedrive2(pdf_out_path)
-                    #st.write(versao_proposta)
-                    path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
-                    fim = time.time()
-                    st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-                    novo_nome_arquivo = os.path.basename(path_proposta_envio)
-                    #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+                    if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
+                        inicio = time.time()
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
+                        versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                        #st.write(versao_proposta)
+                        path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                        fim = time.time()
+                        st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                        novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                        #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+                    else:
+                        st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto antes de gerar a proposta.')
 
+                with st.expander('Solicitação de desconto adicional ao gestor', expanded=False):
+                    st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
+                    
+                    if negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟩 Desconto aprovado.')
+
+                    elif not negocio_selecionado['aprovacao_gestor'] and negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟥 Desconto não aprovado.')
+                    
+                    elif negocio_selecionado['solicitacao_desconto']: 
+                        st.markdown('🟨 Em análise pelo gestor.')
+                    else:
+                        st.markdown('🟦 Sem solicitação de desconto.')
+                        if st.button('Solicitar desconto de {desconto}%'):
+
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
+                            st.success('Solicitação de desconto enviada com sucesso.')
 
 
 
