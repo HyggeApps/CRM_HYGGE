@@ -10,40 +10,43 @@ hoje = dt.date.today()  # current date
 
 def filtrar_por_periodo(df, periodo):
     df_filtrado = df.copy()
-    
+
     if periodo == "Mês atual":
         ano_atual = hoje.year
         mes_atual = hoje.month
         # Primeiro e último dia do mês atual:
-        primeiro_dia = pd.Timestamp(dt.date(ano_atual, mes_atual, 1))
-        ultimo_dia = pd.Timestamp(dt.date(ano_atual, mes_atual, calendar.monthrange(ano_atual, mes_atual)[1]))
+        primeiro_dia = dt.date(ano_atual, mes_atual, 1)
+        ultimo_dia = dt.date(
+            ano_atual, 
+            mes_atual, 
+            calendar.monthrange(ano_atual, mes_atual)[1]
+        )
         df_filtrado = df_filtrado[
-            (df_filtrado['data_previsao_fechamento'] >= primeiro_dia) &
-            (df_filtrado['data_previsao_fechamento'] <= ultimo_dia)
+            (df_filtrado['data_fechamento'].dt.date >= primeiro_dia) &
+            (df_filtrado['data_fechamento'].dt.date <= ultimo_dia)
         ]
-    
+
     elif periodo == "Próximos 30 dias":
-        limite = pd.Timestamp(hoje + dt.timedelta(days=30))
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
+        limite = hoje + dt.timedelta(days=30)
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
     
     elif periodo == "Próximos 3 meses":
-        limite = pd.Timestamp(hoje + dt.timedelta(days=90))
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
+        limite = hoje + dt.timedelta(days=90)
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     elif periodo == "Próximos 6 meses":
-        limite = pd.Timestamp(hoje + dt.timedelta(days=180))
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
+        limite = hoje + dt.timedelta(days=180)
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     elif periodo == "Próximo ano":
-        limite = pd.Timestamp(hoje + dt.timedelta(days=365))
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
+        limite = hoje + dt.timedelta(days=365)
+        df_filtrado = df_filtrado[df_filtrado['data_fechamento'].dt.date <= limite]
 
     else:
         # "Todo o período": não filtra nada
         pass
 
     return df_filtrado
-
 
 def format_currency(value):
     """
@@ -92,7 +95,7 @@ def gerenciamento_oportunidades(user):
                 total = st.number_input('Valor estimado', key="valor_estimado_oportunidade")
                 #estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 estagio = 'Aguardando projeto'
-                #data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
+                data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
             
                 if submit:
@@ -104,7 +107,6 @@ def gerenciamento_oportunidades(user):
             
                         if cliente_selecionado:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
-                            data_previsao_fechamento = (hoje + dt.timedelta(days=90)).strftime("%Y-%m-%d")
                             # "produtos" será uma lista com os nomes dos produtos selecionados
                             
                             valor_estimado_formatado = format_currency(total)
@@ -118,8 +120,8 @@ def gerenciamento_oportunidades(user):
                                 "valor_orcamento": '',
                                 "estagio": estagio,
                                 "data_criacao": data_hoje,
-                                "data_prevista_fechamento": data_previsao_fechamento,
-                                'data_previsao_fechamento': '',
+                                "data_prevista_fechamento": data_fechamento,
+                                'data_fechamento': data_fechamento,
                                 "motivo_perda": '',
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
@@ -156,7 +158,7 @@ def gerenciamento_oportunidades(user):
         collection_oportunidades.find(
             {"proprietario": user},  # <─ ADICIONE ESTA CLÁUSULA PARA FILTRAR
             {"_id": 0, "cliente": 1, "nome_oportunidade": 1,"valor_orcamento": 1, "valor_estimado": 1,
-            "data_criacao": 1, 'data_previsao_fechamento': 1, "estagio": 1, "produtos": 1}
+            "data_criacao": 1, "data_fechamento": 1, "estagio": 1, "produtos": 1}
         )
     )
     if not oportunidades:
@@ -165,8 +167,8 @@ def gerenciamento_oportunidades(user):
     
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
-    df_oportunidades['data_previsao_fechamento'] = pd.to_datetime(df_oportunidades['data_previsao_fechamento'], errors="coerce")
-    df_oportunidades['data_previsao_fechamento']
+    df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
+
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
@@ -241,7 +243,7 @@ def gerenciamento_oportunidades(user):
                         if row['valor_orcamento'] != '': st.write(f"**💲 {row['valor_orcamento']}**")
                         else: st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
-                        data_formatada = row['data_previsao_fechamento'].strftime("%d/%m/%Y")
+                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
                         
                         st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True)
@@ -273,7 +275,7 @@ def gerenciamento_oportunidades(user):
                             #novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
                             nova_data_fechamento = st.date_input(
                                 "Data de fechamento",
-                                value=row['data_previsao_fechamento'] if isinstance(row['data_previsao_fechamento'], dt.date) 
+                                value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
                                                             else dt.date.today(),
                                 key=f"dataFechamento_{row['nome_oportunidade']}"
                             )
@@ -283,7 +285,7 @@ def gerenciamento_oportunidades(user):
                                 update_fields = {
                                     "nome_oportunidade": novo_nome,
                                     #"valor_estimado": novo_valor,
-                                    'data_previsao_fechamento': nova_data_fechamento.isoformat()
+                                    "data_fechamento": nova_data_fechamento.isoformat()
                                 }
                                 result = collection_oportunidades.update_one(
                                     {"nome_oportunidade": row['nome_oportunidade']},
@@ -360,7 +362,7 @@ def gerenciamento_oportunidades(user):
                         st.subheader(f"{row['nome_oportunidade']}")
                         st.write(f"**💲 {row['valor_estimado']}**")
                         st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
-                        data_formatada = row['data_previsao_fechamento'].strftime("%d/%m/%Y")
+                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
                         st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
                         
                         st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True)
@@ -394,7 +396,7 @@ def gerenciamento_oportunidades(user):
                                 novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
                                 nova_data_fechamento = st.date_input(
                                     "Data de fechamento",
-                                    value=row['data_previsao_fechamento'] if isinstance(row['data_previsao_fechamento'], dt.date) 
+                                    value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
                                                                 else dt.date.today(),
                                     key=f"dataFechamento_{row['nome_oportunidade']}"
                                 )
@@ -404,7 +406,7 @@ def gerenciamento_oportunidades(user):
                                     update_fields = {
                                         "nome_oportunidade": novo_nome,
                                         "valor_estimado": novo_valor,
-                                        "data_previsao_fechamento": nova_data_fechamento.isoformat()
+                                        "data_fechamento": nova_data_fechamento.isoformat()
                                     }
                                     result = collection_oportunidades.update_one(
                                         {"nome_oportunidade": row['nome_oportunidade']},
