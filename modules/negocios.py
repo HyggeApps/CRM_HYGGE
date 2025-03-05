@@ -10,43 +10,40 @@ hoje = dt.date.today()  # current date
 
 def filtrar_por_periodo(df, periodo):
     df_filtrado = df.copy()
-
+    
     if periodo == "Mês atual":
         ano_atual = hoje.year
         mes_atual = hoje.month
         # Primeiro e último dia do mês atual:
-        primeiro_dia = dt.date(ano_atual, mes_atual, 1)
-        ultimo_dia = dt.date(
-            ano_atual, 
-            mes_atual, 
-            calendar.monthrange(ano_atual, mes_atual)[1]
-        )
+        primeiro_dia = pd.Timestamp(dt.date(ano_atual, mes_atual, 1))
+        ultimo_dia = pd.Timestamp(dt.date(ano_atual, mes_atual, calendar.monthrange(ano_atual, mes_atual)[1]))
         df_filtrado = df_filtrado[
-            (df_filtrado['data_previsao_fechamento'].dt.date >= primeiro_dia) &
-            (df_filtrado['data_previsao_fechamento'].dt.date <= ultimo_dia)
+            (df_filtrado['data_previsao_fechamento'] >= primeiro_dia) &
+            (df_filtrado['data_previsao_fechamento'] <= ultimo_dia)
         ]
-
+    
     elif periodo == "Próximos 30 dias":
-        limite = hoje + dt.timedelta(days=30)
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'].dt.date <= limite]
+        limite = pd.Timestamp(hoje + dt.timedelta(days=30))
+        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
     
     elif periodo == "Próximos 3 meses":
-        limite = hoje + dt.timedelta(days=90)
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'].dt.date <= limite]
+        limite = pd.Timestamp(hoje + dt.timedelta(days=90))
+        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
 
     elif periodo == "Próximos 6 meses":
-        limite = hoje + dt.timedelta(days=180)
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'].dt.date <= limite]
+        limite = pd.Timestamp(hoje + dt.timedelta(days=180))
+        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
 
     elif periodo == "Próximo ano":
-        limite = hoje + dt.timedelta(days=365)
-        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'].dt.date <= limite]
+        limite = pd.Timestamp(hoje + dt.timedelta(days=365))
+        df_filtrado = df_filtrado[df_filtrado['data_previsao_fechamento'] <= limite]
 
     else:
         # "Todo o período": não filtra nada
         pass
 
     return df_filtrado
+
 
 def format_currency(value):
     """
@@ -169,7 +166,7 @@ def gerenciamento_oportunidades(user):
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
     df_oportunidades['data_previsao_fechamento'] = pd.to_datetime(df_oportunidades['data_previsao_fechamento'], errors="coerce")
-
+    df_oportunidades['data_previsao_fechamento']
     # Opções de períodos
     opcoes_periodo = [
         "Mês atual",
