@@ -438,7 +438,6 @@ def consultar_empresas(user, admin):
                     gerenciamento_tarefas(user, admin, empresa_nome)
                 st.write('----')
                 st.write("### 📌 Histórico de atividades")
-                st.write(1)
                 if empresa_nome:
                     exibir_atividades_empresa(user, admin, empresa_nome)
                 else:
