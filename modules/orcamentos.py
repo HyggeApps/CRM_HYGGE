@@ -77,7 +77,7 @@ def elaborar_orcamento(user):
         return
 
     opcoes_empresas = [f"{empresa['razao_social']}" for empresa in empresas]
-    selected_empresa = st.selectbox("Selecione a Empresa", opcoes_empresas, key="orcamento_empresa")
+    selected_empresa = st.selectbox("**Selecione a Empresa:**", opcoes_empresas, key="orcamento_empresa")
     # Extrair o nome da empresa (razao_social) a partir da string
     empresa_nome = selected_empresa
 
@@ -92,7 +92,7 @@ def elaborar_orcamento(user):
         st.warning("Nenhum negócio encontrado para essa empresa.")
     else:
         opcoes_negocios = [opp["nome_oportunidade"] for opp in oportunidades]
-        selected_negocio = st.selectbox("Selecione o Negócio", opcoes_negocios, key="orcamento_negocio")
+        selected_negocio = st.selectbox("**Selecione o Negócio:**", opcoes_negocios, key="orcamento_negocio")
 
         # Buscar os dados    do negócio selecionado
         negocio_selecionado = next((opp for opp in oportunidades if opp["nome_oportunidade"] == selected_negocio), None)
@@ -102,16 +102,14 @@ def elaborar_orcamento(user):
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
             valor_estimado_formatado = format_currency(total)
-            st.subheader("Informações do Negócio")
-            st.text_input("**Cliente:**", empresa_nome,disabled=True)
+            st.subheader("Informações do Negócio para orçamento")
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
-            st.text_input("**Negócio:**", negocio_selecionado["nome_oportunidade"],disabled=True)
             valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
             valor_negocio = valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", ".")
 
             condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
-            condicao_pagamento = st.selectbox('Condições de pagamento: ',condicoes)
+            condicao_pagamento = st.selectbox('**Condições de pagamento: **',condicoes)
 
             if float(valor_negocio) > 35000:
                   prazos = ['60 dias úteis após o recebimento da documentação completa.',
