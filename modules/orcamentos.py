@@ -106,19 +106,105 @@ def elaborar_orcamento(user):
             st.subheader("Informações do Negócio para orçamento")
             
             st.text('Selecione o(s) produto(s) para o orçamento:')
-            col1, col2, col3, col4, col5 = st.columns(5)
-            with col1: produtos_selecionado1 = st.multiselect("Produto 1:", options=nomes_produtos, key="select_produto_oportunidade1", placeholder='Selecione aqui...')
-            with col2: produtos_selecionado2 = st.multiselect("Produto 2:", options=nomes_produtos, key="select_produto_oportunidade2", placeholder='Selecione aqui...')
-            with col3: produtos_selecionado3 = st.multiselect("Produto 3:", options=nomes_produtos, key="select_produto_oportunidade3", placeholder='Selecione aqui...')
-            with col4: produtos_selecionado4 = st.multiselect("Produto 4:", options=nomes_produtos, key="select_produto_oportunidade4", placeholder='Selecione aqui...')
-            with col5: produtos_selecionado5 = st.multiselect("Produto 5:", options=nomes_produtos, key="select_produto_oportunidade5", placeholder='Selecione aqui...')
 
+            # Recupera os produtos já cadastrados no negócio (se houver)
+            defaults = negocio_selecionado.get('produtos', [])
+            
+            # Define os defaults para cada coluna (se existir o índice correspondente, caso contrário, [] vazio)
+            default1 = [defaults[0]] if len(defaults) >= 1 else []
+            default2 = [defaults[1]] if len(defaults) >= 2 else []
+            default3 = [defaults[2]] if len(defaults) >= 3 else []
+            default4 = [defaults[3]] if len(defaults) >= 4 else []
+            default5 = [defaults[4]] if len(defaults) >= 5 else []
+            default6 = [defaults[5]] if len(defaults) >= 6 else []
+            default7 = [defaults[6]] if len(defaults) >= 7 else []
+            default8 = [defaults[7]] if len(defaults) >= 8 else []
+            default9 = [defaults[8]] if len(defaults) >= 9 else []
+            default10 = [defaults[9]] if len(defaults) >= 10 else []
+            
+            col1, col2, col3, col4, col5 = st.columns(5)
+            with col1:
+                produtos_selecionado1 = st.multiselect(
+                    "Produto 1:",
+                    options=nomes_produtos,
+                    default=default1,
+                    key="select_produto_oportunidade1",
+                    placeholder='Selecione aqui...'
+                )
+            with col2:
+                produtos_selecionado2 = st.multiselect(
+                    "Produto 2:",
+                    options=nomes_produtos,
+                    default=default2,
+                    key="select_produto_oportunidade2",
+                    placeholder='Selecione aqui...'
+                )
+            with col3:
+                produtos_selecionado3 = st.multiselect(
+                    "Produto 3:",
+                    options=nomes_produtos,
+                    default=default3,
+                    key="select_produto_oportunidade3",
+                    placeholder='Selecione aqui...'
+                )
+            with col4:
+                produtos_selecionado4 = st.multiselect(
+                    "Produto 4:",
+                    options=nomes_produtos,
+                    default=default4,
+                    key="select_produto_oportunidade4",
+                    placeholder='Selecione aqui...'
+                )
+            with col5:
+                produtos_selecionado5 = st.multiselect(
+                    "Produto 5:",
+                    options=nomes_produtos,
+                    default=default5,
+                    key="select_produto_oportunidade5",
+                    placeholder='Selecione aqui...'
+                )
+            
             col6, col7, col8, col9, col10 = st.columns(5)
-            with col6: produtos_selecionado6 = st.multiselect("Produto 6:", options=nomes_produtos, key="select_produto_oportunidade6", placeholder='Selecione aqui...')
-            with col7: produtos_selecionado7 = st.multiselect("Produto 7:", options=nomes_produtos, key="select_produto_oportunidade7", placeholder='Selecione aqui...')
-            with col8: produtos_selecionado8 = st.multiselect("Produto 8:", options=nomes_produtos, key="select_produto_oportunidade8", placeholder='Selecione aqui...')
-            with col9: produtos_selecionado9 = st.multiselect("Produto 9:", options=nomes_produtos, key="select_produto_oportunidade9", placeholder='Selecione aqui...')
-            with col10: produtos_selecionado10 = st.multiselect("Produto 10:", options=nomes_produtos, key="select_produto_oportunidade10", placeholder='Selecione aqui...')
+            with col6:
+                produtos_selecionado6 = st.multiselect(
+                    "Produto 6:",
+                    options=nomes_produtos,
+                    default=default6,
+                    key="select_produto_oportunidade6",
+                    placeholder='Selecione aqui...'
+                )
+            with col7:
+                produtos_selecionado7 = st.multiselect(
+                    "Produto 7:",
+                    options=nomes_produtos,
+                    default=default7,
+                    key="select_produto_oportunidade7",
+                    placeholder='Selecione aqui...'
+                )
+            with col8:
+                produtos_selecionado8 = st.multiselect(
+                    "Produto 8:",
+                    options=nomes_produtos,
+                    default=default8,
+                    key="select_produto_oportunidade8",
+                    placeholder='Selecione aqui...'
+                )
+            with col9:
+                produtos_selecionado9 = st.multiselect(
+                    "Produto 9:",
+                    options=nomes_produtos,
+                    default=default9,
+                    key="select_produto_oportunidade9",
+                    placeholder='Selecione aqui...'
+                )
+            with col10:
+                produtos_selecionado10 = st.multiselect(
+                    "Produto 10:",
+                    options=nomes_produtos,
+                    default=default10,
+                    key="select_produto_oportunidade10",
+                    placeholder='Selecione aqui...'
+                )
 
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
                                         produtos_selecionado6, produtos_selecionado7, produtos_selecionado8, produtos_selecionado9, produtos_selecionado10] if p]

@@ -39,7 +39,7 @@ def gerenciamento_aprovacoes():
         'aprovacao_gestor': 'Aprovação do Gestor'
     }, inplace=True)
     
-    st.write("### Solicitações de Desconto em Aberto")
+    st.write("### Solicitações de Desconto em aberto")
     
     # Exibir o DataFrame com st.data_editor sem permitir adição de novas linhas
     edited_df = st.data_editor(df_display, num_rows="fixed")
@@ -67,4 +67,3 @@ def gerenciamento_aprovacoes():
                 }
                 col_aprovacoes.insert_one(aprovacao)
         st.success("Aprovações salvas com sucesso!")
-        st.rerun()
