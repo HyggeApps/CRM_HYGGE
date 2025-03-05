@@ -131,12 +131,12 @@ def elaborar_orcamento(user):
                 #st.write(produtos_selecionados_obj, preco_produtos)
                 valor_estimado_formatado = format_currency(total)
                 st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.')                           
-                valor_negocio_formatado = st.text_input("Desconto:", valor_estimado_formatado)
-                valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
+                desconto = st.slider("Desconto (%)",0, 20)
+                valor_negocio = float(total.replace("R$ ", "").replace(".", "").replace(",", "."))
                 desconto = total - valor_negocio
                 desconto_formatado = format_currency(desconto)
                 st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
-                st.warning(f"**Preço com o desconto aplicado:** {de} ({round((desconto/total)*100,2)}%)")
+                st.warning(f"**Preço com o desconto aplicado:** {valor_negocio*(desconto/100).replace("R$ ", "").replace(".", "").replace(",", ".")} ({round((desconto/total)*100,2)}%)")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
                 condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
