@@ -123,7 +123,7 @@ def elaborar_orcamento(user):
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
                                         produtos_selecionado6, produtos_selecionado7, produtos_selecionado8, produtos_selecionado9, produtos_selecionado10] if p]
             negocio_selecionado['produtos'] = produtos_selecionados
-            
+
             if len(produtos_selecionados) > 0:
                 produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
                 total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
@@ -169,17 +169,16 @@ def elaborar_orcamento(user):
                     selected_contatos = []
                     
 
-        # Exemplo: ação para gerar o orçamento
-            if st.button("Gerar o orçamento"):
-                inicio = time.time()
-                pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
-                versao_proposta = gro.upload_onedrive2(pdf_out_path)
-                #st.write(versao_proposta)
-                path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
-                fim = time.time()
-                st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-                novo_nome_arquivo = os.path.basename(path_proposta_envio)
-                #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+                if st.button("Gerar o orçamento"):
+                    inicio = time.time()
+                    pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
+                    versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                    #st.write(versao_proposta)
+                    path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                    fim = time.time()
+                    st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                    novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                    #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
 
 
 
