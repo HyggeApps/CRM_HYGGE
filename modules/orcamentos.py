@@ -211,15 +211,19 @@ def elaborar_orcamento(user):
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
                                         produtos_selecionado6, produtos_selecionado7, produtos_selecionado8, produtos_selecionado9, produtos_selecionado10] if p]
             
-            st.write(produtos_selecionados)
             negocio_selecionado['produtos'] = produtos_selecionados
-            
+
             if len(produtos_selecionados) > 0:
                 #st.write(negocio_selecionado)
-                produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
+                produtos_dict = {p["nome"]: p for p in produtos}
+
+                # Itera sobre a lista de produtos selecionados, adicionando o objeto correspondente para cada ocorrência
+                produtos_selecionados_obj = [
+                    produtos_dict[nome] for nome in negocio_selecionado['produtos'] if nome in produtos_dict
+                ]
                 total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
                 preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
-                #st.write(produtos_selecionados_obj, preco_produtos)
+                
                 valor_estimado_formatado = format_currency(total)
                 desconto = st.number_input("Desconto (%)",0.0, 100.0)
                 desconto_total = total*(desconto/100)
