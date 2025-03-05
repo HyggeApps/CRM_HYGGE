@@ -1,65 +1,31 @@
 import streamlit as st
 import time
 import requests
-import base64
 import json
-import locale
-from datetime import timedelta
-from docx import Document
-from docx.shared import Pt
 from io import BytesIO
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 import tempfile
 import os
 import unicodedata
-import random
-import string
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_JUSTIFY, TA_CENTER
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-import webbrowser
-import msal
 from msal import ConfidentialClientApplication
 from reportlab.platypus import BaseDocTemplate, SimpleDocTemplate, PageTemplate, Frame, NextPageTemplate, Table, TableStyle
-from reportlab.lib.utils import ImageReader
-import io
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
-import PyPDF2
 from PyPDF2 import PdfReader, PdfWriter
-import urllib.parse
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
 from pathlib import Path
 from reportlab.lib.colors import Color
 from PIL import Image
-from openpyxl import Workbook
-from zipfile import ZipFile
-from eppy import modeleditor
-from eppy.modeleditor import IDF
-from eppy.bunch_subclass import BadEPFieldError
 from tempfile import NamedTemporaryFile
 import re
-import pandas as pd
-import hubspot # type: ignore
-from hubspot import HubSpot # type: ignore
-from hubspot.crm.deals import ApiException # type: ignore
-from hubspot.crm.owners import ApiException as OwnersApiException # type: ignore
-from hubspot.crm.line_items import ApiException as LineItemsApiException # type: ignore
-from hubspot.crm.contacts import ApiException as ContactsApiException # type: ignore
-from hubspot.crm.companies import ApiException as CompaniesApiException # type: ignore
-from hubspot.crm.associations import BatchInputPublicObjectId, PublicObjectId # type: ignore
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 import time
-import templates as tmplt
 
 path_proposta_envio = ''
 versao_proposta = ''
