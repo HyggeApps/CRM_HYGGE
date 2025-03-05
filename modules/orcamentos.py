@@ -106,13 +106,14 @@ def elaborar_orcamento(user):
             st.text_input("**Cliente:**", empresa_nome,disabled=True)
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
             st.text_input("**Negócio:**", negocio_selecionado["nome_oportunidade"],disabled=True)
-            amount = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
+            valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
+            valor_negocio = valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", ".")
 
-            condicoes = calcular_parcelas_e_saldo(float(amount), 6000)
+            condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
             condicao_pagamento = st.selectbox('Condições de pagamento: ',condicoes)
 
-            if float(amount) > 35000:
+            if float(valor_negocio) > 35000:
                   prazos = ['60 dias úteis após o recebimento da documentação completa.',
                         '30 dias úteis após o recebimento da documentação completa.',
                         '20 dias úteis após o recebimento da documentação completa.']
