@@ -126,6 +126,7 @@ def elaborar_orcamento(user):
 
             #st.write(1)
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
+            st.write(produtos_selecionados_obj)
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
             preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
             #st.write(produtos_selecionados_obj, preco_produtos)
