@@ -107,7 +107,7 @@ def gerenciamento_oportunidades(user):
             
                         if cliente_selecionado:
                             data_hoje = datetime.now().strftime("%Y-%m-%d")
-                            data_previsao_fechamento = data_hoje + dt.timedelta(days=30)
+                            data_previsao_fechamento = (hoje + dt.timedelta(days=30)).strftime("%Y-%m-%d")
                             # "produtos" será uma lista com os nomes dos produtos selecionados
                             
                             valor_estimado_formatado = format_currency(total)
