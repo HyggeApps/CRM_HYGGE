@@ -111,6 +111,7 @@ def elaborar_orcamento(user):
             with col4: produtos_selecionado4 = st.multiselect("Produto 4", options=nomes_produtos, key="select_produto_oportunidade4")
             with col5: produtos_selecionado5 = st.multiselect("Produto 5", options=nomes_produtos, key="select_produto_oportunidade5")
 
+            st.write(1)
             produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
             total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
             preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
