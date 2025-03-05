@@ -80,7 +80,7 @@ def elaborar_orcamento(user):
 
     opcoes_empresas = [f"{empresa['razao_social']}" for empresa in empresas]
     
-    st.subheader("Seleção da empresa e negócio")
+    st.subheader("🏢 Seleção da empresa e negócio")
     selected_empresa = st.selectbox("**Selecione a Empresa:**", opcoes_empresas, key="orcamento_empresa")
     # Extrair o nome da empresa (razao_social) a partir da string
     empresa_nome = selected_empresa
@@ -105,7 +105,7 @@ def elaborar_orcamento(user):
         if negocio_selecionado:
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
             nomes_produtos = [p["nome"] for p in produtos]
-            st.subheader("Informações do Negócio para orçamento")
+            st.subheader("ℹ️ Informações do Negócio para orçamento")
             
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
