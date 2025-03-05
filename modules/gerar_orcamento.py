@@ -750,6 +750,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
             ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
             ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
+            
         ])
 
         table.setStyle(style1)
@@ -760,16 +761,21 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
             ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
-            ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
+            ('ALIGN', (3, 1), (3, 1), 'CENTER'),    # Alinha 'R$ 9.900,00' à direita
             ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
             ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 12),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            # Última linha em HeroBold:
             ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
+            # Penúltima linha com fonte na cor cinza:
+            ('TEXTCOLOR', (0, -2), (-1, -2), colors.gray),
+            # Antepenúltima linha em HeroBold:
+            ('FONTNAME', (0, -3), (-1, -3), 'HeroBold'),
             ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
-            ('LINEABOVE', (0, -2), (-1, -2), 1, colors.gray),  # Linha acima da última linha
-            ('TEXTCOLOR', (0, -2), (-1, -2), colors.gray)  # Penúltima linha com fonte cinza
+            ('LINEABOVE', (0, -2), (-1, -2), 1, colors.gray)   # Linha acima da penúltima linha
         ])
+
 
         table.setStyle(style2)
 
