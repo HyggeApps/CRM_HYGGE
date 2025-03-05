@@ -87,7 +87,7 @@ def elaborar_orcamento(user):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1}
+            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1}
         )
     )
     if not oportunidades:
@@ -148,7 +148,7 @@ def elaborar_orcamento(user):
                     else:
                         st.markdown('🟦 Sem solicitação de desconto.')
                         if st.button('Solicitar desconto'):
-                            
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
                             st.success('Solicitação de desconto enviada com sucesso.')
         
                 valor_negocio = total*(1-desconto/100)
