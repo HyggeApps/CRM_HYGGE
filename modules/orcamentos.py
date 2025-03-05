@@ -110,7 +110,7 @@ def elaborar_orcamento(user):
             valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
             desconto = total - valor_negocio
             desconto_formatado = format_currency(desconto)
-            st.text(f"Desconto aplicado: {desconto_formatado} ({round((desconto/total)*100,2)}%)")
+            st.warning(f"**Desconto aplicado:** {desconto_formatado} ({round((desconto/total)*100,2)}%)")
             condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
             condicao_pagamento = st.selectbox('**Condições de pagamento:**',condicoes)
