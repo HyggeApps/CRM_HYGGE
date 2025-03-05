@@ -109,7 +109,7 @@ def elaborar_orcamento(user):
 
             condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
-            condicao_pagamento = st.selectbox('**Condições de pagamento: **',condicoes)
+            condicao_pagamento = st.selectbox('**Condições de pagamento:**',condicoes)
 
             if float(valor_negocio) > 35000:
                   prazos = ['60 dias úteis após o recebimento da documentação completa.',
