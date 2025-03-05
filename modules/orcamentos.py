@@ -261,6 +261,8 @@ def elaborar_orcamento(user):
                     selected_contatos = []
 
                 st.write('-----')
+                
+                st.subheader("Geração de um orçamento convencional")
                 if st.button("Gerar o orçamento"):
                     if desconto <= negocio_selecionado['desconto_aprovado'] or negocio_selecionado['aprovacao_gestor']:  
                         inicio = time.time()
@@ -285,6 +287,7 @@ def elaborar_orcamento(user):
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
                 
                 st.write('-----')
+                st.subheader("Geração de um orçamento com aprovação de desconto adicional")
                 with st.expander('Solicitação de desconto adicional ao gestor', expanded=False):
                     st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
                     
