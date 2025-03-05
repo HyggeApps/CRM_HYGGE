@@ -137,7 +137,7 @@ def gerenciamento_oportunidades(user):
                                 "status": "Registrado",
                                 "titulo": f"Oportunidade '{nome_opp}' criada",
                                 "empresa": cliente_selecionado["razao_social"],
-                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com os produtos: {produtos_lista}. Valor total: {valor_estimado_formatado}.",
+                                "descricao": f"O vendedor {user} criou a oportunidade '{nome_opp}' com valor estimado de: {valor_estimado_formatado}.",
                                 "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                 "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                             }
