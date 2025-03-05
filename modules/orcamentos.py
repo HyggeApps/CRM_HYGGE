@@ -123,61 +123,63 @@ def elaborar_orcamento(user):
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
                                         produtos_selecionado6, produtos_selecionado7, produtos_selecionado8, produtos_selecionado9, produtos_selecionado10] if p]
             negocio_selecionado['produtos'] = produtos_selecionados
-            produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
-            total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
-            preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
-            #st.write(produtos_selecionados_obj, preco_produtos)
-            valor_estimado_formatado = format_currency(total)                           
-            valor_negocio_formatado = st.text_input("Valor do negócio:", valor_estimado_formatado)
-            valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
-            desconto = total - valor_negocio
-            desconto_formatado = format_currency(desconto)
-            st.warning(f"**Desconto aplicado:** {desconto_formatado} ({round((desconto/total)*100,2)}%)")
-            condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
             
-            condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
-
-            if float(valor_negocio) > 35000:
-                  prazos = ['60 dias úteis após o recebimento da documentação completa.',
-                        '30 dias úteis após o recebimento da documentação completa.',
-                        '20 dias úteis após o recebimento da documentação completa.']
-            
-            else: prazos = ['60 dias úteis após o recebimento da documentação completa.',
-                        '30 dias úteis após o recebimento da documentação completa.',
-                        '20 dias úteis após o recebimento da documentação completa.',
-                        '15 dias úteis após o recebimento da documentação completa.',
-                        '10 dias úteis após o recebimento da documentação completa.']
-
-            prazo = st.selectbox("Prazo de execução:", prazos)
-
-            # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
-            contatos = list(
-                collection_contatos.find(
-                    {"empresa": empresa_nome},
-                    {"_id": 0, "nome": 1, "email": 1}
-                )
-            )
-            if contatos:
-                opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
-                nomes_contatos = [f"{c.get('nome', 'Sem nome')} {c.get('sobrenome', '')}" for c in contatos]
-                selected_contatos = st.multiselect("Selecione os contatos da empresa que receberão o orçamento:", opcoes_contatos, key="orcamento_contatos", placeholder='Selecione os contatos aqui...')
-                nome_contato_principal = st.selectbox("Selecione o contato principal (A/C):", nomes_contatos, key="orcamento_contato_principal")
-            else:
-                st.error("Nenhum contato encontrado para essa empresa.")
-                selected_contatos = []
+            if len(produtos_selecionados) > 0:
+                produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in negocio_selecionado['produtos']]
+                total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
+                preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
+                #st.write(produtos_selecionados_obj, preco_produtos)
+                valor_estimado_formatado = format_currency(total)                           
+                valor_negocio_formatado = st.text_input("Valor do negócio:", valor_estimado_formatado)
+                valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
+                desconto = total - valor_negocio
+                desconto_formatado = format_currency(desconto)
+                st.warning(f"**Desconto aplicado:** {desconto_formatado} ({round((desconto/total)*100,2)}%)")
+                condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
+                condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
 
-    # Exemplo: ação para gerar o orçamento
-        if st.button("Gerar o orçamento"):
-            inicio = time.time()
-            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
-            versao_proposta = gro.upload_onedrive2(pdf_out_path)
-            #st.write(versao_proposta)
-            path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
-            fim = time.time()
-            st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-            novo_nome_arquivo = os.path.basename(path_proposta_envio)
-            #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
+                if float(valor_negocio) > 35000:
+                    prazos = ['60 dias úteis após o recebimento da documentação completa.',
+                            '30 dias úteis após o recebimento da documentação completa.',
+                            '20 dias úteis após o recebimento da documentação completa.']
+                
+                else: prazos = ['60 dias úteis após o recebimento da documentação completa.',
+                            '30 dias úteis após o recebimento da documentação completa.',
+                            '20 dias úteis após o recebimento da documentação completa.',
+                            '15 dias úteis após o recebimento da documentação completa.',
+                            '10 dias úteis após o recebimento da documentação completa.']
+
+                prazo = st.selectbox("Prazo de execução:", prazos)
+
+                # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
+                contatos = list(
+                    collection_contatos.find(
+                        {"empresa": empresa_nome},
+                        {"_id": 0, "nome": 1, "email": 1}
+                    )
+                )
+                if contatos:
+                    opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
+                    nomes_contatos = [f"{c.get('nome', 'Sem nome')} {c.get('sobrenome', '')}" for c in contatos]
+                    selected_contatos = st.multiselect("Selecione os contatos da empresa que receberão o orçamento:", opcoes_contatos, key="orcamento_contatos", placeholder='Selecione os contatos aqui...')
+                    nome_contato_principal = st.selectbox("Selecione o contato principal (A/C):", nomes_contatos, key="orcamento_contato_principal")
+                else:
+                    st.error("Nenhum contato encontrado para essa empresa.")
+                    selected_contatos = []
+                    
+
+        # Exemplo: ação para gerar o orçamento
+            if st.button("Gerar o orçamento"):
+                inicio = time.time()
+                pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal)
+                versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                #st.write(versao_proposta)
+                path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                fim = time.time()
+                st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                #st.error(f"**ALERTA:** Ao clicar no botão abaixo a proposta **'{novo_nome_arquivo}'** será para o(s) email(s) **{selected_contatos}**, você tem certeza?",icon='🚨')
 
 
 
