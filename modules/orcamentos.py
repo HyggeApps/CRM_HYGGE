@@ -107,7 +107,7 @@ def elaborar_orcamento(user):
             st.subheader("Informações do Negócio para orçamento")
             st.multiselect("**Produtos:**", negocio_selecionado['produtos'], default=negocio_selecionado['produtos'], disabled=True)
             valor_negocio_formatado = st.text_input("**Valor do negócio:**", valor_estimado_formatado)
-            valor_negocio = valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", ".")
+            valor_negocio = float(valor_negocio_formatado.replace("R$ ", "").replace(".", "").replace(",", "."))
             desconto = total - valor_negocio
             desconto_formatado = format_currency(desconto)
             st.text(f"Desconto aplicado: {desconto_formatado}")
