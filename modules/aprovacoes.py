@@ -47,7 +47,7 @@ def gerenciamento_aprovacoes():
                 disabled=True
             )
         with col5:
-            if st.button("Aprovar Desconto", key=str(oportunidade["_id"])):
+            if st.button("Aprovar Desconto", key=str(oportunidade["_id"]),use_container_width=True):
                 # Atualiza o campo aprovacao_gestor na oportunidade
                 col_oportunidades.update_one(
                     {"_id": oportunidade["_id"]},
