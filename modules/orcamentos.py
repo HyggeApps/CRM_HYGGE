@@ -135,6 +135,7 @@ def elaborar_orcamento(user):
                 valor_negocio = float(total.replace("R$ ", "").replace(".", "").replace(",", "."))
                 desconto = total - valor_negocio
                 desconto_formatado = format_currency(desconto)
+                st.write(1)
                 st.warning(f"**Preço total dos produtos selecionados:** {valor_estimado_formatado}")
                 st.warning(f"**Preço com o desconto aplicado:** {valor_negocio*(desconto/100).replace("R$ ", "").replace(".", "").replace(",", ".")} ({round((desconto/total)*100,2)}%)")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
