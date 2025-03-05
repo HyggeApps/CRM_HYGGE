@@ -710,7 +710,7 @@ if __name__ == '__main__':
             ['Serviço(s)', 'Valor']
         ]
         for p, v in zip (produtos, preco_produtos):
-            data.append([p, v])
+            data.append([p['nome'], f'R$ {float(v['preco']):,.2f}'.replace(',', '.')])
             
         if desconto > 0:
             data.append(['Desconto', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
