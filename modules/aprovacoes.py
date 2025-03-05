@@ -10,46 +10,59 @@ def gerenciamento_aprovacoes():
     col_oportunidades = get_collection("oportunidades")
     col_aprovacoes = get_collection("aprovacoes")
     
-    # Buscar oportunidades com solicitação de desconto
-    oportunidades = list(col_oportunidades.find({"solicitacao_desconto": True}))
+    # Buscar somente oportunidades com solicitação de desconto em aberto
+    oportunidades = list(col_oportunidades.find({
+        "solicitacao_desconto": True,
+        "aprovacao_gestor": False
+    }))
     
     if not oportunidades:
-        st.info("Não há oportunidades com solicitação de desconto.")
+        st.info("Não há solicitações de desconto em aberto.")
         return
     
-    # Criar um DataFrame a partir das oportunidades e converter _id para string
+    # Criar DataFrame a partir das oportunidades
     df = pd.DataFrame(oportunidades)
+    
+    # Salvar a lista de _id para usar no update (não será exibido)
+    id_mapping = df['_id'].tolist()
+    
+    # Converter _id para string (se necessário) e selecionar somente as colunas relevantes
     df['_id'] = df['_id'].astype(str)
+    df_display = df[['cliente', 'nome_oportunidade', 'proprietario', 'desconto_aprovado', 'aprovacao_gestor']].copy()
     
-    # Selecionar as colunas que serão exibidas
-    df_display = df[['_id', 'cliente', 'nome_oportunidade', 'proprietario', 'desconto_aprovado', 'aprovacao_gestor']]
+    # Renomear as colunas para inserir a legenda diretamente
+    df_display.rename(columns={
+        'cliente': '**Empresa**',
+        'nome_oportunidade': '**Negócio**',
+        'proprietario': '**Vendedor**',
+        'desconto_aprovado': '**Desconto Solicitado**',
+        'aprovacao_gestor': '**Aprovação do Gestor**'
+    }, inplace=True)
     
-    st.write("### Oportunidades com Solicitação de Desconto")
-    st.markdown("**Legenda:**  *cliente* = Empresa, *nome_oportunidade* = Negócio, *proprietario* = Vendedor, *desconto_aprovado* = Desconto Solicitado")
+    st.write("### Solicitações de Desconto em Aberto")
     
-    # Exibir o DataFrame com st.data_editor (permitindo edição do campo de aprovação)
-    edited_df = st.data_editor(df_display, num_rows="dynamic")
+    # Exibir o DataFrame com st.data_editor sem permitir adição de novas linhas
+    edited_df = st.data_editor(df_display, num_rows="fixed")
     
-    # Botão para salvar as alterações (aprovações)
     if st.button("Salvar Aprovações"):
         # Iterar pelas linhas do DataFrame editado
-        for idx, row in edited_df.iterrows():
-            # Comparar com o status original para identificar alteração (apenas aprova se antes estava False)
-            original_status = df_display.loc[df_display['_id'] == row['_id'], 'aprovacao_gestor'].iloc[0]
-            if row['aprovacao_gestor'] and not original_status:
-                # Atualizar o campo aprovacao_gestor na coleção de oportunidades
+        for idx in range(len(edited_df)):
+            # Se o campo de aprovação foi marcado (True) na edição, atualiza a oportunidade e registra a aprovação
+            if edited_df.iloc[idx]['**Aprovação do Gestor**'] == True:
+                oportunidade_id_str = id_mapping[idx]
+                # Atualiza a oportunidade para aprovar o desconto
                 col_oportunidades.update_one(
-                    {"_id": ObjectId(row['_id'])},
+                    {"_id": ObjectId(oportunidade_id_str)},
                     {"$set": {"aprovacao_gestor": True}}
                 )
-                # Inserir um registro na coleção de aprovacoes
+                # Insere o registro de aprovação na coleção 'aprovacoes'
                 aprovacao = {
-                    "oportunidade_id": row['_id'],
-                    "empresa": row['cliente'],
-                    "nome_oportunidade": row['nome_oportunidade'],
-                    "vendedor": row['proprietario'],
-                    "desconto_solicitado": row['desconto_aprovado'],
-                    "aprovado_por": "gestor",  # Personalize com o usuário logado, se necessário
+                    "oportunidade_id": oportunidade_id_str,
+                    "empresa": edited_df.iloc[idx]['**Empresa**'],
+                    "nome_oportunidade": edited_df.iloc[idx]['**Negócio**'],
+                    "vendedor": edited_df.iloc[idx]['**Vendedor**'],
+                    "desconto_solicitado": edited_df.iloc[idx]['**Desconto Solicitado**'],
+                    "aprovado_por": "gestor",  # Personalize para capturar o usuário logado
                     "data_aprovacao": dt.datetime.now()
                 }
                 col_aprovacoes.insert_one(aprovacao)
