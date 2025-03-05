@@ -58,10 +58,10 @@ def gerenciamento_aprovacoes():
                 # Insere o registro de aprovação na coleção 'aprovacoes'
                 aprovacao = {
                     "oportunidade_id": oportunidade_id_str,
-                    "empresa": edited_df.iloc[idx]['**Empresa**'],
-                    "nome_oportunidade": edited_df.iloc[idx]['**Negócio**'],
-                    "vendedor": edited_df.iloc[idx]['**Vendedor**'],
-                    "desconto_solicitado": edited_df.iloc[idx]['**Desconto Solicitado**'],
+                    "empresa": edited_df.iloc[idx]['Empresa'],
+                    "nome_oportunidade": edited_df.iloc[idx]['Negócio'],
+                    "vendedor": edited_df.iloc[idx]['Vendedor'],
+                    "desconto_solicitado": edited_df.iloc[idx]['Desconto Solicitado'],
                     "aprovado_por": "gestor",  # Personalize para capturar o usuário logado
                     "data_aprovacao": dt.datetime.now()
                 }
