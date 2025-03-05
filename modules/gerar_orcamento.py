@@ -782,12 +782,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
     # Add the table to the elements list
     elements.append(table)
     
-    if len(produtos) == 1: blank_line(elements,18-dsct)
-    if len(produtos) == 2: blank_line(elements,16-dsct)
-    if len(produtos) == 3: blank_line(elements,15-dsct)
-    if len(produtos) == 4: blank_line(elements,13-dsct)
-    if len(produtos) == 5: blank_line(elements,11-dsct)
-    if len(produtos) == 6: blank_line(elements,10-dsct)
+    if len(produtos) == 1: blank_line(elements,16-dsct)
+    if len(produtos) == 2: blank_line(elements,14-dsct)
+    if len(produtos) == 3: blank_line(elements,13-dsct)
+    if len(produtos) == 4: blank_line(elements,11-dsct)
+    if len(produtos) == 5: blank_line(elements,9-dsct)
+    if len(produtos) == 6: blank_line(elements,8-dsct)
     if len(produtos) == 7: blank_line(elements,6-dsct)
 
     # texto das condições de pagamento
