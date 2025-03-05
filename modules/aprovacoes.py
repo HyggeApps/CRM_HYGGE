@@ -28,14 +28,14 @@ def gerenciamento_aprovacoes():
     
     # Converter _id para string (se necessário) e selecionar somente as colunas relevantes
     df['_id'] = df['_id'].astype(str)
-    df_display = df[['cliente', 'nome_oportunidade', 'proprietario', 'desconto_aprovado', 'aprovacao_gestor']].copy()
+    df_display = df[['cliente', 'nome_oportunidade', 'proprietario', 'desconto_solicitado', 'aprovacao_gestor']].copy()
     
     # Renomear as colunas para inserir a legenda diretamente
     df_display.rename(columns={
         'cliente': 'Empresa',
         'nome_oportunidade': 'Negócio',
         'proprietario': 'Vendedor',
-        'desconto_aprovado': 'Desconto Solicitado',
+        'desconto_solicitado': 'Desconto Solicitado',
         'aprovacao_gestor': 'Aprovação do Gestor'
     }, inplace=True)
     
@@ -58,6 +58,10 @@ def gerenciamento_aprovacoes():
                 col_oportunidades.update_one(
                     {"_id": ObjectId(oportunidade_id_str)},
                     {"$set": {"solicitacao_desconto": False}}
+                )
+                col_oportunidades.update_one(
+                    {"_id": ObjectId(oportunidade_id_str)},
+                    {"$set": {"desconto_aprovado": col_oportunidades.find_one({"_id": ObjectId(oportunidade_id_str)})['desconto_solicitado']}}
                 )
                 # Insere o registro de aprovação na coleção 'aprovacoes'
                 aprovacao = {
