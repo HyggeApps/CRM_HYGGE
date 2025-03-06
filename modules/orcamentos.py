@@ -312,6 +312,10 @@ def elaborar_orcamento(user, email):
                             message["From"] = st.session_state['email']
                             message["To"] = ", ".join(receivers)
                             message["Subject"] = f'Solicitação de desconto adicional - {selected_negocio}'
+                            
+                            st.write("Email:", st.session_state.get('email'))
+                            st.write("Senha:", st.session_state.get('senha'))
+                            st.write("Subject:", f'Solicitação de desconto adicional - {selected_negocio}')
 
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
