@@ -154,6 +154,8 @@ if 'email' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['email'] = None
 if 'roles' not in st.session_state:    ### NEW OR UPDATED ###
     st.session_state['roles'] = None
+if 'senha' not in st.session_state:    ### NEW OR UPDATED ###
+    st.session_state['senha'] = None
 
 if not st.session_state['logado']:
     
@@ -209,6 +211,7 @@ if not st.session_state['logado']:
             # Update the session state to logged in
             st.session_state['logado'] = True
             st.session_state['email'] = email_principal
+            st.session_state['senha'] = senha_principal
             
             # ─────────────────────────────────────────────────────────────
             # Query your "usuarios" collection to map the email to a user

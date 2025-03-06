@@ -309,7 +309,7 @@ def elaborar_orcamento(user, email):
                             receivers = ['rodrigo@hygge.eco.br']
                             
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email_principal']
+                            message["From"] = st.session_state['email']
                             message["To"] = ", ".join(receivers)
                             message["Subject"] = f'Solicitação de desconto adicional - {selected_negocio}'
 
@@ -328,8 +328,8 @@ def elaborar_orcamento(user, email):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.login(st.session_state['email'], st.session_state['senha'])
+                                server.sendmail(st.session_state['email'], receivers, message.as_string())
                                 server.quit()
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
