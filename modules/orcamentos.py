@@ -92,7 +92,7 @@ def gerenciamento_aceites(user, email, senha):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1, 'contatos_selecionados': 1, 'contato_principal': 1, 'condicoes_pagamento': 1, 'prazo_execucao': 1}
+            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1, "valor_orcamento": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1, 'contatos_selecionados': 1, 'contato_principal': 1, 'condicoes_pagamento': 1, 'prazo_execucao': 1}
         )
     )
     if not oportunidades:
