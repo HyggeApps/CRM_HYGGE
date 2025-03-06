@@ -343,7 +343,7 @@ def gerenciamento_aceites(user, email, senha):
 
                 if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and resp_contrato_answ != '-' and entrada_answ != '-' and len(parceria_answ) > 0 and len(comentarios_answ) > 0: 
                 
-                    st.subheader("📨 Envio do email de aceite para o cliente")
+                    st.subheader("📨 Envio do email de aceite interno")
 
                     st.error(f"**ALERTA:** Ao clicar no botão abaixo a pasta será gerada no servidor **e um email de notificação será enviado para a equipe interna da Hygge, sem o envio do email para o cliente**, você tem certeza?",icon='🚨')
                     if st.button("Criar pasta no servidor e enviar email interno"):#, #disabled=st.session_state['button_disabled']):
@@ -509,6 +509,9 @@ def gerenciamento_aceites(user, email, senha):
                             for i in range(10):
                                 st.balloons()
                                 time.sleep(1)
+                    
+                    st.write('------')
+                    st.subheader("📨 Envio do email de aceite para o cliente")
                     
                     st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite de proposta será enviado para o(s) cliente(s) (**{selected_contatos}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
 
