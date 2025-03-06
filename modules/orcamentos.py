@@ -399,6 +399,15 @@ def gerenciamento_aceites(user, email, senha):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
+                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            
+                            st.write(novo_nome_arquivo)
+                            if path_proposta_envio:
+                                novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                            else:
+                                st.error("Erro ao encontrar o arquivo da proposta.")
+                                return
+
                             # Attach the PDF file
                             with open(path_proposta_envio, 'rb') as attachment:
                                 part = MIMEBase('application', 'octet-stream')
@@ -493,7 +502,7 @@ def gerenciamento_aceites(user, email, senha):
                                 time.sleep(1)
 
                     st.write('------')
-                    
+
                     st.subheader("📨 Envio do email de aceite interno")
 
                     st.error(f"**ALERTA:** Ao clicar no botão abaixo a pasta será gerada no servidor **e um email de notificação será enviado para a equipe interna da Hygge, sem o envio do email para o cliente**, você tem certeza?",icon='🚨')
