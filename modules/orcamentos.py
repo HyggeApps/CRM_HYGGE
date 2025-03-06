@@ -279,21 +279,23 @@ def elaborar_orcamento(user, email, senha):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
                         pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
-                        versao_proposta = gro.upload_onedrive2(pdf_out_path)
-                        #st.write(versao_proposta)
-                        path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
-                        fim = time.time()
-                        st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-                        novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                        if pdf_out_path:
+                            versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                            #st.write(versao_proposta)
+                            path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                            fim = time.time()
+                            st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                            novo_nome_arquivo = os.path.basename(path_proposta_envio)
 
-                        # Atualiza o documento da oportunidade com as novas informações
-                        collection_oportunidades.update_one(
-                            {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
-                            {"$set": {
-                                "produtos": produtos_selecionados,
-                                "valor_orcamento": valor_negocio_formatado
-                            }}
-                        )
+                            # Atualiza o documento da oportunidade com as novas informações
+                            collection_oportunidades.update_one(
+                                {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
+                                {"$set": {
+                                    "produtos": produtos_selecionados,
+                                    "valor_orcamento": valor_negocio_formatado
+                                }}
+                            )
+                        else: st.error('Erro na geração do orçamento.')
                       
                     else:
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
@@ -401,21 +403,23 @@ def elaborar_orcamento(user, email, senha):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
                         pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
-                        versao_proposta = gro.upload_onedrive2(pdf_out_path)
-                        #st.write(versao_proposta)
-                        path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
-                        fim = time.time()
-                        st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
-                        novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                        if pdf_out_path:
+                            versao_proposta = gro.upload_onedrive2(pdf_out_path)
+                            #st.write(versao_proposta)
+                            path_proposta_envio = pdf_out_path.replace('.pdf',f'_v0{versao_proposta}.pdf')
+                            fim = time.time()
+                            st.info(f"Tempo da operação: {round(fim-inicio,2)}s")
+                            novo_nome_arquivo = os.path.basename(path_proposta_envio)
 
-                        # Atualiza o documento da oportunidade com as novas informações
-                        collection_oportunidades.update_one(
-                            {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
-                            {"$set": {
-                                "produtos": produtos_selecionados,
-                                "valor_orcamento": valor_negocio_formatado
-                            }}
-                        )
+                            # Atualiza o documento da oportunidade com as novas informações
+                            collection_oportunidades.update_one(
+                                {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
+                                {"$set": {
+                                    "produtos": produtos_selecionados,
+                                    "valor_orcamento": valor_negocio_formatado
+                                }}
+                            )
+                        else: st.error('Erro na geração do orçamento.')
                     
                     else:
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')

@@ -866,7 +866,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
                 writer.add_page(reader.pages[i])
         except:
             st.error(f"Erro ao adicionar o pdf {pdf} ao arquivo.")
-            return
+            return None
 
     with open(pdf_path, 'wb') as f_out:
         writer.write(f_out)
