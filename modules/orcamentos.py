@@ -296,18 +296,6 @@ def gerenciamento_aceites(user, email, senha):
                         default=default_contatos
                     )
 
-                    # Valor padrão para o contato principal (campo 'contato_principal' da oportunidade)
-                    default_contato_principal = negocio_selecionado.get("contato_principal", None)
-                    if default_contato_principal and default_contato_principal in nomes_contatos:
-                        contato_index = nomes_contatos.index(default_contato_principal)
-                    else:
-                        contato_index = 0
-                    nome_contato_principal = st.selectbox(
-                        "Selecione o contato principal (A/C):",
-                        nomes_contatos,
-                        key="orcamento_contato_principal",
-                        index=contato_index
-                    )
                 else:
                     st.error("Nenhum contato encontrado para essa empresa.")
                     selected_contatos = []
