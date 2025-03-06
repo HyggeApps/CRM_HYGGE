@@ -296,9 +296,23 @@ def gerenciamento_aceites(user, email, senha):
                         default=default_contatos
                     )
 
+                    # Valor padrão para o contato principal (campo 'contato_principal' da oportunidade)
+                    default_contato_principal = negocio_selecionado.get("contato_principal", None)
+                    if default_contato_principal and default_contato_principal in nomes_contatos:
+                        contato_index = nomes_contatos.index(default_contato_principal)
+                    else:
+                        contato_index = 0
+                    nome_contato_principal = st.selectbox(
+                        "Selecione o contato principal (A/C):",
+                        nomes_contatos,
+                        key="orcamento_contato_principal",
+                        index=contato_index
+                    )
+
                 else:
                     st.error("Nenhum contato encontrado para essa empresa.")
                     selected_contatos = []
+
 
                 st.write('----')
 
@@ -398,6 +412,10 @@ def gerenciamento_aceites(user, email, senha):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
+                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            if path_proposta_envio:
+                                novo_nome_arquivo = os.path.basename(path_proposta_envio)
+
                             # Attach the PDF file
                             with open(path_proposta_envio, 'rb') as attachment:
                                 part = MIMEBase('application', 'octet-stream')
@@ -425,7 +443,7 @@ def gerenciamento_aceites(user, email, senha):
                             message = MIMEMultipart()
                             message["From"] = st.session_state['email_principal']
                             message["To"] = ", ".join(receivers)
-                            message["Subject"] = f'[Hygge & {company_name}] Proposta Técnico-Comercial ACEITA - {dealname} (EMAIL INTERNO)'
+                            message["Subject"] = f'[Hygge & {selected_empresa}] Proposta Técnico-Comercial ACEITA - {selected_negocio} (EMAIL INTERNO)'
 
                             # Corpo do email original
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
@@ -633,7 +651,6 @@ def gerenciamento_aceites(user, email, senha):
                             for i in range(10):
                                 st.balloons()
                                 time.sleep(1)
-
                 
 def elaborar_orcamento(user, email, senha):
     # Obter as coleções necessárias
