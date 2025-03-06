@@ -499,8 +499,6 @@ def gerenciamento_aceites(user, email, senha):
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
                             
-                            pattern = re.compile(r'_v\d{2}')
-                            file_name = pattern.sub('',novo_nome_arquivo)
                             gro.upload_to_3projetos_v02(f'{selected_negocio}'.upper())
                             
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
@@ -669,8 +667,6 @@ def gerenciamento_aceites(user, email, senha):
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
                             
-                            pattern = re.compile(r'_v\d{2}')
-                            file_name = pattern.sub('',novo_nome_arquivo)
                             gro.upload_to_3projetos_v02(f'{selected_negocio}'.upper())
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
