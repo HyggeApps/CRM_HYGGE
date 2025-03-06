@@ -438,17 +438,17 @@ def elaborar_orcamento(user, email, senha):
                 <p>Estamos à disposição para quaisquer dúvidas ou esclarecimentos.</p>
                 <p>Atenciosamente,</p>"""
                 
-                if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                elif st.session_state['email_principal'] == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                elif st.session_state['email_principal'] == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                elif st.session_state['email_principal'] == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                elif st.session_state['email_principal'] == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                elif st.session_state['email_principal'] == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                elif st.session_state['email_principal'] == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                elif st.session_state['email_principal'] == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                elif st.session_state['email_principal'] == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                elif st.session_state['email_principal'] == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                elif st.session_state['email_principal'] == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
 
                 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
                 response = requests.get(url, headers=headers)
@@ -475,8 +475,8 @@ def elaborar_orcamento(user, email, senha):
                 try:
                     server = smtplib.SMTP('smtp.office365.com', 587)
                     server.starttls()
-                    server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                    server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                    server.login(email, senha)
+                    server.sendmail(email, receivers, message.as_string())
                     server.quit()
                     st.success(f'Etapa 1 de 1 - Email enviado com sucesso com a proposta {novo_nome_arquivo}!')
                 except Exception as e:
