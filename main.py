@@ -245,8 +245,8 @@ if st.session_state.get('logado', False):
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
-                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações"],
-                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square"],
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações","Aceites", "Indicadores"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square","bag-check","speedometer"],
                 menu_icon="cast",
                 default_index=0,
                 styles={
@@ -264,8 +264,8 @@ if st.session_state.get('logado', False):
             # 1. as sidebar menu
             selected = option_menu(
                 f"CRM HYGGE (Admin)",
-                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações"],
-                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square"],
+                ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Templates", "Produtos", "Usuários", "Solicitações","Aceites", "Indicadores"],
+                icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "file-earmark-text", "archive", "person-add", "check2-square","bag-check","speedometer"],
                 menu_icon="cast",
                 default_index=0,
                 styles={
