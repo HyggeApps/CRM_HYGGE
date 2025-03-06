@@ -303,8 +303,8 @@ def elaborar_orcamento(user, email, senha):
                     
                     if negocio_selecionado['aprovacao_gestor']: 
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
+                        justificativa = st.text_area("Justificativa para solicitação de novo desconto adicional:")
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
-                            justificativa = st.text_area("Justificativa para solicitação de desconto adicional:")
                             #receivers = ['rodrigo@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br',selected_email]
                             receivers = ['rodrigo@hygge.eco.br']
                             
