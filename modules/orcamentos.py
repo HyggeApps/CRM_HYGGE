@@ -417,7 +417,6 @@ def elaborar_orcamento(user, email, senha):
                 
                 st.write('-----')
                 
-                st.subheader("📨 Geração de um orçamento com aprovação de desconto adicional")
-                if 
+                st.subheader("📨 Envio da proposta para o cliente")
 
 
