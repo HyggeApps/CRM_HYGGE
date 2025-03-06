@@ -62,7 +62,7 @@ def format_currency(value):
     return "R$ " + "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def elaborar_orcamento(user):
+def elaborar_orcamento(user, email):
     # Obter as coleções necessárias
     collection_empresas = get_collection("empresas")
     collection_oportunidades = get_collection("oportunidades")
