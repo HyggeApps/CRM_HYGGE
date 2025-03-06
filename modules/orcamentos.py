@@ -413,9 +413,10 @@ def gerenciamento_aceites(user, email, senha):
                             message.attach(MIMEText(full_body, "html"))
 
                             path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            
+                            st.write(novo_nome_arquivo)
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
-                                st.write(novo_nome_arquivo)
                             else:
                                 st.error("Erro ao encontrar o arquivo da proposta.")
                                 return
@@ -509,7 +510,7 @@ def gerenciamento_aceites(user, email, senha):
                                 st.balloons()
                                 time.sleep(1)
                     
-                    st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite da proposta **{novo_nome_arquivo}** será enviado para o(s) cliente(s) (**{selected_contatos}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
+                    st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite de proposta será enviado para o(s) cliente(s) (**{selected_contatos}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
 
                     if st.button("Criar pasta no servidor e enviar email de aceite para o cliente"):
                         with st.spinner('Espere a conclusão da operação...'):
