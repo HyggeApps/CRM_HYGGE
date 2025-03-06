@@ -460,6 +460,7 @@ def elaborar_orcamento(user, email, senha):
                 # Anexa o corpo do email completo no formato HTML
                 message.attach(MIMEText(full_body, "html"))
 
+                st.write(f"{selected_negocio}_{negocio_selecionado['_id']}")
                 path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
                 st.write(path_proposta_envio)
                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
