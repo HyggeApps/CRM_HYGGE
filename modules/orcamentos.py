@@ -305,34 +305,7 @@ def elaborar_orcamento(user, email, senha):
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
 
-                            #receivers = ['rodrigo@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br',selected_email]
-                            receivers = ['rodrigo@hygge.eco.br']
                             
-                            message = MIMEMultipart()
-                            message["From"] = email
-                            message["To"] = ", ".join(receivers)
-                            message["Subject"] = f'Solicitação de desconto adicional - {selected_negocio}'
-                            
-                            body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
-                                        <p>Empresa: {negocio_selecionado['cliente']}</p>
-                                        <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
-                                        <p>Desconto solicitado: {desconto}</p>"""
-
-                            # Concatena o corpo do email com a assinatura HTML
-                            full_body = body
-
-                            # Anexa o corpo do email completo no formato HTML
-                            message.attach(MIMEText(full_body, "html"))
-
-                            # Sending the email
-                            try:
-                                server = smtplib.SMTP('smtp.office365.com', 587)
-                                server.starttls()
-                                server.login(email, senha)
-                                server.sendmail(email, receivers, message.as_string())
-                                server.quit()
-                            except Exception as e:
-                                st.error(f"Falha no envio do email: {e}")
 
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_solicitado": float(desconto)}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
