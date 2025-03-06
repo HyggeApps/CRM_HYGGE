@@ -319,7 +319,7 @@ if st.session_state.get('logado', False):
         st.header("📠 Orçamentos")
         #st.info('Consulte, cadastre e edite os seus negócios aqui.')
         st.write('----')
-        orcamentos.elaborar_orcamento(usuario_ativo, st.session_state['email'])
+        orcamentos.elaborar_orcamento(usuario_ativo, st.session_state['email'], st.session_state['senha'])
         
     elif selected == 'Templates':
         st.header("📎 Templates")

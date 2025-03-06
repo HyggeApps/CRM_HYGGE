@@ -62,7 +62,7 @@ def format_currency(value):
     return "R$ " + "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def elaborar_orcamento(user, email):
+def elaborar_orcamento(user, email, senha):
     # Obter as coleções necessárias
     collection_empresas = get_collection("empresas")
     collection_oportunidades = get_collection("oportunidades")
@@ -309,14 +309,10 @@ def elaborar_orcamento(user, email):
                             receivers = ['rodrigo@hygge.eco.br']
                             
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email']
+                            message["From"] = email
                             message["To"] = ", ".join(receivers)
                             message["Subject"] = f'Solicitação de desconto adicional - {selected_negocio}'
                             
-                            st.write("Email:", st.session_state.get('email'))
-                            st.write("Senha:", st.session_state.get('senha'))
-                            st.write("Subject:", f'Solicitação de desconto adicional - {selected_negocio}')
-
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
@@ -332,8 +328,8 @@ def elaborar_orcamento(user, email):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email'], st.session_state['senha'])
-                                server.sendmail(st.session_state['email'], receivers, message.as_string())
+                                server.login(email, senha)
+                                server.sendmail(email, receivers, message.as_string())
                                 server.quit()
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
