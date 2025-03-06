@@ -305,32 +305,49 @@ def gerenciamento_aceites(user, email, senha):
                 st.subheader("🤝 Informações relevantes para o técnico/financeiro")
                 st.info('Preencha todos os campos com "*" para habilitar a etapa de criação de pastas e envio de email.')
 
-                col1, col2, col3, col4, col5 = st.columns(5)
+                col1, col2, col3 = st.columns(3)
                 with col1: tipo_contrato_answ = st.selectbox('Contrato ou somente proposta?*',options=['-','Contrato', 'Somente proposta'])
-                with col2: nro_parcelas_answ = st.selectbox('Número de parcelas?*',options=['-','1x','2x','3x','4x','5x','6x','Não definido'])
-                with col3: parcelas_vinc_ent_answ = st.selectbox('Parcelas vinculadas às entregas?*',options=['-','Sim','Não'])
-                with col4: medicao_answ = st.selectbox('Cliente paga por medição?*',options=['-','Sim','Não'])
-                with col5: negociacao_answ = st.selectbox('Alguma negociação fora do escopo?*',options=['-','Sim','Não'])
+                with col2: resp_contrato_answ = st.selectbox('Quem é responsável pelo contrato?*',options=['-','HYGGE','Contratante','Não definido'])
+                with col3: nro_parcelas_answ = st.selectbox('Número de parcelas?*',options=['-','1x','2x','3x','4x','5x','6x','Não definido'])
+   
+                col1, col2, col3 = st.columns(3)
+                with col1: parceria_answ = st.selectbox('Tem parceria?*', options=['-','Sim, Scala','Não'])
+                with col2: entrada_answ = st.selectbox('Haverá o pagamento de entrada?*',options=['-','Sim','Não'])
+                with col3: parcelas_vinc_ent_answ = st.selectbox('Demais parcelas vinculadas às entregas?*',options=['-','Sim','Não'])
                 
-                col1, col2, col3, col4 = st.columns(4)
-                with col1: parceria_answ = st.text_input('Tem parceria? Se sim, com quem?*')
-                with col2: prazo_answ = st.text_input('Prazo informado para entrega:*')
-                with col3: qtde_cen_answ = st.selectbox('Foram vendidos cenários? Se sim, quantos?*',['Não','0','1','2','3','4','5'])
                 col1, col2 = st.columns(2)
                 with col1: comentarios_answ = st.text_area('Comentários relevantes (condições acordadas):*')
                 with col2: contatos_answ = st.text_area('Contatos adicionais:')
 
+                # escopo (produtos) no email;
+                # prazo informado para entrega - automatico no email;
+
+                # Adicionar as informações completas no email. 
+
                 st.write('---')
 
-                if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and medicao_answ != '-' and negociacao_answ != '-' and len(parceria_answ) > 0 and len(prazo_answ) > 0 and len(comentarios_answ) > 0: 
+                if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and resp_contrato_answ != '-' and entrada_answ != '-' and len(parceria_answ) > 0 and len(comentarios_answ) > 0: 
                 
                     st.subheader("📨 Envio do email de aceite para o cliente")
 
                     st.error(f"**ALERTA:** Ao clicar no botão abaixo a pasta será gerada no servidor **e um email de notificação será enviado para a equipe interna da Hygge, sem o envio do email para o cliente**, você tem certeza?",icon='🚨')
                     if st.button("Criar pasta no servidor e enviar email interno"):#, #disabled=st.session_state['button_disabled']):
                         with st.spinner('Espere a conclusão da operação...'):
+                            
+                            # Atualiza o documento da oportunidade com as novas informações
+                            collection_oportunidades.update_one(
+                                {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
+                                {"$set": {
+                                    "contrato_proposta": tipo_contrato_answ,
+                                    "responsavel_contrato": resp_contrato_answ,
+                                    "nro_parcelas": nro_parcelas_answ,
+                                    "parceria": parceria_answ,
+                                    "entrada": entrada_answ,
+                                    "parcelas_vinc_ent": parcelas_vinc_ent_answ
+                                }}
+                            )
+                            
                             # st.session_state['button_disabled'] = True
-
                             # Configuração do email
                             #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', selected_email]
                             receivers = ['rodrigokarinileitzke@gmail.com']
@@ -343,13 +360,14 @@ def gerenciamento_aceites(user, email, senha):
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
                             <p>A respeito do fechamento {selected_negocio} (em anexo):<br></p>
                             <p>Contrato ou somente proposta? {tipo_contrato_answ}<br></p>
+                            <p>Quem é responsável pelo contrato? {resp_contrato_answ}<br></p>
                             <p>Nro. de parcelas: {nro_parcelas_answ}<br></p>
-                            <p>Parcelas vinculadas à entrega? {parcelas_vinc_ent_answ}<br></p>
-                            <p>Cliente paga por medição? {medicao_answ}<br></p>
-                            <p>Alguma negociação fora do escopo? {negociacao_answ}<br></p>
-                            <p>Tem parceria? Se sim, com quem? {parceria_answ}<br></p>
-                            <p>Foram vendidos cenários? Se sim, quantos? {qtde_cen_answ}<br></p>
-                            <p>Prazo informado para entrega: {prazo_answ}<br></p>
+                            <p>Parceria? {parceria_answ}<br></p>
+                            <p>Entrada? {entrada_answ}<br></p>
+                            <p>Demais parcelas vinculadas à entrega? {parcelas_vinc_ent_answ}<br></p>
+                            <p>Valor do orçamento: {valor_negocio_formatado}<br></p>
+                            <p>Condições de pagamento: {condicao_pagamento}<br></p>
+                            <p>Prazo informado para entrega: {prazo}<br></p>
                             <p>Comentários relevantes: {comentarios_answ}<br></p>
                             <p>Contatos adicionais: {contatos_answ}<br></p>
 
