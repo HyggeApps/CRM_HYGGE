@@ -456,19 +456,10 @@ def upload_to_3projetos_v02(file_name, new_folder_name, file_path):
         if folder_response.status_code in [200, 201]:
             new_folder_id = folder_response.json()['id']
             print(f"New folder '{new_folder_name}' created successfully.")
-            
-            # Step 2: Upload file to the new folder
-            upload_url = f'https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{new_folder_id}:/{file_name}:/content'
-            with open(file_path, "rb") as file:
-                file_content = file.read()
-            upload_response = requests.put(upload_url, headers=headers, data=file_content)
-            if upload_response.status_code in [200, 201]:
-                print("File successfully uploaded to the new folder.")
-                # Step 3: Copy folder contents
-                source_folder_id = "013JXZXAOOEHVKTIHXVVHIERCVM4MJJHKZ"  # ID of the "000 - EMPRESA - PROJETO" folder
-                copy_folder_contents(drive_id, source_folder_id, new_folder_id, access_token)
-            else:
-                print(f"Error uploading file: {upload_response.status_code} {upload_response.text}")
+            # Step 3: Copy folder contents
+            source_folder_id = "013JXZXAOOEHVKTIHXVVHIERCVM4MJJHKZ"  # ID of the "000 - EMPRESA - PROJETO" folder
+            copy_folder_contents(drive_id, source_folder_id, new_folder_id, access_token)
+
         else:
             print(f"Error creating folder: {folder_response.status_code} {folder_response.text}")
     else:

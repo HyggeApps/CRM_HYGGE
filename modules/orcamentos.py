@@ -13,6 +13,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import requests
+import re 
 
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Calcula o número máximo de parcelas possíveis
@@ -367,7 +368,7 @@ def gerenciamento_aceites(user, email, senha):
                             #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', selected_email]
                             receivers = ['rodrigokarinileitzke@gmail.com']
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email_principal']
+                            message["From"] = email
                             message["To"] = ", ".join(receivers)
                             message["Subject"] = f'[Hygge & {selected_empresa}] Informações adicionais - {selected_negocio} (EMAIL INTERNO)'
 
@@ -388,18 +389,18 @@ def gerenciamento_aceites(user, email, senha):
 
                             <p>Atenciosamente,</p>"""
 
-                            if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                            elif st.session_state['email_principal'] == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                            elif st.session_state['email_principal'] == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                            elif st.session_state['email_principal'] == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                            elif st.session_state['email_principal'] == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
-                            elif st.session_state['email_principal'] == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                            elif st.session_state['email_principal'] == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                            elif st.session_state['email_principal'] == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                            elif st.session_state['email_principal'] == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                            elif st.session_state['email_principal'] == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                            elif st.session_state['email_principal'] == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                            elif st.session_state['email_principal'] == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                            elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                            elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                            elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            elif email == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
+                            elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                            elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                            elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                            elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                            elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                            elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                            elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
 
                                 
                             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
@@ -428,8 +429,8 @@ def gerenciamento_aceites(user, email, senha):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.login(email, senha)
+                                server.sendmail(email, receivers, message.as_string())
                                 server.quit()
                                 st.success("Etapa 1 de 3 - Email 1 enviado com sucesso para a equipe interna!")
 
@@ -438,30 +439,30 @@ def gerenciamento_aceites(user, email, senha):
 
 
                             # Configuração do email
-                            receivers = ['fabricio@hygge.eco.br','admin@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', selected_email]
-                            #receivers = ['rodrigokarinileitzke@gmail.com']
+                            #receivers = ['fabricio@hygge.eco.br','admin@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', email]
+                            receivers = ['rodrigokarinileitzke@gmail.com']
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email_principal']
+                            message["From"] = email
                             message["To"] = ", ".join(receivers)
                             message["Subject"] = f'[Hygge & {selected_empresa}] Proposta Técnico-Comercial ACEITA - {selected_negocio} (EMAIL INTERNO)'
 
                             # Corpo do email original
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
-                            <p>Conforme tratativas entre {nome_contato_principal} e {user}, recebemos o aceite da proposta {dealname} - {deal_id} (em anexo).<br></p>
+                            <p>Conforme tratativas entre {nome_contato_principal} e {user}, recebemos o aceite da proposta {selected_negocio} (em anexo).<br></p>
                             <p>Atenciosamente,</p>"""
 
-                            if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                            elif st.session_state['email_principal'] == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                            elif st.session_state['email_principal'] == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                            elif st.session_state['email_principal'] == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                            elif st.session_state['email_principal'] == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
-                            elif st.session_state['email_principal'] == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                            elif st.session_state['email_principal'] == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                            elif st.session_state['email_principal'] == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                            elif st.session_state['email_principal'] == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                            elif st.session_state['email_principal'] == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                            elif st.session_state['email_principal'] == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                            elif st.session_state['email_principal'] == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                            elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                            elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                            elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            elif email == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
+                            elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                            elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                            elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                            elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                            elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                            elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                            elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
 
                                 
                             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
@@ -486,8 +487,8 @@ def gerenciamento_aceites(user, email, senha):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.login(email, senha)
+                                server.sendmail(email, receivers, message.as_string())
                                 server.quit()
                                 st.success("Etapa 2 de 3 - Email 2 enviado com sucesso para a equipe interna!")
                                 for i in range(10):
@@ -499,54 +500,55 @@ def gerenciamento_aceites(user, email, senha):
                             
                             pattern = re.compile(r'_v\d{2}')
                             file_name = pattern.sub('',novo_nome_arquivo)
-                            upload_to_3projetos_v02(file_name, f'{dealname}'.upper())
+                            gro.upload_to_3projetos_v02(file_name, f'{selected_negocio}'.upper())
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
                                 st.balloons()
                                 time.sleep(1)
                     
-                    st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite da proposta **{novo_nome_arquivo}** será enviado para o cliente (**{contact_email}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
+                    st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite da proposta **{novo_nome_arquivo}** será enviado para o(s) cliente(s) (**{selected_contatos}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
 
                     if st.button("Criar pasta no servidor e enviar email de aceite para o cliente"):#, disabled=st.session_state['button_disabled']):
                         with st.spinner('Espere a conclusão da operação...'):
                             #st.session_state['button_disabled'] = True
 
                             # Configuração do email
-                            receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', selected_email]
-                            #receivers = ['rodrigokarinileitzke@gmail.com']
+                            #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            receivers = ['rodrigokarinileitzke@gmail.com']
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email_principal']
+                            message["From"] = email
                             message["To"] = ", ".join(receivers)
-                            message["Subject"] = f'[Hygge & {company_name}] Informações adicionais - {dealname} (EMAIL INTERNO)'
+                            message["Subject"] = f'[Hygge & {selected_empresa}] Informações adicionais - {selected_negocio} (EMAIL INTERNO)'
 
                             # Corpo do email original
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
-                            <p>A respeito do fechamento {dealname} - {deal_id} (em anexo):<br></p>
+                            <p>A respeito do fechamento {selected_negocio} (em anexo):<br></p>
                             <p>Contrato ou somente proposta? {tipo_contrato_answ}<br></p>
+                            <p>Quem é responsável pelo contrato? {resp_contrato_answ}<br></p>
                             <p>Nro. de parcelas: {nro_parcelas_answ}<br></p>
-                            <p>Parcelas vinculadas à entrega? {parcelas_vinc_ent_answ}<br></p>
-                            <p>Cliente paga por medição? {medicao_answ}<br></p>
-                            <p>Alguma negociação fora do escopo? {negociacao_answ}<br></p>
-                            <p>Tem parceria? Se sim, com quem? {parceria_answ}<br></p>
-                            <p>Foram vendidos cenários? Se sim, quantos? {qtde_cen_answ}<br></p>
-                            <p>Prazo informado para entrega: {prazo_answ}<br></p>
+                            <p>Parceria? {parceria_answ}<br></p>
+                            <p>Entrada? {entrada_answ}<br></p>
+                            <p>Demais parcelas vinculadas à entrega? {parcelas_vinc_ent_answ}<br></p>
+                            <p>Valor do orçamento: {valor_negocio_formatado}<br></p>
+                            <p>Condições de pagamento: {condicao_pagamento}<br></p>
+                            <p>Prazo informado para entrega: {prazo}<br></p>
                             <p>Comentários relevantes: {comentarios_answ}<br></p>
                             <p>Contatos adicionais: {contatos_answ}<br></p>
 
                             <p>Atenciosamente,</p>"""
 
-                            if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                            elif st.session_state['email_principal'] == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                            elif st.session_state['email_principal'] == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                            elif st.session_state['email_principal'] == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                            elif st.session_state['email_principal'] == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
-                            elif st.session_state['email_principal'] == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                            elif st.session_state['email_principal'] == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                            elif st.session_state['email_principal'] == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                            elif st.session_state['email_principal'] == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                            elif st.session_state['email_principal'] == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                            elif st.session_state['email_principal'] == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                            elif st.session_state['email_principal'] == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                            elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                            elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                            elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            elif email == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
+                            elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                            elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                            elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                            elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                            elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                            elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                            elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
 
                                 
                             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
@@ -571,8 +573,8 @@ def gerenciamento_aceites(user, email, senha):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.login(email, senha)
+                                server.sendmail(email, receivers, message.as_string())
                                 server.quit()
                                 st.success("Etapa 1 de 3 - Email 1 enviado com sucesso para a equipe interna!")
 
@@ -580,35 +582,35 @@ def gerenciamento_aceites(user, email, senha):
                                 st.error(f"Falha no envio do email: {e}")
 
                             # Configuração do email
-                            receivers = [contact_email,'fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', selected_email]
+                            receivers = selected_contatos + ['fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', selected_email]
                             #receivers = ['rodrigo@hygge.eco.br']
                             message = MIMEMultipart()
-                            message["From"] = st.session_state['email_principal']
+                            message["From"] = email
                             message["To"] = ", ".join(receivers)
-                            message["Subject"] = f'[Hygge & {company_name}] Proposta Técnico-Comercial ACEITA - {dealname}'
+                            message["Subject"] = f'[Hygge & {selected_empresa}] Proposta Técnico-Comercial ACEITA - {selected_negocio}'
 
                             # Corpo do email original
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
-                            <p>Conforme tratativas entre {firstname_owner} {lastname_owner} e {firstname} {lastname}, recebemos o aceite da proposta {dealname} - {deal_id} (em anexo).<br></p>
-                            <p>Portanto, é com grande satisfação que se inicia nossa parceria para o empreendimento {dealname}!<br></p>
+                            <p>Conforme tratativas entre {nome_contato_principal} e {user}, recebemos o aceite da proposta {selected_negocio} (em anexo).<br></p>
+                            <p>Portanto, é com grande satisfação que se inicia nossa parceria para o empreendimento {selected_negocio}!<br></p>
                             <p>Entro em contato para adicionar a Vanessa Godoi do setor financeiro da Hygge (financeiro@hygge.eco.br), a qual entrará em contato para dar continuidade às tratativas referentes à contratos e pagamentos.<br></p>
                             <p>Também incluo a Paula Alano (paula@hygge.eco.br), sócia e coordenadora de projetos, que liderará a equipe técnica da Hygge e será a sua ponte de comunicação para assuntos técnicos.
                             A Paula entrará em contato solicitando as informações necessárias para darmos início ao processo da Análise Hygge.<br></p>
                             <p>Agradecemos a confiança em nosso trabalho e destaco nosso comprometimento total para que nossa parceria seja bem-sucedida.<br></p>
                             <p>Atenciosamente,</p>"""
 
-                            if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                            elif st.session_state['email_principal'] == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                            elif st.session_state['email_principal'] == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                            elif st.session_state['email_principal'] == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                            elif st.session_state['email_principal'] == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
-                            elif st.session_state['email_principal'] == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                            elif st.session_state['email_principal'] == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                            elif st.session_state['email_principal'] == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                            elif st.session_state['email_principal'] == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                            elif st.session_state['email_principal'] == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                            elif st.session_state['email_principal'] == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                            elif st.session_state['email_principal'] == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                            elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                            elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                            elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                            elif email == 'comercial8@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/renan-bertolini-rozov.html"
+                            elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                            elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                            elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                            elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                            elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                            elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                            elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
 
                                 
                             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
@@ -633,8 +635,8 @@ def gerenciamento_aceites(user, email, senha):
                             try:
                                 server = smtplib.SMTP('smtp.office365.com', 587)
                                 server.starttls()
-                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
-                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.login(email, senha)
+                                server.sendmail(email, receivers, message.as_string())
                                 server.quit()
                                 st.success("Etapa 2 de 3 - Email 2 enviado com sucesso para a equipe interna e para o cliente!")
                                 for i in range(10):
@@ -645,7 +647,7 @@ def gerenciamento_aceites(user, email, senha):
                             
                             pattern = re.compile(r'_v\d{2}')
                             file_name = pattern.sub('',novo_nome_arquivo)
-                            upload_to_3projetos_v02(file_name, f'{dealname}'.upper())
+                            gro.upload_to_3projetos_v02(file_name, f'{selected_negocio}'.upper())
                             
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
