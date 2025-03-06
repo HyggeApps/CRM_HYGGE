@@ -158,10 +158,6 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     else:
                         st.error("Preencha os campos obrigatórios: Descrição.")
 
-        # Função extra para o formulário de Reunião (exemplo)
-        def campos_extras_reuniao():
-            negocio = st.selectbox("Negócio associado à reunião", options=['1', '2'])
-            return {"negocio": negocio}
 
         # Exemplo de chamadas dos formulários usando a função genérica
 
@@ -183,8 +179,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     tipo="Whatsapp",
                     titulo_form="🟩➕ Whatsapp",
                     info_msg="Registrar um **Whatsapp** nas atividades da empresa.",
-                    with_status=True,
-                    status_options=["Realizada", "Contato não apareceu", "Remarcada"]
+                    with_status=True
                 )
 
         with col3:
@@ -226,7 +221,6 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     info_msg="Registrar uma **reunião** nas atividades da empresa.",
                     with_status=True,
                     status_options=["Realizada", "Contato não apareceu", "Remarcada"],
-                    extra_fields_fn=campos_extras_reuniao,
                     titulo_tarefa="Acompanhar Reunião"
                 )
 
