@@ -427,7 +427,7 @@ def upload_to_3projetos(file_path, file_name, new_folder_name):
     else:
         print("Error acquiring token:", result.get("error_description", ""))
 
-def upload_to_3projetos_v02(file_name, new_folder_name, file_path):
+def upload_to_3projetos_v02(new_folder_name):
     # Azure credentials and MSAL Client Configuration
     CLIENT_ID = st.secrets['azure']['client_id']
     CLIENT_SECRET = st.secrets['azure']['client_secret']

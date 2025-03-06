@@ -501,7 +501,7 @@ def gerenciamento_aceites(user, email, senha):
                             
                             pattern = re.compile(r'_v\d{2}')
                             file_name = pattern.sub('',novo_nome_arquivo)
-                            gro.upload_to_3projetos_v02(file_name, f'{selected_negocio}'.upper())
+                            gro.upload_to_3projetos_v02(f'{selected_negocio}'.upper())
                             
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
@@ -671,7 +671,7 @@ def gerenciamento_aceites(user, email, senha):
                             
                             pattern = re.compile(r'_v\d{2}')
                             file_name = pattern.sub('',novo_nome_arquivo)
-                            gro.upload_to_3projetos_v02(file_name, f'{selected_negocio}'.upper())
+                            gro.upload_to_3projetos_v02(f'{selected_negocio}'.upper())
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
                                 st.balloons()
