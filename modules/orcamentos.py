@@ -508,9 +508,8 @@ def gerenciamento_aceites(user, email, senha):
                     
                     st.error(f"**ALERTA:** Ao clicar no botão abaixo o e-mail de aceite da proposta **{novo_nome_arquivo}** será enviado para o(s) cliente(s) (**{selected_contatos}**) e a pasta será gerada no servidor, você tem certeza?",icon='🚨')
 
-                    if st.button("Criar pasta no servidor e enviar email de aceite para o cliente"):#, disabled=st.session_state['button_disabled']):
+                    if st.button("Criar pasta no servidor e enviar email de aceite para o cliente"):
                         with st.spinner('Espere a conclusão da operação...'):
-                            #st.session_state['button_disabled'] = True
 
                             # Configuração do email
                             #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
@@ -582,8 +581,8 @@ def gerenciamento_aceites(user, email, senha):
                                 st.error(f"Falha no envio do email: {e}")
 
                             # Configuração do email
-                            receivers = selected_contatos + ['fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', selected_email]
-                            #receivers = ['rodrigo@hygge.eco.br']
+                            #receivers = selected_contatos + ['fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', email]
+                            receivers = ['rodrigo@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
