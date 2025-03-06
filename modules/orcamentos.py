@@ -461,6 +461,7 @@ def elaborar_orcamento(user, email, senha):
                 message.attach(MIMEText(full_body, "html"))
 
                 path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                st.write(path_proposta_envio)
                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
                 
                 # Attach the PDF file
