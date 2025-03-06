@@ -236,7 +236,7 @@ def gerenciamento_aceites(user, email, senha):
                 ]
                 
                 valor_negocio_formatado = negocio_selecionado['valor_orcamento']
-                valor_negocio = float(valor_negocio.replace('R$ ','').replace('.','').replace(',','.'))
+                valor_negocio = float(valor_negocio_formatado.replace('R$ ','').replace('.','').replace(',','.'))
                 st.text_input('Valor do orçamento:', value=f"{valor_negocio_formatado}", disabled=True)
                 #**Preço com o desconto aplicado:** {valor_negocio_formatado}")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio.replace('R$ ','').replace('.','').replace(',','.')), 6000)
