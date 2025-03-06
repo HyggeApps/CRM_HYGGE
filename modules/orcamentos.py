@@ -7,6 +7,10 @@ import calendar
 import modules.gerar_orcamento as gro
 import time
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
 
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Calcula o número máximo de parcelas possíveis
@@ -89,7 +93,7 @@ def elaborar_orcamento(user):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "nome_oportunidade": 1,'produtos': 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_aprovado': 1}
+            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_aprovado': 1}
         )
     )
     if not oportunidades:
@@ -300,6 +304,36 @@ def elaborar_orcamento(user):
                     if negocio_selecionado['aprovacao_gestor']: 
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
+
+                            #receivers = ['rodrigo@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br',selected_email]
+                            receivers = ['rodrigo@hygge.eco.br']
+                            
+                            message = MIMEMultipart()
+                            message["From"] = st.session_state['email_principal']
+                            message["To"] = ", ".join(receivers)
+                            message["Subject"] = f'Solicitação de desconto adicional - {selected_negocio}'
+
+                            body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
+                                        <p>Empresa: {negocio_selecionado['cliente']}</p>
+                                        <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
+                                        <p>Desconto solicitado: {desconto}</p>"""
+
+                            # Concatena o corpo do email com a assinatura HTML
+                            full_body = body
+
+                            # Anexa o corpo do email completo no formato HTML
+                            message.attach(MIMEText(full_body, "html"))
+
+                            # Sending the email
+                            try:
+                                server = smtplib.SMTP('smtp.office365.com', 587)
+                                server.starttls()
+                                server.login(st.session_state['email_principal'], st.session_state['senha_principal'])
+                                server.sendmail(st.session_state['email_principal'], receivers, message.as_string())
+                                server.quit()
+                            except Exception as e:
+                                st.error(f"Falha no envio do email: {e}")
+
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_solicitado": float(desconto)}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"aprovacao_gestor": False}})
