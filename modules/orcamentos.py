@@ -302,7 +302,7 @@ def gerenciamento_aceites(user, email, senha):
 
                 st.write('-----')
                 
-                st.subheader("📄 Geração de um orçamento convencional")
+                st.subheader("📨 Envio do email de aceite para o **cliente**")
 
                 
 def elaborar_orcamento(user, email, senha):
