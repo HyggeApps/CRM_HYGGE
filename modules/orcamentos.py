@@ -295,7 +295,7 @@ def elaborar_orcamento(user, email, senha):
                                     "valor_orcamento": valor_negocio_formatado
                                 }}
                             )
-                        else: st.error('Erro na geração do orçamento.')
+                        else: st.error('Erro na geração do orçamento, fale com o seu gestor.')
                       
                     else:
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
