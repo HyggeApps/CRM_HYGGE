@@ -92,7 +92,7 @@ def gerenciamento_aceites(user, email, senha):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1}
+            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1, 'contatos_selecionados': 1, 'contato_principal': 1, 'condicoes_pagamento': 1, 'prazo_execucao': 1}
         )
     )
     if not oportunidades:
@@ -134,8 +134,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default1,
                     key="select_produto_oportunidade1",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col2:
                 produtos_selecionado2 = st.multiselect(
@@ -143,8 +142,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default2,
                     key="select_produto_oportunidade2",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col3:
                 produtos_selecionado3 = st.multiselect(
@@ -152,8 +150,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default3,
                     key="select_produto_oportunidade3",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col4:
                 produtos_selecionado4 = st.multiselect(
@@ -161,8 +158,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default4,
                     key="select_produto_oportunidade4",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col5:
                 produtos_selecionado5 = st.multiselect(
@@ -170,8 +166,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default5,
                     key="select_produto_oportunidade5",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             
             col6, col7, col8, col9, col10 = st.columns(5)
@@ -181,8 +176,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default6,
                     key="select_produto_oportunidade6",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col7:
                 produtos_selecionado7 = st.multiselect(
@@ -190,8 +184,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default7,
                     key="select_produto_oportunidade7",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col8:
                 produtos_selecionado8 = st.multiselect(
@@ -199,8 +192,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default8,
                     key="select_produto_oportunidade8",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col9:
                 produtos_selecionado9 = st.multiselect(
@@ -208,8 +200,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default9,
                     key="select_produto_oportunidade9",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
             with col10:
                 produtos_selecionado10 = st.multiselect(
@@ -217,8 +208,7 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default10,
                     key="select_produto_oportunidade10",
-                    placeholder='Selecione aqui...',
-                    disabled=True
+                    placeholder='Selecione aqui...'
                 )
 
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
@@ -248,7 +238,17 @@ def gerenciamento_aceites(user, email, senha):
                 #**Preço com o desconto aplicado:** {valor_negocio_formatado}")
                 condicoes = calcular_parcelas_e_saldo(float(valor_negocio), 6000)
                 
-                condicao_pagamento = st.selectbox('Condições de pagamento:',condicoes)
+                # Valor salvo no banco para a condição de pagamento (se existir)
+                default_condicao = negocio_selecionado.get('condicoes_pagamento', None)
+
+                # Se existir e estiver na lista de opções, encontra o índice correspondente;
+                # caso contrário, usa o índice 0 (primeira opção da lista)
+                if default_condicao and default_condicao in condicoes:
+                    default_index = condicoes.index(default_condicao)
+                else:
+                    default_index = 0
+
+                condicao_pagamento = st.selectbox('Condições de pagamento:', condicoes, index=default_index)
 
                 if float(valor_negocio) > 35000:
                     prazos = ['60 dias úteis após o recebimento da documentação completa.',
@@ -261,20 +261,50 @@ def gerenciamento_aceites(user, email, senha):
                             '15 dias úteis após o recebimento da documentação completa.',
                             '10 dias úteis após o recebimento da documentação completa.']
 
-                prazo = st.selectbox("Prazo de execução:", prazos)
+                # 1. Prazo de execução
+                default_prazo = negocio_selecionado.get('prazo_execucao', None)
+                if default_prazo and default_prazo in prazos:
+                    prazo_index = prazos.index(default_prazo)
+                else:
+                    prazo_index = 0
+                prazo = st.selectbox("Prazo de execução:", prazos, index=prazo_index)
 
-                # 3. Seleção dos Contatos da Empresa (pode ser múltiplo)
+                # 2. Seleção dos Contatos da Empresa (pode ser múltiplo)
                 contatos = list(
                     collection_contatos.find(
                         {"empresa": empresa_nome},
-                        {"_id": 0, "nome": 1, "email": 1}
+                        {"_id": 0, "nome": 1, "email": 1, "sobrenome": 1}  # Incluindo sobrenome para contato principal
                     )
                 )
                 if contatos:
                     opcoes_contatos = [f"{c.get('email', 'Sem email')}" for c in contatos]
                     nomes_contatos = [f"{c.get('nome', 'Sem nome')} {c.get('sobrenome', '')}" for c in contatos]
-                    selected_contatos = st.multiselect("Selecione os contatos da empresa que receberão o orçamento:", opcoes_contatos, key="orcamento_contatos", placeholder='Selecione os contatos aqui...')
-                    nome_contato_principal = st.selectbox("Selecione o contato principal (A/C):", nomes_contatos, key="orcamento_contato_principal")
+
+                    # Valor padrão para contatos selecionados (campo 'contatos_selecionados' da oportunidade)
+                    default_contatos = negocio_selecionado.get("contatos_selecionados", [])
+                    # Filtra os defaults para que estejam entre as opções disponíveis
+                    default_contatos = [d for d in default_contatos if d in opcoes_contatos]
+
+                    selected_contatos = st.multiselect(
+                        "Selecione os contatos da empresa que receberão o orçamento:",
+                        opcoes_contatos,
+                        key="orcamento_contatos",
+                        placeholder='Selecione os contatos aqui...',
+                        default=default_contatos
+                    )
+
+                    # Valor padrão para o contato principal (campo 'contato_principal' da oportunidade)
+                    default_contato_principal = negocio_selecionado.get("contato_principal", None)
+                    if default_contato_principal and default_contato_principal in nomes_contatos:
+                        contato_index = nomes_contatos.index(default_contato_principal)
+                    else:
+                        contato_index = 0
+                    nome_contato_principal = st.selectbox(
+                        "Selecione o contato principal (A/C):",
+                        nomes_contatos,
+                        key="orcamento_contato_principal",
+                        index=contato_index
+                    )
                 else:
                     st.error("Nenhum contato encontrado para essa empresa.")
                     selected_contatos = []
@@ -299,7 +329,11 @@ def gerenciamento_aceites(user, email, senha):
                                 {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
                                 {"$set": {
                                     "produtos": produtos_selecionados,
-                                    "valor_orcamento": valor_negocio_formatado
+                                    "valor_orcamento": valor_negocio_formatado,
+                                    "condicoes_pagamento": condicao_pagamento,
+                                    "prazo_execucao": prazo,
+                                    "contato_principal": nome_contato_principal,
+                                    "contatos_selecionados": selected_contatos
                                 }}
                             )
                         else: st.error('Erro na geração do orçamento, fale com o seu gestor.')
@@ -353,6 +387,11 @@ def gerenciamento_aceites(user, email, senha):
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_solicitado": float(desconto)}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"aprovacao_gestor": False}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"condicoes_pagamento": condicao_pagamento}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"prazo_execucao": prazo}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contato_principal": nome_contato_principal}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contatos_selecionados": selected_contatos}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"produtos": produtos_selecionados}})
                             st.success('Solicitação de desconto enviada com sucesso.')
                             st.rerun()
 
@@ -397,9 +436,15 @@ def gerenciamento_aceites(user, email, senha):
                                 server.quit()
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
+                            
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_solicitado": float(desconto)}})    
-                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"aprovacao_gestor": False}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"condicoes_pagamento": condicao_pagamento}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"prazo_execucao": prazo}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contato_principal": nome_contato_principal}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contatos_selecionados": selected_contatos}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"produtos": produtos_selecionados}})
                             st.success('Solicitação de desconto enviada com sucesso.')
                             st.rerun()
 
@@ -423,7 +468,11 @@ def gerenciamento_aceites(user, email, senha):
                                 {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
                                 {"$set": {
                                     "produtos": produtos_selecionados,
-                                    "valor_orcamento": valor_negocio_formatado
+                                    "valor_orcamento": valor_negocio_formatado,
+                                    "condicoes_pagamento": condicao_pagamento,
+                                    "prazo_execucao": prazo,
+                                    "contato_principal": nome_contato_principal,
+                                    "contatos_selecionados": selected_contatos
                                 }}
                             )
                         else: st.error('Erro na geração do orçamento.')
