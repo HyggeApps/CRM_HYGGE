@@ -424,65 +424,67 @@ def elaborar_orcamento(user, email, senha):
                 
                 st.subheader("📨 Envio da proposta para o cliente")
 
-                #receivers = selected_contatos + [email,'fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br']
-                receivers = selected_contatos + ['rodrigo@hygge.eco.br']
-                
-                message = MIMEMultipart()
-                message["From"] = email
-                message["To"] = ", ".join(receivers)
-                message["Subject"] = f'Proposta Técnico-Comercial Hygge - {selected_negocio}'
+                if st.button('Enviar orçamento para o cliente'):
+                    #receivers = selected_contatos + [email,'fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br']
+                    receivers = selected_contatos + ['rodrigo@hygge.eco.br']
+                    
+                    message = MIMEMultipart()
+                    message["From"] = email
+                    message["To"] = ", ".join(receivers)
+                    message["Subject"] = f'Proposta Técnico-Comercial Hygge - {selected_negocio}'
 
-                # Corpo do email original
-                body = f"""<p>Olá {nome_contato_principal},</p>
-                <p>Conforme solicitado, segue em anexo a proposta técnico comercial da Hygge para o empreendimento {selected_negocio}.</p>
-                <p>Estamos à disposição para quaisquer dúvidas ou esclarecimentos.</p>
-                <p>Atenciosamente,</p>"""
-                
-                if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
-                elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
-                elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
-                elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                #elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
-                elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
-                elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
-                elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                #elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
-                elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
-                elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                    # Corpo do email original
+                    body = f"""<p>Olá {nome_contato_principal},</p>
+                    <p>Conforme solicitado, segue em anexo a proposta técnico comercial da Hygge para o empreendimento {selected_negocio}.</p>
+                    <p>Estamos à disposição para quaisquer dúvidas ou esclarecimentos.</p>
+                    <p>Atenciosamente,</p>"""
+                    
+                    if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
+                    elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
+                    elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
+                    elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
+                    #elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                    elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
+                    elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
+                    elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
+                    #elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                    elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
+                    elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
 
-                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-                response = requests.get(url, headers=headers)
-                html_signature = response.text
+                    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+                    response = requests.get(url, headers=headers)
+                    html_signature = response.text
 
-                # Concatena o corpo do email com a assinatura HTML
-                full_body = body + html_signature
+                    # Concatena o corpo do email com a assinatura HTML
+                    full_body = body + html_signature
 
-                # Anexa o corpo do email completo no formato HTML
-                message.attach(MIMEText(full_body, "html"))
+                    # Anexa o corpo do email completo no formato HTML
+                    message.attach(MIMEText(full_body, "html"))
 
-                st.write(f"{selected_negocio}_{negocio_selecionado['_id']}")
-                path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
-                st.write(path_proposta_envio)
-                novo_nome_arquivo = os.path.basename(path_proposta_envio)
-                
-                # Attach the PDF file
-                with open(path_proposta_envio, 'rb') as attachment:
-                    part = MIMEBase('application', 'octet-stream')
-                    part.set_payload(attachment.read())
-                    encoders.encode_base64(part)
-                    part.add_header('Content-Disposition', 'attachment', filename=novo_nome_arquivo)
-                    message.attach(part)
+                    path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                    if path_proposta_envio:
+                        novo_nome_arquivo = os.path.basename(path_proposta_envio)
+                        
+                        # Attach the PDF file
+                        with open(path_proposta_envio, 'rb') as attachment:
+                            part = MIMEBase('application', 'octet-stream')
+                            part.set_payload(attachment.read())
+                            encoders.encode_base64(part)
+                            part.add_header('Content-Disposition', 'attachment', filename=novo_nome_arquivo)
+                            message.attach(part)
 
-                # Sending the email
-                try:
-                    server = smtplib.SMTP('smtp.office365.com', 587)
-                    server.starttls()
-                    server.login(email, senha)
-                    server.sendmail(email, receivers, message.as_string())
-                    server.quit()
-                    st.success(f'Etapa 1 de 1 - Email enviado com sucesso com a proposta {novo_nome_arquivo}!')
-                except Exception as e:
-                    st.error(f"Falha no envio do email: {e}")
+                        # Sending the email
+                        try:
+                            server = smtplib.SMTP('smtp.office365.com', 587)
+                            server.starttls()
+                            server.login(email, senha)
+                            server.sendmail(email, receivers, message.as_string())
+                            server.quit()
+                            st.success(f'Etapa 1 de 1 - Email enviado com sucesso com a proposta {novo_nome_arquivo}!')
+                        except Exception as e:
+                            st.error(f"Falha no envio do email: {e}")
+                    
+                    else: st.error("Arquivo não localizado na pasta, gere um orçamento para enviá-lo ao cliente.")
 
                 st.write('-----')
                 
