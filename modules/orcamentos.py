@@ -765,7 +765,11 @@ def elaborar_orcamento(user, email, senha):
                                 {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
                                 {"$set": {
                                     "produtos": produtos_selecionados,
-                                    "valor_orcamento": valor_negocio_formatado
+                                    "valor_orcamento": valor_negocio_formatado,
+                                    "condicoes_pagamento": condicao_pagamento,
+                                    "prazo_execucao": prazo,
+                                    "contato_principal": nome_contato_principal,
+                                    "contatos_selecionados": selected_contatos
                                 }}
                             )
                         else: st.error('Erro na geração do orçamento, fale com o seu gestor.')
@@ -823,6 +827,7 @@ def elaborar_orcamento(user, email, senha):
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"prazo_execucao": prazo}})
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contato_principal": nome_contato_principal}})
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contatos_selecionados": selected_contatos}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"produtos": produtos_selecionados}})
                             st.success('Solicitação de desconto enviada com sucesso.')
                             st.rerun()
 
@@ -875,6 +880,7 @@ def elaborar_orcamento(user, email, senha):
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"prazo_execucao": prazo}})
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contato_principal": nome_contato_principal}})
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"contatos_selecionados": selected_contatos}})
+                            collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"produtos": produtos_selecionados}})
                             st.success('Solicitação de desconto enviada com sucesso.')
                             st.rerun()
 
@@ -898,7 +904,11 @@ def elaborar_orcamento(user, email, senha):
                                 {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
                                 {"$set": {
                                     "produtos": produtos_selecionados,
-                                    "valor_orcamento": valor_negocio_formatado
+                                    "valor_orcamento": valor_negocio_formatado,
+                                    "condicoes_pagamento": condicao_pagamento,
+                                    "prazo_execucao": prazo,
+                                    "contato_principal": nome_contato_principal,
+                                    "contatos_selecionados": selected_contatos
                                 }}
                             )
                         else: st.error('Erro na geração do orçamento.')
