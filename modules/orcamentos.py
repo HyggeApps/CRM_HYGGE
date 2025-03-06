@@ -136,7 +136,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default1,
                     key="select_produto_oportunidade1",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col2:
                 produtos_selecionado2 = st.multiselect(
@@ -144,7 +145,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default2,
                     key="select_produto_oportunidade2",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col3:
                 produtos_selecionado3 = st.multiselect(
@@ -152,7 +154,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default3,
                     key="select_produto_oportunidade3",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col4:
                 produtos_selecionado4 = st.multiselect(
@@ -160,7 +163,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default4,
                     key="select_produto_oportunidade4",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col5:
                 produtos_selecionado5 = st.multiselect(
@@ -168,7 +172,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default5,
                     key="select_produto_oportunidade5",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             
             col6, col7, col8, col9, col10 = st.columns(5)
@@ -178,7 +183,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default6,
                     key="select_produto_oportunidade6",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col7:
                 produtos_selecionado7 = st.multiselect(
@@ -186,7 +192,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default7,
                     key="select_produto_oportunidade7",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col8:
                 produtos_selecionado8 = st.multiselect(
@@ -194,7 +201,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default8,
                     key="select_produto_oportunidade8",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col9:
                 produtos_selecionado9 = st.multiselect(
@@ -202,7 +210,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default9,
                     key="select_produto_oportunidade9",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
             with col10:
                 produtos_selecionado10 = st.multiselect(
@@ -210,7 +219,8 @@ def gerenciamento_aceites(user, email, senha):
                     options=nomes_produtos,
                     default=default10,
                     key="select_produto_oportunidade10",
-                    placeholder='Selecione aqui...'
+                    placeholder='Selecione aqui...',
+                    disabled=True
                 )
 
             produtos_selecionados = [p[0] for p in [produtos_selecionado1, produtos_selecionado2, produtos_selecionado3, produtos_selecionado4, produtos_selecionado5,
