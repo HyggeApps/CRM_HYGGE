@@ -108,7 +108,7 @@ def gerenciamento_aceites(user, email, senha):
         if negocio_selecionado:
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
             nomes_produtos = [p["nome"] for p in produtos]
-            st.subheader("ℹ️ Informações do Negócio para orçamento")
+            st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
             
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
