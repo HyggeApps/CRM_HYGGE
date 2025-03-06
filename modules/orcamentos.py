@@ -316,7 +316,7 @@ def elaborar_orcamento(user, email, senha):
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
-                                        <p>Desconto solicitado: {desconto}</p>
+                                        <p>Desconto solicitado: {desconto}%</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
@@ -362,7 +362,7 @@ def elaborar_orcamento(user, email, senha):
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
-                                        <p>Desconto solicitado: {desconto}</p>
+                                        <p>Desconto solicitado: {desconto}%</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
