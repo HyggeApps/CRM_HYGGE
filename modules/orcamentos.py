@@ -442,11 +442,11 @@ def elaborar_orcamento(user, email, senha):
                 elif email == 'matheus@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-duarte.html"
                 elif email == 'fabricio@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fabricio-lucchesi.html"
                 elif email == 'alexandre@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alexandre-castagini.html"
-                elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
+                #elif email == 'comercial6@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/maria-eduarda-ferreira.html"  
                 elif email == 'comercial5@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/matheus-rodrigues.html"  
                 elif email == 'comercial4@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/alceu-junior.html"   
                 elif email == 'comercial3@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/victor-oliveira.html"
-                elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
+                #elif email == 'comercial1@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/fernando-tohme.html"
                 elif email == 'rodrigo@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
                 elif email == 'admin@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/rodrigo-leitzke.html"
 
