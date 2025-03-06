@@ -349,4 +349,10 @@ if st.session_state.get('logado', False):
         st.write('----')
         if 'admin' in st.session_state["roles"]: aprovacoes.gerenciamento_aprovacoes()
         else: st.warning("Você não tem permissão para aprovar solicitações.")
-
+    
+    elif selected == 'Aceites':
+        st.header("✒️ Aceite de propostas")
+        #st.info('Consulte, cadastre e edite os usuários da HYGGE.')
+        st.write('----')
+        orcamentos.gerenciamento_aceites(usuario_ativo, st.session_state['email'], st.session_state['senha'])
+        
