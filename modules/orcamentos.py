@@ -110,7 +110,7 @@ def gerenciamento_aceites(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
             
-            st.text('Selecione o(s) produto(s) para o orçamento:')
+            st.text('Produto(s) selecionado(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
             defaults = negocio_selecionado.get('produtos', [])
