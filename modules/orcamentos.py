@@ -320,7 +320,6 @@ def gerenciamento_aceites(user, email, senha):
                 st.subheader("🤝 Informações relevantes para o técnico/financeiro")
                 st.info('Preencha todos os campos com "*" para habilitar a etapa de criação de pastas e envio de email.')
 
-                st.write(1)
                 col1, col2, col3 = st.columns(3)
                 with col1: tipo_contrato_answ = st.selectbox('Contrato ou somente proposta?*',options=['-','Contrato', 'Somente proposta'])
                 with col2: resp_contrato_answ = st.selectbox('Quem é responsável pelo contrato?*',options=['-','HYGGE','Contratante','Não definido'])
