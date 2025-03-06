@@ -317,6 +317,7 @@ def elaborar_orcamento(user, email, senha):
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
                                         <p>Desconto solicitado: {desconto}%</p>
+                                        <p>Valor do orçamento inicial: {valor_estimado_formatado}</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
@@ -363,6 +364,7 @@ def elaborar_orcamento(user, email, senha):
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
                                         <p>Desconto solicitado: {desconto}%</p>
+                                        <p>Valor do orçamento inicial: {valor_estimado_formatado}</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
@@ -414,5 +416,8 @@ def elaborar_orcamento(user, email, senha):
                         st.error('⚠️ Desconto ainda não aprovado pelo gestor. Solicite abaixo aprovação do desconto ou aguarde a decisão antes de gerar a proposta.')
                 
                 st.write('-----')
+                
+                st.subheader("📨 Geração de um orçamento com aprovação de desconto adicional")
+                if 
 
 
