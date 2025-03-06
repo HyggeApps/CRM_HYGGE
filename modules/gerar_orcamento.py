@@ -860,9 +860,13 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, preco_produtos, valor
     writer = PdfWriter()
 
     for pdf in pdfs:
-        reader = PdfReader(open(pdf, 'rb'))
-        for i in range(len(reader.pages)):
-            writer.add_page(reader.pages[i])
+        try:
+            reader = PdfReader(open(pdf, 'rb'))
+            for i in range(len(reader.pages)):
+                writer.add_page(reader.pages[i])
+        except:
+            st.error(f"Erro ao adicionar o pdf {pdf} ao arquivo.")
+            return
 
     with open(pdf_path, 'wb') as f_out:
         writer.write(f_out)
