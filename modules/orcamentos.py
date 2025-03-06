@@ -484,7 +484,7 @@ def elaborar_orcamento(user, email, senha):
                         except Exception as e:
                             st.error(f"Falha no envio do email: {e}")
                     
-                    else: st.error("Arquivo não localizado na pasta, gere um orçamento para enviá-lo ao cliente.")
+                    else: st.error("Arquivo não localizado na pasta '11. Orçamentos', gere um orçamento para enviá-lo ao cliente.")
 
                 st.write('-----')
                 
