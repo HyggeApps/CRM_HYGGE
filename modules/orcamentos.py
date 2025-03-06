@@ -304,7 +304,7 @@ def elaborar_orcamento(user, email, senha):
                     if negocio_selecionado['aprovacao_gestor']: 
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
-                            
+                            justificativa = st.text_area("Justificativa para solicitação de desconto adicional:")
                             #receivers = ['rodrigo@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br',selected_email]
                             receivers = ['rodrigo@hygge.eco.br']
                             
@@ -316,9 +316,11 @@ def elaborar_orcamento(user, email, senha):
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
+                                        <p>Produto(s): {produtos_selecionados}</p>
                                         <p>Desconto solicitado: {desconto}%</p>
                                         <p>Valor do orçamento inicial: {valor_estimado_formatado}</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
+                                        <p>Justificativa: {justificativa}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
                             # Concatena o corpo do email com a assinatura HTML
@@ -336,7 +338,6 @@ def elaborar_orcamento(user, email, senha):
                                 server.quit()
                             except Exception as e:
                                 st.error(f"Falha no envio do email: {e}")
-                            
 
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"desconto_solicitado": float(desconto)}})    
                             collection_oportunidades.update_one({"cliente": empresa_nome, "nome_oportunidade": selected_negocio}, {"$set": {"solicitacao_desconto": True}})    
@@ -349,6 +350,7 @@ def elaborar_orcamento(user, email, senha):
                     
                     elif not negocio_selecionado['solicitacao_desconto']:
                         st.markdown('🟦 Sem solicitação de desconto.')
+                        justificativa = st.text_area("Justificativa para solicitação de desconto adicional:")
                         if st.button(f'Solicitar desconto de {desconto}%'):
                             
                             
@@ -363,9 +365,11 @@ def elaborar_orcamento(user, email, senha):
                             body = f"""<p>Vendedor: {negocio_selecionado['proprietario']}</p>
                                         <p>Empresa: {negocio_selecionado['cliente']}</p>
                                         <p>Projeto: {negocio_selecionado['nome_oportunidade']}</p>
+                                        <p>Produto(s): {produtos_selecionados}</p>
                                         <p>Desconto solicitado: {desconto}%</p>
                                         <p>Valor do orçamento inicial: {valor_estimado_formatado}</p>
                                         <p>Novo valor do orçamento: {valor_negocio_formatado}</p>
+                                        <p>Justificativa: {justificativa}</p>
                                         <p>Acesse a plataforma integrada para aprovar ou reprovar a solicitação.</p>"""
 
                             # Concatena o corpo do email com a assinatura HTML
