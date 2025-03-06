@@ -579,7 +579,6 @@ def gerenciamento_aceites(user, email, senha):
 
                             path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
                             
-                            st.write(novo_nome_arquivo)
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
                             else:
