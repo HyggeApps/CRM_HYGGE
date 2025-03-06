@@ -447,7 +447,7 @@ def gerenciamento_aceites(user, email, senha):
 
                             # Corpo do email original
                             body = f"""<p>Olá a todos, espero que estejam bem.<br></p>
-                            <p>Conforme tratativas entre {firstname_owner} {lastname_owner} e {firstname} {lastname}, recebemos o aceite da proposta {dealname} - {deal_id} (em anexo).<br></p>
+                            <p>Conforme tratativas entre {nome_contato_principal} e {user}, recebemos o aceite da proposta {dealname} - {deal_id} (em anexo).<br></p>
                             <p>Atenciosamente,</p>"""
 
                             if st.session_state['email_principal'] == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"
