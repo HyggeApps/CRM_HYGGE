@@ -49,6 +49,7 @@ def editar_empresa(user, admin):
         col1, col2 = st.columns(2)
         with col1:
             razao_social = st.text_input("Nome da Empresa", value=empresa["Nome"], disabled=not eh_proprietario)
+
         with col2:
             cidade = st.text_input("Cidade", value=empresa["Cidade"], disabled=True)  # Cidade não editável
         

@@ -32,10 +32,10 @@ def calcular_data_execucao(opcao):
     return opcoes_prazo.get(opcao, hoje)
 
 @st.fragment
-def atualizar_status_tarefas(empresa_cnpj):
+def atualizar_status_tarefas(empresa):
     collection_tarefas = get_collection("tarefas")
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
-    tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
+    tarefas = list(collection_tarefas.find({"empresa": empresa}, {"_id": 0}))
     hoje = datetime.today().date()
     atualizacoes_realizadas = False
 
@@ -44,7 +44,7 @@ def atualizar_status_tarefas(empresa_cnpj):
         
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
             collection_tarefas.update_one(
-                {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
+                {"empresa": empresa, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
             )
     
@@ -52,16 +52,16 @@ def atualizar_status_tarefas(empresa_cnpj):
     return collection_tarefas
 
 @st.fragment
-def gerenciamento_tarefas(user, admin, empresa_cnpj):
-    collection_tarefas = atualizar_status_tarefas(empresa_cnpj)
+def gerenciamento_tarefas(user, admin, empresa):
+    collection_tarefas = atualizar_status_tarefas(empresa)
     collection_atividades = get_collection("atividades")
 
-    if not empresa_cnpj:
+    if not empresa:
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
         return
 
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
-    tarefas = list(collection_tarefas.find({"empresa": empresa_cnpj}, {"_id": 0}))
+    tarefas = list(collection_tarefas.find({"empresa": empresa}, {"_id": 0}))
     hoje = datetime.today().date()
 
     for tarefa in tarefas:
@@ -69,7 +69,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
         
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
             collection_tarefas.update_one(
-                {"empresa": empresa_cnpj, "titulo": tarefa["titulo"]},
+                {"empresa": empresa, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
             )
 
@@ -95,7 +95,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 if titulo:
                     nova_tarefa = {
                         "titulo": titulo,
-                        "empresa": empresa_cnpj,
+                        "empresa": empresa,
                         "data_execucao": data_execucao.strftime("%Y-%m-%d"),
                         "observacoes": observacoes,
                         "status": status
@@ -106,7 +106,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                     data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
                     collection_empresas = get_collection("empresas")
                     collection_empresas.update_one(
-                        {"cnpj": empresa_cnpj},
+                        {"cnpj": empresa},
                         {"$set": {"ultima_atividade": data_hoje}}
                     )
 
@@ -148,7 +148,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                 )
 
                 if tarefa_selecionada:
-                    tarefa_dados = collection_tarefas.find_one({"empresa": empresa_cnpj, "titulo": tarefa_selecionada}, {"_id": 0})
+                    tarefa_dados = collection_tarefas.find_one({"empresa": empresa, "titulo": tarefa_selecionada}, {"_id": 0})
                     if tarefa_dados:
                         with st.form("form_editar_tarefa",):
                             st.subheader("✏️ Editar Tarefa")
@@ -182,7 +182,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
                             if submit_editar:
                                 # Verificar se o usuário está tentando concluir todas as tarefas
-                                tarefas_ativas = list(collection_tarefas.find({"empresa": empresa_cnpj, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
+                                tarefas_ativas = list(collection_tarefas.find({"empresa": empresa, "status": {"$in": ["🟨 Em andamento", "🟥 Atrasado"]}}, {"_id": 0}))
 
                                 if len(tarefas_ativas) == 1 and tarefa_dados["status"] in ["🟨 Em andamento", "🟥 Atrasado"] and status_edit == "🟩 Concluída":
                                     st.error("⚠️ Erro: Pelo menos uma tarefa precisa estar 'Em andamento' ou 'Atrasada'. Cadastre uma nova atividade/tarefa antes de concluir todas.")
@@ -196,7 +196,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                             "tipo_atividade": "Observação",
                                             "status": "Registrado",
                                             "titulo": f"Tarefa '{titulo_edit}' concluída",
-                                            "empresa": empresa_cnpj,
+                                            "empresa": empresa,
                                             "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
@@ -207,7 +207,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
 
                                     # Atualizar a tarefa no banco
                                     collection_tarefas.update_one(
-                                        {"empresa": empresa_cnpj, "titulo": tarefa_selecionada},
+                                        {"empresa": empresa, "titulo": tarefa_selecionada},
                                         {"$set": {
                                             "titulo": titulo_edit,
                                             "data_execucao": data_execucao_edit.strftime("%Y-%m-%d"),
@@ -220,7 +220,7 @@ def gerenciamento_tarefas(user, admin, empresa_cnpj):
                                     data_hoje = datetime.now().strftime("%Y-%m-%d")  # Data atual
                                     collection_empresas = get_collection("empresas")
                                     collection_empresas.update_one(
-                                        {"cnpj": empresa_cnpj},
+                                        {"empresa": empresa},
                                         {"$set": {"ultima_atividade": data_hoje}}
                                     )
                                     st.success("Tarefa atualizada com sucesso! 🔄")
