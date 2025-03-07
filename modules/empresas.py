@@ -385,6 +385,7 @@ def consultar_empresas(user, admin):
                         {"$set": {"proprietario": novo_proprietario}}
                     )
                     st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
+                    st.rerun()
             else:
                 st.write("Nenhuma empresa selecionada.")
         else:
