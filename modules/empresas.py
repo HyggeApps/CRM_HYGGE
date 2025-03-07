@@ -201,7 +201,7 @@ def cadastrar_empresas(user, admin):
 
         with col4:
             estado = st.selectbox(
-                "Estado",
+                "Estado *",
                 options=ufs_options,
                 index=default_index_estado,
                 key="estado"
