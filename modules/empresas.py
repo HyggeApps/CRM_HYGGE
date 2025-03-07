@@ -158,9 +158,9 @@ def cadastrar_empresas(user, admin):
         razao_social = st.text_input("Nome da Empresa *", value=st.session_state["dados_cnpj"].get("nome", ""), key="razao_social")
         col1, col2 = st.columns(2)
         with col1:
-            site = st.text_input("Site *", value=st.session_state["dados_cnpj"].get("site", ""), key="site")
+            site = st.text_input("Site", value=st.session_state["dados_cnpj"].get("site", ""), key="site")
         with col2:
-            cnpj = st.text_input("CNPJ *", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
+            cnpj = st.text_input("CNPJ", value=cnpj_input.replace(".", "").replace("/", "").replace("-", "").replace(" ", ""), max_chars=18, key="cnpj")
 
         col7, col8 = st.columns(2)
         with col7:
@@ -169,6 +169,17 @@ def cadastrar_empresas(user, admin):
             endereco = st.text_input("Endereço", value=st.session_state["dados_cnpj"].get("endereco", st.session_state["dados_cep"].get("uf", "")), key="endereco")
 
         col3, col4 = st.columns(2)
+
+        # Função callback que atualiza o estado com base na cidade selecionada
+        def update_estado():
+            # Consulta a coleção de cidades para encontrar o documento com a cidade selecionada
+            collection_cidades = get_collection("cidades")
+            selected_city = st.session_state.get("cidade")
+            if selected_city:
+                doc = collection_cidades.find_one({"cidade": selected_city})
+                if doc and "uf" in doc:
+                    # Atualiza o session_state com a UF encontrada
+                    st.session_state["estado"] = doc["uf"]
 
         # Consulta as coleções de cidades e UFs
         collection_cidades = get_collection("cidades")
@@ -186,24 +197,33 @@ def cadastrar_empresas(user, admin):
         default_cidade = st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", ""))
         default_estado = st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", ""))
 
+        # Garante que os valores padrão estejam armazenados no session_state
+        if "cidade" not in st.session_state:
+            st.session_state["cidade"] = default_cidade
+        if "estado" not in st.session_state:
+            st.session_state["estado"] = default_estado
+
         # Define os índices padrão se o valor estiver presente nas opções
         default_index_cidade = cidades_options.index(default_cidade) if default_cidade in cidades_options else 0
         default_index_estado = ufs_options.index(default_estado) if default_estado in ufs_options else 0
 
         # Cria os widgets com as opções consultadas no banco
         with col3:
+            # Ao mudar a cidade, a função update_estado é chamada
             cidade = st.selectbox(
                 "Cidade *",
                 options=cidades_options,
                 index=default_index_cidade,
-                key="cidade"
+                key="cidade",
+                on_change=update_estado
             )
 
         with col4:
+            # Usa o valor atualizado de 'estado' armazenado no session_state para definir o índice padrão
             estado = st.selectbox(
-                "Estado *",
+                "Estado",
                 options=ufs_options,
-                index=default_index_estado,
+                index=ufs_options.index(st.session_state["estado"]) if st.session_state["estado"] in ufs_options else 0,
                 key="estado"
             )
 
