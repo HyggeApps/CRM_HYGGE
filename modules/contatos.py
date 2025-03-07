@@ -48,10 +48,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                         })
                         
                         st.success("Contato adicionado com sucesso!")
-                        st.rerun()
-                        
-                        
-                        
+                        st.rerun()                        
 
         # Se houver contatos cadastrados, exibir opções de edição/remoção
         if contatos:
