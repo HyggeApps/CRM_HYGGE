@@ -186,43 +186,26 @@ def cadastrar_empresas(user, admin):
         default_cidade = st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", ""))
         default_estado = st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", ""))
 
-        # Garante que os valores padrão estejam no session_state
-        if "cidade" not in st.session_state:
-            st.session_state["cidade"] = default_cidade
-        if "estado" not in st.session_state:
-            st.session_state["estado"] = default_estado
-
+        # Define os índices padrão se o valor estiver presente nas opções
         default_index_cidade = cidades_options.index(default_cidade) if default_cidade in cidades_options else 0
         default_index_estado = ufs_options.index(default_estado) if default_estado in ufs_options else 0
 
-        with st.form("dados_form"):
-            col3, col4 = st.columns(2)
-            with col3:
-                cidade = st.selectbox(
-                    "Cidade *",
-                    options=cidades_options,
-                    index=default_index_cidade,
-                    key="cidade"
-                    # Removido o on_change para evitar o erro dentro do formulário
-                )
-            with col4:
-                estado = st.selectbox(
-                    "Estado",
-                    options=ufs_options,
-                    index=default_index_estado,
-                    key="estado"
-                )
-            
-            submitted = st.form_submit_button("Salvar")
+        # Cria os widgets com as opções consultadas no banco
+        with col3:
+            cidade = st.selectbox(
+                "Cidade *",
+                options=cidades_options,
+                index=default_index_cidade,
+                key="cidade"
+            )
 
-        if submitted:
-            # Ao submeter o formulário, consulta a coleção para obter o estado correto baseado na cidade selecionada
-            doc = collection_cidades.find_one({"cidade": st.session_state["cidade"]})
-            if doc and "uf" in doc:
-                st.session_state["estado"] = doc["uf"]
-                st.success(f"Estado atualizado para: {doc['uf']}")
-            else:
-                st.warning("Estado não encontrado para a cidade selecionada.")
+        with col4:
+            estado = st.selectbox(
+                "Estado",
+                options=ufs_options,
+                index=default_index_estado,
+                key="estado"
+            )
 
         col5, col6 = st.columns(2)
         with col5:
@@ -241,7 +224,7 @@ def cadastrar_empresas(user, admin):
         submit = st.form_submit_button("✅ Cadastrar")
 
         if submit:
-            if not razao_social or not cidade or not estado or not setor or not produto_interesse or not tamanho_empresa:
+            if not razao_social or not cnpj or not cidade or not estado or not setor or not produto_interesse or not tamanho_empresa:
                 st.error("Preencha todos os campos obrigatórios!")
             else:
                 existing_company = collection_empresas.find_one({"razao_social": razao_social})
