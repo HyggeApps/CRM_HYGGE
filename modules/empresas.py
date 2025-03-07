@@ -172,7 +172,7 @@ def cadastrar_empresas(user, admin):
         with col3:
             cidade = st.text_input("Cidade *", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
         with col4:
-            estado = st.text_input("Estado", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
+            estado = st.text_input("Estado *", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
 
         col5, col6 = st.columns(2)
         with col5:
@@ -191,7 +191,7 @@ def cadastrar_empresas(user, admin):
         submit = st.form_submit_button("✅ Cadastrar")
 
         if submit:
-            if not razao_social or not cnpj or not cidade or not setor or not produto_interesse or not tamanho_empresa:
+            if not razao_social or not cnpj or not cidade or not estado or not setor or not produto_interesse or not tamanho_empresa:
                 st.error("Preencha todos os campos obrigatórios!")
             else:
                 existing_company = collection_empresas.find_one({"razao_social": razao_social})
