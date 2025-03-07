@@ -372,6 +372,20 @@ def consultar_empresas(user, admin):
             st.markdown("### Empresas Selecionadas:")
             if selected_names:
                 st.write(", ".join(selected_names))
+                
+                # Permite escolher o novo proprietário dentre os existentes
+                novo_proprietario = st.selectbox(
+                    "Selecione o novo proprietário",
+                    options=vendedores,
+                    index=0
+                )
+                
+                if st.button("Atualizar Proprietário"):
+                    resultado = collection_empresas.update_many(
+                        {"razao_social": {"$in": selected_names}},
+                        {"$set": {"proprietario": novo_proprietario}}
+                    )
+                    st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
             else:
                 st.write("Nenhuma empresa selecionada.")
         else:
