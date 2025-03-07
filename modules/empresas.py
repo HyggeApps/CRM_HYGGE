@@ -239,6 +239,8 @@ def cadastrar_empresas(user, admin):
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
+    st.write(1)
+
     # Carrega todas as razões sociais e vendedores
     todas_razoes = list(collection_empresas.distinct("razao_social"))
     todas_razoes = [r for r in todas_razoes if r]
@@ -320,7 +322,7 @@ def consultar_empresas(user, admin):
             index=0,
             placeholder="Selecione o grau do cliente"
         )
-        
+
     # Construção da query com os filtros aplicados
     query = {}
 
