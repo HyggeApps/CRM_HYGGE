@@ -369,13 +369,12 @@ def consultar_empresas(user, admin):
             )
 
             selected_names = edited_df.loc[edited_df["Editar"] == True, "Nome"].tolist()
-            st.markdown("### Empresas Selecionadas:")
             if selected_names:
-                st.write(", ".join(selected_names))
+                join_selecteds = (", ".join(selected_names))
                 
                 # Permite escolher o novo proprietário dentre os existentes
                 novo_proprietario = st.selectbox(
-                    "Selecione o novo proprietário",
+                    "Selecione o novo proprietário das empresas selecionadas",
                     options=vendedores,
                     index=0
                 )
