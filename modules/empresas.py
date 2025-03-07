@@ -436,26 +436,39 @@ def consultar_empresas(user, admin):
 
             selected_names = edited_df.loc[edited_df["Editar"] == True, "Nome"].tolist()
             if selected_names:
-                join_selecteds = (", ".join(selected_names))
-                
-                # Permite escolher o novo proprietário dentre os existentes
-                novo_proprietario = st.selectbox(
-                    "Selecione o novo proprietário das empresas selecionadas",
-                    options=vendedores,
-                    index=0
-                )
-                
-                if st.button("Atualizar Proprietário"):
-                    resultado = collection_empresas.update_many(
-                        {"razao_social": {"$in": selected_names}},
-                        {"$set": {"proprietario": novo_proprietario}}
+                with st.expander("🔧 Atualizar informações da(s) empresa(s)", expanded=False):
+                    novo_proprietario = st.selectbox(
+                        "Selecione o novo proprietário",
+                        options=vendedores,
+                        index=0
                     )
-                    st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
-                    st.rerun()
+                    novo_setor = st.selectbox(
+                        "Selecione o novo setor",
+                        options=setores,
+                        index=0
+                    )
+                    novo_produto = st.selectbox(
+                        "Selecione o novo produto de interesse",
+                        options=produtos_interesse,
+                        index=0
+                    )
+                    
+                    if st.button("Atualizar Informações"):
+                        update_fields = {
+                            "proprietario": novo_proprietario,
+                            "setor": novo_setor,
+                            "produto_interesse": novo_produto
+                        }
+                        resultado = collection_empresas.update_many(
+                            {"razao_social": {"$in": selected_names}},
+                            {"$set": update_fields}
+                        )
+                        st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
+                        st.rerun()
             else:
                 st.write("Nenhuma empresa selecionada para alterações.")
+        
         else:
-
             edited_df = st.data_editor(
                 df_empresas,
                 column_config={
