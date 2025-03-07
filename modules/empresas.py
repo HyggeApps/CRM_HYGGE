@@ -346,31 +346,50 @@ def consultar_empresas(user, admin):
 
         # Criar editor de dados interativo
         #df_empresas = df_empresas.sort_values(by='Última Atividade', ascending=False)
-        edited_df = st.data_editor(
-            df_empresas,
-            column_config={
-                "Visualizar": st.column_config.CheckboxColumn(
-                    "Visualizar",
-                    help="Marque para ver detalhes da empresa"
-                ),
-            },
-            disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente", "CNPJ"],
-            column_order=["Visualizar", "Nome", "Proprietário", "Última Atividade", "Grau Cliente", "Cidade", "UF", "Setor", "Produto Interesse", "Tamanho", "Data de Criação", "CNPJ"],
-            hide_index=True,
-            use_container_width=True
-        )
 
-        # Se for admin, exibe um campo "Selecionar" com os nomes das empresas marcadas
-
-        
         if admin:
-            edited_df.insert(0, "Selecionar", False)
-            selected_names = edited_df.loc[edited_df["Selecionar"] == True, "Nome"].tolist()
+            
+            df_empresas.insert(0, "Editar", False)
+            edited_df = st.data_editor(
+                df_empresas,
+                column_config={
+                    "Editar": st.column_config.CheckboxColumn(
+                        "Editar",
+                        help="Marque para editar a empresa"
+                    ),
+                    "Visualizar": st.column_config.CheckboxColumn(
+                        "Visualizar",
+                        help="Marque para ver detalhes da empresa"
+                    )
+                },
+                disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente", "CNPJ"],
+                column_order=["Editar", "Visualizar", "Nome", "Proprietário", "Última Atividade", "Grau Cliente", "Cidade", "UF", "Setor", "Produto Interesse", "Tamanho", "Data de Criação", "CNPJ"],
+                hide_index=True,
+                use_container_width=True
+            )
+
+            selected_names = edited_df.loc[edited_df["Editar"] == True, "Nome"].tolist()
             st.markdown("### Empresas Selecionadas:")
             if selected_names:
                 st.write(", ".join(selected_names))
             else:
                 st.write("Nenhuma empresa selecionada.")
+        else:
+
+            edited_df = st.data_editor(
+                df_empresas,
+                column_config={
+                    "Visualizar": st.column_config.CheckboxColumn(
+                        "Visualizar",
+                        help="Marque para ver detalhes da empresa"
+                    )
+                },
+                disabled=["Nome", "Proprietário", "Data de Criação", "Última Atividade", "Cidade", "UF", "Setor", "Tamanho", "Produto Interesse", "Grau Cliente", "CNPJ"],
+                column_order=["Visualizar", "Nome", "Proprietário", "Última Atividade", "Grau Cliente", "Cidade", "UF", "Setor", "Produto Interesse", "Tamanho", "Data de Criação", "CNPJ"],
+                hide_index=True,
+                use_container_width=True
+            )
+
 
         st.write(f'🔍 **{len(df_empresas)}** empresas encontradas.')
 
