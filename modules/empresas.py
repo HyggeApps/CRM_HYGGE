@@ -360,6 +360,15 @@ def consultar_empresas(user, admin):
             use_container_width=True
         )
 
+        # Se for admin, exibe um campo "Selecionar" com os nomes das empresas marcadas
+        if admin:
+            selected_names = edited_df.loc[edited_df["Visualizar"] == True, "Nome"].tolist()
+            st.markdown("### Empresas Selecionadas:")
+            if selected_names:
+                st.write(", ".join(selected_names))
+            else:
+                st.write("Nenhuma empresa selecionada.")
+
         st.write(f'🔍 **{len(df_empresas)}** empresas encontradas.')
 
         # 🔹 Atualiza a empresa selecionada corretamente

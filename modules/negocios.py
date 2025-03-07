@@ -68,7 +68,7 @@ def gerenciamento_oportunidades(user):
     
     st.header('💸 Negócios em andamento')
     with st.popover('➕ Cadastrar negócio'):
-        st.header("Cadastrar Oportunidade")
+        st.header("Cadastrar negócio")
         st.write('----')
         
         # Supondo que as coleções e variáveis já estejam definidas:
