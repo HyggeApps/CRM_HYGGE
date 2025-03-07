@@ -408,12 +408,12 @@ def consultar_empresas(user, admin):
             df_empresas.insert(0, "Editar", False)
 
             # Exibe botões para selecionar/desmarcar tudo
-            col_select, col_deselect = st.columns(2)
+            col_select, col_deselect, v3, v4, v5, v6, v7, v8 = st.columns(8)
             with col_select:
-                if st.button("Selecionar tudo"):
+                if st.button("Selecionar tudo", use_container_width=True):
                     df_empresas["Editar"] = True
             with col_deselect:
-                if st.button("Desmarcar tudo"):
+                if st.button("Desmarcar tudo", use_container_width=True):
                     df_empresas["Editar"] = False
             
             edited_df = st.data_editor(
