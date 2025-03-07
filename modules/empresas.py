@@ -405,8 +405,17 @@ def consultar_empresas(user, admin):
         #df_empresas = df_empresas.sort_values(by='Última Atividade', ascending=False)
 
         if admin:
-            
             df_empresas.insert(0, "Editar", False)
+
+            # Exibe botões para selecionar/desmarcar tudo
+            col_select, col_deselect = st.columns(2)
+            with col_select:
+                if st.button("Selecionar tudo"):
+                    df_empresas["Editar"] = True
+            with col_deselect:
+                if st.button("Desmarcar tudo"):
+                    df_empresas["Editar"] = False
+            
             edited_df = st.data_editor(
                 df_empresas,
                 column_config={
