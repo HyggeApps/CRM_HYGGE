@@ -387,7 +387,7 @@ def consultar_empresas(user, admin):
                     st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
                     st.rerun()
             else:
-                st.write("Nenhuma empresa selecionada.")
+                st.write("Nenhuma empresa selecionada para edição.")
         else:
 
             edited_df = st.data_editor(
