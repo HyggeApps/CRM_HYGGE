@@ -41,7 +41,7 @@ def atualizar_status_tarefas(empresa):
 
     for tarefa in tarefas:
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
-        print(data_execucao, hoje)
+        st.write(tarefa, data_execucao, hoje)
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
             
             collection_tarefas.update_one(
