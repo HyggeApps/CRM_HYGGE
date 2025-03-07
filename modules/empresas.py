@@ -169,10 +169,43 @@ def cadastrar_empresas(user, admin):
             endereco = st.text_input("Endereço", value=st.session_state["dados_cnpj"].get("endereco", st.session_state["dados_cep"].get("uf", "")), key="endereco")
 
         col3, col4 = st.columns(2)
+
+        # Consulta as coleções de cidades e UFs
+        collection_cidades = get_collection("cidades")
+        collection_ufs = get_collection("ufs")
+
+        # Obtém as opções únicas
+        cidades_options = sorted(collection_cidades.distinct("cidade"))
+        ufs_options = sorted(collection_ufs.distinct("uf"))
+
+        # Inclui uma opção vazia para possibilitar não seleção
+        cidades_options = [""] + cidades_options
+        ufs_options = [""] + ufs_options
+
+        # Define valores padrão a partir dos dados do session_state
+        default_cidade = st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", ""))
+        default_estado = st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", ""))
+
+        # Define os índices padrão se o valor estiver presente nas opções
+        default_index_cidade = cidades_options.index(default_cidade) if default_cidade in cidades_options else 0
+        default_index_estado = ufs_options.index(default_estado) if default_estado in ufs_options else 0
+
+        # Cria os widgets com as opções consultadas no banco
         with col3:
-            cidade = st.text_input("Cidade *", value=st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", "")), key="cidade")
+            cidade = st.selectbox(
+                "Cidade *",
+                options=cidades_options,
+                index=default_index_cidade,
+                key="cidade"
+            )
+
         with col4:
-            estado = st.text_input("Estado *", value=st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", "")), key="estado")
+            estado = st.selectbox(
+                "Estado *",
+                options=ufs_options,
+                index=default_index_estado,
+                key="estado"
+            )
 
         col5, col6 = st.columns(2)
         with col5:
