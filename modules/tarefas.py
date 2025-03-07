@@ -43,7 +43,7 @@ def atualizar_status_tarefas(empresa):
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
         
         if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
-            st.write(f'entrei {data_execucao} - {tarefa["status"]}')
+            print(f'entrei {data_execucao} - {tarefa["status"]}')
             collection_tarefas.update_one(
                 {"empresa": empresa, "titulo": tarefa["titulo"]},
                 {"$set": {"status": "🟥 Atrasado"}}
