@@ -362,8 +362,9 @@ def consultar_empresas(user, admin):
 
         # Se for admin, exibe um campo "Selecionar" com os nomes das empresas marcadas
 
-        df_empresas.insert(0, "Selecionar", False)
+        
         if admin:
+            edited_df.insert(0, "Selecionar", False)
             selected_names = edited_df.loc[edited_df["Selecionar"] == True, "Nome"].tolist()
             st.markdown("### Empresas Selecionadas:")
             if selected_names:
