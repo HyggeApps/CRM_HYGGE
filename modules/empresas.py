@@ -170,17 +170,6 @@ def cadastrar_empresas(user, admin):
 
         col3, col4 = st.columns(2)
 
-        # Função callback que atualiza o estado com base na cidade selecionada
-        def update_estado():
-            # Consulta a coleção de cidades para encontrar o documento com a cidade selecionada
-            collection_cidades = get_collection("cidades")
-            selected_city = st.session_state.get("cidade")
-            if selected_city:
-                doc = collection_cidades.find_one({"cidade": selected_city})
-                if doc and "uf" in doc:
-                    # Atualiza o session_state com a UF encontrada
-                    st.session_state["estado"] = doc["uf"]
-
         # Consulta as coleções de cidades e UFs
         collection_cidades = get_collection("cidades")
         collection_ufs = get_collection("ufs")
@@ -197,35 +186,43 @@ def cadastrar_empresas(user, admin):
         default_cidade = st.session_state["dados_cnpj"].get("municipio", st.session_state["dados_cep"].get("localidade", ""))
         default_estado = st.session_state["dados_cnpj"].get("uf", st.session_state["dados_cep"].get("uf", ""))
 
-        # Garante que os valores padrão estejam armazenados no session_state
+        # Garante que os valores padrão estejam no session_state
         if "cidade" not in st.session_state:
             st.session_state["cidade"] = default_cidade
         if "estado" not in st.session_state:
             st.session_state["estado"] = default_estado
 
-        # Define os índices padrão se o valor estiver presente nas opções
         default_index_cidade = cidades_options.index(default_cidade) if default_cidade in cidades_options else 0
         default_index_estado = ufs_options.index(default_estado) if default_estado in ufs_options else 0
 
-        # Cria os widgets com as opções consultadas no banco
-        with col3:
-            # Ao mudar a cidade, a função update_estado é chamada
-            cidade = st.selectbox(
-                "Cidade *",
-                options=cidades_options,
-                index=default_index_cidade,
-                key="cidade",
-                on_change=update_estado
-            )
+        with st.form("dados_form"):
+            col3, col4 = st.columns(2)
+            with col3:
+                cidade = st.selectbox(
+                    "Cidade *",
+                    options=cidades_options,
+                    index=default_index_cidade,
+                    key="cidade"
+                    # Removido o on_change para evitar o erro dentro do formulário
+                )
+            with col4:
+                estado = st.selectbox(
+                    "Estado",
+                    options=ufs_options,
+                    index=default_index_estado,
+                    key="estado"
+                )
+            
+            submitted = st.form_submit_button("Salvar")
 
-        with col4:
-            # Usa o valor atualizado de 'estado' armazenado no session_state para definir o índice padrão
-            estado = st.selectbox(
-                "Estado",
-                options=ufs_options,
-                index=ufs_options.index(st.session_state["estado"]) if st.session_state["estado"] in ufs_options else 0,
-                key="estado"
-            )
+        if submitted:
+            # Ao submeter o formulário, consulta a coleção para obter o estado correto baseado na cidade selecionada
+            doc = collection_cidades.find_one({"cidade": st.session_state["cidade"]})
+            if doc and "uf" in doc:
+                st.session_state["estado"] = doc["uf"]
+                st.success(f"Estado atualizado para: {doc['uf']}")
+            else:
+                st.warning("Estado não encontrado para a cidade selecionada.")
 
         col5, col6 = st.columns(2)
         with col5:
@@ -244,7 +241,7 @@ def cadastrar_empresas(user, admin):
         submit = st.form_submit_button("✅ Cadastrar")
 
         if submit:
-            if not razao_social or not cnpj or not cidade or not estado or not setor or not produto_interesse or not tamanho_empresa:
+            if not razao_social or not cidade or not estado or not setor or not produto_interesse or not tamanho_empresa:
                 st.error("Preencha todos os campos obrigatórios!")
             else:
                 existing_company = collection_empresas.find_one({"razao_social": razao_social})
