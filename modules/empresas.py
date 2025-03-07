@@ -241,44 +241,89 @@ def consultar_empresas(user, admin):
 
     # Carrega todas as razões sociais e vendedores
     todas_razoes = list(collection_empresas.distinct("razao_social"))
-    # Remove valores vazios ou None, se houver
     todas_razoes = [r for r in todas_razoes if r]
 
     vendedores = list(collection_empresas.distinct("proprietario"))
     vendedores = [v for v in vendedores if v]
 
-    # Filtros
-    col1, col4, col5, col6 = st.columns(4)
-    
+    # Carrega os demais filtros com o mesmo padrão
+    ufs = list(collection_empresas.distinct("uf"))
+    ufs = [u for u in ufs if u]
+
+    setores = list(collection_empresas.distinct("setor"))
+    setores = [s for s in setores if s]
+
+    produtos_interesse = list(collection_empresas.distinct("produto_interesse"))
+    produtos_interesse = [p for p in produtos_interesse if p]
+
+    grau_clientes = list(collection_empresas.distinct("grau_cliente"))
+    grau_clientes = [g for g in grau_clientes if g]
+
+    # Exemplo de uso dos filtros na interface Streamlit:
+    col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
+
     with col1:
-        # Selectbox com todas as razões sociais (mais a opção "Todos")
         filtro_razao_social = st.selectbox(
             "Nome",
             options=[""] + todas_razoes,
-            index=0, placeholder="Selecione a razão social"
+            index=0,
+            placeholder="Selecione a razão social"
         )
 
-    with col4:
-        filtro_tamanho = st.multiselect(
-            "Tamanho",
-            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
-            default=[],placeholder="Selecione o tamanho"
-        )
-
-    with col5:
+    with col2:
         filtro_vendedor = st.selectbox(
             "Proprietário",
             options=[""] + vendedores,
-            index=0,placeholder="Selecione o vendedor"
+            index=0,
+            placeholder="Selecione o vendedor"
+        )
+
+    with col3:
+        filtro_tamanho = st.multiselect(
+            "Tamanho",
+            options=["Tier 1", "Tier 2", "Tier 3", "Tier 4"],
+            default=[],
+            placeholder="Selecione o tamanho"
+        )
+
+    with col4:
+        filtro_data_atividade = st.date_input("Data da última atividade", value=None)
+
+    with col5:
+        filtro_uf = st.selectbox(
+            "UF",
+            options=[""] + ufs,
+            index=0,
+            placeholder="Selecione a UF"
         )
 
     with col6:
-        filtro_data_atividade = st.date_input("Data da última atividade", value=None)
+        filtro_setor = st.multiselect(
+            "Setor",
+            options=setores,
+            default=[],
+            placeholder="Selecione o setor"
+        )
 
-    # Construir query
+    with col7:
+        filtro_produto_interesse = st.multiselect(
+            "Produto Interesse",
+            options=produtos_interesse,
+            default=[],
+            placeholder="Selecione o produto de interesse"
+        )
+
+    with col8:
+        filtro_grau_cliente = st.selectbox(
+            "Grau Cliente",
+            options=[""] + grau_clientes,
+            index=0,
+            placeholder="Selecione o grau do cliente"
+        )
+        
+    # Construção da query com os filtros aplicados
     query = {}
 
-    # Se não for "Todos", filtra pela razão selecionada
     if filtro_razao_social and filtro_razao_social != "":
         query["razao_social"] = {"$regex": filtro_razao_social, "$options": "i"}
 
@@ -290,6 +335,21 @@ def consultar_empresas(user, admin):
 
     if filtro_data_atividade:
         query["ultima_atividade"] = {"$gte": filtro_data_atividade.strftime("%Y-%m-%d")}
+
+    if filtro_uf and filtro_uf != "":
+        query["uf"] = filtro_uf
+
+    if filtro_setor:
+        query["setor"] = {"$in": filtro_setor}
+
+    if filtro_produto_interesse:
+        query["produto_interesse"] = {"$in": filtro_produto_interesse}
+
+    if filtro_grau_cliente and filtro_grau_cliente != "":
+        query["grau_cliente"] = filtro_grau_cliente
+
+    # Exemplo de debug: exibe a query construída
+    st.write("Query:", query)
 
     # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
@@ -387,7 +447,7 @@ def consultar_empresas(user, admin):
                     st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
                     st.rerun()
             else:
-                st.write("Nenhuma empresa selecionada para edição.")
+                st.write("Nenhuma empresa selecionada para alterações.")
         else:
 
             edited_df = st.data_editor(
