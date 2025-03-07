@@ -48,13 +48,13 @@ def editar_empresa(user, admin):
     with st.form(key="form_edicao_empresa"):
         col1, col2 = st.columns(2)
         with col1:
-            razao_social = st.text_input("Nome da Empresa *", value=empresa["Nome"], disabled=not eh_proprietario)
+            razao_social = st.text_input("Nome da Empresa", value=empresa["Nome"], disabled=not eh_proprietario)
         with col2:
-            cidade = st.text_input("Cidade *", value=empresa["Cidade"], disabled=True)  # Cidade não editável
+            cidade = st.text_input("Cidade", value=empresa["Cidade"], disabled=True)  # Cidade não editável
         
         col3, col4 = st.columns(2)
         with col3:
-            estado = st.text_input("Estado (UF)", value=empresa["UF"], disabled=True)  # Estado não editável
+            estado = st.text_input("Estado", value=empresa["UF"], disabled=True)  # Estado não editável
         with col4:
             novo_usuario = st.selectbox(
                 "Usuário (Vendedor)", 
@@ -66,14 +66,14 @@ def editar_empresa(user, admin):
         col5, col6 = st.columns(2)
         with col5:
             setor = st.selectbox(
-                "Setor *", 
+                "Setor", 
                 ["", "Comercial", "Residencial", "Residencial MCMV", "Industrial"], 
                 index=["","Comercial", "Residencial", "Residencial MCMV", "Industrial"].index(empresa.get("Setor", "Comercial")), 
                 disabled=not eh_proprietario
             )
         with col6:
             produto_interesse = st.multiselect(
-                "Produto de Interesse *", 
+                "Produto de Interesse", 
                 ["", "NBR Fast", "Consultoria NBR", "Consultoria Hygge", "Consultoria Certificação"], 
                 default=empresa.get("Produto Interesse", []) if isinstance(empresa.get("Produto Interesse"), list) else [empresa.get("Produto Interesse", "NBR Fast")],
                 disabled=not eh_proprietario
@@ -82,7 +82,7 @@ def editar_empresa(user, admin):
         col7, col8 = st.columns(2)
         with col7:
             tamanho_empresa = st.multiselect(
-                "Tamanho da Empresa *", 
+                "Tamanho da Empresa", 
                 ["", "Tier 1", "Tier 2", "Tier 3", "Tier 4"],  
                 default=empresa.get("Tamanho", []) if isinstance(empresa.get("Tamanho"), list) else [empresa.get("Tamanho", "Tier 1")],
                 disabled=not eh_proprietario
