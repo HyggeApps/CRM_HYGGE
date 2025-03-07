@@ -239,8 +239,6 @@ def cadastrar_empresas(user, admin):
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
 
-    st.write(1)
-
     # Carrega todas as razões sociais e vendedores
     todas_razoes = list(collection_empresas.distinct("razao_social"))
     todas_razoes = [r for r in todas_razoes if r]
@@ -349,9 +347,6 @@ def consultar_empresas(user, admin):
 
     if filtro_grau_cliente and filtro_grau_cliente != "":
         query["grau_cliente"] = filtro_grau_cliente
-
-    # Exemplo de debug: exibe a query construída
-    st.write("Query:", query)
 
     # Buscar empresas no banco de dados com os filtros aplicados
     empresas_filtradas = list(
