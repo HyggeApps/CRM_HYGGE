@@ -237,8 +237,6 @@ MESES_PT = {
 }
 
 
-
-@st.cache_data
 def atualizar_tarefas_atrasadas(user):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
