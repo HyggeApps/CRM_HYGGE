@@ -55,7 +55,7 @@ def atualizar_status_tarefas(empresa):
 def gerenciamento_tarefas(user, admin, empresa):
     collection_tarefas = atualizar_status_tarefas(empresa)
     collection_atividades = get_collection("atividades")
-    st.write(1)
+    
     if not empresa:
         st.error("Erro: Nenhuma empresa selecionada para gerenciar tarefas.")
         return
@@ -255,16 +255,28 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
 
-    # 🔹 Filtragem no banco para otimizar carregamento
+    # 🔹 Filtragem de tarefas que não estão concluídas
     tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(empresas_usuario)}},
-        {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
+        {"empresa": {"$in": list(empresas_usuario)}, "status": {"$ne": "🟩 Concluída"}},
+        {"_id": 1, "data_execucao": 1}
     ))
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
         return
+    
+    hoje = datetime.today().date()
 
+    # 🔄 Atualizar status das tarefas atrasadas
+    for tarefa in tarefas:
+        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
+        
+        if data_execucao < hoje:
+            collection_tarefas.update_one(
+                {"_id": tarefa["_id"]},  # Identifica a tarefa pelo ID único
+                {"$set": {"status": "🟥 Atrasado"}}
+            )
+    
     # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
     empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
         {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
