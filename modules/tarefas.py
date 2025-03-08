@@ -39,7 +39,7 @@ def atualizar_status_tarefas(empresa):
     hoje = datetime.today().date()
     atualizacoes_realizadas = False
     
-    st.write(tarefas, hoje)
+    #st.write(tarefas, hoje)
 
     for tarefa in tarefas:
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
@@ -248,6 +248,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 🔹 Filtra diretamente as tarefas do usuário logado
     empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find({"proprietario": user}, {"razao_social": 1})}
     
+    st.write(empresas_usuario)
     
     if not empresas_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
