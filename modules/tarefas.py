@@ -266,10 +266,11 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 {"$set": {"status": "🟥 Atrasado"}}
             )
 
+
     # 🔹 Buscar tarefas do usuário novamente após atualização no banco
     tarefas = list(collection_tarefas.find(
         {"empresa": {"$in": list(empresas_usuario)}},
-        {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
+        {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
     ))
 
     if not tarefas:
@@ -315,7 +316,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 t["Data de Execução"] = pd.to_datetime(t["Data de Execução"], errors="coerce").date()
 
             # Contagem correta das tarefas atrasadas
-            tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
+            tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado" and t["Data de Execução"] < hoje]
             num_tarefas_atrasadas = len(tarefas_atrasadas)
 
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
