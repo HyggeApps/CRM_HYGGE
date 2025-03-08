@@ -34,7 +34,6 @@ def calcular_data_execucao(opcao):
 @st.fragment
 def atualizar_status_tarefas(empresa):
     collection_tarefas = get_collection("tarefas")
-    st.write(1)
     # 📌 Verificar e atualizar tarefas atrasadas automaticamente
     tarefas = list(collection_tarefas.find({"empresa": empresa}, {"_id": 0}))
     hoje = datetime.today().date()
@@ -341,7 +340,6 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 editar_tarefa_modal(tarefas_em_andamento, key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}",user=user)
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
-
 
 def editar_tarefa_modal(tarefas, key, tipo, user): 
     """
