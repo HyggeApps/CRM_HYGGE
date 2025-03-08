@@ -38,6 +38,8 @@ def atualizar_status_tarefas(empresa):
     tarefas = list(collection_tarefas.find({"empresa": empresa}, {"_id": 0}))
     hoje = datetime.today().date()
     atualizacoes_realizadas = False
+    
+    print(tarefas, hoje)
 
     for tarefa in tarefas:
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
