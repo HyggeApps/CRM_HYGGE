@@ -236,6 +236,7 @@ MESES_PT = {
     10: "Outubro", 11: "Novembro", 12: "Dezembro"
 }
 
+
 @st.cache_data
 def atualizar_tarefas_atrasadas(user):
     collection_tarefas = get_collection("tarefas")
@@ -269,6 +270,9 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
 
+    # 🔄 Atualiza as tarefas atrasadas apenas uma vez por sessão
+    atualizar_tarefas_atrasadas(user)
+
     # 🔹 Filtra diretamente as empresas do usuário logado
     empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find(
         {"proprietario": user}, {"razao_social": 1}
@@ -280,22 +284,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
 
     hoje = datetime.today().date()
 
-    # 📌 Verificar e atualizar tarefas atrasadas automaticamente (Mantendo a lógica original)
-    tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(empresas_usuario)}}, {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1}
-    ))
-
-    for tarefa in tarefas:
-        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
-        
-        if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
-            collection_tarefas.update_one(
-                {"empresa": tarefa["empresa"], "titulo": tarefa["titulo"]},
-                {"$set": {"status": "🟥 Atrasado"}}
-            )
-
-
-    # 🔹 Buscar tarefas do usuário novamente após atualização no banco
+    # 🔹 Buscar todas as tarefas **diretamente do banco**, sem reprocessar no Python
     tarefas = list(collection_tarefas.find(
         {"empresa": {"$in": list(empresas_usuario)}},
         {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
@@ -310,10 +299,10 @@ def gerenciamento_tarefas_por_usuario(user, admin):
         {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
     )}
 
-    # 🔹 Adicionar Nome da Empresa e converter datas
+    # 🔹 Converter datas e adicionar nome da empresa
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
-        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
+        tarefa["Data de Execução"] = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
 
     # 📌 Criar abas para filtros rápidos
     abas = st.tabs([
@@ -326,25 +315,21 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     def filtrar_tarefas(data_inicio, data_fim):
         return [t for t in tarefas if data_inicio <= t["Data de Execução"] <= data_fim]
 
-    tarefas_hoje = filtrar_tarefas(hoje, hoje)
-    tarefas_amanha = filtrar_tarefas(hoje + timedelta(days=1), hoje + timedelta(days=1))
-    tarefas_semana = filtrar_tarefas(hoje, hoje + timedelta(days=7))
-    tarefas_mes = filtrar_tarefas(hoje, hoje + timedelta(days=30))
+    # 🔹 Criar listas filtradas de tarefas
+    tarefas_filtradas = {
+        "Hoje": filtrar_tarefas(hoje, hoje),
+        "Amanhã": filtrar_tarefas(hoje + timedelta(days=1), hoje + timedelta(days=1)),
+        "Nesta Semana": filtrar_tarefas(hoje, hoje + timedelta(days=7)),
+        "Neste Mês": filtrar_tarefas(hoje, hoje + timedelta(days=30))
+    }
 
     # 📌 Criar abas para Hoje, Amanhã, Semana, Mês
-    for aba, tarefas_periodo, titulo, data_limite in zip(
-        abas,
-        [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
-        ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
-        [hoje, hoje + timedelta(days=1), hoje + timedelta(days=7), hoje + timedelta(days=30)]
-    ):
+    for aba, titulo in zip(abas, tarefas_filtradas.keys()):
         with aba:
-            # Garantir que todas as datas estejam no formato correto antes da filtragem
-            for t in tarefas_periodo:
-                t["Data de Execução"] = pd.to_datetime(t["Data de Execução"], errors="coerce").date()
+            tarefas_periodo = tarefas_filtradas[titulo]
 
-            # Contagem correta das tarefas atrasadas
-            tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado" and t["Data de Execução"] < hoje]
+            # 🔹 Filtrar tarefas atrasadas diretamente
+            tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
             num_tarefas_atrasadas = len(tarefas_atrasadas)
 
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
@@ -352,32 +337,15 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             if tarefas_atrasadas:
                 df_atrasadas = pd.DataFrame(tarefas_atrasadas)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
                 df_atrasadas = df_atrasadas.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                df_atrasadas["Data de Execução"] = pd.to_datetime(df_atrasadas["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
+                df_atrasadas["Data de Execução"] = df_atrasadas["Data de Execução"].apply(lambda x: x.strftime("%d/%m/%Y"))
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_atrasadas, key=f"editar_tarefa_atrasada_{titulo}",tipo=f"atrasadas - {titulo}",user=user)
+                editar_tarefa_modal(tarefas_atrasadas, key=f"editar_tarefa_atrasada_{titulo}", tipo=f"atrasadas - {titulo}", user=user)
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
-            st.write('---')
 
-            # Contagem correta das tarefas em andamento
-            tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
-            num_tarefas_andamento = len(tarefas_em_andamento)
-
-            st.subheader(f"🟨 Em andamento - {titulo} ({num_tarefas_andamento})")
-
-            if tarefas_em_andamento:
-                df_em_andamento = pd.DataFrame(tarefas_em_andamento)[["titulo", "Data de Execução", "Nome da Empresa", "empresa", "observacoes"]]
-                df_em_andamento = df_em_andamento.rename(columns={"titulo": "Título", "empresa": "CNPJ", "observacoes": "Observações"})
-                df_em_andamento["Data de Execução"] = pd.to_datetime(df_em_andamento["Data de Execução"], errors="coerce").dt.strftime("%d/%m/%Y")
-                df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
-                st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
-
-                editar_tarefa_modal(tarefas_em_andamento, key=f"editar_tarefa_andamento_{titulo}",tipo=f"em andamento - {titulo}",user=user)
-            else:
-                st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 def editar_tarefa_modal(tarefas, key, tipo, user): 
     """
