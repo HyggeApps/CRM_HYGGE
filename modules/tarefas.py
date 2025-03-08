@@ -39,7 +39,7 @@ def atualizar_status_tarefas(empresa):
     hoje = datetime.today().date()
     atualizacoes_realizadas = False
     
-    print(tarefas, hoje)
+    st.write(tarefas, hoje)
 
     for tarefa in tarefas:
         data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
