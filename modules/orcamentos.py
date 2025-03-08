@@ -750,8 +750,6 @@ def elaborar_orcamento(user, email, senha):
             if len(default9) > 0: nomes_produtos.append(default9[0])
             if len(default10) > 0: nomes_produtos.append(default10[0])
             
-            st.write(nomes_produtos)
-            
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
                 produtos_selecionado1 = st.multiselect(
@@ -970,6 +968,7 @@ def elaborar_orcamento(user, email, senha):
                 st.subheader("📝 Geração de um orçamento com aprovação de desconto adicional")
                 with st.expander('Solicitação de desconto adicional ao gestor', expanded=False):
                     st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
+                    st.write(negocio_selecionado['desconto_solicitado'])
                     
                     if negocio_selecionado['aprovacao_gestor']: 
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
