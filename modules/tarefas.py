@@ -241,7 +241,7 @@ def atualizar_tarefas_atrasadas(user):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
 
-    # Buscar empresas do usuário
+    # 🔹 Buscar todas as empresas do usuário
     empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find(
         {"proprietario": user}, {"razao_social": 1}
     )}
@@ -249,25 +249,19 @@ def atualizar_tarefas_atrasadas(user):
     if not empresas_usuario:
         return None
 
-    hoje = datetime.today().date()
+    hoje = datetime.today().strftime("%Y-%m-%d")  # Formato compatível com MongoDB
 
-    # Buscar todas as tarefas das empresas do usuário
-    tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(empresas_usuario)}}, 
-        {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1}
-    ))
+    # 🔹 Atualizar **todas** as tarefas atrasadas de uma só vez (eliminando o loop)
+    resultado = collection_tarefas.update_many(
+        {
+            "empresa": {"$in": list(empresas_usuario)},  # Filtra as empresas do usuário
+            "data_execucao": {"$lt": hoje},             # Tarefas com data anterior a hoje
+            "status": {"$ne": "🟩 Concluída"}            # Exclui tarefas já concluídas
+        },
+        {"$set": {"status": "🟥 Atrasado"}}
+    )
 
-    # Atualizar apenas as tarefas atrasadas
-    for tarefa in tarefas:
-        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
-        
-        if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
-            collection_tarefas.update_one(
-                {"empresa": tarefa["empresa"], "titulo": tarefa["titulo"]},
-                {"$set": {"status": "🟥 Atrasado"}}
-            )
-
-    return True  # Apenas para indicar que o processo foi concluído
+    return resultado.modified_count  # Retorna o número de tarefas atualizadas
 
 
 @st.fragment
