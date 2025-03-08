@@ -276,45 +276,39 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
     collection_empresas = get_collection("empresas")
 
-    # 🔄 Indicador de carregamento das tarefas
-    with st.status("🔄 Carregando tarefas... Aguarde.", expanded=True) as status:
-        
-        # Atualiza as tarefas atrasadas apenas uma vez por sessão
-        atualizar_tarefas_atrasadas(user)
+    # 🔄 Atualiza as tarefas atrasadas apenas uma vez por sessão
+    atualizar_tarefas_atrasadas(user)
 
-        # 🔹 Filtra diretamente as empresas do usuário logado
-        empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find(
-            {"proprietario": user}, {"razao_social": 1}
-        )}
+    # 🔹 Filtra diretamente as empresas do usuário logado
+    empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find(
+        {"proprietario": user}, {"razao_social": 1}
+    )}
 
-        if not empresas_usuario:
-            st.warning("Nenhuma empresa atribuída a você.")
-            return
+    if not empresas_usuario:
+        st.warning("Nenhuma empresa atribuída a você.")
+        return
 
-        hoje = datetime.today().date()
+    hoje = datetime.today().date()
 
-        # 🔹 Buscar todas as tarefas SEM CACHE para que a interface seja dinâmica
-        tarefas = list(collection_tarefas.find(
-            {"empresa": {"$in": list(empresas_usuario)}},
-            {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
-        ))
+    # 🔹 Buscar todas as tarefas SEM CACHE para que a interface seja dinâmica
+    tarefas = list(collection_tarefas.find(
+        {"empresa": {"$in": list(empresas_usuario)}},
+        {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
+    ))
 
-        if not tarefas:
-            st.warning("Nenhuma tarefa encontrada.")
-            return
+    if not tarefas:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
 
-        # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
-        empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
-            {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
-        )}
+    # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
+    empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
+        {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
+    )}
 
-        # 🔹 Adicionar Nome da Empresa e converter datas
-        for tarefa in tarefas:
-            tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
-            tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
-        
-        # 🔄 Finalizar carregamento com sucesso
-        status.update(label="✅ Tarefas carregadas com sucesso!", state="complete", expanded=False)
+    # 🔹 Adicionar Nome da Empresa e converter datas
+    for tarefa in tarefas:
+        tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa"], "Não encontrado")
+        tarefa["Data de Execução"] = pd.to_datetime(tarefa["data_execucao"]).date()
 
     # 📌 Criar abas para filtros rápidos
     abas = st.tabs([
