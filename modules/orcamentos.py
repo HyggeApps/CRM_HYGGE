@@ -750,6 +750,8 @@ def elaborar_orcamento(user, email, senha):
             if len(default9) > 0: nomes_produtos += [default9]
             if len(default10) > 0: nomes_produtos += [default10]
             
+            st.write(nomes_produtos)
+            
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
                 produtos_selecionado1 = st.multiselect(
