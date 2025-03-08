@@ -255,10 +255,10 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     fim_semana = hoje + timedelta(days=7)
     fim_mes = hoje + timedelta(days=30)
 
-    # 🔹 Filtragem de tarefas que não estão concluídas
+    # 🔹 Filtragem no banco para otimizar carregamento
     tarefas = list(collection_tarefas.find(
-        {"empresa": {"$in": list(empresas_usuario)}, "status": {"$ne": "🟩 Concluída"}},
-        {"_id": 1, "data_execucao": 1, "empresa": 1, "status": 1}
+        {"empresa": {"$in": list(empresas_usuario)}},
+        {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
     ))
 
     if not tarefas:
@@ -267,15 +267,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     
     hoje = datetime.today().date()
 
-    # 🔄 Atualizar status das tarefas atrasadas
-    for tarefa in tarefas:
-        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
-        
-        if data_execucao < hoje:
-            collection_tarefas.update_one(
-                {"_id": tarefa["_id"]},  # Identifica a tarefa pelo ID único
-                {"$set": {"status": "🟥 Atrasado"}}
-            )
+    
     
     # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
     empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
