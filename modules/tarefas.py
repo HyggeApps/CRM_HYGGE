@@ -239,23 +239,34 @@ MESES_PT = {
 @st.fragment
 def gerenciamento_tarefas_por_usuario(user, admin):
     collection_tarefas = get_collection("tarefas")
-    collection_atividades = get_collection("atividades")
     collection_empresas = get_collection("empresas")
 
-    # 🔹 Filtra diretamente as tarefas do usuário logado
-    empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find({"proprietario": user}, {"razao_social": 1})}
+    # 🔹 Filtra diretamente as empresas do usuário logado
+    empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find(
+        {"proprietario": user}, {"razao_social": 1}
+    )}
     
     if not empresas_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
         return
 
-    # 📅 Criar filtros de período
     hoje = datetime.today().date()
-    amanha = hoje + timedelta(days=1)
-    fim_semana = hoje + timedelta(days=7)
-    fim_mes = hoje + timedelta(days=30)
 
-    # 🔹 Filtragem no banco para otimizar carregamento
+    # 📌 Verificar e atualizar tarefas atrasadas automaticamente (Mantendo a lógica original)
+    tarefas = list(collection_tarefas.find(
+        {"empresa": {"$in": list(empresas_usuario)}}, {"_id": 0, "titulo": 1, "empresa": 1, "data_execucao": 1, "status": 1}
+    ))
+
+    for tarefa in tarefas:
+        data_execucao = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
+        
+        if data_execucao < hoje and tarefa["status"] != "🟩 Concluída":
+            collection_tarefas.update_one(
+                {"empresa": tarefa["empresa"], "titulo": tarefa["titulo"]},
+                {"$set": {"status": "🟥 Atrasado"}}
+            )
+
+    # 🔹 Buscar tarefas do usuário novamente após atualização no banco
     tarefas = list(collection_tarefas.find(
         {"empresa": {"$in": list(empresas_usuario)}},
         {"_id": 0, "tarefa_id": 0, "atividade_vinculada": 0}
@@ -264,15 +275,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
         return
-    
-    hoje = datetime.today().date()
 
-    # 🔄 **ATUALIZAR STATUS DE TAREFAS ATRASADAS**
-    collection_tarefas.update_many(
-        {"empresa": {"$in": list(empresas_usuario)}, "status": {"$ne": "🟩 Concluída"}, "data_execucao": {"$lt": hoje.strftime("%Y-%m-%d")}},
-        {"$set": {"status": "🟥 Atrasado"}}
-    )
-    
     # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
     empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
         {"razao_social": {"$in": list(empresas_usuario)}}, {"razao_social": 1}
@@ -286,25 +289,25 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 📌 Criar abas para filtros rápidos
     abas = st.tabs([
         f"Hoje ({hoje.strftime('%d/%m')})",
-        f"Amanhã ({amanha.strftime('%d/%m')})",
-        f"Nesta semana (até {fim_semana.strftime('%d/%m')})",
-        f"Neste mês (até {fim_mes.strftime('%d/%m')})"
+        f"Amanhã ({(hoje + timedelta(days=1)).strftime('%d/%m')})",
+        f"Nesta semana (até {(hoje + timedelta(days=7)).strftime('%d/%m')})",
+        f"Neste mês (até {(hoje + timedelta(days=30)).strftime('%d/%m')})"
     ])
 
     def filtrar_tarefas(data_inicio, data_fim):
         return [t for t in tarefas if data_inicio <= t["Data de Execução"] <= data_fim]
 
     tarefas_hoje = filtrar_tarefas(hoje, hoje)
-    tarefas_amanha = filtrar_tarefas(amanha, amanha)
-    tarefas_semana = filtrar_tarefas(hoje, fim_semana)
-    tarefas_mes = filtrar_tarefas(hoje, fim_mes)
+    tarefas_amanha = filtrar_tarefas(hoje + timedelta(days=1), hoje + timedelta(days=1))
+    tarefas_semana = filtrar_tarefas(hoje, hoje + timedelta(days=7))
+    tarefas_mes = filtrar_tarefas(hoje, hoje + timedelta(days=30))
 
     # 📌 Criar abas para Hoje, Amanhã, Semana, Mês
     for aba, tarefas_periodo, titulo, data_limite in zip(
         abas,
         [tarefas_hoje, tarefas_amanha, tarefas_semana, tarefas_mes],
         ["Hoje", "Amanhã", "Nesta Semana", "Neste Mês"],
-        [hoje, amanha, fim_semana, fim_mes]
+        [hoje, hoje + timedelta(days=1), hoje + timedelta(days=7), hoje + timedelta(days=30)]
     ):
         with aba:
             # Garantir que todas as datas estejam no formato correto antes da filtragem
@@ -312,7 +315,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 t["Data de Execução"] = pd.to_datetime(t["Data de Execução"], errors="coerce").date()
 
             # Contagem correta das tarefas atrasadas
-            tarefas_atrasadas = [t for t in tarefas if t["status"] == "🟥 Atrasado" and t["Data de Execução"] < hoje]
+            tarefas_atrasadas = [t for t in tarefas_periodo if t["status"] == "🟥 Atrasado"]
             num_tarefas_atrasadas = len(tarefas_atrasadas)
 
             st.subheader(f"🟥 Atrasado - {titulo} ({num_tarefas_atrasadas})")
@@ -331,7 +334,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
             st.write('---')
 
             # Contagem correta das tarefas em andamento
-            tarefas_em_andamento = [t for t in tarefas if t["status"] == "🟨 Em andamento" and t["Data de Execução"] <= data_limite]
+            tarefas_em_andamento = [t for t in tarefas_periodo if t["status"] == "🟨 Em andamento"]
             num_tarefas_andamento = len(tarefas_em_andamento)
 
             st.subheader(f"🟨 Em andamento - {titulo} ({num_tarefas_andamento})")
