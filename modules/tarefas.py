@@ -258,7 +258,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 🔹 Filtragem de tarefas que não estão concluídas
     tarefas = list(collection_tarefas.find(
         {"empresa": {"$in": list(empresas_usuario)}, "status": {"$ne": "🟩 Concluída"}},
-        {"_id": 1, "data_execucao": 1, "empresa": 1}
+        {"_id": 1, "data_execucao": 1, "empresa": 1, "status": 1}
     ))
 
     if not tarefas:
