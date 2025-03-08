@@ -739,6 +739,17 @@ def elaborar_orcamento(user, email, senha):
             default9 = [defaults[8]] if len(defaults) >= 9 else []
             default10 = [defaults[9]] if len(defaults) >= 10 else []
             
+            if default1 is not None: nomes_produtos += [default1]
+            if default2 is not None: nomes_produtos += [default2]
+            if default3 is not None: nomes_produtos += [default3]
+            if default4 is not None: nomes_produtos += [default4]
+            if default5 is not None: nomes_produtos += [default5]
+            if default6 is not None: nomes_produtos += [default6]
+            if default7 is not None: nomes_produtos += [default7]
+            if default8 is not None: nomes_produtos += [default8]
+            if default9 is not None: nomes_produtos += [default9]
+            if default10 is not None: nomes_produtos += [default10]
+            
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
                 produtos_selecionado1 = st.multiselect(
