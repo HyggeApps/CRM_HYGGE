@@ -267,7 +267,11 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     
     hoje = datetime.today().date()
 
-    
+    # 🔄 **ATUALIZAR STATUS DE TAREFAS ATRASADAS**
+    collection_tarefas.update_many(
+        {"empresa": {"$in": list(empresas_usuario)}, "status": {"$ne": "🟩 Concluída"}, "data_execucao": {"$lt": hoje.strftime("%Y-%m-%d")}},
+        {"$set": {"status": "🟥 Atrasado"}}
+    )
     
     # 🔹 Criar um dicionário com Nome da Empresa baseado no CNPJ
     empresas_dict = {empresa["razao_social"]: empresa["razao_social"] for empresa in collection_empresas.find(
