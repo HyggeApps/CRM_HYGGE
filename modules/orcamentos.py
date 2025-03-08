@@ -968,7 +968,6 @@ def elaborar_orcamento(user, email, senha):
                 st.subheader("📝 Geração de um orçamento com aprovação de desconto adicional")
                 with st.expander('Solicitação de desconto adicional ao gestor', expanded=False):
                     st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
-                    st.write(negocio_selecionado['desconto_solicitado'])
                     
                     if negocio_selecionado['aprovacao_gestor']: 
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
