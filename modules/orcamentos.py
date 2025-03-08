@@ -739,16 +739,16 @@ def elaborar_orcamento(user, email, senha):
             default9 = [defaults[8]] if len(defaults) >= 9 else []
             default10 = [defaults[9]] if len(defaults) >= 10 else []
             
-            if len(default1) > 0: nomes_produtos += [default1]
-            if len(default2) > 0: nomes_produtos += [default2]
-            if len(default3) > 0: nomes_produtos += [default3]
-            if len(default4) > 0: nomes_produtos += [default4]
-            if len(default5) > 0: nomes_produtos += [default5]
-            if len(default6) > 0: nomes_produtos += [default6]
-            if len(default7) > 0: nomes_produtos += [default7]
-            if len(default8) > 0: nomes_produtos += [default8]
-            if len(default9) > 0: nomes_produtos += [default9]
-            if len(default10) > 0: nomes_produtos += [default10]
+            if len(default1) > 0: nomes_produtos.append(default1[0])
+            if len(default2) > 0: nomes_produtos.append(default2[0])
+            if len(default3) > 0: nomes_produtos.append(default3[0])
+            if len(default4) > 0: nomes_produtos.append(default4[0])
+            if len(default5) > 0: nomes_produtos.append(default5[0])
+            if len(default6) > 0: nomes_produtos.append(default6[0])
+            if len(default7) > 0: nomes_produtos.append(default7[0])
+            if len(default8) > 0: nomes_produtos.append(default8[0])
+            if len(default9) > 0: nomes_produtos.append(default9[0])
+            if len(default10) > 0: nomes_produtos.append(default10[0])
             
             st.write(nomes_produtos)
             
