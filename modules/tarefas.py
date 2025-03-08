@@ -245,7 +245,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 🔹 Filtra diretamente as tarefas do usuário logado
     empresas_usuario = {empresa["razao_social"] for empresa in collection_empresas.find({"proprietario": user}, {"razao_social": 1})}
     
-    #st.write(empresas_usuario)
+    st.write(empresas_usuario)
     
     if not empresas_usuario:
         st.warning("Nenhuma empresa atribuída a você.")
