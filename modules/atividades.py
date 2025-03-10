@@ -122,6 +122,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                             "empresa": empresa_nome,
                             "contato": contato,
                             "descricao": descricao,
+                            "vendedor_criacao": user,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
                             "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
                         }

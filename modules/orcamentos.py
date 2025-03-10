@@ -127,6 +127,17 @@ def gerenciamento_aceites(user, email, senha):
             default8 = [defaults[7]] if len(defaults) >= 8 else []
             default9 = [defaults[8]] if len(defaults) >= 9 else []
             default10 = [defaults[9]] if len(defaults) >= 10 else []
+
+            if len(default1) > 0: nomes_produtos.append(default1[0])
+            if len(default2) > 0: nomes_produtos.append(default2[0])
+            if len(default3) > 0: nomes_produtos.append(default3[0])
+            if len(default4) > 0: nomes_produtos.append(default4[0])
+            if len(default5) > 0: nomes_produtos.append(default5[0])
+            if len(default6) > 0: nomes_produtos.append(default6[0])
+            if len(default7) > 0: nomes_produtos.append(default7[0])
+            if len(default8) > 0: nomes_produtos.append(default8[0])
+            if len(default9) > 0: nomes_produtos.append(default9[0])
+            if len(default10) > 0: nomes_produtos.append(default10[0])
             
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
