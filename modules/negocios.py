@@ -177,6 +177,7 @@ def gerenciamento_oportunidades(user):
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
     df_oportunidades["data_fechamento"] = pd.to_datetime(df_oportunidades["data_fechamento"], errors="coerce")
+    
 
     # Opções de períodos
     opcoes_periodo = [
@@ -289,13 +290,16 @@ def gerenciamento_oportunidades(user):
                                                             else dt.date.today(),
                                 key=f"dataFechamento_{row['nome_oportunidade']}"
                             )
+
+                            nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento, time.min)
+                            nova_data_fechamento = nova_data_fechamento_datetime.isoformat(timespec='milliseconds')
                             
                             # Button to save changes
                             if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
                                 update_fields = {
                                     "nome_oportunidade": novo_nome,
                                     #"valor_estimado": novo_valor,
-                                    "data_fechamento": nova_data_fechamento.isoformat()
+                                    "data_fechamento": nova_data_fechamento
                                 }
                                 result = collection_oportunidades.update_one(
                                     {"nome_oportunidade": row['nome_oportunidade']},
