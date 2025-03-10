@@ -284,15 +284,15 @@ def gerenciamento_oportunidades(user):
                             # como nome, valor estimado, datas, etc.
                             novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
                             #novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
-                            nova_data_fechamento = st.date_input(
+                            nova_data_fechamento_date = st.date_input(
                                 "Data de fechamento",
                                 value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
                                                             else dt.date.today(),
                                 key=f"dataFechamento_{row['nome_oportunidade']}"
                             )
-
-                            nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento, time.min)
-                            nova_data_fechamento = nova_data_fechamento_datetime.isoformat(timespec='milliseconds')
+                            
+                            nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento_date, time.min)
+                            nova_data_fechamento = nova_data_fechamento_datetime.isoformat(timespec='milliseconds') + 'Z'
                             
                             # Button to save changes
                             if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
@@ -408,18 +408,21 @@ def gerenciamento_oportunidades(user):
                                 # Aqui você pode permitir editar campos específicos,
                                 # como nome, valor estimado, datas, etc.
                                 novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
-                                nova_data_fechamento = st.date_input(
-                                    "Data de fechamento",
-                                    value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
-                                                                else dt.date.today(),
-                                    key=f"dataFechamento_{row['nome_oportunidade']}"
+                                nova_data_fechamento_date = st.date_input(
+                                "Data de fechamento",
+                                value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
+                                                            else dt.date.today(),
+                                key=f"dataFechamento_{row['nome_oportunidade']}"
                                 )
+                                
+                                nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento_date, time.min)
+                                nova_data_fechamento = nova_data_fechamento_datetime.isoformat(timespec='milliseconds') + 'Z'
                                 
                                 # Button to save changes
                                 if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
                                     update_fields = {
                                         "nome_oportunidade": novo_nome,
-                                        "data_fechamento": nova_data_fechamento.isoformat()
+                                        "data_fechamento": nova_data_fechamento
                                     }
                                     result = collection_oportunidades.update_one(
                                         {"nome_oportunidade": row['nome_oportunidade']},
