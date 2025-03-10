@@ -29,7 +29,7 @@ def base36encode(number):
         base36 = alphabet[i] + base36
     return base36
 
-def gerar_hash_8(objid):
+def gerar_hash_6(objid):
     """
     Gera um hash de 8 caracteres (números e letras maiúsculas) a partir do _id.
     """
@@ -141,7 +141,7 @@ def gerenciamento_aceites(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
             
-            negocio_id = gerar_hash_8(negocio_selecionado['_id'])
+            negocio_id = gerar_hash_6(negocio_selecionado['_id'])
             st.text('Produto(s) selecionado(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
@@ -787,7 +787,7 @@ def elaborar_orcamento(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para orçamento")
 
-            negocio_id = gerar_hash_8(negocio_selecionado['_id'])
+            negocio_id = gerar_hash_6(negocio_selecionado['_id'])
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
