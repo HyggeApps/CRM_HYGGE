@@ -15,11 +15,10 @@ from email import encoders
 import requests
 import re
 import hashlib
+from bson import ObjectId
 
 def base36encode(number):
     """Converte um número inteiro para uma string em base36 (0-9, A-Z)."""
-    if number < 0:
-        raise ValueError("Número deve ser não-negativo")
     alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if number == 0:
         return alphabet[0]
@@ -31,17 +30,15 @@ def base36encode(number):
 
 def gerar_hash_6(objid):
     """
-    Gera um hash de 8 caracteres (números e letras maiúsculas) a partir do _id.
+    Gera um hash de 6 caracteres (números e letras maiúsculas) a partir do _id.
     """
-    # Calcula o MD5 do _id
-    md5_hash = hashlib.md5(objid.encode("utf-8")).hexdigest()
-    # Converte o hash MD5 para inteiro
+    # Converte o ObjectId para string antes de codificar
+    objid_str = str(objid)
+    md5_hash = hashlib.md5(objid_str.encode("utf-8")).hexdigest()
     hash_int = int(md5_hash, 16)
-    # 36^8 define o espaço de 6 dígitos em base36
+    # 36^6 define o espaço de 6 dígitos em base36
     mod_value = 36**6
-    # Faz o módulo para limitar o número ao intervalo desejado
     hash_mod = hash_int % mod_value
-    # Converte o número para base36 e preenche com zeros à esquerda, se necessário, para garantir 6 caracteres
     hash_base36 = base36encode(hash_mod).zfill(6)
     return hash_base36
 
@@ -141,7 +138,8 @@ def gerenciamento_aceites(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
             
-            negocio_id = gerar_hash_6(negocio_selecionado['_id'])
+            objid = ObjectId(negocio_selecionado['_id'])
+            negocio_id = gerar_hash_6(objid)
             st.text('Produto(s) selecionado(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
@@ -787,7 +785,8 @@ def elaborar_orcamento(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para orçamento")
 
-            negocio_id = gerar_hash_6(negocio_selecionado['_id'])
+            objid = ObjectId(negocio_selecionado['_id'])
+            negocio_id = gerar_hash_6(objid)
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
