@@ -341,9 +341,11 @@ def gerenciamento_aceites(user, email, senha):
                 with col2: entrada_answ = st.selectbox('Haverá o pagamento de entrada?*',options=['-','Sim','Não'])
                 with col3: parcelas_vinc_ent_answ = st.selectbox('Demais parcelas vinculadas às entregas?*',options=['-','Sim','Não'])
                 
-                col1, col2 = st.columns(2)
+                col1, col2, col3 = st.columns(3)
                 with col1: comentarios_answ = st.text_area('Comentários relevantes (condições acordadas):*')
-                with col2: contatos_answ = st.text_area('Contatos adicionais:')
+                with col2: contato_financeiro_answ = st.text_area('Contato financeiro (nome e email) *')
+                with col3: contatos_answ = st.text_area('Contatos adicionais')
+
 
                 # escopo (produtos) no email;
                 # prazo informado para entrega - automatico no email;
@@ -352,7 +354,7 @@ def gerenciamento_aceites(user, email, senha):
 
                 st.write('---')
 
-                if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and resp_contrato_answ != '-' and entrada_answ != '-' and len(parceria_answ) > 0 and len(comentarios_answ) > 0: 
+                if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and resp_contrato_answ != '-' and entrada_answ != '-' and len(parceria_answ) > 0 and len(comentarios_answ) > 0 and len(contato_financeiro_answ) > 0: 
                     
                     st.subheader("📨 Envio do email de aceite para o cliente")
                     
@@ -360,6 +362,22 @@ def gerenciamento_aceites(user, email, senha):
 
                     if st.button("Criar pasta no servidor e enviar email de aceite para o cliente"):
                         with st.spinner('Espere a conclusão da operação...'):
+
+                            # Atualiza o documento da oportunidade com as novas informações
+                            collection_oportunidades.update_one(
+                                {"cliente": empresa_nome, "nome_oportunidade": selected_negocio},
+                                {"$set": {
+                                    "contrato_proposta": tipo_contrato_answ,
+                                    "responsavel_contrato": resp_contrato_answ,
+                                    "nro_parcelas": nro_parcelas_answ,
+                                    "parceria": parceria_answ,
+                                    "entrada": entrada_answ,
+                                    "parcelas_vinc_ent": parcelas_vinc_ent_answ,
+                                    "contato_financeiro": contato_financeiro_answ,
+                                    "comentarios_relevantes": comentarios_answ,
+                                    "contatos_adicionais": contatos_answ
+                                }}
+                            )
 
                             # Configuração do email
                             #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
@@ -382,6 +400,7 @@ def gerenciamento_aceites(user, email, senha):
                             <p>Condições de pagamento: {condicao_pagamento}<br></p>
                             <p>Prazo informado para entrega: {prazo}<br></p>
                             <p>Comentários relevantes: {comentarios_answ}<br></p>
+                            <p>Contato financeiro: {contato_financeiro_answ}<br></p>
                             <p>Contatos adicionais: {contatos_answ}<br></p>
 
                             <p>Atenciosamente,</p>"""
@@ -534,7 +553,10 @@ def gerenciamento_aceites(user, email, senha):
                                     "nro_parcelas": nro_parcelas_answ,
                                     "parceria": parceria_answ,
                                     "entrada": entrada_answ,
-                                    "parcelas_vinc_ent": parcelas_vinc_ent_answ
+                                    "parcelas_vinc_ent": parcelas_vinc_ent_answ,
+                                    "contato_financeiro": contato_financeiro_answ,
+                                    "comentarios_relevantes": comentarios_answ,
+                                    "contatos_adicionais": contatos_answ
                                 }}
                             )
                             
@@ -560,6 +582,7 @@ def gerenciamento_aceites(user, email, senha):
                             <p>Condições de pagamento: {condicao_pagamento}<br></p>
                             <p>Prazo informado para entrega: {prazo}<br></p>
                             <p>Comentários relevantes: {comentarios_answ}<br></p>
+                            <p>Contato financeiro: {contato_financeiro_answ}<br></p>
                             <p>Contatos adicionais: {contatos_answ}<br></p>
 
                             <p>Atenciosamente,</p>"""
