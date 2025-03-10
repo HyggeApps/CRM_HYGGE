@@ -37,12 +37,12 @@ def gerar_hash_8(objid):
     md5_hash = hashlib.md5(objid.encode("utf-8")).hexdigest()
     # Converte o hash MD5 para inteiro
     hash_int = int(md5_hash, 16)
-    # 36^8 define o espaço de 8 dígitos em base36
-    mod_value = 36**8
+    # 36^8 define o espaço de 6 dígitos em base36
+    mod_value = 36**6
     # Faz o módulo para limitar o número ao intervalo desejado
     hash_mod = hash_int % mod_value
-    # Converte o número para base36 e preenche com zeros à esquerda, se necessário, para garantir 8 caracteres
-    hash_base36 = base36encode(hash_mod).zfill(8)
+    # Converte o número para base36 e preenche com zeros à esquerda, se necessário, para garantir 6 caracteres
+    hash_base36 = base36encode(hash_mod).zfill(6)
     return hash_base36
 
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
