@@ -13,7 +13,37 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import requests
-import re 
+import re
+import hashlib
+
+def base36encode(number):
+    """Converte um número inteiro para uma string em base36 (0-9, A-Z)."""
+    if number < 0:
+        raise ValueError("Número deve ser não-negativo")
+    alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    if number == 0:
+        return alphabet[0]
+    base36 = ""
+    while number:
+        number, i = divmod(number, 36)
+        base36 = alphabet[i] + base36
+    return base36
+
+def gerar_hash_8(objid):
+    """
+    Gera um hash de 8 caracteres (números e letras maiúsculas) a partir do _id.
+    """
+    # Calcula o MD5 do _id
+    md5_hash = hashlib.md5(objid.encode("utf-8")).hexdigest()
+    # Converte o hash MD5 para inteiro
+    hash_int = int(md5_hash, 16)
+    # 36^8 define o espaço de 8 dígitos em base36
+    mod_value = 36**8
+    # Faz o módulo para limitar o número ao intervalo desejado
+    hash_mod = hash_int % mod_value
+    # Converte o número para base36 e preenche com zeros à esquerda, se necessário, para garantir 8 caracteres
+    hash_base36 = base36encode(hash_mod).zfill(8)
+    return hash_base36
 
 def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Calcula o número máximo de parcelas possíveis
@@ -111,6 +141,7 @@ def gerenciamento_aceites(user, email, senha):
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
             
+            negocio_id = gerar_hash_8(negocio_selecionado['_id'])
             st.text('Produto(s) selecionado(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
@@ -429,7 +460,7 @@ def gerenciamento_aceites(user, email, senha):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
-                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
             
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
@@ -499,7 +530,7 @@ def gerenciamento_aceites(user, email, senha):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
-                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
             
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
@@ -611,7 +642,7 @@ def gerenciamento_aceites(user, email, senha):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
-                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                            path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
                             
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
@@ -755,7 +786,8 @@ def elaborar_orcamento(user, email, senha):
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para orçamento")
-            
+
+            negocio_id = gerar_hash_8(negocio_selecionado['_id'])
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
@@ -972,7 +1004,7 @@ def elaborar_orcamento(user, email, senha):
                 if st.button("Gerar o orçamento"):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
-                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                         if pdf_out_path:
                             versao_proposta = gro.upload_onedrive2(pdf_out_path)
                             #st.write(versao_proposta)
@@ -1111,7 +1143,7 @@ def elaborar_orcamento(user, email, senha):
                 if st.button("Gerar o orçamento com o desconto adicional aprovado"):
                     if desconto <= negocio_selecionado['desconto_aprovado']:  
                         inicio = time.time()
-                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_selecionado['_id'], selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
+                        pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                         if pdf_out_path:
                             versao_proposta = gro.upload_onedrive2(pdf_out_path)
                             #   versao_proposta)
@@ -1178,7 +1210,7 @@ def elaborar_orcamento(user, email, senha):
                     # Anexa o corpo do email completo no formato HTML
                     message.attach(MIMEText(full_body, "html"))
 
-                    path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_selecionado['_id']}")
+                    path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
                     if path_proposta_envio:
                         novo_nome_arquivo = os.path.basename(path_proposta_envio)
                         
