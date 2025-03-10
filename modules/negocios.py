@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.database import get_collection
-from datetime import datetime
+from datetime import datetime, time
 import pandas as pd
 import datetime as dt
 import calendar
@@ -95,7 +95,7 @@ def gerenciamento_oportunidades(user):
                 total = st.number_input('Valor estimado', key="valor_estimado_oportunidade")
                 #estagio = st.selectbox("Estágio", options=estagios, key="select_estagio_oportunidade")
                 estagio = 'Aguardando projeto'
-                data_fechamento = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
+                data_fechamento_date = st.date_input("Data de Fechamento (Prevista)", key="input_data_fechamento_oportunidade")
                 submit = st.form_submit_button("Cadastrar")
             
                 if submit:
@@ -106,7 +106,10 @@ def gerenciamento_oportunidades(user):
                         #produtos_selecionados_obj = [p for p in produtos if f"{p['nome']}" in produtos_selecionados_text]
             
                         if cliente_selecionado:
-                            data_hoje = datetime.now().strftime("%Y-%m-%d")
+                            data_criacao = datetime.utcnow().isoformat(timespec='milliseconds') + 'Z'
+                            data_fechamento_datetime = datetime.combine(data_fechamento_date, time.min)
+                            data_fechamento = data_fechamento_datetime.isoformat(timespec='milliseconds') + 'Z'
+                            
                             # "produtos" será uma lista com os nomes dos produtos selecionados
                             
                             valor_estimado_formatado = format_currency(total)
@@ -119,8 +122,8 @@ def gerenciamento_oportunidades(user):
                                 "valor_estimado": valor_estimado_formatado,
                                 "valor_orcamento": '',
                                 "estagio": estagio,
-                                "data_criacao": data_hoje,
-                                "data_fechamento": str(data_fechamento),
+                                "data_criacao": data_criacao,
+                                "data_fechamento": data_fechamento,
                                 "motivo_perda": '',
                                 "motivo_ganho": '',
                                 "dias_para_fechar": '',
