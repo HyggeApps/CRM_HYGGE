@@ -102,15 +102,15 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     status_value = None
                 
                 descricao = st.text_area("Descrição *")
-                
-                st.markdown("---")
-                st.subheader("📌 Prazo para o acompanhamento")
-                prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", 
-                                                "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
-                # Se houver opção "Personalizada", exibe um date_input; caso contrário, calcula a data
-                data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
-                
-                submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
+                if tipo != 'Observação':
+                    st.markdown("---")
+                    st.subheader("📌 Prazo para o acompanhamento")
+                    prazo = st.selectbox("Prazo", ["1 dia útil", "2 dias úteis", "3 dias úteis", 
+                                                    "1 semana", "2 semanas", "1 mês", "2 meses", "3 meses"], index=3)
+                    # Se houver opção "Personalizada", exibe um date_input; caso contrário, calcula a data
+                    data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
+                    
+                    submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
                 
                 if submit_atividade:
                     if descricao:
@@ -133,28 +133,29 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                         nova_atividade.update(extra_fields)
                         
                         collection_atividades.insert_one(nova_atividade)
+
+                        if tipo != 'Observação':
+                            nova_tarefa = {
+                                "tarefa_id": str(datetime.now().timestamp()),
+                                "titulo": titulo_tarefa if titulo_tarefa is not None else tipo,
+                                "empresa": empresa_nome,
+                                "atividade_vinculada": atividade_id,
+                                "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
+                                "status": "🟨 Em andamento",
+                                "observacoes": ""
+                            }
+                            collection_tarefas = get_collection("tarefas")
+                            collection_tarefas.insert_one(nova_tarefa)
+                            
+                            # Atualiza a última atividade da empresa
+                            data_hoje = datetime.now().strftime("%Y-%m-%d")
+                            collection_empresas = get_collection("empresas")
+                            collection_empresas.update_one(
+                                {"razao_social": empresa_nome},
+                                {"$set": {"ultima_atividade": data_hoje}}
+                            )
                         
-                        nova_tarefa = {
-                            "tarefa_id": str(datetime.now().timestamp()),
-                            "titulo": titulo_tarefa if titulo_tarefa is not None else tipo,
-                            "empresa": empresa_nome,
-                            "atividade_vinculada": atividade_id,
-                            "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
-                            "status": "🟨 Em andamento",
-                            "observacoes": ""
-                        }
-                        collection_tarefas = get_collection("tarefas")
-                        collection_tarefas.insert_one(nova_tarefa)
-                        
-                        # Atualiza a última atividade da empresa
-                        data_hoje = datetime.now().strftime("%Y-%m-%d")
-                        collection_empresas = get_collection("empresas")
-                        collection_empresas.update_one(
-                            {"razao_social": empresa_nome},
-                            {"$set": {"ultima_atividade": data_hoje}}
-                        )
-                        
-                        st.success("Atividade e tarefa vinculada adicionadas com sucesso! 📌")
+                        st.success("Atividade adicionada com sucesso! 📌")
                         st.rerun()
                     else:
                         st.error("Preencha os campos obrigatórios: Descrição.")

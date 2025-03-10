@@ -783,6 +783,30 @@ def elaborar_orcamento(user, email, senha):
 
             objid = ObjectId(negocio_selecionado['_id'])
             negocio_id = gerar_hash_6(objid)
+
+
+            categoria_orcamento = st.selectbox('Categoria: *', ['', 'MCMV', 'Consultoria', 'Certificação'])
+            if categoria_orcamento == 'MCMV':
+                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *' ['NBR Fast - Prédios', 'NBR Fast - Casas', 'NBR Fast Economy','Médio Padrão - 1 tipo', 'Médio Padrão - Até 3 tipos', 'Alto Padrão - 3 tipos + Duplex', 'Altíssimo Padrão - +5 tipos'])
+            elif categoria_orcamento == 'Consultoria':
+                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *' ['NBR Fast - Prédios', 'NBR Fast - Casas', 'NBR Fast Economy','Médio Padrão - 1 tipo', 'Médio Padrão - Até 3 tipos', 'Alto Padrão - 3 tipos + Duplex', 'Altíssimo Padrão - +5 tipos'])
+            elif categoria_orcamento == 'Certificação':
+                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *' ['NBR Fast - Prédios', 'NBR Fast - Casas',
+                                                                                'NBR Fast Economy','Médio Padrão - 1 tipo',
+                                                                                'Médio Padrão - Até 3 tipos',
+                                                                                'Alto Padrão - 3 tipos + Duplex',
+                                                                                'Altíssimo Padrão - +5 tipos',
+                                                                                'EVTA Certificação - Residencial EDGE Médio Padrão',
+                                                                                'EVTA Certificação - Residencial EDGE Alto Padrão',
+                                                                                'EVTA Certificação - Residencial EDGE Altíssimo Padrão',
+                                                                                'Auditoria Certificação - Residencial EDGE Médio Padrão',
+                                                                                'Auditoria Certificação - Residencial EDGE Alto Padrão',
+                                                                                'Auditoria Certificação - Residencial EDGE Altíssimo Padrão',
+                                                                                'EVTA Certificação - Comercial EDGE Médio Padrão',
+                                                                                'EVTA Certificação - Comercial EDGE Alto Padrão', 
+                                                                                'EVTA Certificação - Comercial EDGE Altíssimo Padrão'])
+            
+
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
@@ -1034,8 +1058,8 @@ def elaborar_orcamento(user, email, senha):
                         st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                         justificativa = st.text_area("Justificativa para solicitação de novo desconto adicional:")
                         if st.button(f'Solicitar novo desconto de {desconto}%'):
-                            receivers = ['fabricio@hygge.eco.br', email]
-                            
+                            #receivers = ['fabricio@hygge.eco.br', email]
+                            receivers = [email]
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
@@ -1086,7 +1110,8 @@ def elaborar_orcamento(user, email, senha):
                         justificativa = st.text_area("Justificativa para solicitação de desconto adicional:")
                         if st.button(f'Solicitar desconto de {desconto}%'):
                         
-                            receivers = ['fabricio@hygge.eco.br', email]
+                            #receivers = ['fabricio@hygge.eco.br', email]
+                            receivers = [email]
                             
                             message = MIMEMultipart()
                             message["From"] = email
