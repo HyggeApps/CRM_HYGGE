@@ -314,7 +314,7 @@ def gerenciamento_oportunidades(user):
                                         "status": "Registrado",
                                         "titulo": f"Oportunidade '{nome_opp}' atualizada",
                                         "empresa": row['cliente'],
-                                        "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}, novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
+                                        "descricao": f"O vendedor {user} atualizou a oportunidade '{nome_opp}: nova data de fechamento: {nova_data_fechamento}'.",
                                         "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                         "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                                     }
@@ -404,7 +404,6 @@ def gerenciamento_oportunidades(user):
                                 # Aqui você pode permitir editar campos específicos,
                                 # como nome, valor estimado, datas, etc.
                                 novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
-                                novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
                                 nova_data_fechamento = st.date_input(
                                     "Data de fechamento",
                                     value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
@@ -416,7 +415,6 @@ def gerenciamento_oportunidades(user):
                                 if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
                                     update_fields = {
                                         "nome_oportunidade": novo_nome,
-                                        "valor_estimado": novo_valor,
                                         "data_fechamento": nova_data_fechamento.isoformat()
                                     }
                                     result = collection_oportunidades.update_one(
@@ -431,7 +429,7 @@ def gerenciamento_oportunidades(user):
                                             "status": "Registrado",
                                             "titulo": f"Oportunidade '{novo_nome}' atualizada",
                                             "empresa": row["cliente"],
-                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{novo_nome}', novo valor: {novo_valor} e nova data de fechamento: {nova_data_fechamento}'.",
+                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{novo_nome}': nova data de fechamento prevista: {nova_data_fechamento}'.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                                         }
