@@ -100,7 +100,7 @@ def gerenciamento_produtos():
             else:
                 st.error("Preencha todos os campos obrigatórios.")
     
-# --- Aba: Editar Produto (Tabela com st.data_editor) ---
+    # --- Aba: Editar Produto (Tabela com st.data_editor e filtros dropdown) ---
     with tab2:
         st.subheader("Editar Produtos")
         
@@ -113,20 +113,43 @@ def gerenciamento_produtos():
             from bson import ObjectId
             
             df = pd.DataFrame(produtos)
-            # Converte _id para string para facilitar a edição
+            # Converte _id para string e define como índice para ocultá-lo
             df['_id'] = df['_id'].astype(str)
+            df = df.set_index('_id')
             
-            st.write("Edite os produtos abaixo:")
-            # Remova o parâmetro de rótulo e passe somente o DataFrame
-            edited_df = st.data_editor(df, num_rows="dynamic", use_container_width=True)
+            st.markdown("### Filtros")
+            # Obtém os valores distintos de cada campo
+            nomes_disponiveis = ["Todos"] + sorted(df["nome"].unique().tolist())
+            categorias_disponiveis = ["Todos"] + sorted(df["categoria"].unique().tolist())
+            tipos_disponiveis = ["Todos"] + sorted(df["tipo"].unique().tolist())
+            tamanhos_disponiveis = ["Todos"] + sorted(df["tamanho"].unique().tolist())
             
-            if st.button("Salvar Alterações"):
-                for index, row in edited_df.iterrows():
-                    product_id = ObjectId(row['_id'])
+            # Cria os filtros como listas suspensas (dropdowns)
+            filtro_nome = st.selectbox("Filtrar por Nome:", nomes_disponiveis, index=0, key="filtro_nome")
+            filtro_categoria = st.selectbox("Filtrar por Categoria:", categorias_disponiveis, index=0, key="filtro_categoria")
+            filtro_tipo = st.selectbox("Filtrar por Tipo:", tipos_disponiveis, index=0, key="filtro_tipo")
+            filtro_tamanho = st.selectbox("Filtrar por Tamanho:", tamanhos_disponiveis, index=0, key="filtro_tamanho")
+            
+            # Aplica os filtros se uma opção diferente de "Todos" for selecionada
+            filtered_df = df.copy()
+            if filtro_nome != "Todos":
+                filtered_df = filtered_df[filtered_df["nome"] == filtro_nome]
+            if filtro_categoria != "Todos":
+                filtered_df = filtered_df[filtered_df["categoria"] == filtro_categoria]
+            if filtro_tipo != "Todos":
+                filtered_df = filtered_df[filtered_df["tipo"] == filtro_tipo]
+            if filtro_tamanho != "Todos":
+                filtered_df = filtered_df[filtered_df["tamanho"] == filtro_tamanho]
+            
+            st.write("Edite os produtos abaixo (o campo _id está oculto):")
+            edited_df = st.data_editor(filtered_df, num_rows="dynamic", use_container_width=True)
+            
+            if st.button("Salvar Alterações", key="save_edits"):
+                for product_id, row in edited_df.iterrows():
                     update_data = row.to_dict()
-                    update_data.pop('_id', None)
-                    collection.update_one({"_id": product_id}, {"$set": update_data})
+                    collection.update_one({"_id": ObjectId(product_id)}, {"$set": update_data})
                 st.success("Alterações salvas com sucesso!")
+
     
     # Aba: Remover Produto
     with tab3:
