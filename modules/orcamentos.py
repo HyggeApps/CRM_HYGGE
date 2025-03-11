@@ -1042,8 +1042,9 @@ def elaborar_orcamento(user, email, senha):
             documento_preco = collection_precos.find_one(filtro_precos)
 
             if documento_preco:
-                preco = documento_preco.get("preco", "Preço não definido")
-                st.write("Preço para essa combinação:", preco)
+                preco_modelagem = documento_preco.get("preco_modelagem", "Preço não definido")
+                preco_servico = documento_preco.get("preco_servico", "Preço não definido")
+                st.write("Preço para essa combinação:", preco_modelagem+preco_servico)
             else:
                 st.write("Nenhum preço encontrado para essa combinação.")
                 
