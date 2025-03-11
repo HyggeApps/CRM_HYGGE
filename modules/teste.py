@@ -15,8 +15,8 @@ def get_collection(collection_name):
 
 # Define as combinações para cada categoria
 # Valores para "NBR Fast" (torres ou casas) e para os outros (áreas em m²)
-tamanhos_torres = ['Até 6 Torres', '7 a 12 Torres', '13 a 18 Torres', '19 a 24 Torres', '25 a 35 Torres', 'até 42 Torres']
-tamanhos_casas = ['Até 50 Casas', '51 a 100 Casas', '101 a 150 Casas', '151 a 200 Casas', '201 a 250 Casas', '350 Casas']
+tamanhos_torres = ['Até 6 Torres', '7 a 12 Torres', '13 a 18 Torres', '19 a 24 Torres', '25 a 35 Torres', '42 Torres ou mais']
+tamanhos_casas = ['Até 50 Casas', '51 a 100 Casas', '101 a 150 Casas', '151 a 200 Casas', '201 a 250 Casas', '350 Casas ou mais']
 tamanhos_area = ['1 mil m²', '3 mil m²', '5 mil m²', '10 mil m²', '15 mil m²', '20 mil m²']
 
 # Categoria: MCMV
@@ -28,9 +28,6 @@ mcmv_types = {
 
 # Categoria: Consultoria
 consultoria_types = {
-    "NBR Fast - Prédios": tamanhos_torres,
-    "NBR Fast - Casas": tamanhos_casas,
-    "NBR Fast Economy": tamanhos_torres,
     # Para os tipos onde o tamanho é medido em área:
     "Médio Padrão - 1 tipo": tamanhos_area,
     "Médio Padrão - Até 3 tipos": tamanhos_area,
@@ -43,17 +40,6 @@ consultoria_types = {
 
 # Categoria: Certificação
 certificacao_types = {
-    "NBR Fast - Prédios": tamanhos_torres,
-    "NBR Fast - Casas": tamanhos_casas,
-    "NBR Fast Economy": tamanhos_torres,
-    # Grupo: medido em área
-    "Médio Padrão - 1 tipo": tamanhos_area,
-    "Médio Padrão - Até 3 tipos": tamanhos_area,
-    "Alto Padrão - 3 tipos + Duplex": tamanhos_area,
-    "Altíssimo Padrão - +5 tipos": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Médio Padrão": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Alto Padrão": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão": tamanhos_area,
     "EVTA Certificação - Residencial EDGE Médio Padrão": tamanhos_area,
     "EVTA Certificação - Residencial EDGE Alto Padrão": tamanhos_area,
     "EVTA Certificação - Residencial EDGE Altíssimo Padrão": tamanhos_area,
@@ -90,7 +76,7 @@ for categoria, tipos in categorias.items():
     for tipo, tamanhos in tipos.items():
         for tamanho in tamanhos:
             produto = {
-                "nome": f'{categoria} - {tipo} - {tamanho}',
+                "nome": f'{tipo} - {tamanho}',
                 "categoria": categoria,
                 "tipo": tipo,
                 "tamanho": tamanho,
