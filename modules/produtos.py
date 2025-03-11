@@ -6,6 +6,11 @@ def gerenciamento_produtos():
     
     tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
     
+def gerenciamento_produtos():
+    collection = get_collection("produtos")
+    
+    tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
+    
     # Aba: Cadastrar Produto
     with tab1:
         st.subheader("Cadastrar Produto")
@@ -42,21 +47,33 @@ def gerenciamento_produtos():
         
         # --- Serviços Adicionais ---
         st.markdown("### Serviços Adicionais")
-        # Serviços padrão disponíveis
+        servicos_adicionais = {}
+        
+        # Serviços padrão (ex.: seleção múltipla)
         servicos_opcoes = ['Reunião', 'Urgência', 'Cenário extra']
         servicos_selecionados = st.multiselect("Selecione os serviços adicionais desejados", servicos_opcoes, key="cad_servicos")
-        servicos_adicionais = {}
         for servico in servicos_selecionados:
             valor = st.number_input(f"Valor para {servico}:", min_value=0, step=1, value=0, key=f"valor_{servico}")
             servicos_adicionais[servico] = valor
         
-        # Permite adicionar um serviço personalizado
-        if st.checkbox("Adicionar serviço personalizado", key="cad_servico_custom_check"):
-            custom_servico_nome = st.text_input("Nome do serviço personalizado:", key="cad_servico_custom_nome")
-            custom_servico_valor = st.number_input("Valor para o serviço personalizado:", min_value=0, step=1, key="cad_servico_custom_valor")
-            if custom_servico_nome:
-                servicos_adicionais[custom_servico_nome] = custom_servico_valor
+        # Serviços personalizados (vários)
+        if "custom_services" not in st.session_state:
+            st.session_state.custom_services = []
         
+        with st.expander("Adicionar serviços personalizados"):
+            if st.button("Adicionar novo serviço personalizado", key="add_custom_service"):
+                st.session_state.custom_services.append({"nome": "", "valor": 0})
+            
+            # Para cada serviço personalizado, cria campos de entrada
+            for idx, service in enumerate(st.session_state.custom_services):
+                nome_custom = st.text_input(f"Nome do serviço personalizado {idx+1}:", key=f"custom_nome_{idx}")
+                valor_custom = st.number_input(f"Valor para o serviço personalizado {idx+1}:", min_value=0, step=1, key=f"custom_valor_{idx}")
+                st.session_state.custom_services[idx]["nome"] = nome_custom
+                st.session_state.custom_services[idx]["valor"] = valor_custom
+                if nome_custom:
+                    servicos_adicionais[nome_custom] = valor_custom
+        
+        # Botão para cadastrar o produto
         if st.button("Cadastrar Produto", key="cad_submit"):
             if categoria and tipo and tamanho and nome_produto:
                 # Verifica duplicidade pelo campo "nome"
