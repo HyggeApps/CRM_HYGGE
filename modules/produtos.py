@@ -171,8 +171,9 @@ def gerenciamento_produtos():
             produtos_dict = {}
             for produto in produtos:
                 produto_id = produto["_id"]
+                produto_categoria = produto.get("categoria", "Sem categoria")
                 produto_nome = produto.get("nome", "Sem nome")
-                display_text = f"{produto_nome} - {produto_id}"
+                display_text = f"{produto_categoria} - {produto_nome}"
                 produtos_dict[display_text] = produto_id
             
             # Exibir a lista suspensa com os produtos
