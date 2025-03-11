@@ -12,62 +12,60 @@ def gerenciamento_produtos():
     # Aba: Cadastrar Produto
     with tab1:
         st.subheader("Cadastrar Produto")
-        with st.form(key="form_cadastro_produto"):
-            # --- Categoria ---
-            # Consulta as categorias já cadastradas e adiciona opção para novo valor
-            categorias_existentes = collection.distinct("categoria")
-            opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
-            categoria = st.selectbox("Categoria: *", opcoes_categoria)
-            if categoria == "-- Novo --":
-                categoria = st.text_input("Digite a nova categoria:")
-            
-            # --- Tipo ---
-            # Se já houver uma categoria, consulta os tipos existentes para ela
-            tipos_existentes = []
-            if categoria:
-                tipos_existentes = collection.distinct("tipo", {"categoria": categoria})
-            opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
-            tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo)
-            if tipo == "-- Novo --":
-                tipo = st.text_input("Digite o novo tipo para a categoria escolhida:")
-            
-            # --- Tamanho/Quantidade ---
-            # Consulta os tamanhos existentes para a combinação de categoria e tipo
-            tamanhos_existentes = []
-            if categoria and tipo:
-                tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo})
-            opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
-            tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho)
-            if tamanho == "-- Novo --":
-                tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:")
-            
-            # Preços e nome do produto
-            preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0)
-            preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0)
-            nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
-            nome_produto = st.text_input("Nome do Produto", value=nome_gerado)
-            
-            submit = st.form_submit_button("Cadastrar Produto")
-            if submit:
-                if categoria and tipo and tamanho and nome_produto:
-                    # Verifica se já existe um produto com este nome
-                    existing = collection.find_one({"nome": nome_produto})
-                    if existing:
-                        st.error("Produto já cadastrado com este nome!")
-                    else:
-                        document = {
-                            "nome": nome_produto,
-                            "categoria": categoria,
-                            "tipo": tipo,
-                            "tamanho": tamanho,
-                            "preco_modelagem": preco_modelagem,
-                            "preco_servico": preco_servico,
-                            "servicos_adicionais": {'Reunião': 1000, 'Urgência': 2000, 'Cenário extra': 2500}
-                        }
-                        collection.insert_one(document)
-                        st.success("Produto cadastrado com sucesso!")
+        # Consulta as categorias já cadastradas e adiciona opção para novo valor
+        categorias_existentes = collection.distinct("categoria")
+        opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
+        categoria = st.selectbox("Categoria: *", opcoes_categoria)
+        if categoria == "-- Novo --":
+            categoria = st.text_input("Digite a nova categoria:")
+        
+        # --- Tipo ---
+        # Se já houver uma categoria, consulta os tipos existentes para ela
+        tipos_existentes = []
+        if categoria:
+            tipos_existentes = collection.distinct("tipo", {"categoria": categoria})
+        opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
+        tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo)
+        if tipo == "-- Novo --":
+            tipo = st.text_input("Digite o novo tipo para a categoria escolhida:")
+        
+        # --- Tamanho/Quantidade ---
+        # Consulta os tamanhos existentes para a combinação de categoria e tipo
+        tamanhos_existentes = []
+        if categoria and tipo:
+            tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo})
+        opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
+        tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho)
+        if tamanho == "-- Novo --":
+            tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:")
+        
+        # Preços e nome do produto
+        preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0)
+        preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0)
+        nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
+        nome_produto = st.text_input("Nome do Produto", value=nome_gerado)
+        
+        submit = st.form_submit_button("Cadastrar Produto")
+        if submit:
+            if categoria and tipo and tamanho and nome_produto:
+                # Verifica se já existe um produto com este nome
+                existing = collection.find_one({"nome": nome_produto})
+                if existing:
+                    st.error("Produto já cadastrado com este nome!")
                 else:
-                    st.error("Preencha todos os campos obrigatórios.")
+                    document = {
+                        "nome": nome_produto,
+                        "categoria": categoria,
+                        "tipo": tipo,
+                        "tamanho": tamanho,
+                        "preco_modelagem": preco_modelagem,
+                        "preco_servico": preco_servico,
+                        "servicos_adicionais": {'Reunião': 1000, 'Urgência': 2000, 'Cenário extra': 2500}
+                    }
+                    collection.insert_one(document)
+                    st.success("Produto cadastrado com sucesso!")
+            else:
+                st.error("Preencha todos os campos obrigatórios.")
     
     # Aba: Editar Produto
     with tab2:
