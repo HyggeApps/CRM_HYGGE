@@ -9,40 +9,42 @@ def gerenciamento_produtos():
     
     tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
     
+    # Aba: Cadastrar Produto
     with tab1:
         st.subheader("Cadastrar Produto")
         
         # Linha 1: Categoria, Tipo e Tamanho/Quantidade
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
+        col_cat, col_tipo, col_tam = st.columns(3)
+        with col_cat:
             categorias_existentes = collection.distinct("categoria")
             opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
             categoria = st.selectbox("Categoria: *", opcoes_categoria, key="cad_categoria")
             if categoria == "-- Novo --":
                 categoria = st.text_input("Digite a nova categoria:", key="cad_categoria_novo")
-        
-        with col2:
-            tipos_existentes = collection.distinct("tipo", {"categoria": categoria}) if categoria else []
+        with col_tipo:
+            tipos_existentes = []
+            if categoria:
+                tipos_existentes = collection.distinct("tipo", {"categoria": categoria})
             opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
             tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo, key="cad_tipo")
             if tipo == "-- Novo --":
                 tipo = st.text_input("Digite o novo tipo para a categoria escolhida:", key="cad_tipo_novo")
-        
-        with col3:
-            tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo}) if categoria and tipo else []
+        with col_tam:
+            tamanhos_existentes = []
+            if categoria and tipo:
+                tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo})
             opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
             tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho, key="cad_tamanho")
             if tamanho == "-- Novo --":
                 tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:", key="cad_tamanho_novo")
         
         # Linha 2: Preços e Nome do Produto
-        col4, col5, col6 = st.columns(3)
-        with col4:
+        col_preco_mod, col_preco_serv, col_nome = st.columns(3)
+        with col_preco_mod:
             preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0, key="cad_preco_modelagem")
-        with col5:
+        with col_preco_serv:
             preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0, key="cad_preco_servico")
-        with col6:
+        with col_nome:
             nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
             nome_produto = st.text_input("Nome do Produto", value=nome_gerado, key="cad_nome")
         
@@ -64,20 +66,22 @@ def gerenciamento_produtos():
         with st.expander("Adicionar serviços personalizados"):
             if st.button("Adicionar novo serviço personalizado", key="add_custom_service"):
                 st.session_state.custom_services.append({"nome": "", "valor": 0})
-            
-            # Para cada serviço personalizado, cria campos de entrada
+            # Para cada serviço personalizado, use colunas para organizar os campos
             for idx, service in enumerate(st.session_state.custom_services):
-                nome_custom = st.text_input(f"Nome do serviço personalizado {idx+1}:", key=f"custom_nome_{idx}")
-                valor_custom = st.number_input(f"Valor para o serviço personalizado {idx+1}:", min_value=0, step=1, key=f"custom_valor_{idx}")
+                col_custom1, col_custom2 = st.columns(2)
+                with col_custom1:
+                    nome_custom = st.text_input(f"Nome do serviço personalizado {idx+1}:", key=f"custom_nome_{idx}")
+                with col_custom2:
+                    valor_custom = st.number_input(f"Valor para o serviço personalizado {idx+1}:", min_value=0, step=1, key=f"custom_valor_{idx}")
                 st.session_state.custom_services[idx]["nome"] = nome_custom
                 st.session_state.custom_services[idx]["valor"] = valor_custom
                 if nome_custom:
                     servicos_adicionais[nome_custom] = valor_custom
         
-        # Botão para cadastrar o produto
+        # Linha final: Botão de Cadastro
         if st.button("Cadastrar Produto", key="cad_submit"):
             if categoria and tipo and tamanho and nome_produto:
-                # Verifica duplicidade pelo campo "nome"
+                # Verifica se o produto já existe
                 existing = collection.find_one({"nome": nome_produto})
                 if existing:
                     st.error("Produto já cadastrado com este nome!")
