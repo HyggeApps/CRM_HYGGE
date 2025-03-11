@@ -836,38 +836,13 @@ def elaborar_orcamento(user, email, senha):
 
                 st.text('Selecione o(s) produto(s) para o orçamento:')
 
-                # Recupera os produtos já cadastrados no negócio (se houver)
-                defaults = negocio_selecionado.get('produtos', [])
-                
-                # Define os defaults para cada coluna (se existir o índice correspondente, caso contrário, [] vazio)
-                default1 = [defaults[0]] if len(defaults) >= 1 else []
-                default2 = [defaults[1]] if len(defaults) >= 2 else []
-                default3 = [defaults[2]] if len(defaults) >= 3 else []
-                default4 = [defaults[3]] if len(defaults) >= 4 else []
-                default5 = [defaults[4]] if len(defaults) >= 5 else []
-                default6 = [defaults[5]] if len(defaults) >= 6 else []
-                default7 = [defaults[6]] if len(defaults) >= 7 else []
-                default8 = [defaults[7]] if len(defaults) >= 8 else []
-                default9 = [defaults[8]] if len(defaults) >= 9 else []
-                default10 = [defaults[9]] if len(defaults) >= 10 else []
-                
-                if len(default1) > 0: nomes_produtos.append(default1[0])
-                if len(default2) > 0: nomes_produtos.append(default2[0])
-                if len(default3) > 0: nomes_produtos.append(default3[0])
-                if len(default4) > 0: nomes_produtos.append(default4[0])
-                if len(default5) > 0: nomes_produtos.append(default5[0])
-                if len(default6) > 0: nomes_produtos.append(default6[0])
-                if len(default7) > 0: nomes_produtos.append(default7[0])
-                if len(default8) > 0: nomes_produtos.append(default8[0])
-                if len(default9) > 0: nomes_produtos.append(default9[0])
-                if len(default10) > 0: nomes_produtos.append(default10[0])
                 
                 col1, col2, col3, col4, col5 = st.columns(5)
                 with col1:
                     produtos_selecionado1 = st.multiselect(
                         "Produto 1:",
                         options=nomes_produtos,
-                        default=default1,
+                        default='',
                         key="select_produto_oportunidade1",
                         placeholder='Selecione aqui...'
                     )
@@ -875,7 +850,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado2 = st.multiselect(
                         "Produto 2:",
                         options=nomes_produtos,
-                        default=default2,
+                        default='',
                         key="select_produto_oportunidade2",
                         placeholder='Selecione aqui...'
                     )
@@ -883,7 +858,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado3 = st.multiselect(
                         "Produto 3:",
                         options=nomes_produtos,
-                        default=default3,
+                        default='',
                         key="select_produto_oportunidade3",
                         placeholder='Selecione aqui...'
                     )
@@ -891,7 +866,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado4 = st.multiselect(
                         "Produto 4:",
                         options=nomes_produtos,
-                        default=default4,
+                        default='',
                         key="select_produto_oportunidade4",
                         placeholder='Selecione aqui...'
                     )
@@ -899,7 +874,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado5 = st.multiselect(
                         "Produto 5:",
                         options=nomes_produtos,
-                        default=default5,
+                        default='',
                         key="select_produto_oportunidade5",
                         placeholder='Selecione aqui...'
                     )
@@ -909,7 +884,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado6 = st.multiselect(
                         "Produto 6:",
                         options=nomes_produtos,
-                        default=default6,
+                        default='',
                         key="select_produto_oportunidade6",
                         placeholder='Selecione aqui...'
                     )
@@ -917,7 +892,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado7 = st.multiselect(
                         "Produto 7:",
                         options=nomes_produtos,
-                        default=default7,
+                        default='',
                         key="select_produto_oportunidade7",
                         placeholder='Selecione aqui...'
                     )
@@ -925,7 +900,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado8 = st.multiselect(
                         "Produto 8:",
                         options=nomes_produtos,
-                        default=default8,
+                        default='',
                         key="select_produto_oportunidade8",
                         placeholder='Selecione aqui...'
                     )
@@ -933,7 +908,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado9 = st.multiselect(
                         "Produto 9:",
                         options=nomes_produtos,
-                        default=default9,
+                        default='',
                         key="select_produto_oportunidade9",
                         placeholder='Selecione aqui...'
                     )
@@ -941,7 +916,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado10 = st.multiselect(
                         "Produto 10:",
                         options=nomes_produtos,
-                        default=default10,
+                        default='',
                         key="select_produto_oportunidade10",
                         placeholder='Selecione aqui...'
                     )
@@ -953,14 +928,11 @@ def elaborar_orcamento(user, email, senha):
 
                 if len(produtos_selecionados) > 0:
                     #st.write(negocio_selecionado)
-                    produtos_dict = {p["nome"]: p for p in produtos}
 
                     # Itera sobre a lista de produtos selecionados, adicionando o objeto correspondente para cada ocorrência
-                    produtos_selecionados_obj = [
-                        produtos_dict[nome] for nome in negocio_selecionado['produtos'] if nome in produtos_dict
-                    ]
-                    total = sum(float(p["preco"]) for p in produtos_selecionados_obj)
-                    preco_produtos = [p["preco"] for p in produtos_selecionados_obj]
+                    produtos_selecionados_obj = [produtos_selecionados]
+
+                    total = preco_modelagem + preco_servico
                     
                     valor_estimado_formatado = format_currency(total)
                     desconto = st.number_input("Desconto (%)",0.0, 100.0)
@@ -1050,7 +1022,7 @@ def elaborar_orcamento(user, email, senha):
                     if st.button("Gerar o orçamento"):
                         if desconto <= negocio_selecionado['desconto_aprovado']:  
                             inicio = time.time()
-                            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
+                            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                             if pdf_out_path:
                                 versao_proposta = gro.upload_onedrive2(pdf_out_path)
                                 #st.write(versao_proposta)
@@ -1188,7 +1160,7 @@ def elaborar_orcamento(user, email, senha):
                     if st.button("Gerar o orçamento com o desconto adicional aprovado"):
                         if desconto <= negocio_selecionado['desconto_aprovado']:  
                             inicio = time.time()
-                            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, preco_produtos, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
+                            pdf_out_path = gro.generate_proposal_pdf2(selected_empresa, negocio_id, selected_negocio, produtos_selecionados_obj, valor_negocio, desconto_total, condicao_pagamento, prazo, nome_contato_principal)
                             if pdf_out_path:
                                 versao_proposta = gro.upload_onedrive2(pdf_out_path)
                                 #   versao_proposta)
