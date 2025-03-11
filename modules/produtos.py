@@ -9,45 +9,48 @@ def gerenciamento_produtos():
     
     tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
     
-    # Aba: Cadastrar Produto
     with tab1:
         st.subheader("Cadastrar Produto")
-        # --- Categoria ---
-        categorias_existentes = collection.distinct("categoria")
-        opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
-        categoria = st.selectbox("Categoria: *", opcoes_categoria, key="cad_categoria")
-        if categoria == "-- Novo --":
-            categoria = st.text_input("Digite a nova categoria:", key="cad_categoria_novo")
         
-        # --- Tipo ---
-        tipos_existentes = []
-        if categoria:
-            tipos_existentes = collection.distinct("tipo", {"categoria": categoria})
-        opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
-        tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo, key="cad_tipo")
-        if tipo == "-- Novo --":
-            tipo = st.text_input("Digite o novo tipo para a categoria escolhida:", key="cad_tipo_novo")
+        # Linha 1: Categoria, Tipo e Tamanho/Quantidade
+        col1, col2, col3 = st.columns(3)
         
-        # --- Tamanho/Quantidade ---
-        tamanhos_existentes = []
-        if categoria and tipo:
-            tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo})
-        opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
-        tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho, key="cad_tamanho")
-        if tamanho == "-- Novo --":
-            tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:", key="cad_tamanho_novo")
+        with col1:
+            categorias_existentes = collection.distinct("categoria")
+            opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
+            categoria = st.selectbox("Categoria: *", opcoes_categoria, key="cad_categoria")
+            if categoria == "-- Novo --":
+                categoria = st.text_input("Digite a nova categoria:", key="cad_categoria_novo")
         
-        # Preços e Nome do Produto
-        preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0, key="cad_preco_modelagem")
-        preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0, key="cad_preco_servico")
-        nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
-        nome_produto = st.text_input("Nome do Produto", value=nome_gerado, key="cad_nome")
+        with col2:
+            tipos_existentes = collection.distinct("tipo", {"categoria": categoria}) if categoria else []
+            opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
+            tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo, key="cad_tipo")
+            if tipo == "-- Novo --":
+                tipo = st.text_input("Digite o novo tipo para a categoria escolhida:", key="cad_tipo_novo")
         
-        # --- Serviços Adicionais ---
+        with col3:
+            tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo}) if categoria and tipo else []
+            opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
+            tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho, key="cad_tamanho")
+            if tamanho == "-- Novo --":
+                tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:", key="cad_tamanho_novo")
+        
+        # Linha 2: Preços e Nome do Produto
+        col4, col5, col6 = st.columns(3)
+        with col4:
+            preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0, key="cad_preco_modelagem")
+        with col5:
+            preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0, key="cad_preco_servico")
+        with col6:
+            nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
+            nome_produto = st.text_input("Nome do Produto", value=nome_gerado, key="cad_nome")
+        
+        # Linha 3: Serviços Adicionais
         st.markdown("### Serviços Adicionais")
         servicos_adicionais = {}
         
-        # Serviços padrão (ex.: seleção múltipla)
+        # Serviços pré-definidos
         servicos_opcoes = ['Reunião', 'Urgência', 'Cenário extra']
         servicos_selecionados = st.multiselect("Selecione os serviços adicionais desejados", servicos_opcoes, key="cad_servicos")
         for servico in servicos_selecionados:
