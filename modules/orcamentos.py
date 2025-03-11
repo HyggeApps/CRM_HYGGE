@@ -850,39 +850,43 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado1 = st.multiselect(
                         "Produto 1:",
                         options=nomes_produtos,
-                        default='',
+                        default=nomes_produtos[0]
                         key="select_produto_oportunidade1",
                         placeholder='Selecione aqui...'
+                        disabled=True
                     )
+                
+                nomes_produtos_demais = nomes_produtos.remove(nomes_produtos[0])
+
                 with col2:
                     produtos_selecionado2 = st.multiselect(
                         "Produto 2:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade2",
                         placeholder='Selecione aqui...'
                     )
                 with col3:
                     produtos_selecionado3 = st.multiselect(
                         "Produto 3:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade3",
                         placeholder='Selecione aqui...'
                     )
                 with col4:
                     produtos_selecionado4 = st.multiselect(
                         "Produto 4:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade4",
                         placeholder='Selecione aqui...'
                     )
                 with col5:
                     produtos_selecionado5 = st.multiselect(
                         "Produto 5:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade5",
                         placeholder='Selecione aqui...'
                     )
@@ -891,16 +895,16 @@ def elaborar_orcamento(user, email, senha):
                 with col6:
                     produtos_selecionado6 = st.multiselect(
                         "Produto 6:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade6",
                         placeholder='Selecione aqui...'
                     )
                 with col7:
                     produtos_selecionado7 = st.multiselect(
                         "Produto 7:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade7",
                         placeholder='Selecione aqui...'
                     )
@@ -908,23 +912,23 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado8 = st.multiselect(
                         "Produto 8:",
                         options=nomes_produtos,
-                        default='',
+                        #default='',
                         key="select_produto_oportunidade8",
                         placeholder='Selecione aqui...'
                     )
                 with col9:
                     produtos_selecionado9 = st.multiselect(
                         "Produto 9:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade9",
                         placeholder='Selecione aqui...'
                     )
                 with col10:
                     produtos_selecionado10 = st.multiselect(
                         "Produto 10:",
-                        options=nomes_produtos,
-                        default='',
+                        options=nomes_produtos_demais,
+                        #default='',
                         key="select_produto_oportunidade10",
                         placeholder='Selecione aqui...'
                     )
