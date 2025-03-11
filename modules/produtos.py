@@ -1,11 +1,9 @@
 import streamlit as st
 from utils.database import get_collection
+from bson import ObjectId
+import pandas as pd
 
-def gerenciamento_produtos():
-    collection = get_collection("produtos")
-    
-    tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
-    
+
 def gerenciamento_produtos():
     collection = get_collection("produtos")
     
@@ -95,27 +93,40 @@ def gerenciamento_produtos():
             else:
                 st.error("Preencha todos os campos obrigatórios.")
     
-    # Aba: Editar Produto
+# --- Aba: Editar Produto (Tabela com st.data_editor) ---
     with tab2:
-        st.subheader("Editar Produto")
-        identifier = st.text_input("Informe o Nome ou Produto_ID para editar", key="edit_identifier")
-        novo_preco_modelagem = st.number_input("Novo Preço Modelagem", min_value=0.0, step=0.01, key="edit_preco_modelagem")
-        novo_preco_servico = st.number_input("Novo Preço Serviço", min_value=0.0, step=0.01, key="edit_preco_servico")
-        if st.button("Atualizar Produto", key="edit_submit"):
-            if identifier:
-                result = collection.update_one(
-                    {"$or": [{"nome": identifier}, {"_id": identifier}]},
-                    {"$set": {
-                        "preco_modelagem": novo_preco_modelagem,
-                        "preco_servico": novo_preco_servico
-                    }}
-                )
-                if result.modified_count > 0:
-                    st.success(f"Produto '{identifier}' atualizado com sucesso!")
-                else:
-                    st.error(f"Nenhum produto encontrado com Nome/ID '{identifier}'.")
-            else:
-                st.error("Informe o Nome ou Produto_ID do produto para editar.")
+        st.subheader("Editar Produtos")
+        
+        # Consulta todos os produtos e converte para DataFrame
+        produtos = list(collection.find({}))
+        if not produtos:
+            st.info("Nenhum produto cadastrado.")
+        else:
+            df = pd.DataFrame(produtos)
+            # Converte a coluna _id para string para exibição
+            df['_id'] = df['_id'].astype(str)
+            
+            # Exibe a tabela editável
+            edited_df = st.data_editor(
+                "Edite os produtos abaixo:",
+                df,
+                num_rows="dynamic",
+                use_container_width=True
+            )
+            
+            if st.button("Salvar Alterações"):
+                for index, row in edited_df.iterrows():
+                    # Recupera o _id e converte para ObjectId
+                    product_id = ObjectId(row['_id'])
+                    # Cria um dicionário com os campos atualizados (exclui _id)
+                    update_data = row.to_dict()
+                    update_data.pop('_id', None)
+                    # Atualiza o documento no banco
+                    result = collection.update_one(
+                        {"_id": product_id},
+                        {"$set": update_data}
+                    )
+                st.success("Alterações salvas com sucesso!")
     
     # Aba: Remover Produto
     with tab3:
