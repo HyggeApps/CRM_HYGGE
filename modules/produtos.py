@@ -40,6 +40,23 @@ def gerenciamento_produtos():
         nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
         nome_produto = st.text_input("Nome do Produto", value=nome_gerado, key="cad_nome")
         
+        # --- Serviços Adicionais ---
+        st.markdown("### Serviços Adicionais")
+        # Serviços padrão disponíveis
+        servicos_opcoes = ['Reunião', 'Urgência', 'Cenário extra']
+        servicos_selecionados = st.multiselect("Selecione os serviços adicionais desejados", servicos_opcoes, key="cad_servicos")
+        servicos_adicionais = {}
+        for servico in servicos_selecionados:
+            valor = st.number_input(f"Valor para {servico}:", min_value=0, step=1, value=0, key=f"valor_{servico}")
+            servicos_adicionais[servico] = valor
+        
+        # Permite adicionar um serviço personalizado
+        if st.checkbox("Adicionar serviço personalizado", key="cad_servico_custom_check"):
+            custom_servico_nome = st.text_input("Nome do serviço personalizado:", key="cad_servico_custom_nome")
+            custom_servico_valor = st.number_input("Valor para o serviço personalizado:", min_value=0, step=1, key="cad_servico_custom_valor")
+            if custom_servico_nome:
+                servicos_adicionais[custom_servico_nome] = custom_servico_valor
+        
         if st.button("Cadastrar Produto", key="cad_submit"):
             if categoria and tipo and tamanho and nome_produto:
                 # Verifica duplicidade pelo campo "nome"
@@ -54,7 +71,7 @@ def gerenciamento_produtos():
                         "tamanho": tamanho,
                         "preco_modelagem": preco_modelagem,
                         "preco_servico": preco_servico,
-                        "servicos_adicionais": {'Reunião': 1000, 'Urgência': 2000, 'Cenário extra': 2500}
+                        "servicos_adicionais": servicos_adicionais
                     }
                     collection.insert_one(document)
                     st.success("Produto cadastrado com sucesso!")
