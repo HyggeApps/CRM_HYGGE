@@ -852,7 +852,7 @@ def elaborar_orcamento(user, email, senha):
                         options=nomes_produtos,
                         default=nomes_produtos[0],
                         key="select_produto_oportunidade1",
-                        placeholder='Selecione aqui...'
+                        placeholder='Selecione aqui...',
                         disabled=True
                     )
                 
