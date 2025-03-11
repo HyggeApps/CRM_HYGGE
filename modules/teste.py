@@ -90,6 +90,7 @@ for categoria, tipos in categorias.items():
     for tipo, tamanhos in tipos.items():
         for tamanho in tamanhos:
             produto = {
+                "nome": f'{categoria} - {tipo} - {tamanho}',
                 "categoria": categoria,
                 "tipo": tipo,
                 "tamanho": tamanho,
