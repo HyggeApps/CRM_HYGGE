@@ -162,16 +162,35 @@ def gerenciamento_produtos():
     # Aba: Remover Produto
     with tab3:
         st.subheader("Remover Produto")
-        identifier_remove = st.text_input("Informe o Nome ou Produto_ID do produto a remover", key="remove_identifier")
-        if st.button("Remover Produto", key="remove_submit"):
-            if identifier_remove:
-                result = collection.delete_one({"$or": [{"nome": identifier_remove}, {"_id": identifier_remove}]})
-                if result.deleted_count > 0:
-                    st.success(f"Produto '{identifier_remove}' removido com sucesso!")
-                else:
-                    st.error(f"Nenhum produto encontrado com Nome/ID '{identifier_remove}'.")
-            else:
-                st.error("Informe o Nome ou Produto_ID do produto para remover.")
+        
+        # Buscar todos os produtos cadastrados
+        produtos = list(collection.find())
+        
+        if produtos:
+            # Criar um dicionário para mapear o texto exibido à _id do produto
+            produtos_dict = {}
+            for produto in produtos:
+                produto_id = produto["_id"]
+                produto_nome = produto.get("nome", "Sem nome")
+                display_text = f"{produto_nome} - {produto_id}"
+                produtos_dict[display_text] = produto_id
+            
+            # Exibir a lista suspensa com os produtos
+            produto_selecionado = st.selectbox("Selecione o produto para remover", list(produtos_dict.keys()))
+            
+            if st.button("Remover Produto", key="remove_submit"):
+                selected_id = produtos_dict[produto_selecionado]
+                try:
+                    result = collection.delete_one({"_id": selected_id})
+                    if result.deleted_count > 0:
+                        st.success(f"Produto '{produto_selecionado}' removido com sucesso!")
+                    else:
+                        st.error("Nenhum produto encontrado para remoção.")
+                except Exception as e:
+                    st.error(f"Ocorreu um erro ao remover o produto: {e}")
+        else:
+            st.info("Nenhum produto cadastrado para remover.")
+
     
     # Aba: Exibir Produtos
     with tab4:
