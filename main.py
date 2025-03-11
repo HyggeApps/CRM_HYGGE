@@ -197,7 +197,8 @@ if not st.session_state['logado']:
     if 'ThiagoHygge@hygge.eco.br' in emails:
         emails.remove('ThiagoHygge@hygge.eco.br')
 
-    email_principal = st.sidebar.selectbox("Email", emails)
+    #email_principal = st.sidebar.selectbox("Email", emails)
+    email_principal = st.sidebar.selectbox("Email", ['admin@hygge.eco.br'])
     senha_principal = st.sidebar.text_input("Senha", type="password")
     
     # If the user is not logged in, show the login button and login process
