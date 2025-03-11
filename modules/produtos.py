@@ -102,7 +102,6 @@ def gerenciamento_produtos():
     
     # --- Aba: Editar Produto (Tabela com st.data_editor e filtros em colunas) ---
     with tab2:
-        st.subheader("Editar Produtos")
         
         # Consulta todos os produtos e converte para DataFrame
         produtos = list(collection.find({}))
