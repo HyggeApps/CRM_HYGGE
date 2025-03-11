@@ -845,7 +845,7 @@ def elaborar_orcamento(user, email, senha):
                             if servico not in nomes_produtos:
                                 nomes_produtos.append(servico)
                                 
-                st.write(nomes_produtos)
+                #st.write(nomes_produtos)
                                 
                 st.text('Selecione o(s) produto(s) para o orçamento:')
 
