@@ -817,16 +817,16 @@ def elaborar_orcamento(user, email, senha):
 
                 # Coleta todos os serviços adicionais disponíveis em collection_produtos
 
-                if 'NBR Fast Economy' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast Economy', '']
-                elif 'NBR Fast' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast', '']
-                elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575', '']
-                elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575', '']
-                elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Coonsultoria Hygge', '']
-                elif 'Certificação' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Residencial', '']
-                elif 'Certificação' in tipo_empreendimento and 'Comercial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Comercial', '']
-                elif 'Certificação' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Residencial', '']
-                elif 'Auditoria' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE - Comercial', '']
-                else: nomes_produtos = ['']
+                if 'NBR Fast Economy' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast Economy']
+                elif 'NBR Fast' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast']
+                elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575']
+                elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575']
+                elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Coonsultoria Hygge']
+                elif 'Certificação' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Residencial']
+                elif 'Certificação' in tipo_empreendimento and 'Comercial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Comercial']
+                elif 'Certificação' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE - Residencial']
+                elif 'Auditoria' in tipo_empreendimento and 'Residencial' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE - Comercial']
+                else: nomes_produtos = []
 
                 
                 for produto in collection_produtos.find({}):
