@@ -16,6 +16,7 @@ import requests
 import re
 import hashlib
 from bson import ObjectId
+import ast
 
 def base36encode(number):
     """Converte um número inteiro para uma string em base36 (0-9, A-Z)."""
@@ -729,10 +730,7 @@ def gerenciamento_aceites(user, email, senha):
                             st.success("Etapa 3 de 3 - Parabéns pela venda! Informações atualizadas no servidor e pastas criadas.")
                             for i in range(10):
                                 st.balloons()
-                                time.sleep(1)
-                    
-                    
-                    
+                                time.sleep(1)    
                 
 def elaborar_orcamento(user, email, senha):
     # Obter as coleções necessárias
@@ -763,7 +761,7 @@ def elaborar_orcamento(user, email, senha):
     oportunidades = list(
         collection_oportunidades.find(
             {"cliente": empresa_nome},
-            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1,"valor_orcamento": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1, 'contatos_selecionados': 1, 'contato_principal': 1, 'condicoes_pagamento': 1, 'prazo_execucao': 1}
+            {"_id": 1, "cliente": 1, "nome_oportunidade": 1, "proprietario": 1, "produtos": 1, "valor_estimado": 1,"valor_orcamento": 1, "data_criacao": 1, "data_fechamento": 1, "estagio": 1, 'aprovacao_gestor': 1, 'solicitacao_desconto': 1, 'desconto_solicitado': 1, 'desconto_aprovado': 1, 'contatos_selecionados': 1, 'contato_principal': 1, 'condicoes_pagamento': 1, 'prazo_execucao': 1, 'categoria': 1, 'tipo': 1, 'tamanho': 1}
         )
     )
     if not oportunidades:
@@ -817,7 +815,25 @@ def elaborar_orcamento(user, email, senha):
                     st.write("Preço para essa combinação:", preco_modelagem + preco_servico)
                 else:
                     st.write("Nenhum preço encontrado para essa combinação.")
-        
+
+                # Coleta todos os serviços adicionais disponíveis em collection_produtos
+                nomes_produtos = []
+                for produto in collection_produtos.find({}):
+                    servicos_str = produto.get("servicos_adicionais")
+                    if servicos_str:
+                        try:
+                            # Converte a string em dicionário
+                            servicos_dict = ast.literal_eval(servicos_str)
+                        except Exception as e:
+                            servicos_dict = {}
+                        # Adiciona as chaves (nomes dos serviços) na lista, se ainda não estiverem presentes
+                        for servico in servicos_dict.keys():
+                            if servico not in nomes_produtos:
+                                nomes_produtos.append(servico)
+                                
+                st.write("Serviços Adicionais disponíveis:", nomes_produtos)
+                
+
                 st.text('Selecione o(s) produto(s) para o orçamento:')
 
                 # Recupera os produtos já cadastrados no negócio (se houver)
