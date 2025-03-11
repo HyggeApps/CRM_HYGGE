@@ -109,30 +109,23 @@ def gerenciamento_produtos():
         if not produtos:
             st.info("Nenhum produto cadastrado.")
         else:
+            import pandas as pd
+            from bson import ObjectId
+            
             df = pd.DataFrame(produtos)
-            # Converte a coluna _id para string para exibição
+            # Converte _id para string para facilitar a edição
             df['_id'] = df['_id'].astype(str)
             
-            # Exibe a tabela editável
-            edited_df = st.data_editor(
-                "Edite os produtos abaixo:",
-                df,
-                num_rows="dynamic",
-                use_container_width=True
-            )
+            st.write("Edite os produtos abaixo:")
+            # Remova o parâmetro de rótulo e passe somente o DataFrame
+            edited_df = st.data_editor(df, num_rows="dynamic", use_container_width=True)
             
             if st.button("Salvar Alterações"):
                 for index, row in edited_df.iterrows():
-                    # Recupera o _id e converte para ObjectId
                     product_id = ObjectId(row['_id'])
-                    # Cria um dicionário com os campos atualizados (exclui _id)
                     update_data = row.to_dict()
                     update_data.pop('_id', None)
-                    # Atualiza o documento no banco
-                    result = collection.update_one(
-                        {"_id": product_id},
-                        {"$set": update_data}
-                    )
+                    collection.update_one({"_id": product_id}, {"$set": update_data})
                 st.success("Alterações salvas com sucesso!")
     
     # Aba: Remover Produto
