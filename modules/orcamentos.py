@@ -858,7 +858,7 @@ def elaborar_orcamento(user, email, senha):
                         disabled=True
                     )
                 
-                nomes_produtos_demais = nomes_produtos.remove(nomes_produtos[0])
+                nomes_produtos_demais = nomes_produtos.pop(0)
 
                 st.write(nomes_produtos_demais)
 
