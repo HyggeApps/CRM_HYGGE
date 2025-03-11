@@ -24,18 +24,20 @@ mcmv_types = {
     "NBR Fast - Prédios": tamanhos_torres,
     "NBR Fast - Casas": tamanhos_casas,
     "NBR Fast Economy": tamanhos_torres,
+    "Aditivo de NBR - Prédios": tamanhos_torres,
+    "Aditivo de NBR - Casas": tamanhos_casas 
 }
 
 # Categoria: Consultoria
 consultoria_types = {
     # Para os tipos onde o tamanho é medido em área:
-    "Médio Padrão - 1 tipo": tamanhos_area,
-    "Médio Padrão - Até 3 tipos": tamanhos_area,
-    "Alto Padrão - 3 tipos + Duplex": tamanhos_area,
-    "Altíssimo Padrão - +5 tipos": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Médio Padrão": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Alto Padrão": tamanhos_area,
-    "Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão": tamanhos_area,
+    "NBR Médio Padrão - 1 tipo": tamanhos_area,
+    "NBR Médio Padrão - Até 3 tipos": tamanhos_area,
+    "NBR Alto Padrão - 3 tipos + Duplex": tamanhos_area,
+    "NBR Altíssimo Padrão - +5 tipos": tamanhos_area,
+    "Consultoria HYGGE Residencial - Médio Padrão": tamanhos_area,
+    "Consultoria HYGGE Residencial - Alto Padrão": tamanhos_area,
+    "Consultoria HYGGE Residencial - Altíssimo Padrão": tamanhos_area,
 }
 
 # Categoria: Certificação
@@ -43,12 +45,24 @@ certificacao_types = {
     "EVTA Certificação - Residencial EDGE Médio Padrão": tamanhos_area,
     "EVTA Certificação - Residencial EDGE Alto Padrão": tamanhos_area,
     "EVTA Certificação - Residencial EDGE Altíssimo Padrão": tamanhos_area,
-    "Auditoria Certificação - Residencial EDGE Médio Padrão": tamanhos_area,
-    "Auditoria Certificação - Residencial EDGE Alto Padrão": tamanhos_area,
-    "Auditoria Certificação - Residencial EDGE Altíssimo Padrão": tamanhos_area,
     "EVTA Certificação - Comercial EDGE Médio Padrão": tamanhos_area,
     "EVTA Certificação - Comercial EDGE Alto Padrão": tamanhos_area,
     "EVTA Certificação - Comercial EDGE Altíssimo Padrão": tamanhos_area,
+    "Certificação - Residencial EDGE Médio Padrão": tamanhos_area,
+    "Certificação - Residencial EDGE Alto Padrão": tamanhos_area,
+    "Certificação - Residencial EDGE Altíssimo Padrão": tamanhos_area,
+    "Certificação - Comercial EDGE Médio Padrão": tamanhos_area,
+    "Certificação - Comercial EDGE Alto Padrão": tamanhos_area,
+    "Certificação - Comercial EDGE Altíssimo Padrão": tamanhos_area,
+    "Certificação - Residencial Fitwell Médio Padrão": tamanhos_area,
+    "Certificação - Residencial Fitwell Alto Padrão": tamanhos_area,
+    "Certificação - Residencial Fitwell Altíssimo Padrão": tamanhos_area,
+}
+
+auditoria_types = {
+    "Auditoria Certificação - Residencial EDGE Médio Padrão": tamanhos_area,
+    "Auditoria Certificação - Residencial EDGE Alto Padrão": tamanhos_area,
+    "Auditoria Certificação - Residencial EDGE Altíssimo Padrão": tamanhos_area,
 }
 
 # Junta todas as combinações em um dicionário
@@ -56,6 +70,7 @@ categorias = {
     "MCMV": mcmv_types,
     "Consultoria": consultoria_types,
     "Certificação": certificacao_types,
+    "Auditoria": auditoria_types,
 }
 
 # Valores fictícios para os preços (você pode editar estes valores posteriormente no banco)
@@ -81,7 +96,8 @@ for categoria, tipos in categorias.items():
                 "tipo": tipo,
                 "tamanho": tamanho,
                 "preco_modelagem": preco_modelagem_default,
-                "preco_servico": preco_servico_default
+                "preco_servico": preco_servico_default,
+                "servicos_adicionais": {'Reunião':1000, 'Urgência':2000, 'Cenário extra':2500}
             }
             produtos_docs.append(produto)
 

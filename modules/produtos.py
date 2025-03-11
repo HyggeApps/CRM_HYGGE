@@ -1,43 +1,55 @@
 import streamlit as st
 from utils.database import get_collection
 
+import streamlit as st
+from utils.database import get_collection
+
 def gerenciamento_produtos():
     collection = get_collection("produtos")
-
+    
     tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
-
+    
     # Aba: Cadastrar Produto
     with tab1:
         st.subheader("Cadastrar Produto")
         with st.form(key="form_cadastro_produto"):
-            # Obtém as categorias já cadastradas
+            # --- Categoria ---
+            # Consulta as categorias já cadastradas e adiciona opção para novo valor
             categorias_existentes = collection.distinct("categoria")
-            categoria = st.selectbox('Categoria: *', [''] + categorias_existentes, key="input_categoria")
-
-            tipo_empreendimento = None
-            tamanho_empreendimento = None
-
+            opcoes_categoria = [''] + categorias_existentes + ["-- Novo --"]
+            categoria = st.selectbox("Categoria: *", opcoes_categoria)
+            if categoria == "-- Novo --":
+                categoria = st.text_input("Digite a nova categoria:")
+            
+            # --- Tipo ---
+            # Se já houver uma categoria, consulta os tipos existentes para ela
+            tipos_existentes = []
             if categoria:
-                # Obtém os tipos para a categoria selecionada
                 tipos_existentes = collection.distinct("tipo", {"categoria": categoria})
-                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *', [''] + tipos_existentes, key="input_tipo")
-                if tipo_empreendimento:
-                    # Obtém os tamanhos para a combinação de categoria e tipo
-                    tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo_empreendimento})
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [''] + tamanhos_existentes, key="input_tamanho")
-
-            # Inputs para preços
-            preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, key="input_preco_modelagem")
-            preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, key="input_preco_servico")
-
-            # Geração automática do nome do produto (se todos os campos estiverem preenchidos)
-            nome_gerado = f"{categoria} - {tipo_empreendimento} - {tamanho_empreendimento}" if categoria and tipo_empreendimento and tamanho_empreendimento else ""
-            nome_produto = st.text_input("Nome do Produto", value=nome_gerado, key="input_nome_produto")
-
-            submit_cadastrar = st.form_submit_button("Cadastrar Produto")
-
-            if submit_cadastrar:
-                if nome_produto and preco_modelagem is not None and preco_servico is not None and categoria and tipo_empreendimento and tamanho_empreendimento:
+            opcoes_tipo = [''] + tipos_existentes + ["-- Novo --"]
+            tipo = st.selectbox("Tipo do empreendimento: *", opcoes_tipo)
+            if tipo == "-- Novo --":
+                tipo = st.text_input("Digite o novo tipo para a categoria escolhida:")
+            
+            # --- Tamanho/Quantidade ---
+            # Consulta os tamanhos existentes para a combinação de categoria e tipo
+            tamanhos_existentes = []
+            if categoria and tipo:
+                tamanhos_existentes = collection.distinct("tamanho", {"categoria": categoria, "tipo": tipo})
+            opcoes_tamanho = [''] + tamanhos_existentes + ["-- Novo --"]
+            tamanho = st.selectbox("Tamanho/Quantidade: *", opcoes_tamanho)
+            if tamanho == "-- Novo --":
+                tamanho = st.text_input("Digite o novo tamanho/quantidade para o tipo escolhido:")
+            
+            # Preços e nome do produto
+            preco_modelagem = st.number_input("Preço Modelagem", min_value=0.0, step=0.01, value=150.0)
+            preco_servico = st.number_input("Preço Serviço", min_value=0.0, step=0.01, value=200.0)
+            nome_gerado = f"{tipo} - {tamanho}" if tipo and tamanho else ""
+            nome_produto = st.text_input("Nome do Produto", value=nome_gerado)
+            
+            submit = st.form_submit_button("Cadastrar Produto")
+            if submit:
+                if categoria and tipo and tamanho and nome_produto:
                     # Verifica se já existe um produto com este nome
                     existing = collection.find_one({"nome": nome_produto})
                     if existing:
@@ -46,25 +58,26 @@ def gerenciamento_produtos():
                         document = {
                             "nome": nome_produto,
                             "categoria": categoria,
-                            "tipo": tipo_empreendimento,
-                            "tamanho": tamanho_empreendimento,
+                            "tipo": tipo,
+                            "tamanho": tamanho,
                             "preco_modelagem": preco_modelagem,
-                            "preco_servico": preco_servico
+                            "preco_servico": preco_servico,
+                            "servicos_adicionais": {'Reunião': 1000, 'Urgência': 2000, 'Cenário extra': 2500}
                         }
                         collection.insert_one(document)
                         st.success("Produto cadastrado com sucesso!")
                 else:
                     st.error("Preencha todos os campos obrigatórios.")
-
-    # As demais abas (Editar, Remover, Exibir) podem permanecer iguais ou serem ajustadas conforme a necessidade
+    
+    # Aba: Editar Produto
     with tab2:
         st.subheader("Editar Produto")
         with st.form(key="form_editar_produto"):
-            identifier = st.text_input("Informe o Nome ou Produto_ID para editar", key="input_edit_identifier")
-            novo_preco_modelagem = st.number_input("Novo Preço Modelagem", min_value=0.0, step=0.01, key="input_novo_preco_modelagem")
-            novo_preco_servico = st.number_input("Novo Preço Serviço", min_value=0.0, step=0.01, key="input_novo_preco_servico")
-            edit_submit = st.form_submit_button("Atualizar Produto")
-            if edit_submit:
+            identifier = st.text_input("Informe o Nome ou Produto_ID para editar")
+            novo_preco_modelagem = st.number_input("Novo Preço Modelagem", min_value=0.0, step=0.01)
+            novo_preco_servico = st.number_input("Novo Preço Serviço", min_value=0.0, step=0.01)
+            submit_edit = st.form_submit_button("Atualizar Produto")
+            if submit_edit:
                 if identifier:
                     result = collection.update_one(
                         {"$or": [{"nome": identifier}, {"_id": identifier}]},
@@ -79,32 +92,33 @@ def gerenciamento_produtos():
                         st.error(f"Nenhum produto encontrado com Nome/ID '{identifier}'.")
                 else:
                     st.error("Informe o Nome ou Produto_ID do produto para editar.")
-
+    
+    # Aba: Remover Produto
     with tab3:
         st.subheader("Remover Produto")
         with st.form(key="form_remover_produto"):
-            remove_identifier = st.text_input("Nome ou Produto_ID do Produto a Remover", key="input_remove_identifier")
-            remove_submit = st.form_submit_button("Remover Produto")
-            if remove_submit:
-                if remove_identifier:
-                    result = collection.delete_one({"$or": [{"nome": remove_identifier}, {"_id": remove_identifier}]})
+            identifier = st.text_input("Informe o Nome ou Produto_ID do produto a remover")
+            submit_remove = st.form_submit_button("Remover Produto")
+            if submit_remove:
+                if identifier:
+                    result = collection.delete_one({"$or": [{"nome": identifier}, {"_id": identifier}]})
                     if result.deleted_count > 0:
-                        st.success(f"Produto '{remove_identifier}' removido com sucesso!")
+                        st.success(f"Produto '{identifier}' removido com sucesso!")
                     else:
-                        st.error(f"Nenhum produto encontrado com Nome/ID '{remove_identifier}'.")
+                        st.error(f"Nenhum produto encontrado com Nome/ID '{identifier}'.")
                 else:
-                    st.error("Por favor, informe o Nome ou Produto_ID do produto para remover.")
-
+                    st.error("Informe o Nome ou Produto_ID do produto para remover.")
+    
+    # Aba: Exibir Produtos
     with tab4:
         st.subheader("Produtos Cadastrados")
         produtos = list(collection.find({}, {"_id": 0}))
         if produtos:
-            st.write("Lista de Produtos:")
             for produto in produtos:
                 st.write(
-                    f"Nome: {produto['nome']}, Categoria: {produto['categoria']}, Tipo: {produto['tipo']}, "
-                    f"Tamanho: {produto['tamanho']}, Preço Modelagem: R${produto['preco_modelagem']:.2f}, "
-                    f"Preço Serviço: R${produto['preco_servico']:.2f}"
+                    f"Nome: {produto.get('nome')}, Categoria: {produto.get('categoria')}, Tipo: {produto.get('tipo')}, "
+                    f"Tamanho: {produto.get('tamanho')}, Preço Modelagem: R${produto.get('preco_modelagem'):.2f}, "
+                    f"Preço Serviço: R${produto.get('preco_servico'):.2f}, Serviços Adicionais: {produto.get('servicos_adicionais')}"
                 )
         else:
             st.write("Nenhum produto cadastrado ainda.")
