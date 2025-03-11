@@ -850,7 +850,7 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionado1 = st.multiselect(
                         "Produto 1:",
                         options=nomes_produtos,
-                        default=nomes_produtos[0]
+                        default=nomes_produtos[0],
                         key="select_produto_oportunidade1",
                         placeholder='Selecione aqui...'
                         disabled=True
