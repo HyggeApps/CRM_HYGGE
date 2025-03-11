@@ -7,7 +7,7 @@ import pandas as pd
 def gerenciamento_produtos():
     collection = get_collection("produtos")
     
-    tab1, tab2, tab3, tab4 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto", "Exibir Produtos"])
+    tab1, tab2, tab3 = st.tabs(["Cadastrar Produto", "Editar Produto", "Remover Produto"])
     
     # Aba: Cadastrar Produto
     with tab1:
@@ -190,18 +190,3 @@ def gerenciamento_produtos():
                     st.error(f"Ocorreu um erro ao remover o produto: {e}")
         else:
             st.info("Nenhum produto cadastrado para remover.")
-
-    
-    # Aba: Exibir Produtos
-    with tab4:
-        st.subheader("Produtos Cadastrados")
-        produtos = list(collection.find({}, {"_id": 0}))
-        if produtos:
-            for produto in produtos:
-                st.write(
-                    f"Nome: {produto.get('nome')}, Categoria: {produto.get('categoria')}, Tipo: {produto.get('tipo')}, "
-                    f"Tamanho: {produto.get('tamanho')}, Preço Modelagem: R${produto.get('preco_modelagem'):.2f}, "
-                    f"Preço Serviço: R${produto.get('preco_servico'):.2f}, Serviços Adicionais: {produto.get('servicos_adicionais')}"
-                )
-        else:
-            st.write("Nenhum produto cadastrado ainda.")
