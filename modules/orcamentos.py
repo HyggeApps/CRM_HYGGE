@@ -860,6 +860,8 @@ def elaborar_orcamento(user, email, senha):
                 
                 nomes_produtos_demais = nomes_produtos.remove(nomes_produtos[0])
 
+                st.write(nomes_produtos_demais)
+
                 with col2:
                     produtos_selecionado2 = st.multiselect(
                         "Produto 2:",
