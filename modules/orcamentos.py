@@ -784,272 +784,42 @@ def elaborar_orcamento(user, email, senha):
             objid = ObjectId(negocio_selecionado['_id'])
             negocio_id = gerar_hash_6(objid)
 
-            # Seleção da categoria
-            categoria_orcamento = st.selectbox('Categoria: *', ['', 'MCMV', 'Consultoria', 'Certificação'])
+            # Conecta na coleção de produtos
+            collection_produtos = get_collection("produtos")
 
-            # Variáveis para guardar as escolhas
+            # Consulta as categorias existentes no banco e monta o select
+            categorias_existentes = collection_produtos.distinct("categoria")
+            categoria_orcamento = st.selectbox("Categoria: *", [''] + categorias_existentes)
+
             tipo_empreendimento = None
             tamanho_empreendimento = None
 
-            if categoria_orcamento == 'MCMV':
-                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *', [
-                    'NBR Fast - Prédios',
-                    'NBR Fast - Casas',
-                    'NBR Fast Economy'
-                ])
-                if tipo_empreendimento == 'NBR Fast - Prédios':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast - Casas':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 50 Casas',
-                        '51 a 100 Casas',
-                        '101 a 150 Casas',
-                        '151 a 200 Casas',
-                        '201 a 250 Casas',
-                        '350 Casas'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast Economy':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
+            if categoria_orcamento:
+                # Consulta os tipos existentes para a categoria selecionada
+                tipos_existentes = collection_produtos.distinct("tipo", {"categoria": categoria_orcamento})
+                tipo_empreendimento = st.selectbox("Tipo do empreendimento: *", [''] + tipos_existentes)
+                
+                if tipo_empreendimento:
+                    # Consulta os tamanhos existentes para a combinação de categoria e tipo
+                    tamanhos_existentes = collection_produtos.distinct("tamanho", {"categoria": categoria_orcamento, "tipo": tipo_empreendimento})
+                    tamanho_empreendimento = st.selectbox("Tamanho: *", [''] + tamanhos_existentes)
+
+            # Consulta o documento de produto com base na seleção
+            if categoria_orcamento and tipo_empreendimento and tamanho_empreendimento:
+                filtro_produto = {
+                    "categoria": categoria_orcamento,
+                    "tipo": tipo_empreendimento,
+                    "tamanho": tamanho_empreendimento
+                }
+                documento_produto = collection_produtos.find_one(filtro_produto)
+
+                if documento_produto:
+                    preco_modelagem = documento_produto.get("preco_modelagem", 0)
+                    preco_servico = documento_produto.get("preco_servico", 0)
+                    st.write("Preço para essa combinação:", preco_modelagem + preco_servico)
+                else:
+                    st.write("Nenhum preço encontrado para essa combinação.")
                     
-            elif categoria_orcamento == 'Consultoria':
-                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *', [
-                    'NBR Fast - Prédios',
-                    'NBR Fast - Casas',
-                    'NBR Fast Economy',
-                    'Médio Padrão - 1 tipo',
-                    'Médio Padrão - Até 3 tipos',
-                    'Alto Padrão - 3 tipos + Duplex',
-                    'Altíssimo Padrão - +5 tipos',
-                    'Consultoria HYGGE (Savings) Residencial - Médio Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Alto Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão'
-                ])
-                if tipo_empreendimento == 'NBR Fast - Prédios':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast - Casas':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 50 Casas',
-                        '51 a 100 Casas',
-                        '101 a 150 Casas',
-                        '151 a 200 Casas',
-                        '201 a 250 Casas',
-                        '350 Casas'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast Economy':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
-                elif tipo_empreendimento in [
-                    'Médio Padrão - 1 tipo',
-                    'Médio Padrão - Até 3 tipos',
-                    'Alto Padrão - 3 tipos + Duplex',
-                    'Altíssimo Padrão - +5 tipos',
-                    'Consultoria HYGGE (Savings) Residencial - Médio Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Alto Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão'
-                ]:
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                    
-            elif categoria_orcamento == 'Certificação':
-                tipo_empreendimento = st.selectbox('Tipo do empreendimento: *', [
-                    'NBR Fast - Prédios',
-                    'NBR Fast - Casas',
-                    'NBR Fast Economy',
-                    'Médio Padrão - 1 tipo',
-                    'Médio Padrão - Até 3 tipos',
-                    'Alto Padrão - 3 tipos + Duplex',
-                    'Altíssimo Padrão - +5 tipos',
-                    'Consultoria HYGGE (Savings) Residencial - Médio Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Alto Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão',
-                    'EVTA Certificação - Residencial EDGE Médio Padrão',
-                    'EVTA Certificação - Residencial EDGE Alto Padrão',
-                    'EVTA Certificação - Residencial EDGE Altíssimo Padrão',
-                    'Auditoria Certificação - Residencial EDGE Médio Padrão',
-                    'Auditoria Certificação - Residencial EDGE Alto Padrão',
-                    'Auditoria Certificação - Residencial EDGE Altíssimo Padrão',
-                    'EVTA Certificação - Comercial EDGE Médio Padrão',
-                    'EVTA Certificação - Comercial EDGE Alto Padrão', 
-                    'EVTA Certificação - Comercial EDGE Altíssimo Padrão'
-                ])
-                
-                if tipo_empreendimento == 'NBR Fast - Prédios':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast - Casas':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 50 Casas',
-                        '51 a 100 Casas',
-                        '101 a 150 Casas',
-                        '151 a 200 Casas',
-                        '201 a 250 Casas',
-                        '350 Casas'
-                    ])
-                elif tipo_empreendimento == 'NBR Fast Economy':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        'Até 6 Torres',
-                        '7 a 12 Torres',
-                        '13 a 18 Torres',
-                        '19 a 24 Torres',
-                        '25 a 35 Torres',
-                        'até 42 Torres'
-                    ])
-                elif tipo_empreendimento in [
-                    'Médio Padrão - 1 tipo',
-                    'Médio Padrão - Até 3 tipos',
-                    'Alto Padrão - 3 tipos + Duplex',
-                    'Altíssimo Padrão - +5 tipos',
-                    'Consultoria HYGGE (Savings) Residencial - Médio Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Alto Padrão',
-                    'Consultoria HYGGE (Savings) Residencial - Altíssimo Padrão'
-                ]:
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Residencial EDGE Médio Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Residencial EDGE Alto Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Residencial EDGE Altíssimo Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'Auditoria Certificação - Residencial EDGE Médio Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'Auditoria Certificação - Residencial EDGE Alto Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'Auditoria Certificação - Residencial EDGE Altíssimo Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Comercial EDGE Médio Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Comercial EDGE Alto Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-                elif tipo_empreendimento == 'EVTA Certificação - Comercial EDGE Altíssimo Padrão':
-                    tamanho_empreendimento = st.selectbox('Tamanho: *', [
-                        '1 mil m²',
-                        '3 mil m²',
-                        '5 mil m²',
-                        '10 mil m²',
-                        '15 mil m²',
-                        '20 mil m²'
-                    ])
-
-            # Consulta a coleção de preços para buscar o preço com base na seleção
-            collection_precos = get_collection("tabela_precos")
-            filtro_precos = {
-                "categoria": categoria_orcamento,
-                "tipo": tipo_empreendimento,
-                "tamanho": tamanho_empreendimento
-            }
-            documento_preco = collection_precos.find_one(filtro_precos)
-
-            if documento_preco:
-                preco_modelagem = documento_preco.get("preco_modelagem", "Preço não definido")
-                preco_servico = documento_preco.get("preco_servico", "Preço não definido")
-                st.write("Preço para essa combinação:", preco_modelagem+preco_servico)
-            else:
-                st.write("Nenhum preço encontrado para essa combinação.")
-                
-                
-
             st.text('Selecione o(s) produto(s) para o orçamento:')
 
             # Recupera os produtos já cadastrados no negócio (se houver)
