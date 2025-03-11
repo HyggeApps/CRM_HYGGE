@@ -830,18 +830,21 @@ def elaborar_orcamento(user, email, senha):
 
                 
                 for produto in collection_produtos.find({}):
-                    servicos_str = produto.get("servicos_adicionais")
-                    if servicos_str:
-                        try:
-                            # Converte a string em dicionário
-                            servicos_dict = ast.literal_eval(servicos_str)
-                        except Exception as e:
-                            servicos_dict = {}
+                    servicos = produto.get("servicos_adicionais")
+                    if servicos:
+                        # Se já for um dicionário, utilize-o diretamente
+                        if isinstance(servicos, dict):
+                            servicos_dict = servicos
+                        else:
+                            try:
+                                servicos_dict = ast.literal_eval(servicos)
+                            except Exception as e:
+                                servicos_dict = {}
                         # Adiciona as chaves (nomes dos serviços) na lista, se ainda não estiverem presentes
                         for servico in servicos_dict.keys():
                             if servico not in nomes_produtos:
                                 nomes_produtos.append(servico)
-                
+                                
                 st.write(nomes_produtos)
                                 
                 st.text('Selecione o(s) produto(s) para o orçamento:')
