@@ -827,7 +827,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     flag_EVTA = False
     for item in produtos: 
-        if 'EVTA' in item or 'Auditoria' in item: flag_EVTA = True
+        if 'Certificação' in item or 'Auditoria' in item: flag_EVTA = True
 
     # PDFs2 to merge PROPOSTAS EVTA
     if flag_EVTA:
@@ -847,13 +847,13 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         pdfs = [capa_path, pdf_path]
 
         for item in produtos:
-            if item != 'Reunião':
+            if item != 'Reunião' and item != 'Urgência':
                 path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
                 pdfs.append(path_item)
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
         pdfs.append(disposicoes_gerais_filename)
-        pdfs.append(aditivo_filename)
+        #pdfs.append(aditivo_filename)
         #pdfs.append(pq_escolher_filename)
         pdfs.append(clientes_hygge_filename)
         pdfs.append(contracapa_path) # pdf_path is the path to your main PDF
