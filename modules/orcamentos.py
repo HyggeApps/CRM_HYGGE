@@ -852,6 +852,7 @@ def elaborar_orcamento(user, email, senha):
                     escopo = [escopo]
                 lista_escopo.append(escopo)
 
+                st.write(1)
                 st.write("Lista de escopos com base no tipo:", lista_escopo)
 
                 for produto in collection_produtos.find({}):
