@@ -730,7 +730,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     if desconto == 0.0:
         dsct = 0
         style1 = TableStyle([
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            #('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
             ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
             ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
@@ -759,7 +759,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     else:
         dsct = 1
         style2 = TableStyle([
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            #('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
             ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
             ('ALIGN', (3, 1), (3, 1), 'CENTER'),    # Alinha 'R$ 9.900,00' à direita
