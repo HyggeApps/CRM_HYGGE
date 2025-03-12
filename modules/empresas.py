@@ -272,6 +272,7 @@ def cadastrar_empresas(user, admin):
 @st.fragment
 def consultar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
+    collection_oportunidades = get_collection("oportunidades")
 
     # Carrega todas as razões sociais e vendedores
     todas_razoes = list(collection_empresas.distinct("razao_social"))
@@ -502,7 +503,16 @@ def consultar_empresas(user, admin):
                             {"razao_social": {"$in": selected_names}},
                             {"$set": update_fields}
                         )
-                        st.success(f"{resultado.modified_count} registros atualizados com sucesso.")
+                        st.success(f"{resultado.modified_count} registros de empresas atualizados com sucesso.")
+                        
+                        # Atualizar também as oportunidades: para cada empresa atualizada,
+                        # se o campo "cliente" for igual ao nome da empresa, atualiza o "proprietario"
+                        for empresa in selected_names:
+                            collection_oportunidades.update_many(
+                                {"cliente": empresa},
+                                {"$set": {"proprietario": novo_proprietario}}
+                            )
+                        st.success("Proprietário das oportunidades atualizado com sucesso.")
                         st.rerun()
             else:
                 st.write("Nenhuma empresa selecionada para alterações.")
