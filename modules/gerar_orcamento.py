@@ -878,7 +878,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
         for produto in produtos:
             # Ignora itens que não geram PDF
-            if produto in ['Reunião', 'Urgência', 'Cenário adicional']:
+            if produto in ['Reunião', 'Urgência', 'Cenário adicional de simulação']:
                 continue
 
             # Caso especial para 'NBR' com 'Cenário adicional' sem 'Aditivo'
