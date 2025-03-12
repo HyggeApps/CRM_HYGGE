@@ -466,7 +466,7 @@ def upload_to_3projetos_v02(new_folder_name):
         print("Error acquiring token:", result.get("error_description", ""))
 
 
-def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal):
+def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, desconto, condicao_pagamento, prazo, nome_contato_principal, escopos):
                 
     # Path to the font file
     font_path = Path(__file__).parent / "PDFs2/Hero-Regular.ttf"
@@ -764,9 +764,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     elements.append(Paragraph(f'INVESTIMENTO', center_style))
     blank_line(elements,1)
 
-    for p in produtos:
+    for p, e in zip(produtos, escopos):
         elements.append(Paragraph(f'{p}', left_hero_light_style))
-        elements.append(Paragraph(f'', justify_hero_light_style_small_gray))
+        if len(e) > 0:
+            for v in e:
+                elements.append(Paragraph(f'{e}', justify_hero_light_style_small_gray))
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
         elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_gray))
