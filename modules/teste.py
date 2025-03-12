@@ -16,24 +16,14 @@ def get_collection(collection_name):
 # Conecta à coleção "produtos"
 collection_produtos = get_collection("produtos")
 
-# Busca os documentos onde servicos_adicionais está armazenado como string
-cursor = collection_produtos.find({"servicos_adicionais": {"$type": "string"}})
+escopo_list = [
+    'Laudo Normativo por simulação computacional para o desempenho Térmico da NBR 15.575:2024',
+    'Laudo Normativo por simulação computacional para o desempenho Térmico da NBR 15.575:2024',
+    'Análise por simulação computacional dos itens 2.2 e 2.3 do Selo Casa Azul + CAIXA',
+    'Modelo 3D com os resultados obtidos por simulação computacional'
+]
 
-for doc in cursor:
-    servicos_str = doc.get("servicos_adicionais")
-    try:
-        # Converte a string para dicionário
-        servicos = ast.literal_eval(servicos_str)
-        # Verifica e atualiza a chave, se presente
-        if "Cenário extra" in servicos:
-            valor = servicos.pop("Cenário extra")
-            servicos["Cenário adicional"] = valor
-
-            # Atualiza o documento, armazenando servicos_adicionais como dicionário
-            result = collection_produtos.update_one(
-                {"_id": doc["_id"]},
-                {"$set": {"servicos_adicionais": servicos}}
-            )
-            print(f"Documento {doc['_id']} atualizado com sucesso.")
-    except Exception as e:
-        print(f"Erro ao converter servicos_adicionais no documento {doc['_id']}: {e}")
+resultado = collection_produtos.update_many(
+    {"categoria": "MCMV"},
+    {"$set": {"escopo": escopo_list}}
+)
