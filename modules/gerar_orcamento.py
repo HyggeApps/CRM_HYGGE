@@ -592,6 +592,17 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         leading=16,
         leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
+
+    right_hero_bold_style_gray = ParagraphStyle(
+        'HeroBold',
+        parent=styles['Normal'],
+        alignment=TA_RIGHT,
+        fontName='HeroBold',
+        fontSize=10,
+        leading=16,
+        textColor=colors.gray,
+        leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+    )
     title_hero_light_style = ParagraphStyle(
         'TitleHeroLight',
         parent=styles['Normal'],
@@ -728,13 +739,14 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
-        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
+        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_gray))
         elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.'), right_hero_bold_style))
 
     else:    
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
 
 
+    blank_line(elements,3)
     # texto das condições de pagamento
     elements.append(Paragraph(f'Forma de pagamento:', left_hero_light_style))
     elements.append(Paragraph(f'{condicao_pagamento}', left_hero_bold_style))
