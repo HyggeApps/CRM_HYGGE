@@ -837,7 +837,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             # Verifica se o arquivo de INTRO existe
             path_intro = Path(__file__).parent / f"PDFs2/Descritivo - {produto_ref} - intro.pdf"
             if path_intro.exists():
-                st.success(f"Arquivo encontrado: {path_intro.name}")
+                #st.success(f"Arquivo encontrado: {path_intro.name}")
                 pdfs.append(path_intro)
             else:
                 st.warning(f"Arquivo não encontrado: {path_intro.name}. Será omitido.")
@@ -848,7 +848,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             # Verifica se o arquivo de ESCOPO existe
             path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {produto_ref} - escopo.pdf"
             if path_escopo.exists():
-                st.success(f"Arquivo encontrado: {path_escopo.name}")
+                #st.success(f"Arquivo encontrado: {path_escopo.name}")
                 pdfs.append(path_escopo)
             else:
                 st.warning(f"Arquivo não encontrado: {path_escopo.name}. Será omitido.")
