@@ -833,9 +833,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     if flag_EVTA:
         pdfs=[capa_path] # CAPA
         path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']} - intro.pdf"
+        if path_item: st.success('existe intro')
         pdfs.append(path_item) # INTRODUÇÃO
         pdfs.append(pdf_path) # PROPOSTA
         path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']} - escopo.pdf"
+        if path_item: st.success('existe escopo')
         pdfs.append(path_escopo) # ESCOPO
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
