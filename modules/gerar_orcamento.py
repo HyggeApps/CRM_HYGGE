@@ -700,7 +700,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     data = [
         ['Serviço(s) contemplados', '     ', '     ', '     ']
     ]
-    for p in zip (produtos):
+    for p in produtos:
         #print(p,v)
         data.append([p, '     ', '     ', '     '])
         
