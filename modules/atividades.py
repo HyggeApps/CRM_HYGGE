@@ -110,7 +110,7 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                     # Se houver opção "Personalizada", exibe um date_input; caso contrário, calcula a data
                     data_execucao_tarefa = st.date_input("Data de Execução", value=calcular_data_execucao(prazo)) if prazo == "Personalizada" else calcular_data_execucao(prazo)
                     
-                    submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
+                submit_atividade = st.form_submit_button("✅ Adicionar Atividade")
                 
                 if submit_atividade:
                     if descricao:
