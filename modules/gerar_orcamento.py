@@ -701,7 +701,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         ['Serviço(s) contemplados', '     ', '     ', '     ']
     ]
     for p in produtos:
-        #print(p,v)
+        st.write(p)
         data.append([p, '     ', '     ', '     '])
         
     if desconto > 0:
