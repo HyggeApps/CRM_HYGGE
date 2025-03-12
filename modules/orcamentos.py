@@ -131,7 +131,11 @@ def gerenciamento_aceites(user, email, senha):
     if not oportunidades:
         st.warning("Nenhum negócio encontrado para essa empresa.")
     else:
-        opcoes_negocios = [opp["nome_oportunidade"] for opp in oportunidades]
+        opcoes_negocios = [
+            opp["nome_oportunidade"] 
+            for opp in oportunidades 
+            if opp.get("estagio") not in ["Perdida", "Fechado"]
+        ]
         selected_negocio = st.selectbox("**Selecione o Negócio:**", opcoes_negocios, key="orcamento_negocio")
 
         # Buscar os dados    do negócio selecionado
@@ -403,7 +407,8 @@ def gerenciamento_aceites(user, email, senha):
                                     "parcelas_vinc_ent": parcelas_vinc_ent_answ,
                                     "contato_financeiro": contato_financeiro_answ,
                                     "comentarios_relevantes": comentarios_answ,
-                                    "contatos_adicionais": contatos_answ
+                                    "contatos_adicionais": contatos_answ,
+                                    "estagio": "Fechado"
                                 }}
                             )
 
@@ -584,7 +589,8 @@ def gerenciamento_aceites(user, email, senha):
                                     "parcelas_vinc_ent": parcelas_vinc_ent_answ,
                                     "contato_financeiro": contato_financeiro_answ,
                                     "comentarios_relevantes": comentarios_answ,
-                                    "contatos_adicionais": contatos_answ
+                                    "contatos_adicionais": contatos_answ,
+                                    "estagio": "Fechado"
                                 }}
                             )
                             
@@ -767,7 +773,11 @@ def elaborar_orcamento(user, email, senha):
     if not oportunidades:
         st.warning("Nenhum negócio encontrado para essa empresa.")
     else:
-        opcoes_negocios = [opp["nome_oportunidade"] for opp in oportunidades]
+        opcoes_negocios = [
+            opp["nome_oportunidade"] 
+            for opp in oportunidades 
+            if opp.get("estagio") not in ["Perdida", "Fechado"]
+        ]
         selected_negocio = st.selectbox("**Selecione o Negócio:**", opcoes_negocios, key="orcamento_negocio")
 
         # Buscar os dados    do negócio selecionado
