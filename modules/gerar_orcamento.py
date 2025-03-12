@@ -694,7 +694,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     blank_line(elements,1)
     elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {negocio}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
     
-    blank_line(elements,3)
+    blank_line(elements,2)
     elements.append(Paragraph(f'INVESTIMENTO', center_style))
     blank_line(elements,1)
     data = [
@@ -735,7 +735,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
             ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
             ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
-            ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 12),
+            ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 10),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
             ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
