@@ -849,8 +849,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         pdfs = [capa_path, pdf_path]
 
         for item in produtos:
-            if item != 'Reunião' and item != 'Urgência':
-                path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
+            if item != 'Reunião' and item != 'Urgência' and item != 'Cenário adicional':
+                if 'NBR' in item and 'Cenário adicional' in produtos and not 'Aditivo' in item:
+                    path_item = Path(__file__).parent / f"PDFs2/Descritivo - Laudo NBR Fast e Aditivo.pdf"
+                else:
+                    path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
+
                 pdfs.append(path_item)
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
