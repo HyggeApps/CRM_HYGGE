@@ -785,6 +785,7 @@ def elaborar_orcamento(user, email, senha):
             default_categoria = negocio_selecionado.get("categoria", "")
             default_categoria_index = categoria_options.index(default_categoria) if default_categoria in categoria_options else 0
 
+            st.write(1)
             categoria_orcamento = st.selectbox("Categoria: *", categoria_options, index=default_categoria_index)
 
             tipo_empreendimento = None
