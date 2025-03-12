@@ -538,21 +538,21 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         'HeroLight',
         parent=styles['Normal'],
         fontName='HeroLightRegular',
-        fontSize=12,
+        fontSize=10,
         leading=16
     )
     session_light_style = ParagraphStyle(
         'sessionLight',
         parent=styles['Normal'],
         fontName='HeroLightRegular',
-        fontSize=12,
+        fontSize=10,
         leading=16
     )
     hero_bold_style = ParagraphStyle(
         'HeroBold',
         parent=styles['Normal'],
         fontName='HeroBold',
-        fontSize=12,
+        fontSize=10,
         leading=16
     )
     left_hero_light_style = ParagraphStyle(
@@ -560,7 +560,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         parent=styles['Normal'],
         alignment=TA_LEFT,
         fontName='HeroLightRegular',
-        fontSize=12,
+        fontSize=10,
         leading=16,
         leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
@@ -569,7 +569,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         parent=styles['Normal'],
         alignment=TA_LEFT,
         fontName='HeroBold',
-        fontSize=12,
+        fontSize=10,
         leading=16,
         leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
@@ -617,7 +617,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         'JustifyStyle',
         parent=hero_light_style,
         alignment=TA_CENTER,
-        fontSize=14
+        fontSize=12
     )
     
     # CAPA DA PROPOSTA
