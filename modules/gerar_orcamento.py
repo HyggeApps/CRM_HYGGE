@@ -727,12 +727,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         elements.append(Paragraph(f'{p}', left_hero_light_style))
         
     if desconto > 0:
-        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
-        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
-        elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.')), right_hero_bold_style)
+        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
+        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
+        elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.'), right_hero_bold_style))
 
     else:    
-        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
+        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
 
 
     # texto das condições de pagamento
