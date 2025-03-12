@@ -664,6 +664,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # Initialize the BaseDocTemplate
     doc = BaseDocTemplate(pdf_path, pagesize=A4)
 
+    for p in produtos:
+        if 'NBR' in p:
+            image_reader = Path(__file__).parent / "PDFs2/Template_NBRFast.png"
+            break
+    
     image_reader = Path(__file__).parent / "PDFs2/Template.png"
 
     # Create a frame and a page template with the background
