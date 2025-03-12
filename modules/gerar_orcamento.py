@@ -698,6 +698,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         "December": "dezembro"
     }
 
+    st.write(1)
     # Formatando a data
     data_formatada = data_hoje.strftime("%d de %B de %Y")
     mes_portugues = meses[data_hoje.strftime("%B")]
