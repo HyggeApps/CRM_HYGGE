@@ -573,6 +573,25 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         leading=16,
         leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
+    
+    right_hero_light_style = ParagraphStyle(
+        'HeroLight',
+        parent=styles['Normal'],
+        alignment=TA_RIGHT,
+        fontName='HeroLightRegular',
+        fontSize=10,
+        leading=16,
+        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+    )
+    right_hero_bold_style = ParagraphStyle(
+        'HeroBold',
+        parent=styles['Normal'],
+        alignment=TA_RIGHT,
+        fontName='HeroBold',
+        fontSize=10,
+        leading=16,
+        leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+    )
     title_hero_light_style = ParagraphStyle(
         'TitleHeroLight',
         parent=styles['Normal'],
@@ -697,89 +716,18 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     blank_line(elements,2)
     elements.append(Paragraph(f'INVESTIMENTO', center_style))
     blank_line(elements,1)
-    data = [
-        ['Serviço(s) contemplados', '     ', '     ', '     ']
-    ]
+
     for p in produtos:
-        data.append([p, '     ', '     ', '     '])
+        elements.append(Paragraph(f'{p}', left_hero_light_style))
         
     if desconto > 0:
-        data.append(['Total', '     ', '     ', f' R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')])
-        data.append(['Desconto', '     ', '     ', f'- R$ {float(desconto):,.2f}'.replace(',', '.')])
-        data.append(['Total com desconto', '     ', '     ', f' R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
+        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
+        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
+        elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.')), right_hero_bold_style)
 
     else:    
-        data.append(['Total', '     ', '     ', f'R$ {float(valor_negocio):,.2f}'.replace(',', '.')])
+        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')), right_hero_bold_style)
 
-    # Page width and margin
-    page_width, page_height = letter
-    margin = 80  # Reduzindo a margem para 80 pontos de cada lado
-
-    # Calculate column widths (proportional width)
-    available_width = page_width - (2 * margin)
-    col_widths = [
-        available_width * 0.50,  # 40% of the available width
-        available_width * 0.10,  # 20% of the available width
-        available_width * 0.20,  # 20% of the available width
-        available_width * 0.20   # 20% of the available width
-    ]
-
-    # Define a tabela de produtos da proposta
-    table = Table(data, colWidths=col_widths)
-
-    if desconto == 0.0:
-        dsct = 0
-        style1 = TableStyle([
-            #('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
-            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
-            ('ALIGN', (3, 1), (3, 1), 'CENTER'),  # Alinha 'R$ 9.900,00' à direita
-            ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
-            ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-            ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
-            #('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
-            
-        ])
-
-        table.setStyle(style1)
-
-        # Add the table to the elements list
-        elements.append(table)
-
-    else:
-        dsct = 1
-        style2 = TableStyle([
-            #('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Alinha a primeira coluna à esquerda
-            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Alinha as demais colunas à direita
-            ('ALIGN', (3, 1), (3, 1), 'CENTER'),    # Alinha 'R$ 9.900,00' à direita
-            ('ALIGN', (2, -2), (-1, -1), 'CENTER'),  # Alinha 'Desconto' e 'Valor final' à direita
-            ('FONT', (0, 0), (-1, -1), 'HeroLightRegular', 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-            # Última linha em HeroBold:
-            ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
-            # Penúltima linha com fonte na cor cinza:
-            #('TEXTCOLOR', (0, -2), (-1, -2), colors.gray),
-            # Antepenúltima linha em HeroBold:
-            ('FONTNAME', (0, -3), (-1, -3), 'HeroBold'),
-        ])
-
-
-        table.setStyle(style2)
-
-        # Add the table to the elements list
-        elements.append(table)
-        
-        if len(produtos) == 1: blank_line(elements,17-dsct)
-        if len(produtos) == 2: blank_line(elements,14-dsct)
-        if len(produtos) == 3: blank_line(elements,13-dsct)
-        if len(produtos) == 4: blank_line(elements,11-dsct)
-        if len(produtos) == 5: blank_line(elements,9-dsct)
-        if len(produtos) == 6: blank_line(elements,8-dsct)
-        if len(produtos) == 7: blank_line(elements,6-dsct)
 
     # texto das condições de pagamento
     elements.append(Paragraph(f'Forma de pagamento:', left_hero_light_style))
