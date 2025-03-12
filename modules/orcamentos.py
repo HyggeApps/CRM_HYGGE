@@ -948,6 +948,24 @@ def elaborar_orcamento(user, email, senha):
                     produtos_selecionados_obj = [produtos_selecionados]
 
                     total = preco_modelagem + preco_servico
+
+                    # Tenta recuperar o dicionário de serviços adicionais do documento de produto
+                    servicos_adicionais = documento_produto.get("servicos_adicionais", {})
+                    # Caso não seja um dicionário, tenta converter
+                    if not isinstance(servicos_adicionais, dict):
+                        try:
+                            servicos_adicionais = ast.literal_eval(servicos_adicionais)
+                        except Exception as e:
+                            servicos_adicionais = {}
+
+                    # Itera sobre os produtos selecionados e soma os preços dos serviços adicionais, se existentes
+                    for produto in produtos_selecionados:
+                        # Verifica se o produto selecionado está no dicionário e se o valor é numérico
+                        valor = servicos_adicionais.get(produto)
+                        if valor and isinstance(valor, (int, float)):
+                            total += valor
+
+                    st.write("Total: ", total)
                     
                     valor_estimado_formatado = format_currency(total)
                     desconto = st.number_input("Desconto (%)",0.0, 100.0)
