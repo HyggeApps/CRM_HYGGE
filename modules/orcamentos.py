@@ -830,9 +830,9 @@ def elaborar_orcamento(user, email, senha):
                 # Coleta todos os serviços adicionais disponíveis em collection_produtos
 
                 if 'NBR Fast Economy' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast Economy']
+                elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575']
                 elif 'NBR Fast' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast']
                 elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575']
-                elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575']
                 elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Coonsultoria Hygge']
                 elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE (EVTA)', 'Auditoria EDGE']
                 elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE (EVTA)']

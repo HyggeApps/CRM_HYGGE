@@ -795,7 +795,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
-        elements.append(Paragraph(f'Desconto                - R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_light_style_gray))
+        elements.append(Paragraph(f'Desconto                 -R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_light_style_gray))
         elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.'), right_hero_bold_style_green))
         elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.black, spaceBefore=5, spaceAfter=5))
 
