@@ -624,7 +624,18 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         #leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
 
-    right_hero_bold_style_gray = ParagraphStyle(
+    right_hero_bold_style_green = ParagraphStyle(
+        'HeroBold',
+        parent=styles['Normal'],
+        alignment=TA_RIGHT,
+        fontName='HeroBold',
+        fontSize=10,
+        leading=16,
+        textColor=colors.HexColor("#7a8630")
+        #leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+    )
+
+    right_hero_light_style_gray = ParagraphStyle(
         'HeroBold',
         parent=styles['Normal'],
         alignment=TA_RIGHT,
@@ -680,6 +691,16 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         alignment=TA_CENTER,
         fontSize=12
     )
+
+    center_style_bold_green = ParagraphStyle(
+        'JustifyStyle',
+        parent=hero_bold_style,
+        alignment=TA_CENTER,
+        fontSize=12,
+        textColor=colors.HexColor("#7a8630")
+    )
+
+    st.write(colors.)
     
     # CAPA DA PROPOSTA
     image_reader = Path(__file__).parent / "PDFs2/Capa.png"
@@ -762,7 +783,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {negocio}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
     
     blank_line(elements,2)
-    elements.append(Paragraph(f'INVESTIMENTO', center_style))
+    elements.append(Paragraph(f'INVESTIMENTO', center_style_bold_green))
     blank_line(elements,1)
     
     elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.black, spaceBefore=5, spaceAfter=5))
@@ -776,12 +797,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
-        elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_gray))
-        elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.'), right_hero_bold_style))
+        elements.append(Paragraph(f'Desconto                - R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_light_style_gray))
+        elements.append(Paragraph(f'Total com desconto        R$ {float(valor_negocio):,.2f}'.replace(',', '.'), right_hero_bold_style_green))
         elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.black, spaceBefore=5, spaceAfter=5))
 
     else:    
-        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
+        elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_green))
         elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.black, spaceBefore=5, spaceAfter=5))
 
 
