@@ -702,7 +702,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     ]
     for p in zip (produtos):
         #print(p,v)
-        data.append([p['nome'], '     ', '     ', '     '])
+        data.append([p, '     ', '     ', '     '])
         
     if desconto > 0:
         data.append(['Total', '     ', '     ', f' R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.')])
@@ -833,10 +833,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # PDFs2 to merge PROPOSTAS EVTA
     if flag_EVTA:
         pdfs=[capa_path] # CAPA
-        path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item} - intro.pdf"
+        path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']} - intro.pdf"
         pdfs.append(path_item) # INTRODUÇÃO
         pdfs.append(pdf_path) # PROPOSTA
-        path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {item} - escopo.pdf"
+        path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']} - escopo.pdf"
         pdfs.append(path_escopo) # ESCOPO
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
