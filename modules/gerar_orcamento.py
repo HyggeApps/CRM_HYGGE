@@ -26,6 +26,7 @@ import re
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 import time
+from reportlab.platypus import HRFlowable
 
 path_proposta_envio = ''
 versao_proposta = ''
@@ -769,6 +770,9 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         if len(e) > 0:
             for v in e:
                 elements.append(Paragraph(f'• {v}', justify_hero_light_style_small_gray))
+    
+    elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.black, spaceBefore=10, spaceAfter=10))
+
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
         elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_gray))
