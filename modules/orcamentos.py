@@ -408,8 +408,8 @@ def gerenciamento_aceites(user, email, senha):
                             )
 
                             # Configuração do email
-                            #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
-                            receivers = ['rodrigo@hygge.eco.br', 'alexandre@hygge.eco.br']
+                            receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            #receivers = ['rodrigo@hygge.eco.br', 'alexandre@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
@@ -486,8 +486,8 @@ def gerenciamento_aceites(user, email, senha):
                                 st.error(f"Falha no envio do email: {e}")
 
                             # Configuração do email
-                            #receivers = selected_contatos + ['fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', email]
-                            receivers = ['rodrigo@hygge.eco.br', 'alexandre@hygge.eco.br']
+                            receivers = selected_contatos + ['fabricio@hygge.eco.br','alexandre@hygge.eco.br','rodrigo@hygge.eco.br','paula@hygge.eco.br','financeiro@hygge.eco.br', email]
+                            #receivers = ['rodrigo@hygge.eco.br', 'alexandre@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
