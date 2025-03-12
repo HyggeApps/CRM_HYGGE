@@ -1017,7 +1017,7 @@ def elaborar_orcamento(user, email, senha):
                             total += valor
                     
                     valor_estimado_formatado = format_currency(total)
-                    desconto = st.number_input("Desconto (%)",0.00000000, 100.00000000)
+                    desconto = st.number_input("Desconto (%)", 0.0, 100.0, format="%.8f")
                     desconto_total = total*(desconto/100)
                     valor_negocio = total - desconto_total
                     valor_negocio_formatado = format_currency(valor_negocio)
