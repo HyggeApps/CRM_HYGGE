@@ -783,9 +783,15 @@ def elaborar_orcamento(user, email, senha):
             # Conecta na coleção de produtos
             collection_produtos = get_collection("produtos")
 
-            # Consulta as categorias existentes no banco e monta o select
+            # Consulta as categorias existentes e monta a lista de opções
             categorias_existentes = collection_produtos.distinct("categoria")
-            categoria_orcamento = st.selectbox("Categoria: *", [''] + categorias_existentes)
+            categoria_options = [''] + categorias_existentes
+
+            # Define a categoria padrão, se disponível
+            default_categoria = negocio_selecionado.get("categoria", "")
+            default_categoria_index = categoria_options.index(default_categoria) if default_categoria in categoria_options else 0
+
+            categoria_orcamento = st.selectbox("Categoria: *", categoria_options, index=default_categoria_index)
 
             tipo_empreendimento = None
             tamanho_empreendimento = None
@@ -793,12 +799,24 @@ def elaborar_orcamento(user, email, senha):
             if categoria_orcamento:
                 # Consulta os tipos existentes para a categoria selecionada
                 tipos_existentes = collection_produtos.distinct("tipo", {"categoria": categoria_orcamento})
-                tipo_empreendimento = st.selectbox("Tipo do empreendimento: *", [''] + tipos_existentes)
-                
+                tipo_options = [''] + tipos_existentes
+
+                # Define o tipo padrão, se disponível
+                default_tipo = negocio_selecionado.get("tipo", "")
+                default_tipo_index = tipo_options.index(default_tipo) if default_tipo in tipo_options else 0
+
+                tipo_empreendimento = st.selectbox("Tipo do empreendimento: *", tipo_options, index=default_tipo_index)
+
                 if tipo_empreendimento:
                     # Consulta os tamanhos existentes para a combinação de categoria e tipo
                     tamanhos_existentes = collection_produtos.distinct("tamanho", {"categoria": categoria_orcamento, "tipo": tipo_empreendimento})
-                    tamanho_empreendimento = st.selectbox("Tamanho: *", [''] + tamanhos_existentes)
+                    tamanho_options = [''] + tamanhos_existentes
+
+                    # Define o tamanho padrão, se disponível
+                    default_tamanho = negocio_selecionado.get("tamanho", "")
+                    default_tamanho_index = tamanho_options.index(default_tamanho) if default_tamanho in tamanho_options else 0
+
+                    tamanho_empreendimento = st.selectbox("Tamanho: *", tamanho_options, index=default_tamanho_index)
 
             # Consulta o documento de produto com base na seleção
             if categoria_orcamento and tipo_empreendimento and tamanho_empreendimento:
@@ -964,8 +982,6 @@ def elaborar_orcamento(user, email, senha):
                         valor = servicos_adicionais.get(produto)
                         if valor and isinstance(valor, (int, float)):
                             total += valor
-
-                    st.write("Total: ", total)
                     
                     valor_estimado_formatado = format_currency(total)
                     desconto = st.number_input("Desconto (%)",0.0, 100.0)
@@ -1211,7 +1227,10 @@ def elaborar_orcamento(user, email, senha):
                                         "condicoes_pagamento": condicao_pagamento,
                                         "prazo_execucao": prazo,
                                         "contato_principal": nome_contato_principal,
-                                        "contatos_selecionados": selected_contatos
+                                        "contatos_selecionados": selected_contatos,
+                                        "categoria": categoria_orcamento,
+                                        "tipo": tipo_empreendimento,
+                                        "tamanho": tamanho_empreendimento
                                     }}
                                 )
                             else: st.error('Erro na geração do orçamento.')
