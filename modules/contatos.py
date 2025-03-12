@@ -77,7 +77,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
 
                             with col2:
                                 sobrenome_edit = st.text_input("Sobrenome", value=contato_dados.get("sobrenome", ""))
-                                email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""), disabled=True)
+                                email_edit = st.text_input("E-mail", value=contato_dados.get("email", ""))
 
                             submit_editar = st.form_submit_button("💾 Salvar Alterações")
 
@@ -88,7 +88,8 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                                         "nome": nome_edit,
                                         "sobrenome": sobrenome_edit,
                                         "cargo": cargo_edit,
-                                        "fone": telefone_edit
+                                        "fone": telefone_edit,
+                                        "email": email_edit
                                     }}
                                 )
                                 
