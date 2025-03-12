@@ -739,7 +739,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
             ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
-            ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
+            #('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
             
         ])
 
@@ -747,14 +747,6 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
         # Add the table to the elements list
         elements.append(table)
-        
-        if len(produtos) == 1: blank_line(elements,18-dsct)
-        if len(produtos) == 2: blank_line(elements,16-dsct)
-        if len(produtos) == 3: blank_line(elements,14-dsct)
-        if len(produtos) == 4: blank_line(elements,10-dsct)
-        if len(produtos) == 5: blank_line(elements,9-dsct)
-        if len(produtos) == 6: blank_line(elements,8-dsct)
-        if len(produtos) == 7: blank_line(elements,7-dsct)
 
     else:
         dsct = 1
@@ -770,11 +762,9 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             # Última linha em HeroBold:
             ('FONTNAME', (0, -1), (-1, -1), 'HeroBold'),
             # Penúltima linha com fonte na cor cinza:
-            ('TEXTCOLOR', (0, -2), (-1, -2), colors.gray),
+            #('TEXTCOLOR', (0, -2), (-1, -2), colors.gray),
             # Antepenúltima linha em HeroBold:
             ('FONTNAME', (0, -3), (-1, -3), 'HeroBold'),
-            ('LINEABOVE', (0, -1), (-1, -1), 1, colors.gray),  # Linha acima da última linha
-            ('LINEABOVE', (0, -2), (-1, -2), 1, colors.gray)   # Linha acima da penúltima linha
         ])
 
 
