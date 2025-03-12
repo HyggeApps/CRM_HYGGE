@@ -963,7 +963,7 @@ def elaborar_orcamento(user, email, senha):
                     #st.write(negocio_selecionado)
 
                     # Itera sobre a lista de produtos selecionados, adicionando o objeto correspondente para cada ocorrência
-                    produtos_selecionados_obj = [produtos_selecionados]
+                    produtos_selecionados_obj = produtos_selecionados
 
                     total = preco_modelagem + preco_servico
 
