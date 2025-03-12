@@ -50,13 +50,15 @@ def calcular_parcelas_e_saldo(amount, parcela_fixa):
     combinacoes = []
     texto_prop = ". à partir do aceite da proposta ou assinatura do contrato,"
     texto_prop1 = ". após a entrega do laudo diagnóstico,"
-    texto_50entrada = ". e saldo na entrega do serviço contratado,"
+    texto_entrada = ". e saldo na entrega do serviço contratado,"
 
     # Adiciona a opção à vista
     
     combinacoes.append(f"Total à vista de R$ {amount:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
     combinacoes.append(f"Total à vista de R$ {amount:,.2f}{texto_prop1}".replace(",", "X").replace(".", ",").replace("X", "."))
-    combinacoes.append(f"50% de entrada no valor de R$ {(amount/2):,.2f}{texto_50entrada}".replace(",", "X").replace(".", ",").replace("X", "."))
+    combinacoes.append(f"50% de entrada no valor de R$ {(amount/2):,.2f}{texto_entrada}".replace(",", "X").replace(".", ",").replace("X", "."))
+    combinacoes.append(f"30% de entrada no valor de R$ {(amount*0.3):,.2f}{texto_entrada}".replace(",", "X").replace(".", ",").replace("X", "."))
+
     if amount >= 12000 and amount < 18000: 
         combinacoes.append(f"2x de R$ {amount/2:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
     elif amount >= 18000 and amount < 24000: 
