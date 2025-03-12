@@ -789,7 +789,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         elements.append(Paragraph(f'{p}', left_hero_light_style))
         if len(e) > 0:
             for v in e:
-                elements.append(Paragraph(f'• {v}', justify_hero_light_style_small_gray))
+                if v == 'Cenário adicional de simulação':
+                    elements.append(Paragraph(f'• {v} (1 (uma) simulação computacional térmica e lumínica natural)', justify_hero_light_style_small_gray))
+                else: 
+                    elements.append(Paragraph(f'• {v}', justify_hero_light_style_small_gray))
     
     elements.append(HRFlowable(width="100%", thickness=0.5, lineCap='round', color=colors.black, spaceBefore=5, spaceAfter=5))
 
