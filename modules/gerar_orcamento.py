@@ -573,6 +573,27 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         leading=16,
         leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
+    left_hero_light_style_small_gray = ParagraphStyle(
+        'HeroLight',
+        parent=styles['Normal'],
+        alignment=TA_LEFT,
+        fontName='HeroLightRegular',
+        fontSize=8,
+        leading=16,
+        textColor=colors.gray,
+        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+    )
+    
+    justify_hero_light_style_small_gray = ParagraphStyle(
+        'HeroLight',
+        parent=styles['Normal'],
+        alignment=TA_JUSTIFY,
+        fontName='HeroLightRegular',
+        fontSize=8,
+        leading=16,
+        textColor=colors.gray,
+        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+    )
     left_hero_bold_style = ParagraphStyle(
         'HeroBold',
         parent=styles['Normal'],
@@ -745,7 +766,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     for p in produtos:
         elements.append(Paragraph(f'{p}', left_hero_light_style))
-        
+        elements.append(Paragraph(f'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', left_hero_light_style_small_gray))
     if desconto > 0:
         elements.append(Paragraph(f'Total                     R$ {float(valor_negocio+desconto):,.2f}'.replace(',', '.'), right_hero_bold_style))
         elements.append(Paragraph(f'Desconto                  R$ {float(desconto):,.2f}'.replace(',', '.'), right_hero_bold_style_gray))
