@@ -1,9 +1,7 @@
-import streamlit as st
 from pymongo import MongoClient # type: ignore
 from urllib.parse import quote_plus
 import ast
 
-@st.cache_resource
 def get_db_client():
     """Retorna o cliente MongoDB usando cache para otimizar conexões."""
     username = "crm_hygge"
@@ -19,29 +17,82 @@ def get_collection(collection_name):
 
 collection_produtos = get_collection('produtos')
 
-# Iterar por todos os documentos na coleção
-for doc in collection_produtos.find({}):
-    if "servicos_adicionais" in doc:
-        try:
-            # Converter a string para dicionário
-            servicos = ast.literal_eval(doc["servicos_adicionais"])
-            
-            # Atualizar os valores conforme solicitado
-            if "Reunião" in servicos:
-                servicos["Reunião"] = 1500
-            if "Urgência" in servicos:
-                servicos["Urgência"] = 2000
-            if "Cenário extra" in servicos:
-                servicos["Cenário extra"] = 1000
+import re
+import ast
 
-            # Converter o dicionário de volta para string ou manter como dicionário, se preferir
-            servicos_atualizado = str(servicos)
-            
-            # Atualizar o documento no banco
-            collection_produtos.update_one(
-                {"_id": doc["_id"]},
-                {"$set": {"servicos_adicionais": servicos_atualizado}}
-            )
-            print(f"Documento {doc['_id']} atualizado com sucesso.")
-        except Exception as e:
-            print(f"Erro ao atualizar documento {doc['_id']}: {e}")
+# Prefixos que identificam os produtos que queremos combinar
+prefix_auditoria = "Auditoria Certificação - "
+prefix_certificacao = "Certificação - "
+
+# Consulta os produtos que começam com um dos dois prefixos
+filtro = {
+    "nome": {
+        "$regex": f"^({re.escape(prefix_auditoria)}|{re.escape(prefix_certificacao)})"
+    }
+}
+produtos = list(collection_produtos.find(filtro))
+
+# Agrupa os produtos pela parte do nome que vem após o prefixo
+grupos = {}
+for prod in produtos:
+    nome = prod.get("nome", "")
+    if nome.startswith(prefix_auditoria):
+        remainder = nome[len(prefix_auditoria):]
+    elif nome.startswith(prefix_certificacao):
+        remainder = nome[len(prefix_certificacao):]
+    else:
+        continue
+
+    grupos.setdefault(remainder, []).append(prod)
+
+# Para cada grupo que contenha mais de um produto, cria um novo produto combinado
+for remainder, produtos_group in grupos.items():
+    # Só combina se houver pelo menos dois produtos (um de cada tipo, por exemplo)
+    if len(produtos_group) < 2:
+        continue
+
+    total_preco_servico = 0
+    total_preco_modelagem = 0
+    servicos_adicionais_combinados = {}
+
+    for prod in produtos_group:
+        total_preco_servico += prod.get("preco_servico", 0)
+        total_preco_modelagem += prod.get("preco_modelagem", 0)
+
+        servicos = prod.get("servicos_adicionais", {})
+        # Caso venha como string, tenta converter para dicionário
+        if isinstance(servicos, str):
+            try:
+                servicos = ast.literal_eval(servicos)
+            except Exception:
+                servicos = {}
+
+        # Soma os valores de cada serviço adicional
+        for chave, valor in servicos.items():
+            if chave in servicos_adicionais_combinados:
+                servicos_adicionais_combinados[chave] += valor
+            else:
+                servicos_adicionais_combinados[chave] = valor
+
+    # Define o novo nome com base na parte comum (remainder)
+    novo_nome = "Auditoria e Certificação - " + remainder
+
+    # Exemplo de definição dos demais campos:
+    # Aqui se assume que o "remainder" possui duas partes separadas por " - ",
+    # onde a primeira corresponde ao tipo e a última ao tamanho.
+    partes = remainder.split(" - ")
+    novo_tipo = "Auditoria e Certificação - " + (partes[0] if partes else "")
+    novo_tamanho = partes[-1] if len(partes) > 1 else ""
+
+    novo_produto = {
+        "nome": novo_nome,
+        "categoria": "Certificação",  # Conforme especificado
+        "tipo": novo_tipo,
+        "tamanho": novo_tamanho,
+        "preco_modelagem": total_preco_modelagem,
+        "preco_servico": total_preco_servico,
+        "servicos_adicionais": servicos_adicionais_combinados
+    }
+
+    resultado = collection_produtos.insert_one(novo_produto)
+    print(f"Novo produto criado para o grupo '{novo_nome}' com ID: {resultado.inserted_id}")

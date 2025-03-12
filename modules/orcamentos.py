@@ -376,12 +376,6 @@ def gerenciamento_aceites(user, email, senha):
                 with col2: contato_financeiro_answ = st.text_area('Contato financeiro (nome e email) *')
                 with col3: contatos_answ = st.text_area('Contatos adicionais')
 
-
-                # escopo (produtos) no email;
-                # prazo informado para entrega - automatico no email;
-
-                # Adicionar as informações completas no email. 
-
                 st.write('---')
 
                 if tipo_contrato_answ != '-' and nro_parcelas_answ != '-' and parcelas_vinc_ent_answ != '-' and resp_contrato_answ != '-' and entrada_answ != '-' and len(parceria_answ) > 0 and len(comentarios_answ) > 0 and len(contato_financeiro_answ) > 0: 
@@ -840,6 +834,7 @@ def elaborar_orcamento(user, email, senha):
                 elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575']
                 elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575']
                 elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Coonsultoria Hygge']
+                elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: ['Certificação EDGE', 'Auditoria EDGE']
                 elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE']
                 elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE']
                 elif 'Auditoria' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE']
@@ -878,14 +873,25 @@ def elaborar_orcamento(user, email, senha):
                         disabled=True
                     )
 
-                with col2:
-                    produtos_selecionado2 = st.multiselect(
-                        "Produto 2:",
-                        options=nomes_produtos,
-                        #default='',
-                        key="select_produto_oportunidade2",
-                        placeholder='Selecione aqui...'
-                    )
+                if 'Certificação EDGE' in nomes_produtos and 'Auditoria EDGE' in nomes_produtos:     
+                    with col2:
+                        produtos_selecionado2 = st.multiselect(
+                            "Produto 2:",
+                            options=nomes_produtos,
+                            default=nomes_produtos[1],
+                            key="select_produto_oportunidade2",
+                            placeholder='Selecione aqui...'
+                        )
+                
+                else:
+                    with col2:
+                        produtos_selecionado2 = st.multiselect(
+                            "Produto 2:",
+                            options=nomes_produtos,
+                            #default='',
+                            key="select_produto_oportunidade2",
+                            placeholder='Selecione aqui...'
+                        )
                 with col3:
                     produtos_selecionado3 = st.multiselect(
                         "Produto 3:",
