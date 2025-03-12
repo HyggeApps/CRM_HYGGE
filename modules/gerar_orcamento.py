@@ -700,9 +700,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     data = [
         ['Serviço(s) contemplados', '     ', '     ', '     ']
     ]
-    st.write(produtos)
     for p in produtos:
-        st.write(p)
         data.append([p, '     ', '     ', '     '])
         
     if desconto > 0:
@@ -849,9 +847,9 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         pdfs = [capa_path, pdf_path]
 
         for item in produtos:
-            if item['nome'] != 'Reunião':
-                path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item['nome']}.pdf"
-                pdfs.append(path_item) 
+            if item != 'Reunião':
+                path_item = Path(__file__).parent / f"PDFs2/Descritivo - {item}.pdf"
+                pdfs.append(path_item)
         #local de input dos pdfs para a proposta
         pdfs.append(termos_filename)
         pdfs.append(disposicoes_gerais_filename)
