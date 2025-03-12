@@ -450,6 +450,11 @@ def consultar_empresas(user, admin):
                 if st.button("Desmarcar tudo", use_container_width=True):
                     df_empresas["Editar"] = False
             
+            
+            df_empresas["Produto Interesse"] = df_empresas["Produto Interesse"].apply(
+                lambda x: ", ".join(x) if isinstance(x, list) else x
+            )
+
             edited_df = st.data_editor(
                 df_empresas,
                 column_config={

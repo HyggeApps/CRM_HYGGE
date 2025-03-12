@@ -134,7 +134,7 @@ def gerenciamento_aceites(user, email, senha):
         opcoes_negocios = [
             opp["nome_oportunidade"] 
             for opp in oportunidades 
-            if opp.get("estagio") not in ["Perdida", "Fechado"]
+            if opp.get("estagio") not in ["Perdido", "Fechado"]
         ]
         selected_negocio = st.selectbox("**Selecione o Negócio:**", opcoes_negocios, key="orcamento_negocio")
 
@@ -776,7 +776,7 @@ def elaborar_orcamento(user, email, senha):
         opcoes_negocios = [
             opp["nome_oportunidade"] 
             for opp in oportunidades 
-            if opp.get("estagio") not in ["Perdida", "Fechado"]
+            if opp.get("estagio") not in ["Perdido", "Fechado"]
         ]
         selected_negocio = st.selectbox("**Selecione o Negócio:**", opcoes_negocios, key="orcamento_negocio")
 
