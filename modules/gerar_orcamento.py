@@ -699,8 +699,6 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontSize=12,
         textColor=colors.HexColor("#7a8630")
     )
-
-    st.write(colors.)
     
     # CAPA DA PROPOSTA
     image_reader = Path(__file__).parent / "PDFs2/Capa.png"
