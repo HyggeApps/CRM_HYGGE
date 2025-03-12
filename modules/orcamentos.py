@@ -977,7 +977,13 @@ def elaborar_orcamento(user, email, senha):
                 
                 negocio_selecionado['produtos'] = produtos_selecionados
 
-                for i in range(len(produtos_selecionados)-1):
+                size_produtos = len(produtos_selecionados)-1
+                for p in produtos_selecionados:
+                    if p == 'Cenário adicional de simulação':
+                        lista_escopo.append(['Contempla 1 (uma) simulação computacional térmica e lumínica natural adicional'])
+                        size_produtos-=1
+
+                for i in range(size_produtos):
                     lista_escopo.append([])
 
                 if len(produtos_selecionados) > 0:
