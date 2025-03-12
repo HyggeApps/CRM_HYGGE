@@ -564,6 +564,15 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         leading=16,
         leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
+    left_hero_light_style_small = ParagraphStyle(
+        'HeroLight',
+        parent=styles['Normal'],
+        alignment=TA_LEFT,
+        fontName='HeroLightRegular',
+        fontSize=8,
+        leading=16,
+        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+    )
     left_hero_bold_style = ParagraphStyle(
         'HeroBold',
         parent=styles['Normal'],
