@@ -252,25 +252,41 @@ def gerenciamento_oportunidades(user):
                 st.write('----')
                 
                 if not df_filtrado.empty:
-                    for _, row in df_filtrado.iterrows():
+                    for i, (idx, row) in enumerate(df_filtrado.iterrows()):
                         st.subheader(f"{row['nome_oportunidade']}")
-                        if row['valor_orcamento'] != '': st.write(f"**💲 {row['valor_orcamento']}**")
-                        else: st.write(f"**💲 {row['valor_estimado']}**")
-                        st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
-                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
-                        st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
+                        if row['valor_orcamento'] != '':
+                            st.write(f"**💲 {row['valor_orcamento']}**")
+                        else:
+                            st.write(f"**💲 {row['valor_estimado']}**")
                         
-                        st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True, key='produtos_'+row['nome_oportunidade'])
+                        if pd.notnull(row["data_criacao"]):
+                            data_criacao_str = row["data_criacao"].strftime("%d/%m/%Y")
+                        else:
+                            data_criacao_str = "Data não informada"
 
-                        # Criar selectbox para alterar o estágio
-                        novo_estagio = st.selectbox(
-                            "Alterar estágio",
-                            options=estagios_disponiveis+['On-hold','Perdido','Fechado'],
-                            index=estagios_disponiveis.index(row['estagio']),
-                            key=f"select_{row['nome_oportunidade']}"
+                        if pd.notnull(row["data_fechamento"]):
+                            data_fechamento_str = row["data_fechamento"].strftime("%d/%m/%Y")
+                        else:
+                            data_fechamento_str = "Data não informada"
+
+                        st.write(f'📆 Criação: **{data_criacao_str}**')
+                        st.write(f"📆 Previsão de fechamento: **{data_fechamento_str}**")
+                        
+                        st.multiselect(
+                            "**Produtos:**", 
+                            row['produtos'], 
+                            default=row['produtos'], 
+                            disabled=True, 
+                            key=f'produtos_{row["nome_oportunidade"]}_{i}'
                         )
 
-                        # Se o estágio for alterado, atualizar no MongoDB
+                        novo_estagio = st.selectbox(
+                            "Alterar estágio",
+                            options=estagios_disponiveis + ['On-hold','Perdido','Fechado'],
+                            index=estagios_disponiveis.index(row['estagio']),
+                            key=f"select_{row['nome_oportunidade']}_{i}"
+                        )
+
                         if novo_estagio != row['estagio']:
                             collection_oportunidades.update_one(
                                 {"nome_oportunidade": row['nome_oportunidade']},
@@ -376,22 +392,41 @@ def gerenciamento_oportunidades(user):
                 st.write('----')
                 
                 if not df_filtrado.empty:
-                    for _, row in df_filtrado.iterrows():
+                    for i, (_, row) in enumerate(df_filtrado.iterrows()):
                         st.subheader(f"{row['nome_oportunidade']}")
                         st.write(f"**💲 {row['valor_estimado']}**")
-                        st.write(f'📆 Criação: **{row["data_criacao"].strftime("%d/%m/%Y")}**')
-                        data_formatada = row['data_fechamento'].strftime("%d/%m/%Y")
-                        st.write(f"📆 Previsão de fechamento: **{data_formatada}**")
                         
-                        st.multiselect("**Produtos:**", row['produtos'], default=row['produtos'], disabled=True)
+                        # Formatando a data de criação
+                        if pd.notnull(row["data_criacao"]):
+                            data_criacao_str = row["data_criacao"].strftime("%d/%m/%Y")
+                        else:
+                            data_criacao_str = "Data não informada"
+
+                        # Formatando a data de fechamento
+                        if pd.notnull(row["data_fechamento"]):
+                            data_fechamento_str = row["data_fechamento"].strftime("%d/%m/%Y")
+                        else:
+                            data_fechamento_str = "Data não informada"
+
+                        st.write(f'📆 Criação: **{data_criacao_str}**')
+                        st.write(f"📆 Previsão de fechamento: **{data_fechamento_str}**")
+                        
+                        # Atribuindo uma chave única usando o índice
+                        st.multiselect(
+                            "**Produtos:**", 
+                            row['produtos'], 
+                            default=row['produtos'], 
+                            disabled=True, 
+                            key=f"produtos_{row['nome_oportunidade']}_{i}"
+                        )
 
                         if row['estagio'] == 'On-hold':
-                            # Criar selectbox para alterar o estágio
+                            # Criar selectbox para alterar o estágio com chave única
                             novo_estagio = st.selectbox(
                                 "Alterar estágio",
-                                options=list(estagios_encerrados.keys())+['Aguardando projeto','Frio', 'Morno','Quente','Aguardando assinatura'],
+                                options=list(estagios_encerrados.keys()) + ['Aguardando projeto','Frio', 'Morno','Quente','Aguardando assinatura'],
                                 index=list(estagios_encerrados.keys()).index(row['estagio']),
-                                key=f"select_{row['nome_oportunidade']}_encerrado"
+                                key=f"select_{row['nome_oportunidade']}_encerrado_{i}"
                             )
 
                             # Se o estágio for alterado, atualizar no MongoDB
@@ -402,7 +437,6 @@ def gerenciamento_oportunidades(user):
                                 )
                                 st.success(f"Estágio alterado para {novo_estagio}")
                                 st.rerun()  # Atualiza a página após a mudança
-
                             # ──────────────────────────────────────────────────────────────────────────
                             # Exemplo de "editar oportunidade" via expander
                             # ──────────────────────────────────────────────────────────────────────────
