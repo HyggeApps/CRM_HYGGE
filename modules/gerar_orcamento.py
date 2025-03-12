@@ -562,7 +562,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontName='HeroLightRegular',
         fontSize=10,
         leading=16,
-        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
     left_hero_light_style_small = ParagraphStyle(
         'HeroLight',
@@ -581,7 +581,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontSize=8,
         leading=16,
         textColor=colors.gray,
-        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
     
     justify_hero_light_style_small_gray = ParagraphStyle(
@@ -601,7 +601,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontName='HeroBold',
         fontSize=10,
         leading=16,
-        leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
     
     right_hero_light_style = ParagraphStyle(
@@ -611,7 +611,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontName='HeroLightRegular',
         fontSize=10,
         leading=16,
-        leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent= 1 * cm  # Define o recuo de 2 cm à esquerda
     )
     right_hero_bold_style = ParagraphStyle(
         'HeroBold',
@@ -620,7 +620,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontName='HeroBold',
         fontSize=10,
         leading=16,
-        leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
 
     right_hero_bold_style_gray = ParagraphStyle(
@@ -631,7 +631,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         fontSize=10,
         leading=16,
         textColor=colors.gray,
-        leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
+        #leftIndent=1 * cm  # Define o recuo de 2 cm à esquerda
     )
     title_hero_light_style = ParagraphStyle(
         'TitleHeroLight',
@@ -640,7 +640,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         alignment=TA_LEFT,
         fontSize=30,
         leading=35,
-        leftIndent= -0.5 * cm
+        #leftIndent= -0.5 * cm
     )
 
     right_aligned_style = ParagraphStyle(
