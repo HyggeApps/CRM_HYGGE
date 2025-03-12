@@ -49,7 +49,7 @@ def calcular_parcelas_e_saldo(amount, parcela_fixa):
     # Cria uma lista para armazenar as combinações
     combinacoes = []
     texto_prop = ". à partir do aceite da proposta ou assinatura do contrato,"
-    texto_prop1 = ". após a entrega do laudo diagnóstico,"
+    texto_prop1 = ". após a entrega do serviço contratado,"
     texto_entrada = " e saldo na entrega do serviço contratado,"
 
     # Adiciona a opção à vista
