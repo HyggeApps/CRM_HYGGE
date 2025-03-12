@@ -977,7 +977,7 @@ def elaborar_orcamento(user, email, senha):
                 
                 negocio_selecionado['produtos'] = produtos_selecionados
 
-                for i in range(produtos_selecionados-1):
+                for i in range(len(produtos_selecionados)-1):
                     lista_escopo.append([])
 
                 if len(produtos_selecionados) > 0:
