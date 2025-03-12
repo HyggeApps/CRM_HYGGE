@@ -825,46 +825,55 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     pq_escolher_filename = Path(__file__).parent / "PDFs2/pq a Hygge.pdf"
     
 
-    # 1. Verifica se há produtos que contenham 'Certificação' ou 'Auditoria'
+    # Supondo que 'produtos' seja uma lista de strings
     flag_EVTA = any('Certificação' in produto or 'Auditoria' in produto for produto in produtos)
 
-    # 2. Criação da lista de PDFs a partir do flag definido
     if flag_EVTA:
         pdfs = [capa_path]  # CAPA
 
         # Seleciona um produto de referência que contenha as palavras-chave
         produto_ref = next((produto for produto in produtos if 'Certificação' in produto or 'Auditoria' in produto), None)
         if produto_ref:
+            # Verifica se o arquivo de INTRO existe
             path_intro = Path(__file__).parent / f"PDFs2/Descritivo - {produto_ref} - intro.pdf"
             if path_intro.exists():
-                st.success('existe intro')
-            pdfs.append(path_intro)  # INTRODUÇÃO
+                st.success(f"Arquivo encontrado: {path_intro.name}")
+                pdfs.append(path_intro)
+            else:
+                st.warning(f"Arquivo não encontrado: {path_intro.name}. Será omitido.")
 
-            pdfs.append(pdf_path)  # PROPOSTA
+            # Adiciona a proposta
+            pdfs.append(pdf_path)
 
+            # Verifica se o arquivo de ESCOPO existe
             path_escopo = Path(__file__).parent / f"PDFs2/Descritivo - {produto_ref} - escopo.pdf"
             if path_escopo.exists():
-                st.success('existe escopo')
-            pdfs.append(path_escopo)  # ESCOPO
+                st.success(f"Arquivo encontrado: {path_escopo.name}")
+                pdfs.append(path_escopo)
+            else:
+                st.warning(f"Arquivo não encontrado: {path_escopo.name}. Será omitido.")
 
-        # Adiciona os demais PDFs
+        # Adiciona os demais PDFs obrigatórios
         pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
     else:
         pdfs = [capa_path, pdf_path]
 
         for produto in produtos:
-            # Ignora itens específicos que não devem gerar PDF
+            # Ignora itens que não geram PDF
             if produto in ['Reunião', 'Urgência', 'Cenário adicional']:
                 continue
 
-            # Caso especial: se o nome contém 'NBR' e 'Cenário adicional' está na lista, e não contém 'Aditivo'
+            # Caso especial para 'NBR' com 'Cenário adicional' sem 'Aditivo'
             if 'NBR' in produto and 'Cenário adicional' in produtos and 'Aditivo' not in produto:
                 path_item = Path(__file__).parent / "PDFs2/Descritivo - Laudo NBR Fast e Aditivo.pdf"
             else:
                 path_item = Path(__file__).parent / f"PDFs2/Descritivo - {produto}.pdf"
-            pdfs.append(path_item)
 
-        # Adiciona os demais PDFs
+            if path_item.exists():
+                pdfs.append(path_item)
+            else:
+                st.warning(f"Arquivo não encontrado: {path_item.name}. Será omitido.")
+
         pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
 
     writer = PdfWriter()
