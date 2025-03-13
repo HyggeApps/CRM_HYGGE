@@ -852,7 +852,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     if flag_EVTA:
         pdfs = [capa_path]  # CAPA
-      
+   
 
         # Seleciona um produto de referência que contenha as palavras-chave
         produto_ref = next((produto for produto in produtos if 'Certificação' in produto or 'Auditoria' in produto), None)
@@ -879,7 +879,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         # Adiciona os demais PDFs obrigatórios
         pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
     else:
-        pdfs = [capa, pdf_path]
+        pdfs = [capa_path, pdf_path]
 
         for produto in produtos:
             # Ignora itens que não geram PDF
