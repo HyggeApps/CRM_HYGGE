@@ -527,7 +527,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     temp_dir = tempfile.mkdtemp()
     pdf_filename = f'{negocio}_{id}.pdf'
     capa = f'Capa.pdf'
-    capa_NBR = f'NBR_Capa.pdf'
+    capa_NBR = f'NBR_Capa.png'
     contracapa = f'Contracapa.pdf'           
     pdf_path = os.path.join(temp_dir, pdf_filename)
     capa_path = os.path.join(temp_dir, capa)
