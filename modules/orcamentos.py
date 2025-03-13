@@ -444,7 +444,6 @@ def gerenciamento_aceites(user, email, senha):
                             <p>Tipo de empreendimento: {tipo}<br></p>
                             <p>Tamanho: {tamanho}<br></p>
 
-
                             <p>Atenciosamente,</p>"""
 
                             if email == 'comercial2@hygge.eco.br': url = "https://www.hygge.eco.br/assinatura-email/2024/thiago-lecheta.html"

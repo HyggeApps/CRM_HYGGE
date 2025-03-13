@@ -768,7 +768,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # CABEÇALHO, NUMERO PROPOSTA, VALIDADE DA PROPOSTA
     blank_line(elements,2)
     elements.append(Paragraph(f'Curitiba, {data_formatada_ptbr}', hero_bold_style))
-    elements.append(Paragraph(f'Número da proposta: {id}', hero_bold_style))
+    elements.append(Paragraph(f'Código da proposta: {id}', hero_bold_style))
     elements.append(Paragraph(f'Validade da proposta: 30 dias', hero_bold_style))
 
     blank_line(elements,1)
