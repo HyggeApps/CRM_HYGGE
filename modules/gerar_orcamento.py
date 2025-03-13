@@ -527,11 +527,9 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     temp_dir = tempfile.mkdtemp()
     pdf_filename = f'{negocio}_{id}.pdf'
     capa = f'Capa.pdf'
-    capa_NBR = f'NBR_Capa.pdf'
     contracapa = f'Contracapa.pdf'           
     pdf_path = os.path.join(temp_dir, pdf_filename)
     capa_path = os.path.join(temp_dir, capa)
-    NBR_capa = os.path.join(temp_dir, capa_NBR)
     contracapa_path = os.path.join(temp_dir, contracapa)
     
     # ESTILOS DE PARAGRAFGO
@@ -881,7 +879,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         # Adiciona os demais PDFs obrigatórios
         pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
     else:
-        pdfs = [NBR_capa, pdf_path]
+        pdfs = [capa, pdf_path]
 
         for produto in produtos:
             # Ignora itens que não geram PDF
