@@ -527,9 +527,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     temp_dir = tempfile.mkdtemp()
     pdf_filename = f'{negocio}_{id}.pdf'
     capa = f'Capa.pdf'
+    capa_NBR = f'NBR_Capa.pdf'
     contracapa = f'Contracapa.pdf'           
     pdf_path = os.path.join(temp_dir, pdf_filename)
     capa_path = os.path.join(temp_dir, capa)
+    NBR_capa = os.path.join(temp_dir, capa_NBR)
     contracapa_path = os.path.join(temp_dir, contracapa)
     
     # ESTILOS DE PARAGRAFGO
@@ -834,7 +836,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     doc.build(elements)
     aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
-    disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf" 
+    NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
+    NBR_disposicoes = Path(__file__).parent / "PDFs2/NBRFast_Disposicoes.pdf" 
+    NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
+    disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf"  
     clientes_hygge_filename = Path(__file__).parent / "PDFs2/Nossos clientes.pdf"
     pq_escolher_filename = Path(__file__).parent / "PDFs2/pq a Hygge.pdf"
     
@@ -844,6 +849,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     if flag_EVTA:
         pdfs = [capa_path]  # CAPA
+      
 
         # Seleciona um produto de referência que contenha as palavras-chave
         produto_ref = next((produto for produto in produtos if 'Certificação' in produto or 'Auditoria' in produto), None)
@@ -870,7 +876,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         # Adiciona os demais PDFs obrigatórios
         pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
     else:
-        pdfs = [capa_path, pdf_path]
+        pdfs = [NBR_capa, pdf_path]
 
         for produto in produtos:
             # Ignora itens que não geram PDF
@@ -888,7 +894,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             else:
                 st.warning(f"Arquivo não encontrado: {path_item.name}. Será omitido.")
 
-        pdfs.extend([termos_filename, disposicoes_gerais_filename, clientes_hygge_filename, contracapa_path])
+        pdfs.extend([NBRFast_Termos, NBR_disposicoes, NBR_clientes_hygge, contracapa_path])
 
     writer = PdfWriter()
 
