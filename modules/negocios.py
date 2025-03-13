@@ -298,6 +298,7 @@ def gerenciamento_oportunidades(user):
                         # ──────────────────────────────────────────────────────────────────────────
                         # Exemplo de "editar oportunidade" via expander
                         # ──────────────────────────────────────────────────────────────────────────
+                        st.write(1)
                         with st.popover("✏️ Editar oportunidade"):
                             # Aqui você pode permitir editar campos específicos,
                             # como nome, valor estimado, datas, etc.
