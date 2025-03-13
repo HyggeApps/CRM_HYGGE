@@ -301,7 +301,7 @@ def gerenciamento_oportunidades(user):
                         with st.popover("✏️ Editar oportunidade"):
                             # Aqui você pode permitir editar campos específicos,
                             # como nome, valor estimado, datas, etc.
-                            novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
+                            novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}_{i}")  # Unique key)
                             #novo_valor = st.text_input("Valor estimado", value=str(row["valor_estimado"]),key=f"valor_{row['nome_oportunidade']}")
                             nova_data_fechamento_date = st.date_input(
                                 "Data de fechamento",
