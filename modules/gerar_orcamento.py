@@ -527,7 +527,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     temp_dir = tempfile.mkdtemp()
     pdf_filename = f'{negocio}_{id}.pdf'
     capa = f'Capa.pdf'
-    capa_NBR = f'NBR_Capa.png'
+    capa_NBR = f'NBR_Capa.pdf'
     contracapa = f'Contracapa.pdf'           
     pdf_path = os.path.join(temp_dir, pdf_filename)
     capa_path = os.path.join(temp_dir, capa)
@@ -703,7 +703,12 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     )
     
     # CAPA DA PROPOSTA
-    image_reader = Path(__file__).parent / "PDFs2/Capa.png"
+    image_reader=None
+    for p in produtos:
+        if 'NBR' in p:
+            image_reader = Path(__file__).parent / "PDFs2/NBR_Capa.png"
+    if image_reader is not None:
+        image_reader = Path(__file__).parent / "PDFs2/Capa.png"
 
     # Criação do documento no padrão A4
     doc = BaseDocTemplate(capa_path, pagesize=A4)
