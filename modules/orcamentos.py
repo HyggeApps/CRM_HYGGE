@@ -440,9 +440,9 @@ def gerenciamento_aceites(user, email, senha):
                             <p>Contatos adicionais: {contatos_answ}<br></p>
                             
                             <br><p>Detalhes do fechamento:<br></p>
-                            <p>Contatos adicionais: {contatos_answ}<br></p>
-                            <p>Contatos adicionais: {contatos_answ}<br></p>
-                            <p>Contatos adicionais: {contatos_answ}<br></p>
+                            <p>Categoria: {categoria}<br></p>
+                            <p>Tipo de empreendimento: {tipo}<br></p>
+                            <p>Tamanho: {tamanho}<br></p>
 
 
                             <p>Atenciosamente,</p>"""
