@@ -335,6 +335,9 @@ def gerenciamento_aceites(user, email, senha):
 
                     # Valor padrão para contatos selecionados (campo 'contatos_selecionados' da oportunidade)
                     default_contatos = negocio_selecionado.get("contatos_selecionados", [])
+                    categoria = negocio_selecionado.get("categoria", '')
+                    tipo = negocio_selecionado.get("tipo", '')
+                    tamanho = negocio_selecionado.get("tamanho", '')
                     # Filtra os defaults para que estejam entre as opções disponíveis
                     default_contatos = [d for d in default_contatos if d in opcoes_contatos]
 
@@ -435,6 +438,12 @@ def gerenciamento_aceites(user, email, senha):
                             <p>Comentários relevantes: {comentarios_answ}<br></p>
                             <p>Contato financeiro: {contato_financeiro_answ}<br></p>
                             <p>Contatos adicionais: {contatos_answ}<br></p>
+                            
+                            <br><p>Detalhes do fechamento:<br></p>
+                            <p>Contatos adicionais: {contatos_answ}<br></p>
+                            <p>Contatos adicionais: {contatos_answ}<br></p>
+                            <p>Contatos adicionais: {contatos_answ}<br></p>
+
 
                             <p>Atenciosamente,</p>"""
 
