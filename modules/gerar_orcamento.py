@@ -841,7 +841,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
     NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
     NBR_disposicoes = Path(__file__).parent / "PDFs2/NBRFast_Disposicoes.pdf" 
-    NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
+    #NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
     disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf"  
     clientes_hygge_filename = Path(__file__).parent / "PDFs2/Nossos clientes.pdf"
     pq_escolher_filename = Path(__file__).parent / "PDFs2/pq a Hygge.pdf"
@@ -897,8 +897,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             else:
                 st.warning(f"Arquivo não encontrado: {path_item.name}. Será omitido.")
 
-        pdfs.extend([NBRFast_Termos, NBR_disposicoes, NBR_clientes_hygge, contracapa_path])
-
+        #pdfs.extend([NBRFast_Termos, NBR_disposicoes, NBR_clientes_hygge, contracapa_path])
+        pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])
     writer = PdfWriter()
 
     for pdf in pdfs:
