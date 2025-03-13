@@ -518,6 +518,9 @@ def consultar_empresas(user, admin):
                 st.write("Nenhuma empresa selecionada para alterações.")
         
         else:
+            df_empresas["Produto Interesse"] = df_empresas["Produto Interesse"].apply(
+                lambda x: x if isinstance(x, list) or pd.isnull(x) else [x]
+            )
             edited_df = st.data_editor(
                 df_empresas,
                 column_config={
