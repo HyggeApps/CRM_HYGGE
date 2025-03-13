@@ -298,7 +298,6 @@ def gerenciamento_oportunidades(user):
                         # ──────────────────────────────────────────────────────────────────────────
                         # Exemplo de "editar oportunidade" via expander
                         # ──────────────────────────────────────────────────────────────────────────
-                        st.write(1)
                         with st.popover("✏️ Editar oportunidade"):
                             # Aqui você pode permitir editar campos específicos,
                             # como nome, valor estimado, datas, etc.
@@ -308,7 +307,7 @@ def gerenciamento_oportunidades(user):
                                 "Data de fechamento",
                                 value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
                                                             else dt.date.today(),
-                                key=f"dataFechamento_{row['nome_oportunidade']}"
+                                key=f"dataFechamento_{row['nome_oportunidade']}_{i}"
                             )
                             
                             nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento_date, time.min)
