@@ -314,7 +314,7 @@ def gerenciamento_oportunidades(user):
                             nova_data_fechamento = nova_data_fechamento_datetime.isoformat(timespec='milliseconds') + 'Z'
                             
                             # Button to save changes
-                            if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}"):
+                            if st.button("Salvar alterações", key=f"salvar_{row['nome_oportunidade']}_{i}"):
                                 update_fields = {
                                     "nome_oportunidade": novo_nome,
                                     #"valor_estimado": novo_valor,
