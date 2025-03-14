@@ -703,8 +703,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # CAPA DA PROPOSTA
     image_reader=None
     for p in produtos:
+        st.write(p)
         if 'NBR' in p:
+            st.write('entrei')
             image_reader = Path(__file__).parent / "PDFs2/NBR_Capa.png"
+            break
     if image_reader is not None:
         image_reader = Path(__file__).parent / "PDFs2/Capa.png"
 
