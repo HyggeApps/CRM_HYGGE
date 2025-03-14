@@ -16,24 +16,28 @@ def get_collection(collection_name):
 # Conecta à coleção "produtos"
 collection_produtos = get_collection("produtos")
 
-# Primeiro: remove o campo "escopo" dos produtos da categoria MCMV
+# Primeiro: remove o campo "escopo" dos produtos da categoria Consultoria
 resultado_unset = collection_produtos.update_many(
-    {"categoria": "Certificação"},
+    {
+        "categoria": "Consultoria",
+        "tipo": {"$regex": "NBR"}
+    },
     {"$unset": {"escopo": ""}}
 )
 print("Campo 'escopo' removido de", resultado_unset.modified_count, "documentos.")
 
-# Em seguida: define a lista de escopo corrigida
+# Define a lista de escopo corrigida
 escopo_list = [
-    'Laudo Normativo por simulação computacional para o desempenho Térmico da NBR 15.575:2024',
-    'Laudo Normativo por simulação computacional para o desempenho Lumínico Natural da NBR 15.575:2024',
-    'Análise por simulação computacional dos itens 2.2 e 2.3 do Selo Casa Azul + CAIXA',
-    'Modelo 3D com os resultados obtidos por simulação computacional'
+    'Laudo diagnóstico para NBR 15.575 por simulação computacional para o térmico e lumínico natural.'
 ]
 
-# Atualiza os documentos com a lista corrigida
+# Atualiza os documentos que não possuem o campo "escopo", adicionando-o com escopo_list
 resultado_set = collection_produtos.update_many(
-    {"categoria": "Certificação"},
+    {
+        "categoria": "Consultoria",
+        "tipo": {"$regex": "NBR"},
+        "escopo": {"$exists": False}
+    },
     {"$set": {"escopo": escopo_list}}
 )
-("Campo 'escopo' atualizado em", resultado_set.modified_count, "documentos.")
+print("Campo 'escopo' atualizado em", resultado_set.modified_count, "documentos.")
