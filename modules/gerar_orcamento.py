@@ -705,13 +705,13 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     for p in produtos:
         st.write(p)
         if 'NBR' in p:
-            st.write('entrei')
+            #st.write('entrei')
             image_reader = Path(__file__).parent / "PDFs2/NBR_Capa.png"
             break
-    if image_reader is not None:
+    if image_reader is None:
         image_reader = Path(__file__).parent / "PDFs2/Capa.png"
 
-    st.write(image_reader)
+    #st.write(image_reader)
 
     # Criação do documento no padrão A4
     doc = BaseDocTemplate(capa_path, pagesize=A4)
