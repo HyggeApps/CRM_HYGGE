@@ -903,7 +903,7 @@ def elaborar_orcamento(user, email, senha):
                                 nomes_produtos.append(servico)
                                 
                 #st.write(nomes_produtos)
-                                
+                st.write('1')                
                 st.text('Selecione o(s) produto(s) para o orçamento:')
 
                 col1, col2, col3, col4, col5 = st.columns(5)
