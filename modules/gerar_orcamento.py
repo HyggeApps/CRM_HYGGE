@@ -711,6 +711,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     if image_reader is not None:
         image_reader = Path(__file__).parent / "PDFs2/Capa.png"
 
+    st.write(image_reader)
+
     # Criação do documento no padrão A4
     doc = BaseDocTemplate(capa_path, pagesize=A4)
 
