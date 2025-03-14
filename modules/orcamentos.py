@@ -1165,8 +1165,8 @@ def elaborar_orcamento(user, email, senha):
                             st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
                             justificativa = st.text_area("Justificativa para solicitação de novo desconto adicional:")
                             if st.button(f'Solicitar novo desconto de {desconto}%'):
-                                #receivers = ['fabricio@hygge.eco.br', email]
-                                receivers = [email]
+                                receivers = ['fabricio@hygge.eco.br', email]
+                                #receivers = [email]
                                 message = MIMEMultipart()
                                 message["From"] = email
                                 message["To"] = ", ".join(receivers)
@@ -1217,8 +1217,8 @@ def elaborar_orcamento(user, email, senha):
                             justificativa = st.text_area("Justificativa para solicitação de desconto adicional:")
                             if st.button(f'Solicitar desconto de {desconto}%'):
                             
-                                #receivers = ['fabricio@hygge.eco.br', email]
-                                receivers = [email]
+                                receivers = ['fabricio@hygge.eco.br', email]
+                                #receivers = [email]
                                 
                                 message = MIMEMultipart()
                                 message["From"] = email
