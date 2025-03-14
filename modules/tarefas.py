@@ -170,10 +170,13 @@ def gerenciamento_tarefas(user, admin, empresa):
 
                             with col2:
                                 st.text_input("Status atual", tarefa_dados["status"], disabled=True)
+                                options = ["🟨 Em andamento", "🟩 Concluída"]
+                                # Use a default mapping if tarefa_dados["status"] is not in options
+                                default_status = tarefa_dados["status"] if tarefa_dados["status"] in options else "🟨 Em andamento"
                                 status_edit = st.selectbox(
                                     "Status",
-                                    ["🟨 Em andamento", "🟩 Concluída"],
-                                    index=["🟥 Atrasado","🟨 Em andamento", "🟩 Concluída"].index(tarefa_dados["status"])
+                                    options,
+                                    index=options.index(default_status)
                                 )
                             observacoes_edit = st.text_area("Observações", value=tarefa_dados["observacoes"])
 
