@@ -866,10 +866,11 @@ def elaborar_orcamento(user, email, senha):
                 elif 'NBR Fast' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast']
                 elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575']
                 elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Consultoria Hygge']
-                elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE (EVTA)', 'Auditoria EDGE']
-                elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE (EVTA)']
-                elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação Fitwell (EVTA)']
+                elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE', 'Auditoria EDGE']
+                elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE']
+                elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação Fitwell']
                 elif 'Auditoria' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE']
+                elif 'GBC' in tipo_empreendimento: nomes_produtos = ['GBC Casa Condomínio']
                 else: nomes_produtos = []
 
                 lista_escopo = []  # Será uma lista de listas; cada sublista corresponde ao "escopo" de um produto
