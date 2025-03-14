@@ -791,10 +791,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     elements.append(Paragraph('À', hero_light_style))
     elements.append(Paragraph(f'{empresa}', hero_light_style))
     elements.append(Paragraph(f'A/C: {nome_contato_principal}', hero_light_style))
+    elements.append(Paragraph(f'Ref: {negocio}', hero_bold_style))
 
-    # TEXTO DA PROPOSTA - TEXTO GENERICO DA PROPOSTA, cabecalho investimento, serviços
-    blank_line(elements,1)
-    elements.append(Paragraph(f'Ref: Proposta comercial Hygge referente ao empreendimento {negocio}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
+    blank_line(elements, 1)
+    elements.append(Paragraph(f'Proposta comercial Hygge referente ao empreendimento {negocio}, conforme tabela de investimento a seguir e detalhamento do escopo nas páginas subsequentes', justify_style))
     
     blank_line(elements,2)
     elements.append(Paragraph(f'INVESTIMENTO', center_style_bold_green))
