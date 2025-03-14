@@ -724,9 +724,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # Conteúdo do documento - lista de todos os elementos que compoe a proposta
     elements = []
 
-    blank_line(elements,19)
-    elements.append(Paragraph(f'{negocio}', title_hero_light_style))
-    elements.append(PageBreak())
+    if not 'NBR' in str(image_reader):
+        blank_line(elements,19)
+        elements.append(Paragraph(f'{negocio}', title_hero_light_style))
+        elements.append(PageBreak())
 
     # PAGINA DA PROPOSTA
     # Gerar PDF
