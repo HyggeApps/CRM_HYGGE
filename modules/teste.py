@@ -1,4 +1,4 @@
-import ast
+import random
 from pymongo import MongoClient
 from urllib.parse import quote_plus
 
@@ -13,31 +13,25 @@ def get_collection(collection_name):
     db = client["crm_database"]
     return db[collection_name]
 
-# Conecta à coleção "produtos"
-collection_produtos = get_collection("produtos")
+# Conecta à coleção "tarefas"
+collection_tarefas = get_collection("tarefas")
 
-# Primeiro: remove o campo "escopo" dos produtos da categoria Consultoria
-resultado_unset = collection_produtos.update_many(
-    {
-        "categoria": "Consultoria",
-        "tipo": {"$regex": "NBR"}
-    },
-    {"$unset": {"escopo": ""}}
-)
-print("Campo 'escopo' removido de", resultado_unset.modified_count, "documentos.")
+def atualizar_titulos():
+    # Percorre todas as tarefas
+    for tarefa in collection_tarefas.find():
+        empresa = tarefa.get("empresa", "")
+        titulo = tarefa.get("titulo", "")
+        # Gera um hexadecimal aleatório de 4 caracteres
+        random_hex = f"{random.randint(0, 0xFFFF):04x}"
+        # Novo título: título atual concatenado com o campo "empresa" e o hexadecimal
+        novo_titulo = f"{titulo} ({empresa} - {random_hex})"
+        
+        # Atualiza o documento com o novo título e adiciona o campo "hexa"
+        collection_tarefas.update_one(
+            {"_id": tarefa["_id"]},
+            {"$set": {"titulo": novo_titulo, "hexa": random_hex}}
+        )
+        print(f"Tarefa {tarefa['_id']} atualizada para: {novo_titulo}")
 
-# Define a lista de escopo corrigida
-escopo_list = [
-    'Laudo diagnóstico para NBR 15.575 por simulação computacional para o térmico e lumínico natural.'
-]
-
-# Atualiza os documentos que não possuem o campo "escopo", adicionando-o com escopo_list
-resultado_set = collection_produtos.update_many(
-    {
-        "categoria": "Consultoria",
-        "tipo": {"$regex": "NBR"},
-        "escopo": {"$exists": False}
-    },
-    {"$set": {"escopo": escopo_list}}
-)
-print("Campo 'escopo' atualizado em", resultado_set.modified_count, "documentos.")
+# Executa a atualização
+atualizar_titulos()

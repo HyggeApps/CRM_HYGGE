@@ -2,7 +2,7 @@ import streamlit as st
 from utils.database import get_collection
 from datetime import datetime, timedelta, date
 import pandas as pd
-
+import random
 
 def calcular_data_execucao(opcao):
     """Calcula a data de execução da tarefa com base na opção selecionada, considerando apenas dias úteis."""
@@ -92,13 +92,15 @@ def gerenciamento_tarefas(user, admin, empresa):
                 submit_criar = st.form_submit_button("✅ Criar Tarefa")
 
             if submit_criar:
+                random_hex = f"{random.randint(0, 0xFFFF):04x}"
                 if titulo:
                     nova_tarefa = {
-                        "titulo": titulo,
+                        "titulo": f"{titulo} ({empresa} - {random_hex})",
                         "empresa": empresa,
                         "data_execucao": data_execucao.strftime("%Y-%m-%d"),
                         "observacoes": observacoes,
-                        "status": status
+                        "status": status,
+                        "hexa": random_hex
                     }
                     collection_tarefas.insert_one(nova_tarefa)
                     

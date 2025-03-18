@@ -232,6 +232,7 @@ def cadastrar_empresas(user, admin):
                 if existing_company:
                     st.error("Empresa já cadastrada com esta razão social!")
                 else:
+                    random_hex = f"{random.randint(0, 0xFFFF):04x}"
                     # Registrar empresa
                     now = datetime.today().strftime("%Y-%m-%d")
                     document = {
@@ -258,7 +259,7 @@ def cadastrar_empresas(user, admin):
                     # Criar automaticamente uma tarefa associada à empresa
                     prazo_execucao = datetime.today().date() + timedelta(days=1)
                     tarefa_document = {
-                        "titulo": "Identificar personas",
+                        "titulo": f"Identificar personas ({razao_social} - {random_hex})",
                         "empresa": razao_social,
                         "data_execucao": prazo_execucao.strftime("%Y-%m-%d"),
                         "observacoes": "Nova empresa cadastrada",

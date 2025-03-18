@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from collections import defaultdict
 import time
+import random
 
 # Dicionário de meses em português
 MESES_PT = {
@@ -135,9 +136,11 @@ def exibir_atividades_empresa(user, admin, empresa_nome):
                         collection_atividades.insert_one(nova_atividade)
 
                         if tipo != 'Observação':
+                            
+                            random_hex = f"{random.randint(0, 0xFFFF):04x}"
                             nova_tarefa = {
                                 "tarefa_id": str(datetime.now().timestamp()),
-                                "titulo": titulo_tarefa if titulo_tarefa is not None else tipo,
+                                "titulo": f"{titulo_tarefa} ({empresa_nome} - {random_hex})" if titulo_tarefa is not None else tipo,
                                 "empresa": empresa_nome,
                                 "atividade_vinculada": atividade_id,
                                 "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
