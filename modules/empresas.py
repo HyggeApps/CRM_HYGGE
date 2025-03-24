@@ -73,10 +73,18 @@ def editar_empresa(user, admin):
                 disabled=not eh_proprietario
             )
         with col6:
+            options_produto = ["", "NBR Fast", "Consultoria NBR", "Consultoria Hygge", "Consultoria Certificação"]
+            default_produto = empresa.get("Produto Interesse", [])
+            if not isinstance(default_produto, list):
+                default_produto = [default_produto] if default_produto in options_produto else ["NBR Fast"]
+            else:
+                default_produto = [p for p in default_produto if p in options_produto]
+                if not default_produto:
+                    default_produto = ["NBR Fast"]
             produto_interesse = st.multiselect(
                 "Produto de Interesse", 
-                ["", "NBR Fast", "Consultoria NBR", "Consultoria Hygge", "Consultoria Certificação"], 
-                default=empresa.get("Produto Interesse", []) if isinstance(empresa.get("Produto Interesse"), list) else [empresa.get("Produto Interesse", "NBR Fast")],
+                options_produto, 
+                default=default_produto,
                 disabled=not eh_proprietario
             )
 
