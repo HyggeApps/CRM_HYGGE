@@ -58,6 +58,7 @@ def calcular_parcelas_e_saldo(amount, parcela_fixa):
     combinacoes.append(f"Total à vista de R$ {amount:,.2f}{texto_prop1}".replace(",", "X").replace(".", ",").replace("X", "."))
     combinacoes.append(f"50% de entrada no valor de R$ {(amount/2):,.2f}{texto_entrada}".replace(",", "X").replace(".", ",").replace("X", "."))
     combinacoes.append(f"30% de entrada no valor de R$ {(amount*0.3):,.2f}{texto_entrada}".replace(",", "X").replace(".", ",").replace("X", "."))
+    combinacoes.append(f"4x de R$ {amount/4:,.2f} com entrada para 7 dias após a assinatura do contrato".replace(",", "X").replace(".", ",").replace("X", "."))
 
     if amount >= 12000 and amount < 18000: 
         combinacoes.append(f"2x de R$ {amount/2:,.2f}{texto_prop}".replace(",", "X").replace(".", ",").replace("X", "."))
