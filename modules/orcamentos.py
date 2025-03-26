@@ -855,10 +855,11 @@ def elaborar_orcamento(user, email, senha):
                 documento_produto = collection_produtos.find_one(filtro_produto)
 
                 if documento_produto:
+                    nome_produto = documento_produto.get("nome", "Consultoria HYGGE")
                     preco_modelagem = documento_produto.get("preco_modelagem", 0)
                     preco_servico = documento_produto.get("preco_servico", 0)
                 else:
-                    st.write("Nenhum preço encontrado para essa combinação.")
+                    st.write("Nenhum nome/preço encontrado para essa combinação.")
 
                 # Coleta todos os serviços adicionais disponíveis em collection_produtos
 
@@ -872,7 +873,7 @@ def elaborar_orcamento(user, email, senha):
                 elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação Fitwell']
                 elif 'Auditoria' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE']
                 elif 'GBC' in tipo_empreendimento: nomes_produtos = ['GBC Casa Condomínio']
-                else: nomes_produtos = []
+                else: nomes_produtos = [nome_produto]
 
                 lista_escopo = []  # Será uma lista de listas; cada sublista corresponde ao "escopo" de um produto
 
