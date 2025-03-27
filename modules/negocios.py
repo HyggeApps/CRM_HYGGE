@@ -288,9 +288,15 @@ def gerenciamento_oportunidades(user):
                         )
 
                         if novo_estagio != row['estagio']:
+                            update_fields = {"estagio": novo_estagio}
+                            if novo_estagio == "Fechado":
+                                update_fields["negocio_fechado"] = True
+                            elif novo_estagio == "Perdido":
+                                update_fields["negocio_perdido"] = True
+                            
                             collection_oportunidades.update_one(
                                 {"nome_oportunidade": row['nome_oportunidade']},
-                                {"$set": {"estagio": novo_estagio}}
+                                {"$set": update_fields}
                             )
                             st.success(f"Estágio alterado para {novo_estagio}")
                             st.rerun()  # Atualiza a página após a mudança
@@ -429,11 +435,16 @@ def gerenciamento_oportunidades(user):
                                 key=f"select_{row['nome_oportunidade']}_encerrado_{i}"
                             )
 
-                            # Se o estágio for alterado, atualizar no MongoDB
                             if novo_estagio != row['estagio']:
+                                update_fields = {"estagio": novo_estagio}
+                                if novo_estagio == "Fechado":
+                                    update_fields["negocio_fechado"] = True
+                                elif novo_estagio == "Perdido":
+                                    update_fields["negocio_perdido"] = True
+                                
                                 collection_oportunidades.update_one(
                                     {"nome_oportunidade": row['nome_oportunidade']},
-                                    {"$set": {"estagio": novo_estagio}}
+                                    {"$set": update_fields}
                                 )
                                 st.success(f"Estágio alterado para {novo_estagio}")
                                 st.rerun()  # Atualiza a página após a mudança
