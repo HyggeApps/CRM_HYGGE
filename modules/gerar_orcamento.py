@@ -702,6 +702,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     
     # CAPA DA PROPOSTA
     image_reader=None
+    flag_ECO=False
     for p in produtos:
         #st.write(p)
         if 'NBR' in p and 'Fast' in p:
@@ -710,6 +711,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
             break
         elif 'NBR' in p and 'Eco' in p:
             #st.write('entrei')
+            flag_ECO=True
             image_reader = Path(__file__).parent / "PDFs2/Capa_NBR_Eco.png"
             break
     if image_reader is None:
@@ -852,6 +854,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
 
     # Gerar PDF dos aditivos e adicionais e textos extra
     doc.build(elements)
+
     aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
     if any("NBR" in produto and 'Fast' in produto for produto in produtos):
@@ -914,7 +917,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
                 st.warning(f"Arquivo não encontrado: {path_item.name}. Será omitido.")
 
         #pdfs.extend([NBRFast_Termos, NBR_disposicoes, NBR_clientes_hygge, contracapa_path])
-        pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])
+        if flag_ECO:
+            pdfs.extend([contracapa_path])
+        else:
+            pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])
     writer = PdfWriter()
 
     for pdf in pdfs:
