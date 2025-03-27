@@ -704,9 +704,13 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     image_reader=None
     for p in produtos:
         #st.write(p)
-        if 'NBR' in p:
+        if 'NBR' in p and 'Fast' in p:
             #st.write('entrei')
-            image_reader = Path(__file__).parent / "PDFs2/NBR_Capa.png"
+            image_reader = Path(__file__).parent / "PDFs2/Capa_NBR_Fast.png"
+            break
+        elif 'NBR' in p and 'Eco' in p:
+            #st.write('entrei')
+            image_reader = Path(__file__).parent / "PDFs2/Capa_NBR_Eco.png"
             break
     if image_reader is None:
         image_reader = Path(__file__).parent / "PDFs2/Capa.png"
@@ -850,7 +854,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     doc.build(elements)
     aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
-    NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
+    if any("NBR" in produto and 'Fast' in produto for produto in produtos):
+        NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
     NBR_disposicoes = Path(__file__).parent / "PDFs2/NBRFast_Disposicoes.pdf" 
     #NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
     disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf"  
