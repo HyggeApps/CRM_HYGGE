@@ -56,7 +56,7 @@ def format_currency(value):
     return "R$ " + "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def gerenciamento_oportunidades(user):
+def gerenciamento_oportunidades(user, admin):
     
     collection_atividades = get_collection("atividades")
     collection_oportunidades = get_collection("oportunidades")
@@ -74,8 +74,11 @@ def gerenciamento_oportunidades(user):
         # Supondo que as coleções e variáveis já estejam definidas:
         # collection_clientes, collection_usuarios, collection_produtos,
         # collection_oportunidades, collection_atividades, user, estagios
-
-        clientes = list(collection_clientes.find({"proprietario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        if not admin:
+            clientes = list(collection_clientes.find({"proprietario": user}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        else: 
+            clientes = list(collection_clientes.find({}, {"_id": 0, "razao_social": 1, "cnpj": 1}))
+        # Obter todos os usuários e produtos
         usuarios = list(collection_usuarios.find({}, {"_id": 0, "nome": 1, "sobrenome": 1, "email": 1}))
         produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
 
@@ -164,18 +167,30 @@ def gerenciamento_oportunidades(user):
                     else:
                         st.error("Preencha todos os campos obrigatórios.")
 
-
-    # Buscar oportunidades no banco
-    oportunidades = list(
-        collection_oportunidades.find(
-            {"proprietario": user},  # <─ ADICIONE ESTA CLÁUSULA PARA FILTRAR
-            {"_id": 0, "cliente": 1, "nome_oportunidade": 1,"valor_orcamento": 1, "valor_estimado": 1,
-            "data_criacao": 1, "data_fechamento": 1, "estagio": 1, "produtos": 1}
+    if not admin:
+        # Buscar oportunidades no banco
+        oportunidades = list(
+            collection_oportunidades.find(
+                {"proprietario": user},  # <─ ADICIONE ESTA CLÁUSULA PARA FILTRAR
+                {"_id": 0, "cliente": 1, "nome_oportunidade": 1,"valor_orcamento": 1, "valor_estimado": 1,
+                "data_criacao": 1, "data_fechamento": 1, "estagio": 1, "produtos": 1}
+            )
         )
-    )
-    if not oportunidades:
-        st.warning("Nenhuma oportunidade encontrada.")
-        return
+        if not oportunidades:
+            st.warning("Nenhuma oportunidade encontrada.")
+            return
+    else:
+        # Buscar oportunidades no banco
+        oportunidades = list(
+            collection_oportunidades.find(
+                {},  # <─ ADICIONE ESTA CLÁUSULA PARA FILTRAR
+                {"_id": 0, "cliente": 1, "nome_oportunidade": 1,"valor_orcamento": 1, "valor_estimado": 1,
+                "data_criacao": 1, "data_fechamento": 1, "estagio": 1, "produtos": 1}
+            )
+        )
+        if not oportunidades:
+            st.warning("Nenhuma oportunidade encontrada.")
+            return
     
     df_oportunidades = pd.DataFrame(oportunidades)
     df_oportunidades['data_criacao'] = pd.to_datetime(df_oportunidades['data_criacao'], errors='coerce')
@@ -398,17 +413,18 @@ def gerenciamento_oportunidades(user):
                 st.write('----')
                 
                 if not df_filtrado.empty:
-                    for i, (_, row) in enumerate(df_filtrado.iterrows()):
+                    for i, (idx, row) in enumerate(df_filtrado.iterrows()):
                         st.subheader(f"{row['nome_oportunidade']}")
-                        st.write(f"**💲 {row['valor_estimado']}**")
+                        if row['valor_orcamento'] != '':
+                            st.write(f"**💲 {row['valor_orcamento']}**")
+                        else:
+                            st.write(f"**💲 {row['valor_estimado']}**")
                         
-                        # Formatando a data de criação
                         if pd.notnull(row["data_criacao"]):
                             data_criacao_str = row["data_criacao"].strftime("%d/%m/%Y")
                         else:
                             data_criacao_str = "Data não informada"
 
-                        # Formatando a data de fechamento
                         if pd.notnull(row["data_fechamento"]):
                             data_fechamento_str = row["data_fechamento"].strftime("%d/%m/%Y")
                         else:
