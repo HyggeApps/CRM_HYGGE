@@ -266,7 +266,7 @@ if st.session_state.get('logado', False):
 
             # 1. as sidebar menu
             selected = option_menu(
-                f"CRM HYGGE (Admin)",
+                f"CRM HYGGE (Vendedor)",
                 ["Tarefas", "Empresas", "Contatos", "Negócios", "Orçamentos", "Aceites", "Templates", "Produtos", "Usuários", "Solicitações", "Indicadores"],
                 icons=["list-task", "building", "person-lines-fill", "currency-dollar", "calculator-fill", "bag-check", "file-earmark-text", "archive", "person-add", "check2-square","speedometer"],
                 menu_icon="cast",
