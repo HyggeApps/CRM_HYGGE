@@ -97,7 +97,7 @@ def format_currency(value):
     """
     return "R$ " + "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
 
-def gerenciamento_aceites(user, email, senha):
+def gerenciamento_aceites(user, email, senha, admin):
     # Obter as coleções necessárias
     collection_empresas = get_collection("empresas")
     collection_oportunidades = get_collection("oportunidades")
@@ -105,15 +105,23 @@ def gerenciamento_aceites(user, email, senha):
     collection_produtos = get_collection("produtos")
 
     # 1. Seleção da Empresa
-    empresas = list(
-        collection_empresas.find(
-            {"proprietario": user}, 
-            {"_id": 0, "razao_social": 1, "cnpj": 1}
+    if not admin:
+        empresas = list(
+            collection_empresas.find(
+                {"proprietario": user}, 
+                {"_id": 0, "razao_social": 1, "cnpj": 1}
+            )
         )
-    )
-    if not empresas:
-        st.warning("Nenhuma empresa encontrada para o usuário.")
-        return
+        if not empresas:
+            st.warning("Nenhuma empresa encontrada para o usuário.")
+            return
+    else:
+        empresas = list(
+            collection_empresas.find(
+                {},
+                {"_id": 0, "razao_social": 1, "cnpj": 1}
+            )
+        )
 
     opcoes_empresas = [f"{empresa['razao_social']}" for empresa in empresas]
     
@@ -755,23 +763,35 @@ def gerenciamento_aceites(user, email, senha):
                                 st.balloons()
                                 time.sleep(1)    
                 
-def elaborar_orcamento(user, email, senha):
+def elaborar_orcamento(user, email, senha, admin):
     # Obter as coleções necessárias
     collection_empresas = get_collection("empresas")
     collection_oportunidades = get_collection("oportunidades")
     collection_contatos = get_collection("contatos")  # Supondo que exista uma coleção de contatos
     collection_produtos = get_collection("produtos")
 
-    # 1. Seleção da Empresa
-    empresas = list(
-        collection_empresas.find(
-            {"proprietario": user}, 
-            {"_id": 0, "razao_social": 1, "cnpj": 1}
+    if not admin:
+        # 1. Seleção da Empresa
+        empresas = list(
+            collection_empresas.find(
+                {"proprietario": user}, 
+                {"_id": 0, "razao_social": 1, "cnpj": 1}
+            )
         )
-    )
-    if not empresas:
-        st.warning("Nenhuma empresa encontrada para o usuário.")
-        return
+        if not empresas:
+            st.warning("Nenhuma empresa encontrada para o usuário.")
+            return
+    else:
+        # Se o usuário for admin, listar todas as empresas
+        empresas = list(
+            collection_empresas.find(
+                {}, 
+                {"_id": 0, "razao_social": 1, "cnpj": 1}
+            )
+        )
+        if not empresas:
+            st.warning("Nenhuma empresa encontrada.")
+            return
 
     opcoes_empresas = [f"{empresa['razao_social']}" for empresa in empresas]
     
@@ -1165,7 +1185,7 @@ def elaborar_orcamento(user, email, senha):
                         st.error('⚠️ Descontos acima de 20% devem ser aprovados pelo gestor responsável.') 
                         
                         if negocio_selecionado['aprovacao_gestor']: 
-                            st.markdown(f'🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.')
+                            st.markdown(f"🟩 Desconto aprovado pelo gestor de até {negocio_selecionado['desconto_aprovado']}%.")
                             justificativa = st.text_area("Justificativa para solicitação de novo desconto adicional:")
                             if st.button(f'Solicitar novo desconto de {desconto}%'):
                                 receivers = ['fabricio@hygge.eco.br', email]

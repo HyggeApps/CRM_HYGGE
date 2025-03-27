@@ -35,7 +35,7 @@ def exibir_contatos_empresa(user, admin, empresa_cnpj):
                     # Verificar se o contato já existe em **outra empresa**
                     contato_existente = collection_contatos.find_one({"email": email})
                     if contato_existente and contato_existente["empresa"] != empresa_cnpj:
-                        st.error(f"Erro: O contato '{email}' já está vinculado ao banco de dados na empresa '{contato_existente["empresa"]}'!")
+                        st.error(f"Erro: O contato '{email}' já está vinculado ao banco de dados na empresa '{contato_existente['empresa']}'!")
                     else:
                         # Adicionar contato APENAS à empresa selecionada
                         collection_contatos.insert_one({

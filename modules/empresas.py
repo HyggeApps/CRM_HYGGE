@@ -42,7 +42,7 @@ def editar_empresa(user, admin):
     usuarios = list(collection_usuarios.find({}, {"nome": 1, "sobrenome": 1, "email": 1}))
 
     # Formatar a lista de usuários para o formato: "nome sobrenome (email)"
-    lista_usuarios = [f'{usuario["nome"]} {usuario['sobrenome']}' for usuario in usuarios]
+    lista_usuarios = [f"{usuario['nome']} {usuario['sobrenome']}" for usuario in usuarios]
     lista_usuarios.sort()
 
     with st.form(key="form_edicao_empresa"):
