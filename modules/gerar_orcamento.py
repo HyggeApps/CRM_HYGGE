@@ -704,9 +704,13 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     image_reader=None
     for p in produtos:
         #st.write(p)
-        if 'NBR' in p:
+        if 'NBR' in p and 'Fast' in p:
             #st.write('entrei')
             image_reader = Path(__file__).parent / "PDFs2/Capa_NBR_Fast.png"
+            break
+        elif 'NBR' in p and 'Eco' in p:
+            #st.write('entrei')
+            image_reader = Path(__file__).parent / "PDFs2/Capa_NBR_Eco.png"
             break
     if image_reader is None:
         image_reader = Path(__file__).parent / "PDFs2/Capa.png"
