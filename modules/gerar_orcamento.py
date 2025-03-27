@@ -854,7 +854,10 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     doc.build(elements)
     aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
-    NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
+    if any("NBR" in produto and "Eco" in produto for produto in produtos):
+        NBRFast_Termos = None
+    else:
+        NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
     NBR_disposicoes = Path(__file__).parent / "PDFs2/NBRFast_Disposicoes.pdf" 
     #NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
     disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf"  
