@@ -413,17 +413,18 @@ def gerenciamento_oportunidades(user, admin):
                 st.write('----')
                 
                 if not df_filtrado.empty:
-                    for i, (_, row) in enumerate(df_filtrado.iterrows()):
+                    for i, (idx, row) in enumerate(df_filtrado.iterrows()):
                         st.subheader(f"{row['nome_oportunidade']}")
-                        st.write(f"**💲 {row['valor_estimado']}**")
+                        if row['valor_orcamento'] != '':
+                            st.write(f"**💲 {row['valor_orcamento']}**")
+                        else:
+                            st.write(f"**💲 {row['valor_estimado']}**")
                         
-                        # Formatando a data de criação
                         if pd.notnull(row["data_criacao"]):
                             data_criacao_str = row["data_criacao"].strftime("%d/%m/%Y")
                         else:
                             data_criacao_str = "Data não informada"
 
-                        # Formatando a data de fechamento
                         if pd.notnull(row["data_fechamento"]):
                             data_fechamento_str = row["data_fechamento"].strftime("%d/%m/%Y")
                         else:
