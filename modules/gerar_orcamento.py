@@ -750,8 +750,11 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     image_reader = Path(__file__).parent / "PDFs2/Template.png"
 
     for p in produtos:
-        if 'NBR' in p:
+        if 'Fast' in p:
             image_reader = Path(__file__).parent / "PDFs2/Template_NBRFast.png"
+            break
+        if 'Eco' in p:
+            image_reader = Path(__file__).parent / "PDFs2/Template_NBR_ECO.png"
             break
 
     # Create a frame and a page template with the background
