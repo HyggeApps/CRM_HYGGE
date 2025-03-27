@@ -119,6 +119,7 @@ def editar_empresa(user, admin):
 @st.fragment            
 def cadastrar_empresas(user, admin):
     collection_empresas = get_collection("empresas")
+    collection_subempresas = get_collection("subempresas")
     collection_tarefas = get_collection("tarefas")  # Conectar com a coleção de tarefas
 
     st.header('Cadastro de Empresas')
@@ -263,6 +264,7 @@ def cadastrar_empresas(user, admin):
                         "cep": cep,
                     }
                     collection_empresas.insert_one(document)
+                    collection_subempresas.insert_one(document)
 
                     # Criar automaticamente uma tarefa associada à empresa
                     prazo_execucao = datetime.today().date() + timedelta(days=1)
@@ -651,6 +653,8 @@ def excluir_empresa(user, admin):
     else:
         collection_empresas = get_collection("empresas")
         collection_empresas.delete_one({"razao_social": empresa["Nome"]})
+        collection_subempresas = get_collection("subempresas")
+        collection_subempresas.delete_one({"razao_social": empresa["Nome"]})
 
         st.success(f"Empresa **{empresa['Nome']}** foi removida com sucesso!")
         st.session_state["empresa_selecionada"] = None  # Limpa a seleção
