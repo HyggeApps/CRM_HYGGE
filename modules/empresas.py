@@ -585,10 +585,11 @@ def consultar_empresas(user, admin):
                 with st.expander("📋 Dados da Empresa", expanded=True):
 
                     collection_empresas = get_collection("empresas")
-                    empresa_nome = st.session_state.get("empresa_nome_selecionada", None)
-
-                    if empresa_nome:
-                        empresa_atualizada = collection_empresas.find_one({"razao_social": empresa_nome}, {"_id": 0})
+                    empresa_selecionada = st.session_state.get("empresa_selecionada", None)
+                    empresa_atual = collection_empresas.find_one({"razao_social": empresa_selecionada["Nome"]})
+                    empresa_id = empresa_atual.get("_id") if empresa_atual and "_id" in empresa_atual else None
+                    if empresa_id:
+                        empresa_atualizada = collection_empresas.find_one({"_id": empresa_id}, {"_id": 0})
 
                         if empresa_atualizada:
                             dados_empresa = {
@@ -612,23 +613,23 @@ def consultar_empresas(user, admin):
                         st.warning("Nenhuma empresa selecionada.")
 
                 # Integrando a função de exibir contatos
-                if empresa_nome:
+                if empresa_id:
                     st.write('----')
                     st.subheader("☎️ Informações sobre contatos")
-                    exibir_contatos_empresa(user, admin, empresa_nome)
+                    exibir_contatos_empresa(user, admin, empresa_id)
                 else:
-                    st.error("Erro ao carregar o CNPJ da empresa.")
+                    st.error("Erro ao carregar o ID da empresa.")
 
             with col2:
                 st.write("### 📜 Tarefas para a empresa")
-                if empresa_nome:
-                    gerenciamento_tarefas(user, admin, empresa_nome)
+                if empresa_id:
+                    gerenciamento_tarefas(user, admin, empresa_id)
                 st.write('----')
                 st.write("### 📌 Histórico de atividades")
-                if empresa_nome:
-                    exibir_atividades_empresa(user, admin, empresa_nome)
+                if empresa_id:
+                    exibir_atividades_empresa(user, admin, empresa_id)
                 else:
-                    st.error("Erro ao carregar o CNPJ da empresa.")
+                    st.error("Erro ao carregar o ID da empresa.")
 
         else:
             st.write('----')

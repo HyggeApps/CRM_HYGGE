@@ -615,7 +615,8 @@ def gerenciamento_aceites(user, email, senha, admin):
                             
                             # st.session_state['button_disabled'] = True
                             # Configuração do email
-                            receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            receivers = ['rodrigo@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
@@ -669,7 +670,9 @@ def gerenciamento_aceites(user, email, senha, admin):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
+                            st.write(selected_negocio, negocio_id)
                             path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
+                            st.write(path_proposta_envio)
                             
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)

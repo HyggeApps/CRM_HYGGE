@@ -398,8 +398,10 @@ def gerenciamento_oportunidades(user, admin):
             # Calcula o total da categoria
             total_valor = 0
             for _, row_valor in df_filtrado.iterrows():
-                if row_valor['valor_orcamento'] != '': valor_str = str(row_valor['valor_orcamento']).replace("R$", "").replace(".", "").replace(",", ".").strip()
-                else: valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                if row_valor['valor_orcamento'] != '': 
+                    valor_str = str(row_valor['valor_orcamento']).replace("R$", "").replace(".", "").replace(",", ".").strip()
+                else: 
+                    valor_str = str(row_valor['valor_estimado']).replace("R$", "").replace(".", "").replace(",", ".").strip()
                 try:
                     total_valor += float(valor_str)
                 except ValueError:
@@ -464,6 +466,7 @@ def gerenciamento_oportunidades(user, admin):
                                 )
                                 st.success(f"Estágio alterado para {novo_estagio}")
                                 st.rerun()  # Atualiza a página após a mudança
+                            
                             # ──────────────────────────────────────────────────────────────────────────
                             # Exemplo de "editar oportunidade" via expander
                             # ──────────────────────────────────────────────────────────────────────────
@@ -471,12 +474,12 @@ def gerenciamento_oportunidades(user, admin):
                             with st.popover("✏️ Editar oportunidade"):
                                 # Aqui você pode permitir editar campos específicos,
                                 # como nome, valor estimado, datas, etc.
-                                novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}")  # Unique key)
+                                novo_nome = st.text_input("Nome da oportunidade", value=row["nome_oportunidade"], key=f"nome_{row['nome_oportunidade']}_{i}")  # Unique key)
                                 nova_data_fechamento_date = st.date_input(
-                                "Data de fechamento",
-                                value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
-                                                            else dt.date.today(),
-                                key=f"dataFechamento_{row['nome_oportunidade']}"
+                                    "Data de fechamento",
+                                    value=row["data_fechamento"] if isinstance(row["data_fechamento"], dt.date) 
+                                                                else dt.date.today(),
+                                    key=f"dataFechamento_{row['nome_oportunidade']}"
                                 )
                                 
                                 nova_data_fechamento_datetime = datetime.combine(nova_data_fechamento_date, time.min)
@@ -500,7 +503,7 @@ def gerenciamento_oportunidades(user, admin):
                                             "status": "Registrado",
                                             "titulo": f"Oportunidade '{novo_nome}' atualizada",
                                             "empresa": row["cliente"],
-                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{novo_nome}': nova data de fechamento prevista: {nova_data_fechamento}'.",
+                                            "descricao": f"O vendedor {user} atualizou a oportunidade '{novo_nome}': nova data de fechamento prevista: {nova_data_fechamento}.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
                                             "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
                                         }
@@ -511,11 +514,37 @@ def gerenciamento_oportunidades(user, admin):
                                     else:
                                         st.warning("Nenhum documento foi atualizado. Verifique se o filtro está correto ou se não houve mudança.")
                                     st.rerun()
+                        
+                        elif row['estagio'] == 'Perdido':
+                            # Adicionar selectbox para escolher o motivo da perda
+                            motivos_perda = ['Concorrente - Preço', 'Concorrente  - NBR + Acústico', 'Concorrente - Escopo', 'Timing', 'Não viu valor', 'Fornecedor conhecido']
+                            # Buscar no banco a oportunidade para obter o motivo preenchido, se existir
+                            documento_opp = collection_oportunidades.find_one({"nome_oportunidade": row['nome_oportunidade']})
+                            motivo_cadastrado = documento_opp.get("motivo_perda", "") if documento_opp else ""
 
-                        st.write("---")
+                            if motivo_cadastrado in motivos_perda:
+                                default_index = motivos_perda.index(motivo_cadastrado)
+                            else:
+                                default_index = 0
 
-                else:
-                    st.info(f"Nenhuma oportunidade.")
+                            motivo_perda_selecionado = st.selectbox(
+                                "Motivo da perda",
+                                options=motivos_perda,
+                                index=default_index,
+                                key=f"motivo_perda_{row['nome_oportunidade']}_{i}"
+                            )
+
+                            # Botão para atualizar o motivo da perda
+                            if st.button("Atualizar motivo da perda", key=f"atualizar_motivo_{row['nome_oportunidade']}_{i}"):
+                                if motivo_perda_selecionado != motivo_cadastrado:
+                                    collection_oportunidades.update_one(
+                                        {"nome_oportunidade": row['nome_oportunidade']},
+                                        {"$set": {"motivo_perda": motivo_perda_selecionado}}
+                                    )
+                                    st.success(f"Motivo da perda atualizado para {motivo_perda_selecionado}")
+                                    st.rerun()
+
+                            st.write("---")
 
 
 
