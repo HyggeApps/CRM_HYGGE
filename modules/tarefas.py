@@ -333,19 +333,19 @@ def gerenciamento_tarefas_por_usuario(user, admin):
     # 🔹 Buscar todas as tarefas diretamente do banco, filtrando por empresa_id
     tarefas = list(collection_tarefas.find(
         {"empresa_id": {"$in": list(empresas_usuario)}},
-        {"_id": 0, "titulo": 1, "empresa_id": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
+        {"_id": 0, "titulo": 1, "empresa_id": 1, "empresa": 1, "data_execucao": 1, "status": 1, "observacoes": 1}
     ))
 
     if not tarefas:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # 🔹 Criar um dicionário com Nome da Empresa baseado no empresa_id
-    empresas_dict = {empresa["empresa_id"]: empresa.get("razao_social", "Não encontrado") for empresa in collection_empresas.find(
-        {"empresa_id": {"$in": list(empresas_usuario)}}, {"empresa_id": 1, "razao_social": 1}
+    # 🔹 Criar um dicionário com Nome da Empresa baseado no _id da empresa
+    empresas_dict = {empresa["_id"]: empresa.get("razao_social", "Não encontrado") for empresa in collection_empresas.find(
+        {"_id": {"$in": list(empresas_usuario)}}, {"_id": 1, "razao_social": 1}
     )}
 
-    # 🔹 Converter datas e adicionar nome da empresa (usando empresa_id)
+    # 🔹 Converter datas e adicionar nome da empresa usando empresa_id
     for tarefa in tarefas:
         tarefa["Nome da Empresa"] = empresas_dict.get(tarefa["empresa_id"], "Não encontrado")
         tarefa["Data de Execução"] = datetime.strptime(tarefa["data_execucao"], "%Y-%m-%d").date()
