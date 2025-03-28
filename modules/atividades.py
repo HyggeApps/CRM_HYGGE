@@ -126,7 +126,8 @@ def exibir_atividades_empresa(user, admin, empresa_id):
                             "descricao": descricao,
                             "vendedor_criacao": user,
                             "data_execucao_atividade": data_execucao.strftime("%Y-%m-%d"),
-                            "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d")
+                            "data_criacao_atividade": datetime.now().strftime("%Y-%m-%d"),
+                            "empresa_id": empresa_id,
                         }
                         # Acrescenta o status à atividade se necessário
                         if with_status and status_value:
@@ -146,7 +147,8 @@ def exibir_atividades_empresa(user, admin, empresa_id):
                                 "atividade_vinculada": atividade_id,
                                 "data_execucao": data_execucao_tarefa.strftime("%Y-%m-%d"),
                                 "status": "🟨 Em andamento",
-                                "observacoes": ""
+                                "observacoes": "",
+                                "empresa_id": empresa_id,
                             }
                             collection_tarefas = get_collection("tarefas")
                             collection_tarefas.insert_one(nova_tarefa)

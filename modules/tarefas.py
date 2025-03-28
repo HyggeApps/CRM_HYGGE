@@ -102,7 +102,8 @@ def gerenciamento_tarefas(user, admin, empresa_id):
                         "data_execucao": data_execucao.strftime("%Y-%m-%d"),
                         "observacoes": observacoes,
                         "status": status,
-                        "hexa": random_hex
+                        "hexa": random_hex,
+                        "empresa_id": empresa_id,
                     }
                     collection_tarefas.insert_one(nova_tarefa)
                     
@@ -206,7 +207,8 @@ def gerenciamento_tarefas(user, admin, empresa_id):
                                             "empresa": nome_empresa,
                                             "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
                                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
-                                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                                            "empresa_id": empresa_id
                                         }
 
                                         # Inserir no banco de atividades
@@ -391,7 +393,7 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_atrasadas = df_atrasadas[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_atrasadas, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_atrasadas, key=f"editar_tarefa_atrasada_{titulo}", tipo=f"atrasadas - {titulo}", user=user)
+                editar_tarefa_modal(tarefas_atrasadas, key=f"editar_tarefa_atrasada_{titulo}", tipo=f"atrasadas - {titulo}", user=user, empresa_id=tarefa["empresa_id"])
             else:
                 st.success(f"Nenhuma tarefa atrasada para {titulo}.")
 
@@ -410,15 +412,12 @@ def gerenciamento_tarefas_por_usuario(user, admin):
                 df_em_andamento = df_em_andamento[["Data de Execução", "Nome da Empresa", "Título", "Observações"]]
                 st.dataframe(df_em_andamento, hide_index=True, use_container_width=True)
 
-                editar_tarefa_modal(tarefas_em_andamento, key=f"editar_tarefa_andamento_{titulo}", tipo=f"em andamento - {titulo}", user=user)
+                editar_tarefa_modal(tarefas_em_andamento, key=f"editar_tarefa_andamento_{titulo}", tipo=f"em andamento - {titulo}", user=user, empresa_id=tarefa["empresa_id"])
             else:
                 st.success(f"Nenhuma tarefa em andamento para {titulo}.")
 
 
-
-
-
-def editar_tarefa_modal(tarefas, key, tipo, user): 
+def editar_tarefa_modal(tarefas, key, tipo, user, empresa_id): 
     """
     Exibe um pop-up/modal para edição de tarefas do tipo especificado (Atrasadas ou Em Andamento).
     """
@@ -505,7 +504,8 @@ def editar_tarefa_modal(tarefas, key, tipo, user):
                             "empresa": tarefa_dados['empresa'],
                             "descricao": f"O vendedor {user} concluiu a tarefa '{titulo_edit}'.",
                             "data_execucao_atividade": datetime.today().strftime("%Y-%m-%d"),
-                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d")
+                            "data_criacao_atividade": datetime.today().strftime("%Y-%m-%d"),
+                            "empresa_id": empresa_id,
                         }
                         collection_atividades.insert_one(nova_atividade)
 
