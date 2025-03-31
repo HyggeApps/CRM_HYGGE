@@ -640,9 +640,9 @@ def gerenciamento_aceites(user, email, senha, admin):
                             
                             <br><p>Detalhes do fechamento:<br></p>
                             <p>Produtos: {produtos}<br></p>
-                            <p>Categoria: {categoria}<br></p>
-                            <p>Tipo de empreendimento: {tipo}<br></p>
-                            <p>Tamanho: {tamanho}<br></p>
+                            <p>Categoria: {negocio_selecionado.get("categoria", "N/A")}<br></p>
+                            <p>Tipo de empreendimento: {negocio_selecionado.get("tipo", "N/A")}<br></p>
+                            <p>Tamanho: {negocio_selecionado.get("tamanho", "N/A")}<br></p>
 
                             <p>Atenciosamente,</p>"""
 
