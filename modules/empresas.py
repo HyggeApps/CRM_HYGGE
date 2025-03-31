@@ -290,8 +290,9 @@ def consultar_empresas(user, admin):
     todas_razoes = list(collection_empresas.distinct("razao_social"))
     todas_razoes = [r for r in todas_razoes if r]
 
-    vendedores = list(f"{collection_usuarios.distinct('nome')} {collection_usuarios.distinct('sobrenome')}")
-    vendedores = [v for v in vendedores if v]
+    usuarios = list(collection_usuarios.find({}, {"nome": 1, "sobrenome": 1}))
+    vendedores = [f"{usuario['nome']} {usuario['sobrenome']}" for usuario in usuarios if usuario.get('nome') and usuario.get('sobrenome')]
+    vendedores.sort()
 
     # Carrega os demais filtros com o mesmo padrão
     ufs = list(collection_empresas.distinct("uf"))
