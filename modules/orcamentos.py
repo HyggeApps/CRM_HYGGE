@@ -615,8 +615,8 @@ def gerenciamento_aceites(user, email, senha, admin):
                             
                             # st.session_state['button_disabled'] = True
                             # Configuração do email
-                            #receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
-                            receivers = ['rodrigo@hygge.eco.br']
+                            receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            #receivers = ['rodrigo@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
