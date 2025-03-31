@@ -77,7 +77,7 @@ def gerenciamento_tarefas(user, admin, empresa_id):
             )
 
     # 📌 Botão para adicionar nova tarefa
-    if admin or (user == st.session_state["empresa_selecionada"]["Proprietário"]):
+    if admin or (user == st.session_state["empresa_selecionada"]["Vendedor"]):
         with st.popover('➕ Criar Tarefa'):
             with st.form("form_criar_tarefa"):
                 st.subheader("➕ Nova Tarefa")
