@@ -64,7 +64,8 @@ def gerenciamento_tarefas(user, admin, empresa_id):
     tarefas = list(collection_tarefas.find({"empresa_id": empresa_id}, {"_id": 0}))
     # pega o nome da empresa com base no "empresa_id" via collection_empresas
     collection_empresas = get_collection("empresas")
-    nome_empresa = collection_empresas.find_one({"empresa_id": empresa_id}, {"_id": 0, "razao_social": 1})   
+    nome_empresa = collection_empresas.find_one({"empresa_id": empresa_id}, {"_id": 0, "razao_social": 1})
+    nome_empresa = nome_empresa["razao_social"] if nome_empresa else "Empresa não encontrada"   
     hoje = datetime.today().date()
 
     for tarefa in tarefas:
