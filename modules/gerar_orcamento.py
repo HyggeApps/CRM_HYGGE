@@ -922,6 +922,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
                 st.warning(f"Arquivo não encontrado: {path_item.name}. Será omitido.")
 
         #pdfs.extend([NBRFast_Termos, NBR_disposicoes, NBR_clientes_hygge, contracapa_path])
+        st.write(flag_ECO, contracapa_path)
         if flag_ECO:
             pdfs.extend([contracapa_path])
         else:
