@@ -862,6 +862,8 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
     if any("NBR" in produto and 'Fast' in produto for produto in produtos):
         NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
+    elif any("Consultoria HYGGE Residencial" in produto for produto in produtos):
+        NBRFast_Termos = Path(__file__).parent / "PDFs2/NBRFast_Termos.pdf"
     NBR_disposicoes = Path(__file__).parent / "PDFs2/NBRFast_Disposicoes.pdf" 
     #NBR_clientes_hygge = Path(__file__).parent / "PDFs2/NBRFAst_clientes.pdf"
     disposicoes_gerais_filename = Path(__file__).parent / "PDFs2/Disposições Gerais.pdf"  
@@ -923,7 +925,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         if flag_ECO:
             pdfs.extend([contracapa_path])
         else:
-            pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])
+            pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])   
     writer = PdfWriter()
 
     for pdf in pdfs:
