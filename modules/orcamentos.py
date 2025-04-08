@@ -152,6 +152,10 @@ def gerenciamento_aceites(user, email, senha, admin):
 
         st.write('----')
         if negocio_selecionado:
+            # Ensure categoria, tipo and tamanho are defined in this scope
+            categoria = negocio_selecionado.get("categoria", "N/A")
+            tipo = negocio_selecionado.get("tipo", "N/A")
+            tamanho = negocio_selecionado.get("tamanho", "N/A")
             produtos = list(collection_produtos.find({}, {"_id": 0, "nome": 1, "categoria": 1, "preco": 1, "base_desconto": 1}))
             nomes_produtos = [p["nome"] for p in produtos]
             st.subheader("ℹ️ Informações do Negócio para o envio do email de aceite")
@@ -344,10 +348,6 @@ def gerenciamento_aceites(user, email, senha, admin):
 
                     # Valor padrão para contatos selecionados (campo 'contatos_selecionados' da oportunidade)
                     default_contatos = negocio_selecionado.get("contatos_selecionados", [])
-                    categoria = negocio_selecionado.get("categoria", '')
-                    tipo = negocio_selecionado.get("tipo", '')
-                    tamanho = negocio_selecionado.get("tamanho", '')
-                    produtos = negocio_selecionado.get("produtos", [])
                     # Filtra os defaults para que estejam entre as opções disponíveis
                     default_contatos = [d for d in default_contatos if d in opcoes_contatos]
 
@@ -451,9 +451,9 @@ def gerenciamento_aceites(user, email, senha, admin):
                             
                             <br><p>Detalhes do fechamento:<br></p>
                             <p>Produtos: {produtos}<br></p>
-                            <p>Categoria: {categoria}<br></p>
-                            <p>Tipo de empreendimento: {tipo}<br></p>
-                            <p>Tamanho: {tamanho}<br></p>
+                            <p>Categoria: {negocio_selecionado.get("categoria", "N/A")}<br></p>
+                            <p>Tipo de empreendimento: {negocio_selecionado.get("tipo", "N/A")}<br></p>
+                            <p>Tamanho: {negocio_selecionado.get("tamanho", "N/A")}<br></p>
 
                             <p>Atenciosamente,</p>"""
 
@@ -616,6 +616,7 @@ def gerenciamento_aceites(user, email, senha, admin):
                             # st.session_state['button_disabled'] = True
                             # Configuração do email
                             receivers = ['paula@hygge.eco.br','financeiro@hygge.eco.br', 'rodrigo@hygge.eco.br','alexandre@hygge.eco.br','fabricio@hygge.eco.br', email]
+                            #receivers = ['rodrigo@hygge.eco.br']
                             message = MIMEMultipart()
                             message["From"] = email
                             message["To"] = ", ".join(receivers)
@@ -639,9 +640,9 @@ def gerenciamento_aceites(user, email, senha, admin):
                             
                             <br><p>Detalhes do fechamento:<br></p>
                             <p>Produtos: {produtos}<br></p>
-                            <p>Categoria: {categoria}<br></p>
-                            <p>Tipo de empreendimento: {tipo}<br></p>
-                            <p>Tamanho: {tamanho}<br></p>
+                            <p>Categoria: {negocio_selecionado.get("categoria", "N/A")}<br></p>
+                            <p>Tipo de empreendimento: {negocio_selecionado.get("tipo", "N/A")}<br></p>
+                            <p>Tamanho: {negocio_selecionado.get("tamanho", "N/A")}<br></p>
 
                             <p>Atenciosamente,</p>"""
 
@@ -669,7 +670,9 @@ def gerenciamento_aceites(user, email, senha, admin):
                             # Anexa o corpo do email completo no formato HTML
                             message.attach(MIMEText(full_body, "html"))
 
+                            st.write(selected_negocio, negocio_id)
                             path_proposta_envio = gro.get_versao(f"{selected_negocio}_{negocio_id}")
+                            st.write(path_proposta_envio)
                             
                             if path_proposta_envio:
                                 novo_nome_arquivo = os.path.basename(path_proposta_envio)
@@ -886,7 +889,7 @@ def elaborar_orcamento(user, email, senha, admin):
                 if 'NBR Eco' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Economy']
                 elif 'Aditivo' in tipo_empreendimento: nomes_produtos = ['Aditivo de NBR 15.575']
                 elif 'NBR Fast' in tipo_empreendimento: nomes_produtos = ['Laudo NBR Fast']
-                elif 'NBR' in tipo_empreendimento: nomes_produtos = ['Laudo diagnóstico normativo da NBR 15.575']
+                elif 'NBR' in tipo_empreendimento: nomes_produtos = ['NBR Fast - Laudo diagnóstico normativo da NBR 15.575']
                 elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Consultoria Hygge']
                 elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE', 'Auditoria EDGE']
                 elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE']
