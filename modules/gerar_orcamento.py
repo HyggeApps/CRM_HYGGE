@@ -858,6 +858,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
     # Gerar PDF dos aditivos e adicionais e textos extra
     doc.build(elements)
 
+    st.write(produtos)
     aditivo_filename = Path(__file__).parent / "PDFs2/Aditivos.pdf"
     termos_filename = Path(__file__).parent / "PDFs2/Termos e condições da prestação de serviço.pdf"
     if any("NBR" in produto and 'Fast' in produto for produto in produtos):
