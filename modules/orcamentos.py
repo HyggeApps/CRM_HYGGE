@@ -893,7 +893,7 @@ def elaborar_orcamento(user, email, senha, admin):
                 elif 'Consultoria' in tipo_empreendimento: nomes_produtos = ['Consultoria Hygge']
                 elif 'Auditoria' in tipo_empreendimento and 'Certificação' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE', 'Auditoria EDGE']
                 elif 'Certificação' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Certificação EDGE']
-                elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação Fitwell']
+                elif 'Certificação' in tipo_empreendimento and  'Fitwell' in tipo_empreendimento: nomes_produtos = ['Certificação Fitwel']
                 elif 'Auditoria' in tipo_empreendimento and 'EDGE' in tipo_empreendimento: nomes_produtos = ['Auditoria EDGE']
                 elif 'GBC' in tipo_empreendimento: nomes_produtos = ['GBC Casa Condomínio']
                 else: nomes_produtos = [nome_produto]
