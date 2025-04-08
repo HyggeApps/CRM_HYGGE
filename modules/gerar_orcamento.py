@@ -925,7 +925,7 @@ def generate_proposal_pdf2(empresa, id, negocio, produtos, valor_negocio, descon
         if flag_ECO:
             pdfs.extend([contracapa_path])
         else:
-            pdfs.extend([NBRFast_Termos, NBR_disposicoes, contracapa_path])   
+            pdfs.extend([NBR_disposicoes, contracapa_path])   
     writer = PdfWriter()
 
     for pdf in pdfs:
